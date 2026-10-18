@@ -1,0 +1,25 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Claude Code (configuración local de cada persona)
+.claude/settings.local.json
+
+# Dependencias y salidas futuras del desarrollo
+node_modules/
+dist/
+build/
+.expo/
+*.log
+.env
+.env.*
+!.env.example
+
+# Archivos temporales
+*.tmp
+~$*

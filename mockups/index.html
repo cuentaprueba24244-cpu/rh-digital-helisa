@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mockups RH digital Comserva</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px var(--gutter) 80px; display: grid; gap: 22px; }
+  .hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: 30px; font-weight: 700; letter-spacing: -.01em; }
+  .hero p { color: var(--fg-2); max-width: 62ch; margin-top: 10px; font-size: 15px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .tile { display: flex; flex-direction: column; gap: 8px; padding: 18px; text-decoration: none; color: inherit; transition: transform .12s; }
+  .tile:hover { transform: translateY(-2px); text-decoration: none; border-color: var(--accent); }
+  .tile .ico { width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-soft-fg); display: grid; place-items: center; font-size: 18px; font-weight: 700; }
+  .tile h3 { font-size: 16px; }
+  .tile p { color: var(--fg-3); font-size: 13px; }
+  .tile .links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .tile .links span { font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px; color: var(--fg-2); }
+  ol.flow { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-size: 14px; }
+  ol.flow li b { font-weight: 600; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Fase 1 · campo y oficina</div>
+      <h1>Mockups de RH digital para Comserva</h1>
+      <p>Prototipo navegable en HTML con datos de prueba para recorrer el proceso completo: el operario registra la visita en el celular, la oficina la ve llegar, cierra el periodo y entrega a Lucrecia los totales listos para Helisa. Los números de Cofema de septiembre de 2026 son los reales (413,85 kg y $2.244.935) y sirven para comprobar la fórmula.</p>
+      <p>Nada se guarda: cada recarga vuelve al estado inicial. "Hoy" es el <b>lunes 19 de octubre de 2026</b>, dentro del periodo de octubre (27 de septiembre al 26 de octubre).</p>
+    </div>
+    <div class="card pad">
+      <h3>Cómo recorrer el proceso en 10 minutos</h3>
+      <ol class="flow" style="margin-top:10px">
+        <li><b>App móvil:</b> entra como Dubeny, abre la visita de IPS Salud Vital, registra kilos, firma y cierra. Activa "Simular sin señal" y repite para ver la cola de envío.</li>
+        <li><b>App móvil:</b> desde la constancia registra un pago en efectivo y mira el recibo. Luego registra una visita fallida en el Consultorio Dr. Ramírez.</li>
+        <li><b>Panel web:</b> revisa la bandeja de visitas (hay una rechazada y una anulada), valida el cliente creado en campo y anula una visita con motivo.</li>
+        <li><b>Panel web:</b> abre Clientes y mira la tarifa vigente de Cofema; en Catálogos revisa las 9 categorías con su tratamiento y dispositor.</li>
+        <li><b>Panel web:</b> en Cierre del periodo abre septiembre de 2026: Cofema suma 413,85 kg y la fórmula da $2.244.935, igual a la factura FVE 25756. Genera el reporte para Helisa.</li>
+        <li><b>Documentos:</b> abre la constancia, la planilla mensual, el recibo de caja y el reporte de cierre tal como saldrían en PDF.</li>
+        <li><b>Portal (fase 2):</b> entra como Cofema y descarga el acta; cambia a IPS Salud Vital para ver el acta retenida por mora.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="tiles">
+    <a class="card tile" href="app/index.html">
+      <div class="ico">📱</div>
+      <h3>App móvil del operario</h3>
+      <p>15 pantallas: inicio de sesión, ruta del día, visita en cuatro pasos, constancia, recibo de caja, visita fallida, historial, sincronización y cliente nuevo en campo.</p>
+      <div class="links"><span>Firmas en pantalla</span><span>Sin señal</span><span>Rangos de consecutivos</span></div>
+    </a>
+    <a class="card tile" href="panel/index.html">
+      <div class="ico">🖥</div>
+      <h3>Panel web de oficina</h3>
+      <p>Inicio, bandeja de visitas, clientes y tarifas, catálogos y parámetros, cierre del periodo con reporte para Helisa, recaudo en efectivo, usuarios y auditoría.</p>
+      <div class="links"><span>Lucrecia</span><span>Gerencia</span><span>Camino A a Helisa</span></div>
+    </a>
+    <a class="card tile" href="documentos/index.html">
+      <div class="ico">📄</div>
+      <h3>Documentos PDF</h3>
+      <p>Constancia de visita, planilla mensual RHPS, recibo de caja provisional, reporte de cierre y, como anticipo de la fase 2, el acta de gestión integral.</p>
+      <div class="links"><span>Consecutivos</span><span>QR de verificación</span><span>Formato actual</span></div>
+    </a>
+    <a class="card tile" href="portal/index.html">
+      <div class="ico">🔐</div>
+      <h3>Portal del cliente (fase 2)</h3>
+      <p>Anticipo: el cliente entra con usuario y clave, descarga constancias, planillas y recibos, y el acta solo si está al día. Página de verificación de documentos por QR.</p>
+      <div class="links"><span>Regla de cartera</span><span>Verificación</span></div>
+    </a>
+  </section>
+
+  <section class="card pad">
+    <h3>Convenciones de estado</h3>
+    <div class="legend" style="margin-top:10px">
+      <div><span class="badge plain">Borrador</span> se puede editar; solo existe en el celular.</div>
+      <div><span class="badge warn">Guardada en el celular</span> firmada y con número; espera señal.</div>
+      <div><span class="badge ok">Transmitida</span> recibida por el servidor.</div>
+      <div><span class="badge danger">Rechazada</span> el servidor la devolvió; la oficina revisa.</div>
+      <div><span class="badge info">En el cierre</span> ya cuenta para un periodo cerrado.</div>
+      <div><span class="badge danger">Anulada</span> con motivo y usuario; se emitió otra.</div>
+    </div>
+  </section>
+
+  <section class="card pad">
+    <h3>Datos de prueba</h3>
+    <p class="muted" style="margin-top:6px">12 clientes activos y 1 pendiente de validar, 2 operarios, 2 vehículos, 9 categorías, 2 dispositores, 3 periodos (agosto y septiembre cerrados, octubre abierto), 48 visitas (incluidas 2 fallidas, 1 rechazada, 1 anulada con reemplazo, 1 en cola sin señal y 1 borrador) y 6 recibos de caja (1 anulado). Están en <span class="mono">assets/data.js</span>, que también contiene la fórmula de la factura y la suma del periodo.</p>
+  </section>
+</div>
+<script src="assets/data.js"></script>
+<script>
+  document.getElementById('bar').innerHTML = window.DATA.mockBar('Inicio').replace(/\.\.\//g, '');
+</script>
+</body>
+</html>

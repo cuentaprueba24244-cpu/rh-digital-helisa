@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clientes y tarifas · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 1100px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .stats { grid-template-columns: 1fr; } }
+  .toolbar .grow { flex: 1; }
+  .sect, .sect > *, .card, .card-body, .modal-body { min-width: 0; }
+  table.tbl tr.row { cursor: pointer; }
+  #tabla { font-size: 12.5px; }
+  #tabla th, #tabla td { padding: 8px 10px; }
+  #tabla th:first-child { min-width: 190px; }
+  #tabla th:nth-child(8) { min-width: 104px; }
+  @media (max-width: 900px) { .panel { grid-template-rows: auto 1fr; } }
+  table.tbl tr.row:focus-visible td { background: var(--accent-soft); }
+  table.tbl td .tarifa { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.tbl td .tarifa small { color: var(--fg-3); }
+  .empty { padding: 28px; text-align: center; color: var(--fg-3); }
+
+  /* modal grande para la ficha */
+  .modal.wide { width: min(980px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; }
+  .modal.wide .modal-body { overflow: auto; }
+  .modal .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .modal .modal-head .close { border: 0; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; color: var(--fg-3); padding: 2px 6px; border-radius: 6px; }
+  .modal .modal-head .close:hover { background: var(--surface-2); color: var(--fg); }
+  .modal .modal-head .title-sub { display: block; font-weight: 400; font-size: 12.5px; color: var(--fg-3); margin-top: 2px; }
+  .modal .modal-head .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .tabs button { border: 1px solid var(--border-2); background: var(--surface); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; cursor: pointer; }
+  .tabs button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-soft-fg); font-weight: 600; }
+  .modal-foot .left { margin-right: auto; font-size: 12.5px; color: var(--fg-3); align-self: center; }
+  .modal-body table.tbl td.num, .modal-body table.tbl th.num { white-space: nowrap; }
+  .sect { display: grid; gap: 10px; }
+  .sect h4 { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); }
+  .calc { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .calc .t { font-weight: 700; border-top: 1px solid var(--border-2); padding-top: 4px; }
+  .err { color: var(--danger); font-size: 12.5px; min-height: 1em; }
+  .req::after { content: ' *'; color: var(--danger); }
+
+  /* importar desde Excel */
+  .cols { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cols span { font-family: var(--font-mono); font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; }
+  .drop { border: 2px dashed var(--border-2); border-radius: var(--radius); padding: 22px; text-align: center; color: var(--fg-3); background: var(--surface-2); cursor: pointer; }
+  .drop:hover, .drop.over { border-color: var(--accent); color: var(--fg); }
+  .drop b { color: var(--fg); display: block; margin-bottom: 4px; }
+  .portal-state { display: flex; align-items: center; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Maestros</div>
+        <h1>Clientes y tarifas</h1>
+        <p>El NIT es la llave de cada cliente. La tarifa vigente se toma por la fecha de corte del periodo: cambiarla hoy no altera los periodos ya cerrados.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btn-importar">Importar desde Excel</button>
+        <button class="btn primary" id="btn-nuevo">Nuevo cliente</button>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="card">
+      <div class="card-body" style="padding-bottom:0">
+        <div class="toolbar">
+          <label class="field grow" style="min-width:220px">
+            <span class="eyebrow" style="font-size:10.5px">Buscar</span>
+            <input class="input" id="q" type="search" placeholder="Nombre comercial, razón social o NIT" autocomplete="off" style="width:100%">
+          </label>
+          <div class="field">
+            <span class="eyebrow" style="font-size:10.5px">Estado</span>
+            <div class="chips" id="chips" role="group" aria-label="Filtrar por estado"></div>
+          </div>
+          <label class="field">
+            <span class="eyebrow" style="font-size:10.5px">Frecuencia</span>
+            <select class="select" id="frec"><option value="">Todas las frecuencias</option></select>
+          </label>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl" id="tabla">
+          <thead>
+            <tr>
+              <th>Cliente</th><th>NIT</th><th>Ciudad</th><th>Frecuencia</th><th>Tarifa vigente</th><th>Plazo</th><th>Cartera</th><th>Última visita</th><th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="card-body muted" id="resumen" style="font-size:12.5px;border-top:1px solid var(--border)"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+  document.getElementById('sidebar').innerHTML = sidebar('clientes.html');
+
+  const state = { q: '', chip: 'todos', frec: '', sel: null, tab: 'datos', nuevaTarifa: false };
+  const PERIODO_CERRADO = D.periodos.find((p) => p.id === '2026-09');
+
+  // ---------- utilidades ----------
+  function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+  function num(v) { return Number(String(v ?? '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0; }
+  // Dígito de verificación del NIT (algoritmo DIAN)
+  function calcDV(nit) {
+    const s = String(nit || '').replace(/\D/g, ''); if (!s) return '';
+    const pesos = [3, 7, 13, 17, 19, 23, 29, 37, 41, 43, 47, 53, 59, 67, 71];
+    let sum = 0; for (let i = 0; i < s.length; i++) sum += Number(s[s.length - 1 - i]) * pesos[i];
+    const r = sum % 11; return String(r > 1 ? 11 - r : r);
+  }
+  function dvHelp(nit, dv) {
+    if (!nit) return 'El DV se calcula solo al escribir el NIT';
+    const calc = calcDV(nit);
+    if (!dv) return 'DV según el algoritmo de la DIAN: ' + calc;
+    // Si el DV ya está registrado no se cuestiona: se tomó del RUT del cliente. Al editar el NIT se recalcula.
+    return String(dv) === calc ? 'DV verificado con el algoritmo de la DIAN' : 'DV tomado del RUT del cliente; si corrige el NIT se recalcula';
+  }
+  function ultimaVisita(c) {
+    // La más reciente; si una anulada y su reemplazo tienen la misma fecha y hora, gana el reemplazo
+    const vs = D.visitas.filter((v) => v.cliente === c.id && v.estado !== 'borrador').sort((a, b) => (b.fecha + b.hora).localeCompare(a.fecha + a.hora) || ((a.estado === 'anulada') - (b.estado === 'anulada')));
+    return vs[0] || null;
+  }
+  const PERIODO_ABIERTO = D.periodos.find((p) => p.estado === 'abierto');
+  // Fechas en local (sin toISOString, que resta un día al este de UTC)
+  const isoLocal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const sumarDias = (iso, n) => { const d = D.parseISO(iso); d.setDate(d.getDate() + n); return isoLocal(d); };
+  // Una tarifa nueva solo puede empezar después del último corte cerrado; por defecto arranca el día siguiente al corte del periodo abierto
+  const ULTIMO_CORTE_CERRADO = D.periodos.filter((p) => p.estado === 'cerrado').map((p) => p.fin).sort().pop() || null;
+  const INICIO_TARIFA_NUEVA = sumarDias(PERIODO_ABIERTO.fin, 1);
+  // Factura real de Cofema por septiembre de 2026 (fuentes/FORMATO FACTURA.pdf): la comprobación de la tarifa se compara contra su total
+  const FACTURA_REAL = { cliente: 'c-cofema', periodo: '2026-09', numero: 'FVE 25756', total: 2244935 };
+  const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
+  // Tarifa que verá el usuario en la tabla: la vigente hoy o, si no hay, la próxima programada
+  function tarifaMostrada(c) {
+    const vig = D.tarifaVigente(c);
+    if (vig) return { t: vig, futura: false };
+    const prox = (c.tarifas || []).filter((t) => t.desde > D.HOY).sort((a, b) => a.desde.localeCompare(b.desde))[0];
+    return prox ? { t: prox, futura: true } : { t: null, futura: false };
+  }
+  const ESTADO_CLS = { borrador: 'plain', cerrada: 'warn', transmitida: 'ok', rechazada: 'danger', en_cierre: 'info', anulada: 'danger' };
+  const badgeVisita = (v) => `<span class="badge ${ESTADO_CLS[v.estado] || 'plain'}">${D.ESTADO_VISITA_LABEL[v.estado] || v.estado}</span>`;
+  function badgeCartera(c) {
+    const m = { al_dia: 'ok', en_mora: 'danger', sin_info: 'plain' };
+    return `<span class="badge ${m[c.cartera] || 'plain'}" title="${esc(c.cartera_fuente ? 'Fuente: ' + c.cartera_fuente : '')}">${D.CARTERA_LABEL[c.cartera] || c.cartera}</span>`;
+  }
+  function badgeEstado(c) {
+    if (c.estado === 'activo') return '<span class="badge ok">Activo</span>';
+    if (c.estado === 'pendiente_validar') return '<span class="badge warn">Pendiente de validar</span>';
+    return `<span class="badge plain">${esc(D.cap(c.estado))}</span>`;
+  }
+  function tarifaTxt(c) {
+    const { t, futura } = tarifaMostrada(c);
+    if (!t) return '<span class="muted">Sin tarifa</span>';
+    return `<span class="tarifa">${D.fmtCOP(t.basico)}<span class="sub">${D.fmtNum(t.kg_incluidos)} kg incl. · ${D.fmtCOP(t.precio_kg)}/kg${futura ? ' · desde ' + D.fmtFechaCorta(t.desde) : ''}</span></span>`;
+  }
+  function openModal({ title, body, foot, wide }) {
+    const m = $('#modal'); if (m) m.remove();
+    const bd = document.createElement('div'); bd.className = 'modal-backdrop'; bd.id = 'modal';
+    bd.innerHTML = `<div class="modal${wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div id="modal-title">${title}</div><button class="close" aria-label="Cerrar" data-close>✕</button></div><div class="modal-body" id="modal-body">${body}</div><div class="modal-foot" id="modal-foot">${foot || ''}</div></div>`;
+    bd.addEventListener('click', (e) => { if (e.target === bd || e.target.closest('[data-close]')) closeModal(); });
+    document.body.appendChild(bd);
+    const f = bd.querySelector('.modal-body input, .modal-body select, .modal-body button'); if (f) f.focus();
+    return bd;
+  }
+  function closeModal() { const m = $('#modal'); if (m) m.remove(); state.sel = null; state.nuevaTarifa = false; }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+  // ---------- filtros ----------
+  const CHIPS = [['todos', 'Todos'], ['activos', 'Activos'], ['pendientes', 'Pendientes de validar'], ['mora', 'En mora']];
+  function renderChips() {
+    $('#chips').innerHTML = CHIPS.map(([k, t]) => {
+      const n = D.clientes.filter((c) => pasaChip(c, k)).length;
+      return `<button type="button" class="chip${state.chip === k ? ' on' : ''}" data-chip="${k}" aria-pressed="${state.chip === k}">${t} <span class="muted">${n}</span></button>`;
+    }).join('');
+    $$('[data-chip]').forEach((b) => b.addEventListener('click', () => { state.chip = b.dataset.chip; renderChips(); renderTabla(); }));
+  }
+  function pasaChip(c, k) {
+    if (k === 'activos') return c.estado === 'activo';
+    if (k === 'pendientes') return c.estado === 'pendiente_validar';
+    if (k === 'mora') return c.cartera === 'en_mora';
+    return true;
+  }
+  Object.entries(D.FRECUENCIA_LABEL).forEach(([k, t]) => { const o = document.createElement('option'); o.value = k; o.textContent = t; $('#frec').appendChild(o); });
+  $('#frec').addEventListener('change', (e) => { state.frec = e.target.value; renderTabla(); });
+  $('#q').addEventListener('input', (e) => { state.q = e.target.value.trim().toLowerCase(); renderTabla(); });
+
+  function filtrados() {
+    const q = state.q.replace(/\./g, '');
+    return D.clientes.filter((c) => pasaChip(c, state.chip) && (!state.frec || c.frecuencia === state.frec) && (!q || c.nombre_comercial.toLowerCase().includes(q) || c.razon_social.toLowerCase().includes(q) || String(c.nit).includes(q)))
+      .sort((a, b) => a.nombre_comercial.localeCompare(b.nombre_comercial, 'es'));
+  }
+
+  function renderStats() {
+    const act = D.clientes.filter((c) => c.estado === 'activo').length;
+    const pend = D.clientes.filter((c) => c.estado === 'pendiente_validar').length;
+    const mora = D.clientes.filter((c) => c.cartera === 'en_mora');
+    const sinTarifa = D.clientes.filter((c) => c.estado === 'activo' && !D.tarifaVigente(c, PERIODO_ABIERTO.fin) && !tarifaMostrada(c).t).length;
+    const frec = { semanal: 0, quincenal: 0, mensual: 0 };
+    D.clientes.filter((c) => c.estado === 'activo').forEach((c) => { frec[c.frecuencia] = (frec[c.frecuencia] || 0) + 1; });
+    $('#stats').innerHTML = `
+      <div class="card stat"><div class="label">Clientes activos</div><div class="value">${act}</div><div class="delta">${frec.semanal} semanales · ${frec.quincenal} quincenales · ${frec.mensual} mensuales</div></div>
+      <div class="card stat"><div class="label">Pendientes de validar</div><div class="value">${pend}</div><div class="delta">${pend ? 'Creados en campo; sus visitas quedan rechazadas' : 'Ninguno'}</div></div>
+      <div class="card stat"><div class="label">En mora</div><div class="value">${mora.length}</div><div class="delta">${mora.length ? 'Según el Excel de Helisa del 17 de octubre' : 'Cartera al día'}</div></div>
+      <div class="card stat"><div class="label">Activos sin tarifa vigente</div><div class="value">${sinTarifa}</div><div class="delta">${sinTarifa ? 'El cierre no puede calcular su factura' : 'Todos tienen tarifa para el corte'}</div></div>`;
+  }
+
+  function renderTabla() {
+    const lista = filtrados();
+    $('#tbody').innerHTML = lista.length ? lista.map((c) => {
+      const t = tarifaMostrada(c).t;
+      const uv = ultimaVisita(c);
+      return `<tr class="row" tabindex="0" data-id="${c.id}" aria-label="Abrir ficha de ${esc(c.nombre_comercial)}">
+        <td><b>${esc(c.nombre_comercial)}</b><span class="sub">${esc(c.razon_social)}</span></td>
+        <td class="mono">${D.nitCompleto(c)}${!c.dv ? '<span class="sub" style="color:var(--warn)">Sin DV</span>' : ''}</td>
+        <td>${esc(c.ciudad)}<span class="sub">${esc(c.departamento)}</span></td>
+        <td>${D.FRECUENCIA_LABEL[c.frecuencia] || '—'}${c.dia_visita ? `<span class="sub">${esc(c.dia_visita)}</span>` : ''}</td>
+        <td>${tarifaTxt(c)}</td>
+        <td>${t ? esc(t.plazo) : '—'}</td>
+        <td>${badgeCartera(c)}</td>
+        <td>${uv ? `<span class="num">${D.fmtFechaCorta(uv.fecha)}</span><span class="sub">${uv.tipo === 'fallida' ? 'Fallida' : D.fmtKg(D.totalKg(uv)) + ' kg'} · ${D.ESTADO_VISITA_LABEL[uv.estado]}</span>` : '<span class="muted">Sin visitas</span>'}</td>
+        <td>${badgeEstado(c)}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="9"><div class="empty">Ningún cliente coincide con el filtro.</div></td></tr>';
+    $('#resumen').textContent = `${lista.length} de ${D.clientes.length} clientes · ${D.clientes.filter((c) => c.estado === 'activo').length} activos entran en el cierre del periodo.`;
+    $$('#tbody tr.row').forEach((tr) => {
+      tr.addEventListener('click', () => abrirFicha(tr.dataset.id));
+      tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirFicha(tr.dataset.id); } });
+    });
+  }
+
+  // ---------- ficha del cliente ----------
+  const TABS = [['datos', 'Datos'], ['tarifas', 'Tarifas'], ['visitas', 'Visitas'], ['documentos', 'Documentos'], ['portal', 'Portal (fase 2)']];
+  function abrirFicha(id, tab = 'datos') {
+    const c = D.cliente(id); if (!c) return;
+    state.sel = c; state.tab = tab; state.nuevaTarifa = false;
+    openModal({ wide: true, title: '', body: '', foot: '' });
+    renderFicha();
+  }
+  function renderFicha() {
+    const c = state.sel; if (!c) return;
+    const uv = ultimaVisita(c);
+    $('#modal-title').innerHTML = `${esc(c.nombre_comercial)}<span class="title-sub">${esc(c.razon_social)} · NIT ${D.nitCompleto(c)} · ${esc(c.sede || '')}</span><div class="badges">${badgeEstado(c)}${badgeCartera(c)}<span class="badge plain">${D.FRECUENCIA_LABEL[c.frecuencia] || 'Sin frecuencia'}</span></div>`;
+    const tabs = `<div class="tabs" role="tablist">${TABS.map(([k, t]) => `<button type="button" role="tab" aria-selected="${state.tab === k}" class="${state.tab === k ? 'on' : ''}" data-tab="${k}">${t}</button>`).join('')}</div>`;
+    const cuerpo = { datos: tabDatos, tarifas: tabTarifas, visitas: tabVisitas, documentos: tabDocumentos, portal: tabPortal }[state.tab](c);
+    $('#modal-body').innerHTML = tabs + cuerpo;
+    $('#modal-foot').innerHTML = `<span class="left">${uv ? 'Última visita: ' + D.fmtFecha(uv.fecha) + ' (constancia ' + (uv.consecutivo ?? 'sin número') + ')' : 'Sin visitas registradas'} · Cliente desde ${D.fmtFechaCorta(c.creado)}</span><button class="btn" data-close>Cerrar</button>${state.tab === 'datos' && c.estado !== 'pendiente_validar' ? '<button class="btn primary" id="guardar-datos">Guardar</button>' : ''}`;
+    $$('[data-tab]').forEach((b) => b.addEventListener('click', () => { state.tab = b.dataset.tab; state.nuevaTarifa = false; renderFicha(); }));
+    bindFicha(c);
+  }
+
+  function formDatos(c, prefix = 'f') {
+    const f = (k, label, val, extra = '') => `<div class="field"><label for="${prefix}-${k}">${label}</label><input class="input" id="${prefix}-${k}" data-k="${k}" value="${esc(val)}" ${extra}></div>`;
+    return `<div class="form-grid">
+      ${f('razon_social', 'Razón social', c.razon_social, 'required').replace('class="field"', 'class="field span-2"')}
+      ${f('nombre_comercial', 'Nombre comercial', c.nombre_comercial)}
+      <div class="field"><label for="${prefix}-nit">NIT o cédula</label><div style="display:grid;grid-template-columns:1fr 64px;gap:8px"><input class="input mono" id="${prefix}-nit" data-k="nit" inputmode="numeric" value="${esc(c.nit)}" required aria-label="NIT"><input class="input mono num" id="${prefix}-dv" data-k="dv" inputmode="numeric" maxlength="1" value="${esc(c.dv)}" aria-label="Dígito de verificación" placeholder="DV"></div><span class="help" id="${prefix}-dv-help">${dvHelp(c.nit, c.dv)}</span></div>
+      ${f('direccion', 'Dirección', c.direccion).replace('class="field"', 'class="field span-2"')}
+      ${f('ciudad', 'Ciudad', c.ciudad)}
+      ${f('departamento', 'Departamento', c.departamento)}
+      ${f('sede', 'Sede', c.sede)}
+      ${f('contacto', 'Contacto', c.contacto)}
+      ${f('telefono', 'Teléfono', c.telefono, 'inputmode="tel"')}
+      ${f('whatsapp', 'WhatsApp', c.whatsapp, 'inputmode="tel"')}
+      ${f('email', 'Correo', c.email, 'type="email"')}
+      <div class="field"><label for="${prefix}-frecuencia">Frecuencia</label><select class="select" id="${prefix}-frecuencia" data-k="frecuencia">${Object.entries(D.FRECUENCIA_LABEL).map(([k, t]) => `<option value="${k}" ${c.frecuencia === k ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+      ${f('dia_visita', 'Día de visita', c.dia_visita, 'placeholder="Ej.: Sábado, Primer jueves"')}
+      <div class="field"><label for="${prefix}-estado">Estado</label><select class="select" id="${prefix}-estado" data-k="estado"><option value="activo" ${c.estado === 'activo' ? 'selected' : ''}>Activo</option><option value="inactivo" ${c.estado === 'inactivo' ? 'selected' : ''}>Inactivo</option><option value="pendiente_validar" ${c.estado === 'pendiente_validar' ? 'selected' : ''}>Pendiente de validar</option></select></div>
+    </div>`;
+  }
+  function formTarifa(t, prefix = 't', conDesde = true) {
+    t = t || { desde: D.HOY, basico: '', kg_incluidos: '', precio_kg: '', iva_pct: D.parametros.iva_pct, plazo: 'Crédito 30 días', nota: '' };
+    return `<div class="form-grid">
+      ${conDesde ? `<div class="field"><label for="${prefix}-desde">Vigente desde</label><input class="input" type="date" id="${prefix}-desde" value="${esc(t.desde)}"></div>` : ''}
+      <div class="field"><label for="${prefix}-basico" class="req">Básico mensual (sin IVA)</label><input class="input num" id="${prefix}-basico" inputmode="numeric" value="${t.basico === '' ? '' : D.fmtNum(t.basico)}" placeholder="74.790"></div>
+      <div class="field"><label for="${prefix}-kg">Kg incluidos en el básico</label><input class="input num" id="${prefix}-kg" inputmode="decimal" value="${esc(t.kg_incluidos)}" placeholder="20"></div>
+      <div class="field"><label for="${prefix}-precio" class="req">Precio del kg adicional (sin IVA)</label><input class="input num" id="${prefix}-precio" inputmode="numeric" value="${t.precio_kg === '' ? '' : D.fmtNum(t.precio_kg)}" placeholder="4.600"></div>
+      <div class="field"><label for="${prefix}-iva">IVA %</label><input class="input num" id="${prefix}-iva" inputmode="numeric" value="${esc(t.iva_pct)}"></div>
+      <div class="field"><label for="${prefix}-plazo">Plazo de pago</label><select class="select" id="${prefix}-plazo">${['Crédito 30 días', '10 primeros días del mes siguiente', 'Paga en efectivo en la visita', 'Contado'].map((p) => `<option ${t.plazo === p ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
+      <div class="field span-2"><label for="${prefix}-nota">Nota</label><input class="input" id="${prefix}-nota" value="${esc(t.nota)}" placeholder="Ej.: según contrato del 27 jul 2026"></div>
+    </div>`;
+  }
+  function leerTarifa(prefix = 't') {
+    const g = (k) => $(`#${prefix}-${k}`);
+    return { desde: g('desde') ? g('desde').value : D.HOY, hasta: null, basico: num(g('basico').value), kg_incluidos: num(g('kg').value), precio_kg: num(g('precio').value), iva_pct: num(g('iva').value), plazo: g('plazo').value, nota: g('nota').value.trim() };
+  }
+
+  function tabDatos(c) {
+    if (c.estado === 'pendiente_validar') {
+      const vr = D.visitas.filter((v) => v.cliente === c.id && v.estado === 'rechazada');
+      const quien = (c.creado_por || 'el operario').replace(/\s*\(.*\)\s*/, '');
+      return `<div class="sect" style="margin-top:14px">
+        <div class="callout warn"><b>Creado en campo por ${esc(quien)} el ${D.fmtFecha(c.creado)};</b> ${vr.length ? `la visita ${vr.map((v) => v.consecutivo).join(', ')} está rechazada hasta validarlo.` : 'no tiene visitas rechazadas.'} ${vr[0] && vr[0].rechazo ? `<span class="muted">Motivo del servidor: ${esc(vr[0].rechazo)}</span>` : ''}</div>
+        <h4>Datos registrados en el celular</h4>
+        ${formDatos(c)}
+        <h4>Validar: completar lo que falta</h4>
+        <div class="callout">Para aceptar las visitas de este cliente hacen falta el dígito de verificación, una tarifa inicial y la frecuencia. Al validar, el servidor vuelve a procesar las visitas rechazadas con esta tarifa.</div>
+        <div class="form-grid">
+          <div class="field"><label for="v-dv" class="req">Dígito de verificación</label><input class="input mono num" id="v-dv" maxlength="1" inputmode="numeric" value="${esc(c.dv || calcDV(c.nit))}"><span class="help">Calculado para el NIT ${D.fmtNum(c.nit)}: ${calcDV(c.nit)}</span></div>
+          <div class="field"><label for="v-frec" class="req">Frecuencia</label><select class="select" id="v-frec">${Object.entries(D.FRECUENCIA_LABEL).map(([k, t]) => `<option value="${k}" ${c.frecuencia === k ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+        </div>
+        ${formTarifa({ desde: c.creado, basico: '', kg_incluidos: '', precio_kg: '', iva_pct: D.parametros.iva_pct, plazo: 'Paga en efectivo en la visita', nota: 'Tarifa inicial al validar el cliente' }, 'v')}
+        <div class="err" id="v-err" aria-live="polite"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn primary" id="validar">Validar y reprocesar visitas</button></div>
+      </div>`;
+    }
+    return `<div class="sect" style="margin-top:14px">${formDatos(c)}<p class="muted" style="font-size:12.5px">Los cambios de datos aplican de inmediato en el celular de los operarios en la próxima sincronización. La tarifa se edita en la pestaña Tarifas.</p></div>`;
+  }
+
+  function tabTarifas(c) {
+    const vig = D.tarifaVigente(c);
+    const sept = D.cierreCliente(c.id, PERIODO_CERRADO.id);
+    const filas = (c.tarifas || []).slice().sort((a, b) => b.desde.localeCompare(a.desde)).map((t) => `<tr class="${t === vig ? 'selected' : ''}">
+        <td class="num">${D.fmtFechaCorta(t.desde)}</td><td>${t === vig ? '<span class="badge ok">Vigente</span>' + (t.hasta ? `<span class="sub">hasta ${D.fmtFechaCorta(t.hasta)}</span>` : '') : (t.hasta ? D.fmtFechaCorta(t.hasta) : (t.desde > D.HOY ? '<span class="badge info">Programada</span>' : '<span class="muted">—</span>'))}</td>
+        <td class="num">${D.fmtCOP(t.basico)}</td><td class="num">${D.fmtNum(t.kg_incluidos)}</td><td class="num">${D.fmtCOP(t.precio_kg)}</td><td class="num">${t.iva_pct} %</td><td>${esc(t.plazo)}</td><td class="muted">${esc(t.nota || '')}</td>
+      </tr>`).join('');
+    let validacion = '';
+    if (sept.factura && sept.kg > 0) {
+      const f = sept.factura;
+      // Solo Cofema tiene factura real para comparar; "igual a la FVE" se afirma únicamente si el total coincide al peso
+      const conFactura = c.id === FACTURA_REAL.cliente && PERIODO_CERRADO.id === FACTURA_REAL.periodo;
+      const coincide = conFactura && f.total === FACTURA_REAL.total;
+      const cola = !conFactura ? '.' : coincide ? `, igual a la factura ${FACTURA_REAL.numero} emitida en Helisa.` : `, que <b>difiere de la ${FACTURA_REAL.numero} (${D.fmtCOP(FACTURA_REAL.total)})</b>: revise la tarifa vigente al corte del ${D.fmtFechaCorta(PERIODO_CERRADO.fin)}.`;
+      validacion = `<div class="callout ${!conFactura ? '' : coincide ? 'ok' : 'warn'}"><b>Comprobación con ${PERIODO_CERRADO.nombre.toLowerCase()}:</b> con ${D.fmtKg(sept.kg)} kg en ${D.fmtMes(PERIODO_CERRADO.id).split(' de ')[0]} la tarifa vigente al corte da <b>${D.fmtCOP(f.total)}</b>${cola}
+        <div class="calc" style="margin-top:8px"><span>Básico mensual</span><span>${D.fmtCOP(f.basico)}</span><span>${D.fmtKg(f.adicionales)} kg adicionales × ${D.fmtCOP(f.precio_kg)} <span class="muted">(${D.fmtKg(f.kg)} − ${D.fmtNum(f.incluidos)} incluidos)</span></span><span>${D.fmtCOP(f.valorAdicionales)}</span><span>Subtotal</span><span>${D.fmtCOP(f.subtotal)}</span><span>IVA ${f.iva_pct} %</span><span>${D.fmtCOP(f.iva)}</span><span class="t">Total</span><span class="t">${D.fmtCOP(f.total)}</span></div></div>`;
+    }
+    return `<div class="sect" style="margin-top:14px">
+      <div class="callout info">Una tarifa nueva rige desde la fecha que se indique y <b>no cambia los periodos ya cerrados</b>: para cada cierre se toma la tarifa vigente en la fecha de corte del periodo (el día ${D.parametros.dia_corte}). Si hay que corregir un periodo cerrado, se reabre con motivo y se vuelve a cerrar.</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h4>Histórico de tarifas</h4><button class="btn sm" id="btn-nueva-tarifa">${state.nuevaTarifa ? 'Cancelar' : 'Nueva tarifa desde una fecha'}</button></div>
+      ${state.nuevaTarifa ? `<div class="card pad sect"><b>Nueva tarifa</b>${formTarifa({ ...(vig || { basico: '', kg_incluidos: '', precio_kg: '', iva_pct: D.parametros.iva_pct, plazo: 'Crédito 30 días' }), desde: INICIO_TARIFA_NUEVA, nota: '' }, 'nt')}<p class="muted" style="font-size:12.5px;margin:0">Por defecto rige desde el día siguiente al corte del periodo abierto (${D.fmtFechaCorta(INICIO_TARIFA_NUEVA)}). Puede adelantarse, pero nunca a una fecha igual o anterior al último corte cerrado (${D.fmtFechaCorta(ULTIMO_CORTE_CERRADO)}).</p><div class="err" id="nt-err" aria-live="polite"></div><div style="display:flex;justify-content:flex-end"><button class="btn primary" id="guardar-tarifa">Guardar tarifa</button></div></div>` : ''}
+      <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">Desde</th><th>Hasta</th><th class="num">Básico</th><th class="num">Kg incl.</th><th class="num">Precio kg</th><th class="num">IVA</th><th>Plazo</th><th>Nota</th></tr></thead><tbody>${filas || '<tr><td colspan="8"><div class="empty">Este cliente aún no tiene tarifa. Sin tarifa el cierre no puede calcular su factura.</div></td></tr>'}</tbody></table></div>
+      ${validacion}
+    </div>`;
+  }
+
+  function tabVisitas(c) {
+    const vs = D.visitas.filter((v) => v.cliente === c.id).sort((a, b) => (b.fecha + (b.hora || '')).localeCompare(a.fecha + (a.hora || ''))).slice(0, 10);
+    const obs = (v) => esc(v.rechazo || v.anulacion_motivo || v.alerta || v.motivo_fallida || (v.reemplaza ? 'Reemplaza la constancia ' + D.visitas.find((x) => x.id === v.reemplaza).consecutivo : '') || (v.ultimo_error ? 'Pendiente de envío: ' + v.ultimo_error : ''));
+    return `<div class="sect" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h4>${vs.length === 0 ? 'Visitas' : vs.length === 1 ? 'Última visita' : `Últimas ${vs.length} visitas`}</h4><a class="btn sm" href="visitas.html#cliente=${c.id}">Ver todas en Visitas →</a></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Fecha</th><th class="num">N.º</th><th>Tipo</th><th>Estado</th><th class="num">Kg</th><th>Operario</th><th>Observación</th></tr></thead><tbody>
+      ${vs.length ? vs.map((v) => `<tr><td class="num">${D.fmtFechaCorta(v.fecha)} <span class="muted">${v.hora || ''}</span></td><td class="num mono">${v.consecutivo ?? '—'}</td><td>${v.tipo === 'fallida' ? 'Fallida' : 'Recolección'}</td><td>${badgeVisita(v)}</td><td class="num">${v.tipo === 'fallida' ? '—' : D.fmtKg(D.totalKg(v))}</td><td>${esc(D.operario(v.operario).nombre.split(' ').slice(0, 2).join(' '))}</td><td class="muted" style="max-width:260px">${obs(v)}</td></tr>`).join('') : '<tr><td colspan="7"><div class="empty">Sin visitas registradas.</div></td></tr>'}
+      </tbody></table></div>
+    </div>`;
+  }
+
+  function tabDocumentos(c) {
+    const pers = D.periodos.slice().reverse().map((p) => {
+      const todas = D.visitasDe(c.id, p.id, { todas: true });
+      if (!todas.length) return null;
+      const t = D.totalizar(c.id, p.id);
+      const num = (todas.find((v) => v.planilla) || {}).planilla;
+      return `<tr><td>${esc(p.nombre)}<span class="sub">${D.fmtFechaCorta(p.inicio)} – ${D.fmtFechaCorta(p.fin)}</span></td><td class="num">${t.visitas.length}${t.fallidas ? ` <span class="muted">+ ${plural(t.fallidas, 'fallida', 'fallidas')}</span>` : ''}</td><td class="num">${D.fmtKg(t.kg)}</td><td class="mono">${num ? num : (p.estado === 'cerrado' ? '<span class="muted">Asignado en el cierre</span>' : '<span class="muted">Se asigna al cerrar</span>')}</td><td>${p.estado === 'cerrado' ? '<span class="badge info">Periodo cerrado</span>' : '<span class="badge warn">Periodo abierto</span>'}</td><td><a href="../documentos/planilla.html#${c.id}|${p.id}">Abrir planilla →</a></td></tr>`;
+    }).filter(Boolean).join('');
+    const actas = D.actas.filter((a) => a.cliente === c.id).map((a) => `<tr><td class="mono">${a.consecutivo}</td><td>${esc(D.byId(D.periodos, a.periodo).nombre)}</td><td class="num">${D.fmtFechaCorta(a.fecha)}</td><td>${a.estado === 'retenida' ? `<span class="badge danger">Retenida</span><span class="sub">${esc(a.retenida_motivo || '')}</span>` : '<span class="badge ok">Emitida</span>'}</td><td>${esc(a.aprobada_por)}</td><td><a href="../documentos/acta.html#${a.cliente}|${a.periodo}">Abrir acta →</a></td></tr>`).join('');
+    const recibos = D.recibos.filter((r) => r.cliente === c.id).sort((a, b) => b.consecutivo - a.consecutivo).map((r) => `<tr><td class="mono">${r.consecutivo}</td><td class="num">${D.fmtFechaCorta(r.fecha)}</td><td class="num">${D.fmtCOP(r.valor)}</td><td class="muted">${esc(r.concepto)}</td><td>${r.estado === 'anulado' ? '<span class="badge danger">Anulado</span>' : (r.conciliado ? '<span class="badge ok">Conciliado</span>' : '<span class="badge warn">Por conciliar</span>')}</td><td><a href="../documentos/recibo.html#${r.id}">Abrir recibo →</a></td></tr>`).join('');
+    return `<div class="sect" style="margin-top:14px">
+      <h4>Planillas mensuales RHPS</h4>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Periodo</th><th class="num">Visitas</th><th class="num">Kg</th><th>N.º planilla</th><th>Estado</th><th></th></tr></thead><tbody>${pers || '<tr><td colspan="6"><div class="empty">Sin planillas: el cliente no tiene visitas.</div></td></tr>'}</tbody></table></div>
+      <h4>Actas de gestión integral (fase 2)</h4>
+      ${actas ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>N.º</th><th>Periodo</th><th class="num">Fecha</th><th>Estado</th><th>Aprobó</th><th></th></tr></thead><tbody>${actas}</tbody></table></div>` : '<p class="muted" style="font-size:12.5px">Sin actas registradas para este cliente.</p>'}
+      <h4>Recibos de caja</h4>
+      ${recibos ? `<div class="table-wrap"><table class="tbl"><thead><tr><th>N.º</th><th class="num">Fecha</th><th class="num">Valor</th><th>Concepto</th><th>Estado</th><th></th></tr></thead><tbody>${recibos}</tbody></table></div>` : '<p class="muted" style="font-size:12.5px">Sin recibos de caja: este cliente no paga en efectivo.</p>'}
+    </div>`;
+  }
+
+  function tabPortal(c) {
+    return `<div class="sect" style="margin-top:14px">
+      <div class="callout info">En la fase 2 el cliente entra al portal con usuario y clave, descarga sus constancias, planillas y recibos, y el acta de gestión integral <b>solo si está al día</b> según la cartera de Helisa.</div>
+      <dl class="kv">
+        <dt>Correo de acceso</dt><dd>${c.email ? `<span class="mono">${esc(c.email)}</span>` : '<span class="muted">Sin correo registrado: agréguelo en Datos</span>'}</dd>
+        <dt>Estado del acceso</dt><dd class="portal-state"><span class="badge plain">Sin activar</span><span class="muted">La invitación se envía cuando arranque la fase 2</span></dd>
+        <dt>Cartera que verá</dt><dd>${badgeCartera(c)} ${c.cartera_fuente ? `<span class="muted">(${esc(c.cartera_fuente)})</span>` : ''}</dd>
+        <dt>Documentos disponibles</dt><dd>${plural(D.visitas.filter((v) => v.cliente === c.id && v.consecutivo).length, 'constancia', 'constancias')} · ${plural(D.periodos.filter((p) => D.visitasDe(c.id, p.id).length).length, 'planilla', 'planillas')} · ${plural(D.recibos.filter((r) => r.cliente === c.id && r.estado !== 'anulado').length, 'recibo', 'recibos')} · ${plural(D.actas.filter((a) => a.cliente === c.id).length, 'acta', 'actas')}</dd>
+      </dl>
+      <div><button class="btn" disabled title="Disponible en la fase 2">Enviar invitación al portal</button></div>
+    </div>`;
+  }
+
+  function bindFicha(c) {
+    // DV en vivo
+    // Al corregir el NIT se recalcula el DV con el algoritmo de la DIAN
+    $$('[data-k="nit"]').forEach((inp) => inp.addEventListener('input', () => { const dv = $('#f-dv'); if (dv) dv.value = calcDV(inp.value); const h = $('#f-dv-help'); if (h) h.textContent = dvHelp(inp.value, dv ? dv.value : ''); }));
+    const g = $('#guardar-datos');
+    if (g) g.addEventListener('click', () => {
+      $$('#modal-body [data-k]').forEach((el) => { c[el.dataset.k] = el.value.trim(); });
+      c.nit = c.nit.replace(/\D/g, '');
+      D.auditoria.unshift({ en: D.HOY + ' ' + new Date().toTimeString().slice(0, 5), quien: 'Lucrecia Quintero', accion: 'Editó datos del cliente', entidad: 'Cliente · ' + c.nombre_comercial, detalle: '' });
+      toast('Datos de ' + c.nombre_comercial + ' guardados'); renderTodo(); renderFicha();
+    });
+    const v = $('#validar');
+    if (v) v.addEventListener('click', () => {
+      const err = $('#v-err'); const dv = $('#v-dv').value.trim(); const t = leerTarifa('v');
+      if (!/^\d$/.test(dv)) { err.textContent = 'Escriba el dígito de verificación (un solo número).'; return; }
+      if (!t.basico) { err.textContent = 'La tarifa necesita el básico mensual.'; return; }
+      if (!t.precio_kg) { err.textContent = 'La tarifa necesita el precio del kilo adicional.'; return; }
+      $$('#modal-body [data-k]').forEach((el) => { if (el.dataset.k !== 'estado' && el.dataset.k !== 'dv') c[el.dataset.k] = el.value.trim(); });
+      c.dv = dv; c.frecuencia = $('#v-frec').value; c.estado = 'activo'; c.cartera = 'al_dia'; c.cartera_fuente = 'Cliente nuevo';
+      c.tarifas = [{ ...t, desde: c.creado }];
+      const repro = D.visitas.filter((x) => x.cliente === c.id && x.estado === 'rechazada');
+      repro.forEach((x) => { x.estado = 'transmitida'; x.rechazo_resuelto = x.rechazo; delete x.rechazo; x.hora_servidor = x.hora_servidor || x.hora; });
+      D.auditoria.unshift({ en: D.HOY + ' ' + new Date().toTimeString().slice(0, 5), quien: 'Lucrecia Quintero', accion: 'Validó cliente creado en campo', entidad: 'Cliente · ' + c.nombre_comercial, detalle: `DV ${dv}, tarifa inicial ${D.fmtCOP(t.basico)}; ${repro.length} visita(s) reprocesada(s)` });
+      toast(`${c.nombre_comercial} validado: ${repro.length} visita${repro.length === 1 ? '' : 's'} reprocesada${repro.length === 1 ? '' : 's'} y transmitida${repro.length === 1 ? '' : 's'}`);
+      renderTodo(); state.tab = 'visitas'; renderFicha();
+    });
+    const nt = $('#btn-nueva-tarifa');
+    if (nt) nt.addEventListener('click', () => { state.nuevaTarifa = !state.nuevaTarifa; renderFicha(); });
+    const gt = $('#guardar-tarifa');
+    if (gt) gt.addEventListener('click', () => {
+      const err = $('#nt-err'); const t = leerTarifa('nt');
+      if (!t.desde) { err.textContent = 'Indique desde qué fecha rige.'; return; }
+      if (!t.basico || !t.precio_kg) { err.textContent = 'Básico y precio del kilo adicional son obligatorios.'; return; }
+      // Nunca retroactiva: ni sobre un periodo ya cerrado ni antes de la última tarifa registrada (la más reciente, no la vigente en esa fecha)
+      if (ULTIMO_CORTE_CERRADO && t.desde <= ULTIMO_CORTE_CERRADO) { err.textContent = `La tarifa nueva debe empezar después del último corte cerrado (${D.fmtFechaCorta(ULTIMO_CORTE_CERRADO)}); para corregir un periodo cerrado reábralo con motivo desde Cierre del periodo.`; return; }
+      const ultima = (c.tarifas || []).slice().sort((a, b) => a.desde.localeCompare(b.desde)).pop() || null;
+      if (ultima && t.desde <= ultima.desde) { err.textContent = 'La fecha debe ser posterior al inicio de la última tarifa registrada (' + D.fmtFechaCorta(ultima.desde) + ').'; return; }
+      if (ultima) ultima.hasta = sumarDias(t.desde, -1); // solo se cierra la última; las anteriores ya tienen su "hasta"
+      if (!c.tarifas) c.tarifas = [];
+      c.tarifas.push(t); c.tarifas.sort((a, b) => b.desde.localeCompare(a.desde));
+      D.auditoria.unshift({ en: D.HOY + ' ' + new Date().toTimeString().slice(0, 5), quien: 'Lucrecia Quintero', accion: 'Creó tarifa desde ' + D.fmtFechaCorta(t.desde), entidad: 'Cliente · ' + c.nombre_comercial, detalle: `${D.fmtCOP(t.basico)} + ${D.fmtNum(t.kg_incluidos)} kg incl. + ${D.fmtCOP(t.precio_kg)}/kg` });
+      state.nuevaTarifa = false; toast('Tarifa guardada; rige desde el ' + D.fmtFecha(t.desde)); renderTodo(); renderFicha();
+    });
+  }
+
+  // ---------- nuevo cliente ----------
+  function nuevoCliente() {
+    const vacio = { nit: '', dv: '', razon_social: '', nombre_comercial: '', sede: '', direccion: '', ciudad: 'Florencia', departamento: 'Caquetá', contacto: '', telefono: '', whatsapp: '', email: '', frecuencia: 'mensual', dia_visita: '', estado: 'activo' };
+    openModal({ wide: true, title: 'Nuevo cliente<span class="title-sub">Se crea activo y con su tarifa inicial; el celular lo recibe en la próxima sincronización.</span>',
+      body: `<div class="sect"><h4>Datos</h4>${formDatos(vacio, 'n')}<h4>Tarifa inicial</h4>${formTarifa(null, 'nt')}<div class="err" id="n-err" aria-live="polite"></div></div>`,
+      foot: '<button class="btn" data-close>Cancelar</button><button class="btn primary" id="crear">Crear cliente</button>' });
+    $('#n-nit').addEventListener('input', () => { $('#n-dv').value = calcDV($('#n-nit').value); $('#n-dv-help').textContent = dvHelp($('#n-nit').value, ''); });
+    $('#crear').addEventListener('click', () => {
+      const err = $('#n-err'); const c = { id: 'c-nuevo-' + Date.now(), creado: D.HOY, cartera: 'sin_info', cartera_fuente: '', tarifas: [] };
+      $$('#modal-body [data-k]').forEach((el) => { c[el.dataset.k] = el.value.trim(); });
+      c.nit = c.nit.replace(/\D/g, '');
+      if (!c.razon_social || !c.nit) { err.textContent = 'Razón social y NIT son obligatorios.'; return; }
+      if (D.clientes.some((x) => x.nit === c.nit)) { err.textContent = `Ya existe un cliente con el NIT ${D.fmtNum(c.nit)}: ${D.clientes.find((x) => x.nit === c.nit).nombre_comercial}.`; return; }
+      if (!c.nombre_comercial) c.nombre_comercial = c.razon_social;
+      const t = leerTarifa('nt');
+      if (!t.basico || !t.precio_kg) { err.textContent = 'La tarifa inicial necesita básico y precio del kilo adicional.'; return; }
+      c.tarifas = [t]; D.clientes.push(c);
+      D.auditoria.unshift({ en: D.HOY + ' ' + new Date().toTimeString().slice(0, 5), quien: 'Lucrecia Quintero', accion: 'Creó cliente', entidad: 'Cliente · ' + c.nombre_comercial, detalle: 'Desde el panel, con tarifa inicial' });
+      closeModal(); toast('Cliente ' + c.nombre_comercial + ' creado'); renderTodo();
+    });
+  }
+
+  // ---------- importar desde Excel ----------
+  const COLS = ['NIT', 'DV', 'Razón social', 'Nombre comercial', 'Dirección', 'Ciudad', 'Departamento', 'Contacto', 'Teléfono', 'WhatsApp', 'Correo', 'Frecuencia', 'Día de visita', 'Básico mensual', 'Kg incluidos', 'Precio kg adicional', 'IVA %', 'Plazo de pago', 'Vigente desde'];
+  function filasImport() {
+    // Previsualización simulada: dos filas nuevas y una con el NIT de un cliente que ya existe
+    const existente = D.cliente('c-saludvital');
+    return [
+      { nit: '900512377', dv: calcDV('900512377'), razon_social: 'Óptica Visual del Caquetá S.A.S.', nombre_comercial: 'Óptica Visual', direccion: 'Calle 15 N.º 9-40', ciudad: 'Florencia', departamento: 'Caquetá', contacto: 'Administración', telefono: '314 650 2210', whatsapp: '314 650 2210', email: 'opticavisual@gmail.com', frecuencia: 'mensual', dia_visita: 'Segundo martes', basico: 42000, kg_incluidos: 4, precio_kg: 4600, iva_pct: 19, plazo: 'Crédito 30 días', desde: D.HOY },
+      { nit: existente.nit, dv: existente.dv, razon_social: existente.razon_social, nombre_comercial: existente.nombre_comercial, direccion: existente.direccion, ciudad: existente.ciudad, departamento: existente.departamento, contacto: existente.contacto, telefono: existente.telefono, whatsapp: existente.whatsapp, email: existente.email, frecuencia: 'semanal', dia_visita: 'Lunes', basico: 120000, kg_incluidos: 30, precio_kg: 4600, iva_pct: 19, plazo: 'Crédito 30 días', desde: D.HOY },
+      { nit: '1117528804', dv: calcDV('1117528804'), razon_social: 'Centro Médico San Rafael de Montañita', nombre_comercial: 'Centro Médico San Rafael', direccion: 'Carrera 3 N.º 4-18', ciudad: 'La Montañita', departamento: 'Caquetá', contacto: 'Enfermera jefe', telefono: '312 884 0197', whatsapp: '312 884 0197', email: '', frecuencia: 'quincenal', dia_visita: 'Jueves', basico: 58000, kg_incluidos: 8, precio_kg: 4600, iva_pct: 19, plazo: '10 primeros días del mes siguiente', desde: D.HOY },
+    ].map((r) => {
+      const dup = D.clientes.find((x) => x.nit === r.nit);
+      r.error = dup ? `NIT repetido: ya existe ${dup.nombre_comercial}` : (!r.email && !r.whatsapp ? 'Sin WhatsApp ni correo' : '');
+      r.ok = !r.error;
+      return r;
+    });
+  }
+  function importar() {
+    const filas = filasImport();
+    const validas = filas.filter((r) => r.ok).length;
+    openModal({ wide: true, title: 'Importar clientes desde Excel<span class="title-sub">Un archivo .xlsx con una fila por cliente y su tarifa vigente. El NIT decide si se crea o se actualiza.</span>',
+      body: `<div class="sect">
+        <h4>Plantilla esperada (${COLS.length} columnas, en este orden)</h4>
+        <div class="cols">${COLS.map((c) => `<span>${c}</span>`).join('')}</div>
+        <div><button class="btn sm" id="plantilla">Descargar plantilla .xlsx</button> <span class="muted" style="font-size:12.5px">Frecuencia: semanal, quincenal, mensual o por demanda. Fechas en formato AAAA-MM-DD. Valores sin IVA y sin puntos.</span></div>
+        <h4>Archivo</h4>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Arrastre el archivo o haga clic para elegirlo"><b>Arrastre el archivo aquí</b>o haga clic para elegirlo · <span class="mono">clientes_comserva.xlsx</span></div>
+        <h4>Previsualización: ${filas.length} filas leídas, ${validas} válidas, ${filas.length - validas} con error</h4>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Fila</th><th>NIT</th><th>Cliente</th><th>Ciudad</th><th>Frecuencia</th><th class="num">Básico</th><th class="num">Kg incl.</th><th class="num">Precio kg</th><th>Vigente desde</th><th>Validación</th></tr></thead><tbody>
+        ${filas.map((r, i) => `<tr><td class="num">${i + 2}</td><td class="mono">${D.fmtNum(r.nit)}-${r.dv}</td><td><b>${esc(r.nombre_comercial)}</b><span class="sub">${esc(r.razon_social)}</span></td><td>${esc(r.ciudad)}</td><td>${D.FRECUENCIA_LABEL[r.frecuencia]}</td><td class="num">${D.fmtCOP(r.basico)}</td><td class="num">${r.kg_incluidos}</td><td class="num">${D.fmtCOP(r.precio_kg)}</td><td class="num">${D.fmtFechaCorta(r.desde)}</td><td>${r.ok ? '<span class="badge ok">Se crea</span>' : `<span class="badge danger">Error</span><span class="sub">${esc(r.error)}</span>`}</td></tr>`).join('')}
+        </tbody></table></div>
+        <div class="callout warn">Las filas con error no se importan. Para actualizar un cliente existente use su ficha; la importación solo crea clientes nuevos y su tarifa inicial.</div>
+      </div>`,
+      foot: `<button class="btn" data-close>Cancelar</button><button class="btn primary" id="do-import">Importar ${validas} fila${validas === 1 ? '' : 's'} válida${validas === 1 ? '' : 's'}</button>` });
+    $('#plantilla').addEventListener('click', () => toast('Se descarga plantilla_clientes_comserva.xlsx con los encabezados y una fila de ejemplo'));
+    const drop = $('#drop');
+    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('over'); if (ev === 'drop') toast('Archivo leído: 3 filas (simulado)'); }));
+    drop.addEventListener('click', () => toast('Se abre el selector de archivos del equipo (simulado)'));
+    drop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drop.click(); } });
+    $('#do-import').addEventListener('click', () => {
+      filas.filter((r) => r.ok).forEach((r) => {
+        D.clientes.push({ id: 'c-imp-' + r.nit, nit: r.nit, dv: r.dv, razon_social: r.razon_social, nombre_comercial: r.nombre_comercial, sede: 'Sede única', direccion: r.direccion, ciudad: r.ciudad, departamento: r.departamento, contacto: r.contacto, telefono: r.telefono, whatsapp: r.whatsapp, email: r.email, frecuencia: r.frecuencia, dia_visita: r.dia_visita, estado: 'activo', cartera: 'sin_info', cartera_fuente: '', creado: D.HOY, tarifas: [{ desde: r.desde, hasta: null, basico: r.basico, kg_incluidos: r.kg_incluidos, precio_kg: r.precio_kg, iva_pct: r.iva_pct, plazo: r.plazo, nota: 'Importado desde Excel' }] });
+      });
+      D.auditoria.unshift({ en: D.HOY + ' ' + new Date().toTimeString().slice(0, 5), quien: 'Lucrecia Quintero', accion: 'Importó clientes desde Excel', entidad: 'Clientes', detalle: `${validas} creados, ${filas.length - validas} con error` });
+      closeModal(); toast(`${validas} clientes importados; 1 fila rechazada por NIT repetido`); renderTodo();
+    });
+  }
+
+  $('#btn-nuevo').addEventListener('click', nuevoCliente);
+  $('#btn-importar').addEventListener('click', importar);
+
+  function renderTodo() { renderStats(); renderChips(); renderTabla(); }
+  renderTodo();
+  // Enlaces profundos: clientes.html#c-cofema o #c-cofema|tarifas abre la ficha; #nuevo y #importar abren esos modales
+  function porHash() {
+    const h = location.hash.slice(1); if (!h) return;
+    if (h === 'nuevo') return nuevoCliente();
+    if (h === 'importar') return importar();
+    const [id, tab] = h.split('|'); if (D.cliente(id)) abrirFicha(id, TABS.some(([k]) => k === tab) ? tab : 'datos');
+  }
+  porHash();
+  window.addEventListener('hashchange', porHash);
+})();
+</script>
+</body>
+</html>
