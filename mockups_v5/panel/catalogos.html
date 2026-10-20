@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catálogos y parámetros · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .tabs-nav { margin-bottom: 16px; }
+  .tabs-nav .chip { text-decoration: none; color: var(--fg-2); display: inline-flex; align-items: center; gap: 6px; }
+  .tabs-nav .chip:hover { text-decoration: none; background: var(--surface-2); }
+  .tabs-nav .chip.on { color: var(--accent-soft-fg); }
+  .tabs-nav .chip .n { font-size: 11px; color: var(--fg-3); }
+  #content, .sect, .sect > *, .card, .card-body { min-width: 0; }
+  @media (max-width: 900px) { .panel { grid-template-rows: auto 1fr; } }
+  .sect { display: grid; gap: 14px; }
+  .sect h4 { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); }
+  .card-head h2 { font-size: 16px; }
+  .card-head .desc { font-size: 12.5px; color: var(--fg-3); margin-top: 2px; }
+  .err { color: var(--danger); font-size: 12.5px; min-height: 1em; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .empty { padding: 24px; text-align: center; color: var(--fg-3); }
+  table.tbl tr.warnrow td { background: color-mix(in srgb, var(--warn-soft) 55%, transparent); }
+  table.tbl { font-size: 12.5px; }
+  table.tbl th, table.tbl td { padding: 8px 9px; }
+  table.tbl td .badge { white-space: normal; text-align: left; line-height: 1.35; padding: 3px 9px; }
+  table.tbl td.acts { text-align: right; }
+  table.tbl td.acts .btn { display: flex; justify-content: center; margin: 3px 0 3px auto; max-width: 150px; white-space: normal; text-align: center; line-height: 1.25; }
+  .usage { min-width: 170px; font-size: 12px; }
+  .usage .meter { height: 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; margin-top: 4px; }
+  .usage .meter > i { display: block; height: 100%; background: var(--accent); }
+  .usage .meter > i.low { background: var(--warn); }
+  .usage .next { color: var(--fg-3); font-size: 11.5px; margin-top: 3px; }
+  .modal .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .modal .modal-head .close { border: 0; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; color: var(--fg-3); padding: 2px 6px; border-radius: 6px; }
+  .modal .modal-head .close:hover { background: var(--surface-2); color: var(--fg); }
+  .modal .modal-head .title-sub { display: block; font-weight: 400; font-size: 12.5px; color: var(--fg-3); margin-top: 2px; }
+  .modal.wide { width: min(760px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; }
+  .modal.wide .modal-body { overflow: auto; }
+  .logo-ph { display: flex; align-items: center; gap: 14px; }
+  .logo-ph .img { width: 72px; height: 72px; border-radius: 50%; background: var(--verde-700); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 20px; flex: none; }
+  .logo-ph small { display: block; color: var(--fg-3); }
+  .param-table td .input, .param-table td .select, .param-table td .textarea { min-width: 140px; }
+  .param-table td.val { width: 260px; }
+  .param-table td .live { display: block; margin-top: 4px; font-size: 12px; color: var(--fg-3); }
+  .param-table td .live b { font-family: var(--font-mono); color: var(--fg); font-weight: 500; }
+  .perm td, .perm th { text-align: center; }
+  .perm td:first-child, .perm th:first-child { text-align: left; }
+  .perm .yes { color: var(--accent-soft-fg); background: var(--ok-soft); border-radius: 999px; padding: 2px 10px; font-weight: 600; font-size: 12px; display: inline-block; }
+  .perm .no { color: var(--fg-3); }
+  .perm .cond { font-size: 12px; color: var(--fg-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; display: inline-block; }
+  .foot-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+  textarea.textarea { min-height: 84px; resize: vertical; line-height: 1.4; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Maestros y sistema</div>
+        <h1>Catálogos y parámetros</h1>
+        <p>Lo que la app descarga al celular y lo que usa el servidor para numerar, cerrar el periodo y generar los documentos. Los cambios quedan en la auditoría.</p>
+      </div>
+    </div>
+    <nav class="chips tabs-nav" id="tabs" aria-label="Secciones"></nav>
+    <div id="content"></div>
+  </main>
+</div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Archivos planos para Helisa']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+
+  // Estado local que complementa a DATA (nada se guarda)
+  // Los tres parámetros de comportamiento se leen de DATA.parametros si existen; si no, valor por defecto acordado
+  const extraParam = (k, def) => (D.parametros[k] === undefined || D.parametros[k] === null) ? def : String(D.parametros[k]);
+  const local = {
+    extra: { exigir_foto_fallida: extraParam('exigir_foto_fallida', 'si'), permitir_cliente_campo: extraParam('permitir_cliente_campo', 'si'), canal_compartir: extraParam('canal_compartir', 'whatsapp') },
+    audFiltro: { quien: '', entidad: '', q: '' },
+    textos: {
+      constancia: 'Documento generado electrónicamente por RH digital Comserva; firmado en pantalla conforme a la Ley 527 de 1999 y el Decreto 2364 de 2012. Verifique este documento en comserva.com.co/verificar con el código impreso junto al QR.',
+      planilla: 'Formulario RHPS "Recolección y transporte de residuos generados en la atención en salud y otras actividades". Servicio especial de aseo. ' + D.empresa.licencia + '. ' + D.empresa.direccion + ' · Cel. ' + D.empresa.telefonos + ' · ' + D.empresa.ciudad + '.',
+      recibo: 'Recibo de caja provisional. ' + D.empresa.nombre_corto + ' · NIT ' + D.empresa.nit + ' · ' + D.empresa.responsable_iva + '. ' + D.empresa.direccion + ' · Cel. ' + D.empresa.telefonos + ' · ' + D.empresa.ciudad + '. Este recibo no reemplaza la factura electrónica de venta.',
+      acta_cert: 'COMSERVA S.A.S certifica el transporte, almacenamiento, tratamiento y/o disposición final de los residuos relacionados a continuación, conforme a lo establecido en la Licencia Ambiental otorgada por CORPOAMAZONIA mediante la Resolución No. 0038 del 23 de enero del 2006.',
+      acta_resp: 'De acuerdo con lo anterior, COMSERVA S.A.S. se hace responsable del transporte y almacenamiento de los residuos mencionados, hasta su entrega a los diferentes dispositores para su aprovechamiento, tratamiento y/o disposición final. En el caso de los residuos biológicos, estos se gestionan mediante tratamiento térmico, el cual permite la eliminación efectiva de agentes patógenos e infecciosos. Durante este proceso, los residuos son sometidos a temperaturas que oscilan entre 800 °C y 1200 °C; adicionalmente, el tratamiento cuenta con sistemas de control de emisiones que reducen la contaminación ambiental.',
+      acta_cierre: 'Para constancia se firma en Florencia a los {dia} días del mes de {mes} de {anio}.',
+      factura: 'Esta factura se asemeja en todos sus efectos a un título valor según el Decreto 1154 de 2020. Favor consignar a la Cuenta Corriente No. 078169999147 del Banco Davivienda o a la Cuenta de Ahorros Bancolombia No. 466-000038-91.',
+    },
+  };
+
+  const TABS = [
+    ['categorias', 'Categorías de residuo', () => D.categorias.length],
+    ['dispositores', 'Dispositores', () => D.dispositores.length],
+    ['operarios', 'Operarios', () => D.operarios.length],
+    ['vehiculos', 'Vehículos', () => D.vehiculos.length],
+    ['empresa', 'Datos de la empresa', null],
+    ['parametros', 'Parámetros', null],
+    ['consecutivos', 'Consecutivos', null],
+    ['usuarios', 'Usuarios', () => D.usuarios.length],
+    ['auditoria', 'Auditoría', () => D.auditoria.length],
+  ];
+  const tabActual = () => { const h = location.hash.slice(1); return TABS.some(([k]) => k === h) ? h : 'categorias'; };
+
+  // ---------- utilidades ----------
+  function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+  function num(v) { return Number(String(v ?? '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0; }
+  const ahora = () => D.HOY + ' ' + new Date().toTimeString().slice(0, 5);
+  function audita(accion, entidad, detalle = '') { D.auditoria.unshift({ en: ahora(), quien: 'Lucrecia Quintero', accion, entidad, detalle }); }
+  function openModal({ title, body, foot, wide }) {
+    closeModal();
+    const bd = document.createElement('div'); bd.className = 'modal-backdrop'; bd.id = 'modal';
+    bd.innerHTML = `<div class="modal${wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div id="modal-title">${title}</div><button class="close" aria-label="Cerrar" data-close>✕</button></div><div class="modal-body" id="modal-body">${body}</div><div class="modal-foot" id="modal-foot">${foot || ''}</div></div>`;
+    bd.addEventListener('click', (e) => { if (e.target === bd || e.target.closest('[data-close]')) closeModal(); });
+    document.body.appendChild(bd);
+    const f = bd.querySelector('.modal-body input, .modal-body select, .modal-body textarea, .modal-body button'); if (f) f.focus();
+    return bd;
+  }
+  function closeModal() { const m = $('#modal'); if (m) m.remove(); }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  const field = (id, label, inner, help = '') => `<div class="field"><label for="${id}">${label}</label>${inner}${help ? `<span class="help">${help}</span>` : ''}</div>`;
+  const input = (id, val, extra = '') => `<input class="input" id="${id}" value="${esc(val)}" ${extra}>`;
+  const select = (id, opts, val) => `<select class="select" id="${id}">${opts.map(([v, t]) => `<option value="${esc(v)}" ${String(v) === String(val) ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
+  const siNo = (b) => b ? '<span class="badge ok">Sí</span>' : '<span class="badge plain">No</span>';
+  const TRATAMIENTOS = ['Tratamiento térmico (incineración)', 'Celdas de seguridad', 'Aprovechamiento (gestor autorizado)', 'Sin tratamiento definido'];
+
+  // ---------- categorías ----------
+  function vCategorias() {
+    const sinTrat = D.categorias.filter((c) => !c.dispositor || c.tratamiento === 'Sin tratamiento definido');
+    const abierto = D.periodos.find((p) => p.estado === 'abierto');
+    const afectadas = D.visitas.filter((v) => v.periodo === abierto.id && v.estado !== 'anulada' && v.estado !== 'borrador' && sinTrat.some((c) => (v.kilos || {})[c.codigo] > 0));
+    const filas = D.categorias.slice().sort((a, b) => a.orden - b.orden).map((c) => {
+      const warn = sinTrat.includes(c);
+      return `<tr class="${warn ? 'warnrow' : ''}">
+        <td class="num">${c.orden}</td><td class="mono">${esc(c.codigo)}</td><td><b>${esc(c.nombre)}</b><span class="sub">${esc(c.ayuda || '')}</span></td><td>${esc(c.nombre_acta)}</td><td class="muted">${esc(c.grupo)}</td>
+        <td>${warn ? '<span class="badge warn">Sin tratamiento definido</span>' : esc(c.tratamiento)}</td>
+        <td>${c.dispositor ? esc(D.dispositor(c.dispositor).nombre) : '<span class="muted">—</span>'}</td>
+        <td>${siNo(c.en_acta)}</td><td>${siNo(c.activa !== false)}</td>
+        <td class="acts">${warn ? `<button class="btn sm primary" data-definir="${c.codigo}">Definir tratamiento</button>` : ''}<button class="btn sm" data-edit-cat="${c.codigo}">Editar</button></td>
+      </tr>`;
+    }).join('');
+    return `<div class="sect">
+      ${sinTrat.length ? `<div class="callout warn"><b>${sinTrat.map((c) => c.nombre).join(' y ')} no tienen tratamiento ni dispositor definidos.</b> Están en la planilla RHPS pero el acta actual no las trae. Si un operario registra kilos en ellas, la visita se acepta y <b>el cierre del periodo lo alerta</b>, porque esos kilos no tendrían fila en el acta ni dispositor que los certifique. La gerencia decide el tratamiento; mientras tanto quedan marcadas.
+        ${afectadas.length ? `<div style="margin-top:6px">En ${abierto.nombre.toLowerCase()} ya hay ${afectadas.length} visita${afectadas.length === 1 ? '' : 's'} con kilos en estas categorías: ${afectadas.map((v) => `${D.cliente(v.cliente).nombre_comercial} (constancia ${v.consecutivo}, ${sinTrat.filter((c) => v.kilos[c.codigo]).map((c) => D.fmtKg(v.kilos[c.codigo]) + ' kg de ' + c.nombre.toLowerCase()).join(', ')})`).join('; ')}.</div>` : ''}</div>` : '<div class="callout ok">Todas las categorías tienen tratamiento y dispositor definidos; el acta las cubre completas.</div>'}
+      <div class="card">
+        <div class="card-head"><div><h2>Catálogo único de categorías</h2><div class="desc">Mismo orden y nombres que la planilla; el nombre del acta puede diferir. El celular lo descarga al sincronizar.</div></div><button class="btn primary" id="nueva-cat">Nueva categoría</button></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">Orden</th><th>Código</th><th>Nombre en planilla</th><th>Nombre en acta</th><th>Grupo</th><th>Tratamiento</th><th>Dispositor</th><th>Aparece en el acta</th><th>Activa</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>
+      </div>
+    </div>`;
+  }
+  function bindCategorias(root) {
+    $$('[data-definir]', root).forEach((b) => b.addEventListener('click', () => modalDefinir(D.categoria(b.dataset.definir))));
+    $$('[data-edit-cat]', root).forEach((b) => b.addEventListener('click', () => modalCategoria(D.categoria(b.dataset.editCat))));
+    $('#nueva-cat', root).addEventListener('click', () => modalCategoria(null));
+  }
+  function modalDefinir(c) {
+    const dispOpts = [['', 'Elegir dispositor']].concat(D.dispositores.map((d) => [d.id, `${d.nombre} · ${d.tratamiento}`]));
+    openModal({ title: `Definir tratamiento: ${esc(c.nombre)}<span class="title-sub">Código ${esc(c.codigo)} · ${esc(c.grupo)}</span>`,
+      body: `<div class="callout">Al definirlo, la categoría pasa a aparecer en el acta <b>desde el próximo cierre</b>. Los periodos cerrados no cambian.</div>
+        ${field('df-trat', 'Tratamiento', select('df-trat', TRATAMIENTOS.filter((t) => t !== 'Sin tratamiento definido').map((t) => [t, t]), ''))}
+        ${field('df-disp', 'Dispositor final', select('df-disp', dispOpts, ''), 'Debe tener licencia para ese tratamiento')}
+        <label class="field" style="flex-direction:row;gap:8px;align-items:center"><input type="checkbox" id="df-acta" checked> <span>Incluir en el acta desde el próximo cierre</span></label>
+        <div class="err" id="df-err" aria-live="polite"></div>`,
+      foot: '<button class="btn" data-close>Cancelar</button><button class="btn primary" id="df-ok">Guardar tratamiento</button>' });
+    $('#df-trat').addEventListener('change', () => { const d = D.dispositores.find((x) => x.tratamiento === $('#df-trat').value); if (d) $('#df-disp').value = d.id; });
+    $('#df-ok').addEventListener('click', () => {
+      const t = $('#df-trat').value, d = $('#df-disp').value;
+      if (!d) { $('#df-err').textContent = 'Elija el dispositor final.'; return; }
+      c.tratamiento = t; c.dispositor = d; c.en_acta = $('#df-acta').checked; c.ayuda = 'Definido por la gerencia el ' + D.fmtFecha(D.HOY);
+      audita('Definió tratamiento de categoría', 'Catálogo · ' + c.nombre, `${t} · ${D.dispositor(d).nombre}`);
+      closeModal(); toast(`Tratamiento definido para ${c.nombre}; el acta la incluirá desde el próximo cierre`); render();
+    });
+  }
+  function modalCategoria(c) {
+    const nuevo = !c;
+    c = c || { codigo: '', nombre: '', nombre_acta: '', grupo: D.categorias[0].grupo, en_acta: true, tratamiento: TRATAMIENTOS[0], dispositor: D.dispositores[0].id, orden: D.categorias.length + 1, ayuda: '', activa: true };
+    const grupos = Array.from(new Set(D.categorias.map((x) => x.grupo)));
+    openModal({ wide: true, title: nuevo ? 'Nueva categoría de residuo' : `Editar categoría: ${esc(c.nombre)}`,
+      body: `<div class="form-grid">
+        ${field('ec-orden', 'Orden en la planilla', input('ec-orden', c.orden, 'inputmode="numeric" class="input num"'))}
+        ${field('ec-codigo', 'Código', input('ec-codigo', c.codigo, nuevo ? 'maxlength="8" class="input mono" placeholder="Ej.: FARM"' : 'readonly class="input mono"'), nuevo ? 'Mayúsculas, sin espacios; no se puede cambiar después' : 'El código no se cambia: identifica la columna en visitas ya cerradas')}
+        ${field('ec-nombre', 'Nombre en la planilla', input('ec-nombre', c.nombre))}
+        ${field('ec-nombre-acta', 'Nombre en el acta', input('ec-nombre-acta', c.nombre_acta))}
+        <div class="field span-2">${field('ec-grupo', 'Grupo', select('ec-grupo', grupos.map((g) => [g, g]), c.grupo)).replace('<div class="field">', '').replace(/<\/div>$/, '')}</div>
+        ${field('ec-trat', 'Tratamiento', select('ec-trat', TRATAMIENTOS.map((t) => [t, t]), c.tratamiento))}
+        ${field('ec-disp', 'Dispositor final', select('ec-disp', [['', 'Ninguno']].concat(D.dispositores.map((d) => [d.id, d.nombre])), c.dispositor || ''))}
+        <div class="field span-2">${field('ec-ayuda', 'Ayuda para el operario', input('ec-ayuda', c.ayuda || '', 'placeholder="Ejemplos de lo que va en esta categoría"')).replace('<div class="field">', '').replace(/<\/div>$/, '')}</div>
+        <label class="field" style="flex-direction:row;gap:8px;align-items:center"><input type="checkbox" id="ec-acta" ${c.en_acta ? 'checked' : ''}> <span>Aparece en el acta</span></label>
+        <label class="field" style="flex-direction:row;gap:8px;align-items:center"><input type="checkbox" id="ec-activa" ${c.activa !== false ? 'checked' : ''}> <span>Activa (visible en el celular)</span></label>
+      </div><div class="err" id="ec-err" aria-live="polite"></div>`,
+      foot: `<button class="btn" data-close>Cancelar</button><button class="btn primary" id="ec-ok">${nuevo ? 'Crear categoría' : 'Guardar cambios'}</button>` });
+    $('#ec-ok').addEventListener('click', () => {
+      const codigo = $('#ec-codigo').value.trim().toUpperCase(), nombre = $('#ec-nombre').value.trim();
+      if (!codigo || !nombre) { $('#ec-err').textContent = 'Código y nombre son obligatorios.'; return; }
+      if (nuevo && D.categoria(codigo)) { $('#ec-err').textContent = 'Ya existe una categoría con ese código.'; return; }
+      Object.assign(c, { codigo, nombre, nombre_acta: $('#ec-nombre-acta').value.trim() || nombre, grupo: $('#ec-grupo').value, tratamiento: $('#ec-trat').value, dispositor: $('#ec-disp').value || null, orden: num($('#ec-orden').value) || c.orden, ayuda: $('#ec-ayuda').value.trim(), en_acta: $('#ec-acta').checked, activa: $('#ec-activa').checked });
+      if (nuevo) D.categorias.push(c);
+      audita(nuevo ? 'Creó categoría' : 'Editó categoría', 'Catálogo · ' + c.nombre, c.tratamiento);
+      closeModal(); toast(nuevo ? `Categoría ${c.nombre} creada; el celular la recibe al sincronizar` : `Categoría ${c.nombre} actualizada`); render();
+    });
+  }
+
+  // ---------- dispositores ----------
+  function vDispositores() {
+    const filas = D.dispositores.map((d) => {
+      const cats = D.categorias.filter((c) => c.dispositor === d.id).map((c) => c.nombre);
+      return `<tr><td><b>${esc(d.nombre)}</b><span class="sub">Atiende: ${cats.length ? esc(cats.join(', ')) : 'ninguna categoría'}</span></td><td class="mono">${esc(d.nit)}</td><td>${esc(d.tratamiento)}</td><td>${esc(d.ciudad)}</td><td class="acts"><button class="btn sm" data-edit-disp="${d.id}">Editar</button></td></tr>`;
+    }).join('');
+    return `<div class="sect"><div class="card">
+      <div class="card-head"><div><h2>Dispositores finales</h2><div class="desc">Aparecen en el acta de gestión integral junto a cada categoría. Comserva responde hasta la entrega al dispositor.</div></div><button class="btn primary" id="nuevo-disp">Nuevo dispositor</button></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Nombre</th><th>NIT</th><th>Tipo de tratamiento</th><th>Ciudad</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>
+    </div></div>`;
+  }
+  function bindDispositores(root) {
+    $$('[data-edit-disp]', root).forEach((b) => b.addEventListener('click', () => modalDispositor(D.dispositor(b.dataset.editDisp))));
+    $('#nuevo-disp', root).addEventListener('click', () => modalDispositor(null));
+  }
+  function modalDispositor(d) {
+    const nuevo = !d; d = d || { id: '', nombre: '', nit: '', tratamiento: TRATAMIENTOS[0], ciudad: '' };
+    openModal({ title: nuevo ? 'Nuevo dispositor' : `Editar dispositor: ${esc(d.nombre)}`,
+      body: `${field('dp-nombre', 'Nombre', input('dp-nombre', d.nombre, 'required'))}${field('dp-nit', 'NIT', input('dp-nit', d.nit, 'class="input mono" placeholder="900.000.000-0"'))}${field('dp-trat', 'Tipo de tratamiento', select('dp-trat', TRATAMIENTOS.filter((t) => t !== 'Sin tratamiento definido').map((t) => [t, t]), d.tratamiento))}${field('dp-ciudad', 'Ciudad', input('dp-ciudad', d.ciudad))}<div class="err" id="dp-err" aria-live="polite"></div>`,
+      foot: `<button class="btn" data-close>Cancelar</button><button class="btn primary" id="dp-ok">${nuevo ? 'Crear' : 'Guardar'}</button>` });
+    $('#dp-ok').addEventListener('click', () => {
+      const nombre = $('#dp-nombre').value.trim(); if (!nombre) { $('#dp-err').textContent = 'El nombre es obligatorio.'; return; }
+      Object.assign(d, { nombre, nit: $('#dp-nit').value.trim(), tratamiento: $('#dp-trat').value, ciudad: $('#dp-ciudad').value.trim() });
+      if (nuevo) { d.id = 'disp-' + Date.now(); D.dispositores.push(d); }
+      audita(nuevo ? 'Creó dispositor' : 'Editó dispositor', 'Catálogo · ' + d.nombre); closeModal(); toast(`Dispositor ${d.nombre} ${nuevo ? 'creado' : 'actualizado'}`); render();
+    });
+  }
+
+  // ---------- operarios ----------
+  function usoRango(r) {
+    if (!r) return '<span class="muted">Sin rango</span>';
+    const total = r.hasta - r.desde + 1, usados = r.siguiente - r.desde, libres = r.hasta - r.siguiente + 1;
+    return `<div class="usage"><span class="mono">${r.desde}–${r.hasta}</span> · ${usados} usados · ${libres} libres<div class="meter" role="meter" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${usados}" aria-label="Uso del rango"><i class="${libres <= 10 ? 'low' : ''}" style="width:${Math.min(100, Math.round(usados / total * 100))}%"></i></div>${r.proximo ? `<div class="next">Siguiente rango reservado: <span class="mono">${r.proximo.desde}–${r.proximo.hasta}</span></div>` : (libres <= 10 ? '<div class="next" style="color:var(--warn)">Quedan pocos: asigne un nuevo rango</div>' : '')}</div>`;
+  }
+  function vOperarios() {
+    const filas = D.operarios.map((o) => `<tr>
+      <td><b>${esc(o.nombre)}</b><span class="sub">${esc(o.cargo)}</span></td><td class="mono">${esc(o.documento)}</td><td>${esc(o.telefono)}</td><td class="mono">${esc(o.usuario)}</td>
+      <td>${o.dispositivo ? esc(o.dispositivo) : '<span class="badge warn">Sin dispositivo autorizado</span>'}</td>
+      <td>${usoRango(o.rango_constancias)}</td><td>${usoRango(o.rango_recibos)}</td><td>${siNo(o.activo)}</td>
+      <td class="acts"><button class="btn sm" data-rango="${o.id}">Asignar nuevo rango</button><button class="btn sm danger" data-desaut="${o.id}" ${o.dispositivo ? '' : 'disabled'}>Desautorizar dispositivo</button></td>
+    </tr>`).join('');
+    return `<div class="sect">
+      <div class="callout info">Cada operario trabaja con un <b>rango de consecutivos reservado</b> (${D.parametros.rango_por_operario} números por defecto) para que el cliente reciba su constancia con número definitivo aunque no haya señal. Solo el celular autorizado puede iniciar sesión con su usuario.</div>
+      <div class="card">
+        <div class="card-head"><div><h2>Operarios de campo</h2><div class="desc">Conductor y auxiliar firman como "funcionario de Comserva" en la planilla.</div></div><button class="btn primary" id="nuevo-op">Nuevo operario</button></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Nombre</th><th>Documento</th><th>Teléfono</th><th>Usuario</th><th>Dispositivo autorizado</th><th>Rango de constancias</th><th>Rango de recibos</th><th>Activo</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>
+      </div>
+    </div>`;
+  }
+  function bindOperarios(root) {
+    $$('[data-rango]', root).forEach((b) => b.addEventListener('click', () => modalRango(D.operario(b.dataset.rango))));
+    $$('[data-desaut]', root).forEach((b) => b.addEventListener('click', () => modalDesautorizar(D.operario(b.dataset.desaut))));
+    $('#nuevo-op', root).addEventListener('click', modalNuevoOperario);
+  }
+  function proximoRango(tipo, tam) {
+    const key = tipo === 'recibos' ? 'rango_recibos' : 'rango_constancias';
+    let max = 0; D.operarios.forEach((o) => { const r = o[key]; if (r) { max = Math.max(max, r.hasta, r.proximo ? r.proximo.hasta : 0); } });
+    return { desde: max + 1, hasta: max + tam };
+  }
+  function modalRango(o) {
+    const previsualizar = () => { const tipo = $('#rg-tipo').value, tam = num($('#rg-tam').value) || D.parametros.rango_por_operario; const r = proximoRango(tipo, tam); $('#rg-prev').innerHTML = `Quedaría reservado el rango <b class="mono">${r.desde}–${r.hasta}</b> para ${esc(o.nombre.split(' ')[0])}. Se activa cuando se agote el actual; el celular lo recibe en la próxima sincronización.`; };
+    openModal({ title: `Asignar nuevo rango a ${esc(o.nombre)}`,
+      body: `${field('rg-tipo', 'Tipo de documento', select('rg-tipo', [['constancias', 'Constancias de visita'], ['recibos', 'Recibos de caja']], 'constancias'))}
+        ${field('rg-tam', 'Tamaño del rango', input('rg-tam', D.parametros.rango_por_operario, 'inputmode="numeric" class="input num"'), 'Por defecto ' + D.parametros.rango_por_operario + ' números (parámetro "Tamaño del rango por operario")')}
+        <div class="callout" id="rg-prev"></div>`,
+      foot: '<button class="btn" data-close>Cancelar</button><button class="btn primary" id="rg-ok">Reservar rango</button>' });
+    previsualizar(); $('#rg-tipo').addEventListener('change', previsualizar); $('#rg-tam').addEventListener('input', previsualizar);
+    $('#rg-ok').addEventListener('click', () => {
+      const tipo = $('#rg-tipo').value, tam = num($('#rg-tam').value) || D.parametros.rango_por_operario; const r = proximoRango(tipo, tam);
+      const key = tipo === 'recibos' ? 'rango_recibos' : 'rango_constancias';
+      if (o[key]) o[key].proximo = r; else o[key] = { ...r, siguiente: r.desde };
+      audita('Reservó rango de ' + tipo, 'Operario · ' + o.nombre, `${r.desde}–${r.hasta}`); closeModal(); toast(`Rango ${r.desde}–${r.hasta} de ${tipo} reservado para ${o.nombre.split(' ')[0]}`); render();
+    });
+  }
+  function modalDesautorizar(o) {
+    openModal({ title: `Desautorizar dispositivo de ${esc(o.nombre)}`,
+      body: `<div class="callout danger">El celular <b>${esc(o.dispositivo)}</b> dejará de poder iniciar sesión. Las visitas guardadas en él y no enviadas quedan retenidas hasta que un dispositivo autorizado las sincronice.</div>
+        ${field('da-motivo', '<span class="req">Motivo</span>', '<textarea class="textarea" id="da-motivo" placeholder="Ej.: celular extraviado el 18 de octubre"></textarea>')}<div class="err" id="da-err" aria-live="polite"></div>`,
+      foot: '<button class="btn" data-close>Cancelar</button><button class="btn danger" id="da-ok">Desautorizar</button>' });
+    $('#da-ok').addEventListener('click', () => {
+      const m = $('#da-motivo').value.trim(); if (m.length < 5) { $('#da-err').textContent = 'Escriba el motivo (queda en la auditoría).'; return; }
+      audita('Desautorizó dispositivo', 'Operario · ' + o.nombre, `${o.dispositivo}. Motivo: ${m}`); o.dispositivo = null; closeModal(); toast(`Dispositivo de ${o.nombre.split(' ')[0]} desautorizado; el próximo inicio de sesión registrará uno nuevo`); render();
+    });
+  }
+  function modalNuevoOperario() {
+    openModal({ title: 'Nuevo operario', body: `<div class="form-grid">${field('no-nombre', 'Nombre completo', input('no-nombre', '', 'required'))}${field('no-doc', 'Documento', input('no-doc', '', 'class="input mono" inputmode="numeric"'))}${field('no-cargo', 'Cargo', select('no-cargo', [['Conductor', 'Conductor'], ['Auxiliar', 'Auxiliar']], 'Auxiliar'))}${field('no-tel', 'Teléfono', input('no-tel', '', 'inputmode="tel"'))}${field('no-user', 'Usuario', input('no-user', '', 'class="input mono"'), 'La clave temporal se envía por WhatsApp')}</div><div class="callout">Al crearlo se le reservan automáticamente ${D.parametros.rango_por_operario} constancias y ${D.parametros.rango_por_operario} recibos. El primer celular con el que entre queda como dispositivo autorizado.</div><div class="err" id="no-err" aria-live="polite"></div>`,
+      foot: '<button class="btn" data-close>Cancelar</button><button class="btn primary" id="no-ok">Crear operario</button>' });
+    $('#no-ok').addEventListener('click', () => {
+      const nombre = $('#no-nombre').value.trim(), usuario = $('#no-user').value.trim().toLowerCase();
+      if (!nombre || !usuario) { $('#no-err').textContent = 'Nombre y usuario son obligatorios.'; return; }
+      const rc = proximoRango('constancias', D.parametros.rango_por_operario), rr = proximoRango('recibos', D.parametros.rango_por_operario);
+      D.operarios.push({ id: 'op-' + usuario, nombre, documento: $('#no-doc').value.trim(), cargo: $('#no-cargo').value, telefono: $('#no-tel').value.trim(), usuario, activo: true, dispositivo: null, rango_constancias: { ...rc, siguiente: rc.desde }, rango_recibos: { ...rr, siguiente: rr.desde } });
+      audita('Creó operario', 'Operario · ' + nombre, `Rangos ${rc.desde}–${rc.hasta} y ${rr.desde}–${rr.hasta}`); closeModal(); toast(`Operario ${nombre} creado con rangos reservados`); render();
+    });
+  }
+
+  // ---------- vehículos ----------
+  function vVehiculos() {
+    const abierto = D.periodos.find((p) => p.estado === 'abierto');
+    const filas = D.vehiculos.map((v) => `<tr><td class="mono"><b>${esc(v.placa)}</b></td><td>${esc(v.descripcion)}</td><td class="num">${D.visitas.filter((x) => x.placa === v.placa && x.periodo === abierto.id && x.estado !== 'borrador').length}</td><td>${siNo(v.activo)}</td><td class="acts"><button class="btn sm" data-edit-veh="${esc(v.placa)}">Editar</button></td></tr>`).join('');
+    return `<div class="sect"><div class="card">
+      <div class="card-head"><div><h2>Vehículos</h2><div class="desc">La placa va en cada fila de la planilla. El operario elige entre los activos.</div></div><button class="btn primary" id="nuevo-veh">Nuevo vehículo</button></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Placa</th><th>Descripción</th><th class="num">Visitas en ${esc(abierto.nombre.toLowerCase())}</th><th>Activo</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>
+    </div></div>`;
+  }
+  function bindVehiculos(root) {
+    $('#nuevo-veh', root).addEventListener('click', () => modalVehiculo(null));
+    $$('[data-edit-veh]', root).forEach((b) => b.addEventListener('click', () => modalVehiculo(D.vehiculos.find((v) => v.placa === b.dataset.editVeh))));
+  }
+  function modalVehiculo(v) {
+    const nuevo = !v; v = v || { placa: '', descripcion: '', activo: true };
+    openModal({ title: nuevo ? 'Nuevo vehículo' : `Editar vehículo ${esc(v.placa)}`,
+      body: `${field('vh-placa', 'Placa', input('vh-placa', v.placa, 'class="input mono" placeholder="ABC 123" maxlength="7"' + (nuevo ? '' : ' readonly')))}${field('vh-desc', 'Descripción', input('vh-desc', v.descripcion, 'placeholder="Marca, tipo y uso"'))}<label class="field" style="flex-direction:row;gap:8px;align-items:center"><input type="checkbox" id="vh-activo" ${v.activo ? 'checked' : ''}> <span>Activo</span></label><div class="err" id="vh-err" aria-live="polite"></div>`,
+      foot: `<button class="btn" data-close>Cancelar</button><button class="btn primary" id="vh-ok">${nuevo ? 'Crear' : 'Guardar'}</button>` });
+    $('#vh-ok').addEventListener('click', () => {
+      const placa = $('#vh-placa').value.trim().toUpperCase(); if (!/^[A-Z]{3} ?\d{3}$/.test(placa)) { $('#vh-err').textContent = 'Escriba una placa válida (tres letras y tres números).'; return; }
+      if (nuevo && D.vehiculos.some((x) => x.placa === placa)) { $('#vh-err').textContent = 'Esa placa ya existe.'; return; }
+      Object.assign(v, { placa, descripcion: $('#vh-desc').value.trim(), activo: $('#vh-activo').checked }); if (nuevo) D.vehiculos.push(v);
+      audita(nuevo ? 'Creó vehículo' : 'Editó vehículo', 'Catálogo · ' + placa); closeModal(); toast(`Vehículo ${placa} ${nuevo ? 'creado' : 'actualizado'}`); render();
+    });
+  }
+
+  // ---------- empresa ----------
+  function vEmpresa() {
+    const e = D.empresa, t = local.textos;
+    const ta = (id, label, val, help) => `<div class="field span-2"><label for="${id}">${label}</label><textarea class="textarea" id="${id}" data-texto="${id.replace('tx-', '')}">${esc(val)}</textarea>${help ? `<span class="help">${help}</span>` : ''}</div>`;
+    return `<div class="sect">
+      <div class="card"><div class="card-head"><div><h2>Datos de la empresa</h2><div class="desc">Encabezado y pie de todos los documentos: constancia, planilla, recibo, acta y reporte de cierre.</div></div></div>
+      <div class="card-body sect">
+        <div class="logo-ph"><div class="img">CS</div><div><b>Logo</b><small>Se imprime en el encabezado de los documentos. PNG o SVG con fondo transparente, mínimo 600 px de ancho.</small><button class="btn sm" id="logo-cambiar" style="margin-top:6px">Cambiar logo</button></div></div>
+        <div class="form-grid">
+          <div class="field span-2">${field('em-razon', 'Razón social', input('em-razon', e.razon_social, 'data-emp="razon_social"')).replace('<div class="field">', '').replace(/<\/div>$/, '')}</div>
+          ${field('em-corto', 'Nombre corto', input('em-corto', e.nombre_corto, 'data-emp="nombre_corto"'))}
+          ${field('em-nit', 'NIT', input('em-nit', e.nit, 'data-emp="nit" class="input mono"'))}
+          <div class="field span-2"><label for="em-dir">Dirección oficial</label>${input('em-dir', e.direccion, 'data-emp="direccion"')}<div class="callout warn" style="margin-top:6px">En los formatos actuales aparecen <b>Km 8</b> (planilla, recibo y contrato) y <b>Km 6</b> (acta); aquí se fija una sola dirección para todos los documentos.</div></div>
+          ${field('em-ciudad', 'Ciudad', input('em-ciudad', e.ciudad, 'data-emp="ciudad"'))}
+          ${field('em-tel', 'Teléfonos', input('em-tel', e.telefonos, 'data-emp="telefonos"'))}
+          ${field('em-mail', 'Correo', input('em-mail', e.email, 'data-emp="email" type="email"'))}
+          ${field('em-resp', 'Responsabilidad tributaria', input('em-resp', e.responsable_iva, 'data-emp="responsable_iva"'))}
+          <div class="field span-2">${field('em-lic', 'Licencia ambiental', input('em-lic', e.licencia, 'data-emp="licencia"'), 'Se imprime bajo el título de la planilla y en la certificación del acta').replace('<div class="field">', '').replace(/<\/div>$/, '')}</div>
+          <div class="field span-2">${field('em-ger', 'Gerente (firma el acta)', input('em-ger', e.gerente, 'data-emp="gerente"'), 'En la fase 2 el acta lleva la imagen de su firma más la aprobación registrada en el sistema').replace('<div class="field">', '').replace(/<\/div>$/, '')}</div>
+          <div class="field span-2">${field('em-bancos', 'Bancos para la factura y el recibo', input('em-bancos', e.bancos, 'data-emp="bancos"')).replace('<div class="field">', '').replace(/<\/div>$/, '')}</div>
+        </div>
+        <h4>Textos legales por documento</h4>
+        <div class="form-grid">
+          ${ta('tx-constancia', 'Constancia de visita · pie', t.constancia, 'Ley 527 de 1999 (mensajes de datos y firma electrónica) y Decreto 2364 de 2012')}
+          ${ta('tx-planilla', 'Planilla mensual RHPS · encabezado y pie', t.planilla)}
+          ${ta('tx-recibo', 'Recibo de caja provisional · pie', t.recibo)}
+          ${ta('tx-acta_cert', 'Acta · párrafo de certificación', t.acta_cert, 'Texto actual del formato GD.FM.01 versión 01')}
+          ${ta('tx-acta_resp', 'Acta · párrafo de responsabilidad y tratamiento térmico', t.acta_resp)}
+          ${ta('tx-acta_cierre', 'Acta · fórmula de cierre', t.acta_cierre, 'Marcadores: {dia}, {mes}, {anio}')}
+          ${ta('tx-factura', 'Factura (Helisa) · texto de referencia', t.factura, 'Solo informativo: la factura la emite Helisa; se usa en el concepto sugerido del recibo')}
+        </div>
+        <div class="foot-actions"><button class="btn primary" id="emp-guardar">Guardar datos de la empresa</button></div>
+      </div></div>
+    </div>`;
+  }
+  function bindEmpresa(root) {
+    $('#logo-cambiar', root).addEventListener('click', () => toast('Se abre el selector de archivos; el logo nuevo se usa en los documentos que se generen desde ahora'));
+    $('#emp-guardar', root).addEventListener('click', () => {
+      $$('[data-emp]', root).forEach((i) => { D.empresa[i.dataset.emp] = i.value.trim(); });
+      $$('[data-texto]', root).forEach((t) => { local.textos[t.dataset.texto] = t.value; });
+      audita('Actualizó datos de la empresa', 'Empresa', 'Dirección oficial: ' + D.empresa.direccion); toast('Datos de la empresa guardados; aplican a los documentos que se generen desde ahora');
+    });
+  }
+
+  // ---------- parámetros ----------
+  // Explica el periodo de octubre de 2026 para un día de corte dado, con fechas reales (sin "31 de septiembre")
+  function rangoCorte(d) {
+    d = Math.min(31, Math.max(1, Math.round(d)));
+    const iso = (dt) => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+    const fin = new Date(2026, 9, Math.min(d, 31));
+    const inicio = new Date(2026, 8, Math.min(d, 30) + 1);
+    return `El periodo va del día siguiente al corte anterior hasta el corte: con corte el ${d}, el de octubre va del ${D.fmtFecha(iso(inicio))} al ${D.fmtFecha(iso(fin))}.`;
+  }
+  function vParametros() {
+    const p = D.parametros, x = local.extra;
+    const row = (label, inner, expl) => `<tr><td><b>${label}</b></td><td class="val">${inner}</td><td class="muted">${expl}</td></tr>`;
+    const corteExpl = () => rangoCorte(p.dia_corte);
+    return `<div class="sect">
+      <div class="card"><div class="card-head"><div><h2>Parámetros del sistema</h2><div class="desc">Rigen desde que se guardan; no cambian lo ya cerrado ni los números ya asignados.</div></div></div>
+      <div class="table-wrap"><table class="tbl param-table"><thead><tr><th>Parámetro</th><th>Valor</th><th>Qué hace</th></tr></thead><tbody>
+        ${row('Día de corte del periodo', input('pa-corte', p.dia_corte, 'class="input num" inputmode="numeric" data-param="dia_corte"') + `<span class="live" id="corte-expl">${corteExpl()}</span>`, 'Al llegar el corte, el cierre suma las visitas de cada cliente y aplica su tarifa vigente a esa fecha.')}
+        ${row('IVA %', input('pa-iva', p.iva_pct, 'class="input num" inputmode="numeric" data-param="iva_pct"'), 'Valor por defecto para tarifas nuevas. Cada tarifa guarda su propio IVA.')}
+        ${row('Formato del consecutivo de planilla', input('pa-fmt', p.formato_planilla, 'class="input mono" data-param="formato_planilla"') + `<span class="live">Ejemplo en vivo: <b id="fmt-ej">${esc(D.consecutivoPlanilla(p.siguiente_planilla, D.HOY))}</b></span>`, 'Marcadores: {n} número y {yy} año en dos cifras. La última planilla en papel fue la 22641-26.')}
+        ${row('Tamaño del rango por operario', input('pa-rango', p.rango_por_operario, 'class="input num" inputmode="numeric" data-param="rango_por_operario"'), 'Números de constancia y de recibo que se reservan a cada celular para trabajar sin señal.')}
+        ${row('Máximo de fotos por visita', input('pa-fotos', p.max_fotos, 'class="input num" inputmode="numeric" data-param="max_fotos"'), 'Las fotos suben aparte cuando hay buena señal; limita el consumo de datos.')}
+        ${row('Tolerancia de reloj (minutos)', input('pa-reloj', p.tolerancia_reloj_min, 'class="input num" inputmode="numeric" data-param="tolerancia_reloj_min"'), 'Si la hora del celular difiere de la del servidor más que esto, la visita queda marcada para revisión.')}
+        ${row('Exigir foto en visita fallida', select('pa-foto-fallida', [['si', 'Sí'], ['no', 'No']], x.exigir_foto_fallida), 'La visita fallida es la evidencia de que el operario fue: sin foto no se puede registrar.')}
+        ${row('Permitir cliente nuevo en campo', select('pa-cliente-campo', [['si', 'Sí'], ['no', 'No']], x.permitir_cliente_campo), 'El operario crea el cliente con datos mínimos; queda pendiente de validar y sus visitas se rechazan hasta que la oficina lo complete.')}
+        ${row('Canal por defecto para compartir', select('pa-canal', [['whatsapp', 'WhatsApp desde el celular'], ['correo', 'Correo desde el servidor']], x.canal_compartir), 'En la fase 1 el operario comparte el PDF desde su celular; la API oficial de WhatsApp queda para la fase 3.')}
+        ${row('Aviso de tratamiento de datos', `<textarea class="textarea" id="pa-aviso" data-param="aviso_datos" style="min-width:260px">${esc(p.aviso_datos)}</textarea>`, 'Se muestra antes de firmar en el celular y se imprime en la constancia (Ley 1581 de 2012).')}
+      </tbody></table></div>
+      <div class="card-body foot-actions"><button class="btn primary" id="pa-guardar">Guardar parámetros</button></div></div>
+    </div>`;
+  }
+  function bindParametros(root) {
+    $('#pa-fmt', root).addEventListener('input', () => { $('#fmt-ej').textContent = $('#pa-fmt').value.replace('{n}', D.parametros.siguiente_planilla).replace('{yy}', D.HOY.slice(2, 4)); });
+    $('#pa-corte', root).addEventListener('input', () => { $('#corte-expl').textContent = rangoCorte(num($('#pa-corte').value) || D.parametros.dia_corte); });
+    $('#pa-guardar', root).addEventListener('click', () => {
+      $$('[data-param]', root).forEach((i) => { const k = i.dataset.param; D.parametros[k] = (k === 'formato_planilla' || k === 'aviso_datos') ? i.value : num(i.value); });
+      local.extra.exigir_foto_fallida = $('#pa-foto-fallida').value; local.extra.permitir_cliente_campo = $('#pa-cliente-campo').value; local.extra.canal_compartir = $('#pa-canal').value;
+      Object.assign(D.parametros, local.extra);
+      audita('Actualizó parámetros', 'Parámetros', `Corte día ${D.parametros.dia_corte}, IVA ${D.parametros.iva_pct} %, rango ${D.parametros.rango_por_operario}`); toast('Parámetros guardados');
+    });
+  }
+
+  // ---------- consecutivos ----------
+  function vConsecutivos() {
+    const p = D.parametros;
+    const rangos = (key) => D.operarios.map((o) => { const r = o[key]; return r ? `<div><b>${esc(o.nombre.split(' ')[0])}</b>: <span class="mono">${r.desde}–${r.hasta}</span> · siguiente <span class="mono">${r.siguiente}</span>${r.proximo ? ` · reservado <span class="mono">${r.proximo.desde}–${r.proximo.hasta}</span>` : ''}</div>` : ''; }).join('');
+    const maxConst = Math.max(...D.visitas.filter((v) => v.consecutivo).map((v) => v.consecutivo));
+    const maxRec = Math.max(...D.recibos.map((r) => r.consecutivo));
+    const filas = [
+      ['Constancia de visita', 'El celular, de su rango reservado', '<span class="muted">No existía en papel (documento nuevo)</span>', `<span class="mono">${maxConst}</span> <span class="muted">(último emitido)</span>`, `Según el rango de cada operario`, rangos('rango_constancias')],
+      ['Planilla mensual RHPS', 'El servidor, al cerrar el periodo', '<span class="mono">22641-26</span>', '<span class="muted">Se asigna al cerrar</span>', `<span class="mono">${esc(D.consecutivoPlanilla(p.siguiente_planilla, D.HOY))}</span>`, '<span class="muted">No aplica: una por cliente y periodo</span>'],
+      ['Recibo de caja provisional', 'El celular, de su rango reservado', '<span class="mono">35651</span>', `<span class="mono">${maxRec}</span> <span class="muted">(último emitido)</span>`, 'Según el rango de cada operario', rangos('rango_recibos')],
+      ['Acta de gestión integral (fase 2)', 'El servidor, al aprobarla el gerente', '<span class="mono">25676</span>', `<span class="mono">${Math.max(...D.actas.map((a) => a.consecutivo))}</span> <span class="muted">(última aprobada)</span>`, `<span class="mono">${p.siguiente_acta}</span>`, '<span class="muted">No aplica</span>'],
+    ].map((f) => `<tr>${f.map((c, i) => `<td>${i === 0 ? '<b>' + c + '</b>' : c}</td>`).join('')}</tr>`).join('');
+    return `<div class="sect">
+      <div class="callout warn"><b>Si un rango se agota sin señal</b>, el celular emite la constancia con un <b>número provisional</b> (marcado como tal en el PDF) y al recuperar la conexión el servidor le asigna el definitivo; el cambio queda en la auditoría y el cliente recibe la constancia definitiva por el mismo canal. Para evitarlo, el panel avisa cuando a un operario le quedan 10 números o menos.</div>
+      <div class="card"><div class="card-head"><div><h2>Consecutivos por tipo de documento</h2><div class="desc">Los números del sistema continúan después del último usado en papel; los dos no se cruzan.</div></div></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Documento</th><th>Quién asigna</th><th>Último usado en papel</th><th>Último en el sistema</th><th>Siguiente número</th><th>Rangos vivos por operario</th></tr></thead><tbody>${filas}</tbody></table></div></div>
+    </div>`;
+  }
+
+  // ---------- usuarios ----------
+  const PERMISOS = [
+    ['Registrar visitas y firmas', 'Sí', 'No', 'No', 'Firma en el celular'],
+    ['Emitir recibo de caja', 'Sí', 'No', 'No', 'Lo recibe'],
+    ['Crear cliente en campo', 'Sí', 'Valida', 'Valida', 'No'],
+    ['Clientes, tarifas y catálogos', 'No', 'Sí', 'Sí', 'No'],
+    ['Cerrar periodo y generar reporte para Helisa', 'No', 'Sí', 'Ve', 'No'],
+    ['Marcar cartera', 'No', 'Sí', 'Ve', 'No'],
+    ['Aprobar y firmar acta (fase 2)', 'No', 'Prepara', 'Sí', 'Descarga si está al día'],
+    ['Anular visita, recibo o acta', 'Solicita', 'Sí', 'Sí', 'No'],
+    ['Reabrir un periodo cerrado', 'No', 'No', 'Sí (con motivo)', 'No'],
+    ['Recaudo y reportes', 'Solo lo suyo', 'Sí', 'Sí', 'No'],
+    ['Usuarios y permisos', 'No', 'No', 'Sí', 'No'],
+    ['Ver histórico', 'Solo lo suyo', 'Todo', 'Todo', 'Solo lo suyo'],
+  ];
+  const permCell = (v) => v === 'Sí' ? '<span class="yes">Sí</span>' : v === 'No' ? '<span class="no">No</span>' : `<span class="cond">${esc(v)}</span>`;
+  function vUsuarios() {
+    const filas = D.usuarios.map((u) => `<tr><td><b>${esc(u.nombre)}</b></td><td class="mono">${esc(u.email)}</td><td><span class="badge ${u.rol === 'gerencia' ? 'info' : u.rol === 'facturacion' ? 'ok' : 'plain'}">${D.ROL_LABEL[u.rol]}</span></td><td>${siNo(u.activo)}</td><td class="num">${esc(u.ultimo_acceso || '—')}</td><td class="acts"><button class="btn sm" data-reset="${u.id}">Restablecer contraseña</button><button class="btn sm" data-edit-user="${u.id}">Editar</button></td></tr>`).join('');
+    return `<div class="sect">
+      <div class="card"><div class="card-head"><div><h2>Usuarios</h2><div class="desc">Tres personas en la oficina más los operarios. Los clientes entran por el portal en la fase 2.</div></div><button class="btn primary" id="nuevo-user">Nuevo usuario</button></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Activo</th><th class="num">Último acceso</th><th></th></tr></thead><tbody>${filas}</tbody></table></div></div>
+      <div class="card"><div class="card-head"><div><h2>Matriz de permisos</h2><div class="desc">Qué puede hacer cada rol. Solo la gerencia cambia usuarios y permisos.</div></div></div>
+      <div class="table-wrap"><table class="tbl perm"><thead><tr><th>Acción</th><th>Operario</th><th>Facturación</th><th>Gerencia</th><th>Cliente (portal, fase 2)</th></tr></thead><tbody>${PERMISOS.map((p) => `<tr><td>${p[0]}</td>${p.slice(1).map((v) => `<td>${permCell(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>
+    </div>`;
+  }
+  function bindUsuarios(root) {
+    $$('[data-reset]', root).forEach((b) => b.addEventListener('click', () => { const u = D.byId(D.usuarios, b.dataset.reset); openModal({ title: `Restablecer contraseña de ${esc(u.nombre)}`, body: `<p>Se envía un enlace temporal (válido 24 horas) a <span class="mono">${esc(u.email)}</span>${u.rol === 'operario' ? ' y por WhatsApp al operario' : ''}. La clave actual deja de servir de inmediato.</p>`, foot: '<button class="btn" data-close>Cancelar</button><button class="btn primary" id="rs-ok">Enviar enlace</button>' }); $('#rs-ok').addEventListener('click', () => { audita('Restableció contraseña', 'Usuario · ' + u.nombre); closeModal(); toast('Enlace de restablecimiento enviado a ' + u.email); }); }));
+    $$('[data-edit-user]', root).forEach((b) => b.addEventListener('click', () => modalUsuario(D.byId(D.usuarios, b.dataset.editUser))));
+    $('#nuevo-user', root).addEventListener('click', () => modalUsuario(null));
+  }
+  function modalUsuario(u) {
+    const nuevo = !u; u = u || { nombre: '', email: '', rol: 'facturacion', activo: true };
+    const roles = ['operario', 'facturacion', 'gerencia'].map((r) => [r, D.ROL_LABEL[r]]);
+    openModal({ title: nuevo ? 'Nuevo usuario' : `Editar usuario: ${esc(u.nombre)}`,
+      body: `${field('us-nombre', 'Nombre completo', input('us-nombre', u.nombre, 'required'))}${field('us-mail', 'Correo', input('us-mail', u.email, 'type="email" class="input mono"'), 'Recibe el enlace para crear su clave')}${field('us-rol', 'Rol', select('us-rol', roles, u.rol), 'Los permisos salen de la matriz; no se asignan uno a uno')}<label class="field" style="flex-direction:row;gap:8px;align-items:center"><input type="checkbox" id="us-activo" ${u.activo ? 'checked' : ''}> <span>Activo</span></label><div class="err" id="us-err" aria-live="polite"></div>`,
+      foot: `<button class="btn" data-close>Cancelar</button><button class="btn primary" id="us-ok">${nuevo ? 'Crear e invitar' : 'Guardar'}</button>` });
+    $('#us-ok').addEventListener('click', () => {
+      const nombre = $('#us-nombre').value.trim(), email = $('#us-mail').value.trim();
+      if (!nombre || !/.+@.+\..+/.test(email)) { $('#us-err').textContent = 'Nombre y un correo válido son obligatorios.'; return; }
+      Object.assign(u, { nombre, email, rol: $('#us-rol').value, activo: $('#us-activo').checked });
+      if (nuevo) { u.id = 'u-' + Date.now(); u.ultimo_acceso = ''; D.usuarios.push(u); }
+      audita(nuevo ? 'Creó usuario' : 'Editó usuario', 'Usuario · ' + nombre, D.ROL_LABEL[u.rol]); closeModal(); toast(nuevo ? `Usuario creado; invitación enviada a ${email}` : 'Usuario actualizado'); render();
+    });
+  }
+
+  // ---------- auditoría ----------
+  const entidadDe = (a) => a.entidad.split(' · ')[0];
+  const origenDe = (a) => a.quien === 'Servidor' ? 'Servidor' : D.operarios.some((o) => o.nombre.startsWith(a.quien.split(' ')[0])) && /Dubeny|Jesús/.test(a.quien) ? 'App móvil' : 'Panel web';
+  function vAuditoria() {
+    const f = local.audFiltro;
+    const quienes = Array.from(new Set(D.auditoria.map((a) => a.quien))).sort();
+    const entidades = Array.from(new Set(D.auditoria.map(entidadDe))).sort();
+    const q = f.q.toLowerCase();
+    const filas = D.auditoria.filter((a) => (!f.quien || a.quien === f.quien) && (!f.entidad || entidadDe(a) === f.entidad) && (!q || (a.accion + ' ' + a.entidad + ' ' + a.detalle + ' ' + (a.dispositivo || '') + ' ' + (a.ip || '')).toLowerCase().includes(q)));
+    // Dispositivo e IP se muestran como columnas cuando el servidor los trae en los eventos; si no, se muestra el origen
+    const conDispositivo = D.auditoria.some((a) => a.dispositivo), conIp = D.auditoria.some((a) => a.ip);
+    const cols = 5 + (conDispositivo ? 1 : 0) + (conIp ? 1 : 0) + 1;
+    return `<div class="sect">
+      <div class="callout info"><b>La auditoría no se puede editar ni borrar;</b> registra quién creó, firmó, transmitió, anuló, cerró, reabrió o exportó cada registro, con fecha, hora, dispositivo e IP.</div>
+      <div class="card"><div class="card-head"><div><h2>Auditoría</h2><div class="desc">${filas.length} de ${D.auditoria.length} eventos. Las horas son del servidor.</div></div><button class="btn" id="aud-export">Exportar a Excel</button></div>
+      <div class="card-body" style="padding-bottom:0"><div class="toolbar">
+        <label class="field"><span class="eyebrow" style="font-size:10.5px">Usuario</span>${select('aud-quien', [['', 'Todos los usuarios']].concat(quienes.map((x) => [x, x])), f.quien)}</label>
+        <label class="field"><span class="eyebrow" style="font-size:10.5px">Entidad</span>${select('aud-ent', [['', 'Todas las entidades']].concat(entidades.map((x) => [x, x])), f.entidad)}</label>
+        <label class="field" style="flex:1;min-width:200px"><span class="eyebrow" style="font-size:10.5px">Buscar</span><input class="input" id="aud-q" type="search" value="${esc(f.q)}" placeholder="Acción, número o detalle" style="width:100%"></label>
+      </div></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Fecha y hora</th><th>Quién</th><th>Acción</th><th>Entidad</th><th>Detalle</th><th>Origen</th>${conDispositivo ? '<th>Dispositivo</th>' : ''}${conIp ? '<th>IP</th>' : ''}</tr></thead><tbody>
+        ${filas.length ? filas.map((a) => `<tr><td class="num mono" style="white-space:nowrap">${esc(a.en)}</td><td>${esc(a.quien)}</td><td>${esc(a.accion)}</td><td>${esc(a.entidad)}</td><td class="muted">${esc(a.detalle || '—')}</td><td><span class="badge plain">${a.origen ? esc(a.origen) : origenDe(a)}</span></td>${conDispositivo ? `<td class="muted">${esc(a.dispositivo || '—')}</td>` : ''}${conIp ? `<td class="mono">${esc(a.ip || '—')}</td>` : ''}</tr>`).join('') : `<tr><td colspan="${cols}"><div class="empty">Ningún evento coincide con el filtro.</div></td></tr>`}
+      </tbody></table></div></div>
+    </div>`;
+  }
+  function bindAuditoria(root) {
+    $('#aud-quien', root).addEventListener('change', (e) => { local.audFiltro.quien = e.target.value; render(); });
+    $('#aud-ent', root).addEventListener('change', (e) => { local.audFiltro.entidad = e.target.value; render(); });
+    const q = $('#aud-q', root); q.addEventListener('input', () => { local.audFiltro.q = q.value; const pos = q.selectionStart; render(); const q2 = $('#aud-q'); q2.focus(); q2.setSelectionRange(pos, pos); });
+    $('#aud-export', root).addEventListener('click', () => { audita('Exportó la auditoría', 'Auditoría', `${D.auditoria.length} eventos`); toast('Se descarga auditoria_comserva.xlsx con los eventos filtrados'); render(); });
+  }
+
+  // ---------- render ----------
+  const VIEWS = { categorias: [vCategorias, bindCategorias], dispositores: [vDispositores, bindDispositores], operarios: [vOperarios, bindOperarios], vehiculos: [vVehiculos, bindVehiculos], empresa: [vEmpresa, bindEmpresa], parametros: [vParametros, bindParametros], consecutivos: [vConsecutivos, null], usuarios: [vUsuarios, bindUsuarios], auditoria: [vAuditoria, bindAuditoria] };
+  function render() {
+    const tab = tabActual();
+    document.getElementById('sidebar').innerHTML = sidebar(tab === 'usuarios' || tab === 'auditoria' ? 'catalogos.html#usuarios' : 'catalogos.html');
+    $('#tabs').innerHTML = TABS.map(([k, t, n]) => `<a class="chip${k === tab ? ' on' : ''}" href="#${k}" ${k === tab ? 'aria-current="page"' : ''}>${t}${n ? `<span class="n">${n()}</span>` : ''}</a>`).join('');
+    const [view, bind] = VIEWS[tab];
+    const root = $('#content'); root.innerHTML = view();
+    if (bind) bind(root);
+    document.title = TABS.find(([k]) => k === tab)[1] + ' · Catálogos · Panel Comserva';
+  }
+  window.addEventListener('hashchange', render);
+  render();
+})();
+</script>
+</body>
+</html>

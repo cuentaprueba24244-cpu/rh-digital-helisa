@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visitas · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .toolbar .input.search { min-width: 240px; flex: 1; }
+  .main > * { min-width: 0; }
+  .drawer { max-width: 100vw; }
+  .drawer .d-body > * { min-width: 0; }
+  .drawer .d-body { overflow-x: hidden; }
+  .chips .chip .n { margin-left: 6px; font-size: 11px; opacity: .75; }
+  table.tbl tbody tr.row { cursor: pointer; }
+  table.tbl tbody tr.row td .mono { font-family: var(--font-mono); font-size: .92em; }
+  table.tbl tbody tr.anulada td { color: var(--fg-3); }
+  table.tbl tbody tr.anulada td .no { text-decoration: line-through; }
+  table.tbl td .sub.nit { white-space: nowrap; } /* el NIT no se parte en el guion del dígito de verificación */
+  .empty { padding: 36px 16px; text-align: center; color: var(--fg-2); }
+  .empty h3 { font-size: 15px; margin-bottom: 6px; color: var(--fg); }
+  .empty p { color: var(--fg-3); font-size: 13px; max-width: 52ch; margin: 0 auto 14px; }
+  #ctx { padding: 0 16px 12px; }
+  #ctx .callout a { font-weight: 600; }
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(10, 20, 15, .35); z-index: 90; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(620px, 100%); background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 95; display: flex; flex-direction: column; }
+  .drawer .d-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+  .drawer .d-head .no { font-family: var(--font-mono); font-size: 24px; color: var(--danger); font-weight: 500; line-height: 1; }
+  .drawer .d-head h2 { font-size: 16px; margin-top: 6px; }
+  .drawer .d-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2); background: var(--surface); cursor: pointer; font-size: 16px; }
+  .drawer .d-body { padding: 18px 20px; overflow: auto; flex: 1; display: grid; gap: 16px; align-content: start; }
+  .drawer .d-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .drawer h3 { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; }
+  .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sig-grid .cap { font-size: 12px; color: var(--fg-3); margin-top: 4px; }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .photo-grid .photo-ph { background: var(--surface-2); color: var(--fg-3); border: 1px solid var(--border); }
+  .kg-tbl td, .kg-tbl th { padding: 6px 10px; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .textarea { min-height: 90px; resize: vertical; }
+  .summary { display: grid; gap: 4px; font-size: 13px; }
+  @media (max-width: 640px) { .sig-grid, .photo-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Operación</div>
+        <h1 style="margin-top:4px">Bandeja de visitas</h1>
+        <p>Cada registro es una visita con sus kilos por categoría. Lo transmitido no se edita: si hay un error se anula con motivo y el operario emite otra constancia.</p>
+      </div>
+      <div class="actions"><a class="btn" href="../documentos/planilla.html">Planilla mensual PDF</a><a class="btn primary" href="cierre.html">Ir al cierre del periodo</a></div>
+    </div>
+
+    <div class="grid cols-4" id="stats" style="margin-bottom:14px"></div>
+
+    <div class="card">
+      <div class="card-body" style="padding-bottom:10px">
+        <div class="toolbar" role="search">
+          <label class="field" style="flex:1;min-width:220px"><span class="eyebrow" style="font-size:10.5px">Buscar</span><input class="input search" id="f-q" type="search" placeholder="Cliente, NIT o consecutivo"></label>
+          <label class="field"><span class="eyebrow" style="font-size:10.5px">Periodo</span><select class="select" id="f-periodo"></select></label>
+          <label class="field"><span class="eyebrow" style="font-size:10.5px">Operario que registró</span><select class="select" id="f-operario"><option value="">Todos los operarios</option></select></label>
+          <label class="field"><span class="eyebrow" style="font-size:10.5px">Tipo</span><select class="select" id="f-tipo"><option value="">Recolección y fallidas</option><option value="recoleccion">Solo recolección</option><option value="fallida">Solo fallidas</option></select></label>
+        </div>
+        <div class="chips" id="chips" role="tablist" aria-label="Filtrar por estado"></div>
+      </div>
+      <div id="ctx" hidden></div>
+      <div class="table-wrap" id="tabla-wrap">
+        <table class="tbl" id="tabla">
+          <thead><tr><th>N.º</th><th>Fecha y hora</th><th>Cliente</th><th>Operario</th><th>Placa</th><th class="num">Kilos</th><th class="num">Bolsas / Guard.</th><th>Estado</th><th class="num">Fotos</th><th></th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="empty" hidden role="status"></div>
+      <div class="card-body muted" id="foot" style="font-size:12.5px;border-top:1px solid var(--border)"></div>
+    </div>
+  </main>
+</div>
+<div id="overlay"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+
+  function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Archivos planos para Helisa']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+  document.getElementById('sidebar').innerHTML = sidebar('visitas.html');
+
+  // ---------- estado en memoria ----------
+  const V = D.visitas.map((v) => Object.assign({}, v));
+  const AUD = D.auditoria.slice();
+  const byId = (id) => V.find((v) => v.id === id);
+  const BADGE = { transmitida: 'ok', cerrada: 'warn', rechazada: 'danger', anulada: 'danger', en_cierre: 'info', borrador: 'plain' };
+  const badge = (e) => `<span class="badge ${BADGE[e] || 'plain'}">${esc(D.ESTADO_VISITA_LABEL[e] || e)}</span>`;
+  const CHIPS = [['todas', 'Todas'], ['transmitida', 'Transmitidas'], ['cerrada', 'En celular'], ['rechazada', 'Rechazadas'], ['anulada', 'Anuladas'], ['fallida', 'Fallidas'], ['borrador', 'Borradores']];
+  const P = D.periodos.find((p) => p.estado === 'abierto');
+  const filtro = { q: '', periodo: P.id, operario: '', tipo: '', estado: 'todas' };
+  let ctxCliente = null; // cliente llegado desde una alerta del Inicio (#cliente=…): muestra su contexto sobre la tabla
+  const nombreCorto = (o) => o.nombre.split(' ').slice(0, 2).join(' ');
+  const esValida = (v) => v.tipo === 'recoleccion' && !['anulada', 'borrador', 'rechazada'].includes(v.estado);
+  const ahora = () => { const d = new Date(); return `${D.HOY} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+
+  // Un solo toast a la vez: el anterior se retira antes de mostrar el nuevo para que no se encimen (p. ej. «Reenviar» y luego «Anular»).
+  function toast(msg) { document.querySelectorAll('.toast').forEach((x) => x.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+
+  // ---------- filtros ----------
+  function base() {
+    const q = filtro.q.trim().toLowerCase().replace(/\./g, '');
+    return V.filter((v) => {
+      if (filtro.periodo && v.periodo !== filtro.periodo) return false;
+      if (filtro.operario && v.operario !== filtro.operario) return false; // solo quien registró la visita (lo que muestra la columna Operario)
+      if (filtro.tipo && v.tipo !== filtro.tipo) return false;
+      if (q) {
+        const c = D.cliente(v.cliente);
+        const hay = [c.nombre_comercial, c.razon_social, c.nit, String(v.consecutivo || '')].join(' ').toLowerCase().replace(/\./g, '');
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+  // Los chips de estado cuentan solo recolecciones (igual que el Inicio); las visitas fallidas tienen su propio chip, así la suma de los chips es "Todas".
+  const porChip = (vs, chip) => chip === 'todas' ? vs : chip === 'fallida' ? vs.filter((v) => v.tipo === 'fallida') : vs.filter((v) => v.estado === chip && v.tipo === 'recoleccion');
+  const orden = (a, b) => (b.fecha + ' ' + b.hora).localeCompare(a.fecha + ' ' + a.hora) || (b.consecutivo || 0) - (a.consecutivo || 0);
+
+  function renderFiltros() {
+    $('#f-periodo').innerHTML = D.periodos.slice().reverse().map((p) => `<option value="${p.id}">${esc(p.nombre)}${p.estado === 'abierto' ? ' (abierto)' : ' (cerrado)'}</option>`).join('') + '<option value="">Todos los periodos</option>';
+    $('#f-periodo').value = filtro.periodo;
+    $('#f-operario').innerHTML = '<option value="">Todos los operarios</option>' + D.operarios.map((o) => `<option value="${o.id}">${esc(o.nombre)}</option>`).join('');
+    $('#f-operario').value = filtro.operario;
+    $('#f-tipo').value = filtro.tipo;
+    $('#f-q').value = filtro.q;
+  }
+
+  function renderChips() {
+    const b = base();
+    const tip = (k) => k === 'todas' ? 'Recolecciones y visitas fallidas' : k === 'fallida' ? 'Visitas en las que nadie entregó residuos' : `Recolecciones en estado «${D.ESTADO_VISITA_LABEL[k].toLowerCase()}»; las fallidas van en su propio filtro`;
+    $('#chips').innerHTML = CHIPS.map(([k, t]) => `<button type="button" role="tab" aria-selected="${filtro.estado === k}" class="chip${filtro.estado === k ? ' on' : ''}" data-chip="${k}" title="${esc(tip(k))}">${t}<span class="n">${porChip(b, k).length}</span></button>`).join('');
+  }
+
+  function renderStats(rows) {
+    const validas = rows.filter(esValida);
+    const kg = validas.reduce((a, v) => a + D.totalKg(v), 0);
+    const pend = rows.filter((v) => v.estado === 'cerrada' || v.estado === 'rechazada').length;
+    const fallidas = rows.filter((v) => v.tipo === 'fallida').length;
+    // "Transmitidas" cuenta recolecciones, igual que la tarjeta del Inicio; una visita fallida transmitida se menciona aparte.
+    const transmitidas = rows.filter((v) => v.estado === 'transmitida' && v.tipo === 'recoleccion').length;
+    const fallidasTransmitidas = rows.filter((v) => v.estado === 'transmitida' && v.tipo === 'fallida').length;
+    $('#stats').innerHTML = `
+      <div class="card stat"><div class="label">Registros en el filtro</div><div class="value">${rows.length}</div><div class="delta">${validas.length} recolecciones válidas · ${fallidas} fallidas</div></div>
+      <div class="card stat"><div class="label">Kilos (sin anuladas ni borradores)</div><div class="value">${D.fmtKg(kg)} <small style="font-size:14px;font-weight:500">kg</small></div><div class="delta">${validas.reduce((a, v) => a + (v.bolsas || 0), 0)} bolsas · ${validas.reduce((a, v) => a + (v.guardianes || 0), 0)} guardianes</div></div>
+      <div class="card stat"><div class="label">Recolecciones transmitidas</div><div class="value">${transmitidas}</div><div class="delta">${rows.filter((v) => v.estado === 'en_cierre').length} ya en un cierre${fallidasTransmitidas ? ` · ${fallidasTransmitidas} fallida${fallidasTransmitidas > 1 ? 's' : ''} transmitida${fallidasTransmitidas > 1 ? 's' : ''} aparte` : ''}</div></div>
+      <div class="card stat"><div class="label">Requieren atención</div><div class="value" style="${pend ? 'color:var(--danger)' : ''}">${pend}</div><div class="delta">${rows.filter((v) => v.estado === 'cerrada').length} en celular · ${rows.filter((v) => v.estado === 'rechazada').length} rechazadas · ${rows.filter((v) => v.estado === 'anulada').length} anuladas</div></div>`;
+  }
+
+  // Contexto del cliente cuando se llega desde una alerta del Inicio (#cliente=…)
+  function renderContexto() {
+    const c = ctxCliente ? D.cliente(ctxCliente) : null;
+    if (!c || filtro.q.trim().toLowerCase() !== c.nombre_comercial.toLowerCase()) { $('#ctx').hidden = true; $('#ctx').innerHTML = ''; return; }
+    const validasAbierto = D.visitasDe(c.id, P.id);
+    const fallidasAbierto = V.filter((v) => v.cliente === c.id && v.periodo === P.id && v.tipo === 'fallida').sort(orden);
+    const ultima = V.filter((v) => v.cliente === c.id && esValida(v)).sort(orden)[0];
+    const ruta = D.ruta_hoy.find((r) => r.cliente === c.id);
+    const frec = `${D.FRECUENCIA_LABEL[c.frecuencia].toLowerCase()}${c.dia_visita ? ' · ' + c.dia_visita.toLowerCase() : ''}`;
+    const kgAbierto = validasAbierto.reduce((a, v) => a + D.totalKg(v), 0);
+    let html;
+    if (validasAbierto.length) {
+      html = `<div class="callout info"><b>${esc(c.nombre_comercial)}</b> · ${validasAbierto.length} recolección${validasAbierto.length > 1 ? 'es' : ''} en ${esc(P.nombre)} · ${D.fmtKg(kgAbierto)} kg · frecuencia ${esc(frec)}.</div>`;
+    } else {
+      html = `<div class="callout warn"><b>${esc(c.nombre_comercial)}</b> no tiene recolección en <b>${esc(P.nombre)}</b> (frecuencia ${esc(frec)}).`
+        + fallidasAbierto.map((f) => ` Visita fallida el ${D.fmtFechaCorta(f.fecha)} a las ${esc(f.hora)} (<a href="#${esc(f.id)}" data-abrir="${esc(f.id)}">constancia ${f.consecutivo}</a>): «${esc((f.motivo_fallida || '').replace(/[.\s]+$/, ''))}».`).join('')
+        + (ultima ? ` Última recolección: <a href="#${esc(ultima.id)}" data-abrir="${esc(ultima.id)}">${D.fmtFechaCorta(ultima.fecha)}, constancia ${ultima.consecutivo}</a> (${D.fmtKg(D.totalKg(ultima))} kg, ${esc(D.fmtMes(ultima.periodo))}).` : ' No registra recolecciones.')
+        + (ruta ? ` Está en la ruta de hoy a las ${esc(ruta.hora_sugerida)}${ruta.nota ? ' · ' + esc(ruta.nota) : ''}.` : '')
+        + (!filtro.periodo ? ' Se muestra todo el historial del cliente.' : '')
+        + `</div>`;
+    }
+    $('#ctx').innerHTML = html; $('#ctx').hidden = false;
+    $('#ctx').querySelectorAll('[data-abrir]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); const v = byId(el.dataset.abrir); if (v && filtro.periodo && v.periodo !== filtro.periodo) { filtro.periodo = ''; renderFiltros(); renderTabla(); } abrir(el.dataset.abrir); }));
+  }
+
+  function renderTabla() {
+    const rows = porChip(base(), filtro.estado).sort(orden);
+    renderStats(rows);
+    renderChips();
+    renderContexto();
+    if (!rows.length) {
+      // Estado vacío fuera de la tabla: con 10 columnas la tabla desborda en un teléfono y el mensaje quedaría cortado.
+      $('#tabla-wrap').hidden = true; $('#tbody').innerHTML = '';
+      const p = D.periodos.find((x) => x.id === filtro.periodo);
+      const partes = [];
+      if (filtro.q.trim()) partes.push(`«${filtro.q.trim()}»`);
+      if (filtro.estado !== 'todas') partes.push(CHIPS.find(([k]) => k === filtro.estado)[1].toLowerCase());
+      if (filtro.operario) partes.push('registradas por ' + nombreCorto(D.operario(filtro.operario)));
+      if (filtro.tipo) partes.push(filtro.tipo === 'fallida' ? 'solo fallidas' : 'solo recolección');
+      $('#empty').hidden = false;
+      $('#empty').innerHTML = `<h3>No hay visitas con este filtro</h3><p>${esc(p ? p.nombre : 'Todos los periodos')}${partes.length ? ' · ' + esc(partes.join(' · ')) : ''}. Cambie el periodo o quite los filtros para ver más registros.</p><button class="btn sm" id="limpiar">Quitar filtros</button>${filtro.periodo ? ` <button class="btn sm ghost" id="todos-periodos">Ver todos los periodos</button>` : ''}`;
+      $('#limpiar').addEventListener('click', () => { Object.assign(filtro, { q: '', operario: '', tipo: '', estado: 'todas', periodo: P.id }); ctxCliente = null; renderFiltros(); renderTabla(); });
+      const tp = $('#todos-periodos'); if (tp) tp.addEventListener('click', () => { filtro.periodo = ''; renderFiltros(); renderTabla(); });
+    } else {
+      $('#tabla-wrap').hidden = false; $('#empty').hidden = true; $('#empty').innerHTML = '';
+      $('#tbody').innerHTML = rows.map((v) => {
+        const c = D.cliente(v.cliente); const o = D.operario(v.operario); const ax = v.auxiliar ? D.operario(v.auxiliar) : null;
+        const horaDistinta = v.hora_servidor && v.hora_servidor !== v.hora;
+        return `<tr class="row${v.estado === 'anulada' ? ' anulada' : ''}" data-id="${v.id}" tabindex="0" aria-label="Ver detalle de la visita ${v.consecutivo || 'en borrador'}">
+          <td><span class="mono no">${v.consecutivo ? v.consecutivo : '—'}</span>${v.reemplaza ? `<span class="sub">reemplaza a ${byId(v.reemplaza).consecutivo}</span>` : ''}${v.reemplazo ? `<span class="sub">reemplazada por ${byId(v.reemplazo).consecutivo}</span>` : ''}</td>
+          <td>${D.fmtFechaCorta(v.fecha)} <span class="mono">${esc(v.hora)}</span>${horaDistinta ? `<span class="sub">Servidor: ${esc(v.hora_servidor)}</span>` : ''}</td>
+          <td>${esc(c.nombre_comercial)}<span class="sub nit">NIT ${esc(D.nitCompleto(c))}${c.estado === 'pendiente_validar' ? ' · sin validar' : ''}</span></td>
+          <td style="white-space:nowrap">${esc(nombreCorto(o))}${ax ? `<span class="sub">Aux.: ${esc(nombreCorto(ax))}</span>` : ''}</td>
+          <td class="mono" style="white-space:nowrap">${esc(v.placa || '—')}</td>
+          <td class="num">${v.tipo === 'fallida' ? '—' : D.fmtKg(D.totalKg(v))}</td>
+          <td class="num">${v.tipo === 'fallida' ? '—' : `${v.bolsas} / ${v.guardianes}`}</td>
+          <td>${badge(v.estado)}${v.tipo === 'fallida' ? ' <span class="badge plain">Fallida</span>' : ''}${v.alerta ? ' <span class="badge warn" title="' + esc(v.alerta) + '">Aviso</span>' : ''}</td>
+          <td class="num">${v.fotos ? v.fotos : '—'}</td>
+          <td style="white-space:nowrap"><button class="btn sm ghost" data-ver="${v.id}">Ver</button>${v.consecutivo && !['borrador', 'cerrada'].includes(v.estado) ? `<a class="btn sm ghost" href="../documentos/constancia.html#${v.id}" data-stop>PDF</a>` : ''}</td>
+        </tr>`;
+      }).join('');
+    }
+    const p = D.periodos.find((x) => x.id === filtro.periodo);
+    $('#foot').textContent = `${rows.length} registros · ${p ? p.nombre + ' (' + D.fmtFechaCorta(p.inicio) + ' – ' + D.fmtFechaCorta(p.fin) + ')' : 'Todos los periodos'} · la hora que se muestra es la del celular; si el servidor registró otra, aparece debajo.`;
+  }
+
+  // ---------- detalle ----------
+  function lineaTiempo(v) {
+    const c = D.cliente(v.cliente); const o = D.operario(v.operario);
+    const items = [];
+    items.push({ en: `${v.fecha} ${v.hora}`, t: `${v.tipo === 'fallida' ? 'Visita fallida registrada' : 'Visita abierta en el celular'} por ${nombreCorto(o)}` });
+    if (v.firmas) items.push({ en: `${v.fecha} ${v.hora}`, t: `Firmada en pantalla por ${v.entrega_nombre} (entrega) y ${nombreCorto(o)}` });
+    if (v.consecutivo && v.estado !== 'borrador') items.push({ en: `${v.fecha} ${v.hora}`, t: `Cerrada con el consecutivo ${v.consecutivo} del rango del operario` });
+    if (v.estado === 'cerrada') items.push({ en: v.pendiente_desde || `${v.fecha} ${v.hora}`, t: `En cola de envío · ${v.intentos || 0} intentos · ${v.ultimo_error || 'sin señal'}`, muted: true });
+    if (['transmitida', 'en_cierre', 'anulada', 'rechazada'].includes(v.estado) || v.reemplazo) items.push({ en: `${v.fecha} ${v.hora_servidor || v.hora}`, t: v.estado === 'rechazada' ? 'Recibida y rechazada por el servidor' : `Transmitida al servidor${v.hora_servidor && v.hora_servidor !== v.hora ? ' (hora del servidor ' + v.hora_servidor + ')' : ''}` });
+    if (v.estado === 'rechazada') items.push({ en: `${v.fecha} ${v.hora_servidor || v.hora}`, t: `Motivo: ${v.rechazo}`, muted: true });
+    if (v.estado === 'en_cierre') { const p = D.periodos.find((x) => x.id === v.periodo); items.push({ en: p.cerrado_en, t: `Incluida en el cierre de ${p.nombre} por ${p.cerrado_por}` }); }
+    if (v.estado === 'anulada') items.push({ en: v.anulada_en, t: `Anulada por ${v.anulada_por} · ${v.anulacion_motivo}` });
+    if (v.reemplaza) items.push({ en: v.anulada_en || `${v.fecha} ${v.hora}`, t: `Emitida en reemplazo de la constancia ${byId(v.reemplaza).consecutivo}`, muted: true });
+    AUD.filter((a) => v.consecutivo && a.accion.includes(String(v.consecutivo)) && !a._local).forEach((a) => { if (!items.some((i) => i.en === a.en)) items.push({ en: a.en, t: `${a.quien} · ${a.accion}${a.detalle ? ' · ' + a.detalle : ''}` }); });
+    items.sort((a, b) => a.en.localeCompare(b.en));
+    return `<ul class="timeline">${items.map((i) => `<li class="${i.muted ? 'muted' : ''}"><div>${esc(i.t)}<div class="when">${D.fmtFechaCorta(i.en)} ${esc(i.en.slice(11))}</div></div></li>`).join('')}</ul>`;
+  }
+
+  function renderDetalle(id) {
+    const v = byId(id); if (!v) return;
+    const c = D.cliente(v.cliente); const o = D.operario(v.operario); const ax = v.auxiliar ? D.operario(v.auxiliar) : null;
+    const kg = D.totalKg(v);
+    const cats = D.categorias.filter((k) => v.kilos[k.codigo] != null).sort((a, b) => a.orden - b.orden);
+    const puedeAnular = v.estado === 'transmitida' || v.estado === 'en_cierre';
+    const enCelular = v.estado === 'cerrada'; // guardada en el celular sin transmitir: el servidor solo tiene el resumen, no la constancia
+    const gps = v.gps ? `${v.gps[0].toFixed(4)}, ${v.gps[1].toFixed(4)}` : '';
+    let avisos = '';
+    if (v.estado === 'anulada') avisos += `<div class="callout danger"><b>Anulada</b> por ${esc(v.anulada_por)} el ${D.fmtFechaCorta(v.anulada_en)} a las ${esc(v.anulada_en.slice(11))}.<br>${esc(v.anulacion_motivo)}${v.reemplazo ? `<br><a href="#${esc(v.reemplazo)}" data-abrir="${esc(v.reemplazo)}">Ver la constancia de reemplazo ${byId(v.reemplazo).consecutivo}</a>` : ''}</div>`;
+    if (v.reemplaza) avisos += `<div class="callout info">Emitida en reemplazo de la constancia <a href="#${esc(v.reemplaza)}" data-abrir="${esc(v.reemplaza)}">${byId(v.reemplaza).consecutivo}</a>, anulada por error de digitación.</div>`;
+    if (v.estado === 'rechazada') avisos += `<div class="callout danger"><b>Rechazada por el servidor.</b> ${esc(v.rechazo)}<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm" href="clientes.html">Validar cliente</a><button class="btn sm" data-toast="Reprocesada. Seguirá rechazada hasta validar el cliente.">Reprocesar</button></div></div>`;
+    if (v.estado === 'cerrada') avisos += `<div class="callout warn"><b>Guardada en el celular de ${esc(nombreCorto(o))} sin enviar</b> desde el ${D.fmtFechaCorta(v.pendiente_desde)} ${esc((v.pendiente_desde || '').slice(11))} · ${v.intentos} intentos · ${esc(v.ultimo_error)}. Ya tiene número y firmas; llegará sola cuando el celular tenga señal.</div>`;
+    if (v.estado === 'en_cierre') avisos += `<div class="callout info">Esta visita ya está en un periodo cerrado: anularla exige reabrir el periodo con autorización de la gerencia.</div>`;
+    if (v.alerta) avisos += `<div class="callout warn">${esc(v.alerta)}.</div>`;
+    if (v.estado === 'borrador') avisos += `<div class="callout">Borrador abierto en el celular: todavía no tiene número ni firmas y solo el operario puede completarlo.</div>`;
+
+    const kilosHTML = v.tipo === 'fallida'
+      ? `<div class="callout"><b>Visita fallida.</b> ${esc(v.motivo_fallida)}${v.testigo ? `<br><span class="muted">Testigo: ${esc(v.testigo)}</span>` : ''}</div>`
+      : `<table class="tbl kg-tbl"><thead><tr><th>Categoría</th><th>Tratamiento</th><th class="num">Kg</th></tr></thead><tbody>${cats.map((k) => `<tr><td>${esc(k.nombre)} <span class="muted mono">${k.codigo}</span></td><td class="${k.dispositor ? '' : 'muted'}">${esc(k.tratamiento)}</td><td class="num">${D.fmtKg(v.kilos[k.codigo])}</td></tr>`).join('')}<tr class="total"><td colspan="2">Total</td><td class="num" style="white-space:nowrap">${D.fmtKg(kg)} kg</td></tr></tbody></table>`;
+
+    $('#overlay').innerHTML = `
+      <div class="drawer-backdrop" data-cerrar></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="d-head">
+          <div>
+            <div class="eyebrow">Constancia de visita</div>
+            <div class="no">${v.consecutivo ? 'N.º ' + v.consecutivo : 'Sin número'}</div>
+            <h2 id="d-title">${esc(c.nombre_comercial)} <span class="muted" style="font-weight:400">· NIT ${esc(D.nitCompleto(c))}</span></h2>
+            <div class="muted" style="font-size:12.5px;margin-top:4px">${esc(D.cap(D.fmtFecha(v.fecha, { dia: true })))} · ${esc(v.hora)} · ${esc(c.direccion)}, ${esc(c.ciudad)}</div>
+            <div style="margin-top:8px">${badge(v.estado)}${v.tipo === 'fallida' ? ' <span class="badge plain">Fallida</span>' : ''}</div>
+          </div>
+          <button class="close" data-cerrar aria-label="Cerrar">✕</button>
+        </div>
+        <div class="d-body">
+          ${avisos}
+          <section><h3>${enCelular ? 'Resumen enviado por el celular (pendiente de transmitir)' : 'Kilos por categoría'}</h3>${kilosHTML}</section>
+          <section><h3>Datos de la visita</h3>
+            <dl class="kv">
+              <dt>Bolsas</dt><dd>${v.tipo === 'fallida' ? '—' : v.bolsas}</dd>
+              <dt>Guardianes</dt><dd>${v.tipo === 'fallida' ? '—' : v.guardianes}</dd>
+              <dt>Placa</dt><dd class="mono">${esc(v.placa || '—')}</dd>
+              <dt>Operario</dt><dd>${esc(o.nombre)} <span class="muted">· ${esc(o.cargo)}</span></dd>
+              <dt>Auxiliar</dt><dd>${ax ? esc(ax.nombre) : '—'}</dd>
+              <dt>Quien entrega</dt><dd>${v.entrega_nombre ? `${esc(v.entrega_nombre)} <span class="muted">· C.C. ${esc(v.entrega_documento)}</span>` : (v.tipo === 'fallida' ? '<span class="muted">Nadie atendió</span>' : '<span class="muted">Pendiente</span>')}</dd>
+              <dt>GPS</dt><dd>${gps ? `<span class="mono">${gps}</span> · <a href="https://www.google.com/maps?q=${v.gps[0]},${v.gps[1]}" target="_blank" rel="noopener">ver en mapa</a>` : '—'}</dd>
+              <dt>Hora del celular</dt><dd class="mono">${esc(v.hora)}</dd>
+              <dt>Hora del servidor</dt><dd class="mono">${v.hora_servidor ? esc(v.hora_servidor) + (v.hora_servidor === v.hora ? ' <span class="muted" style="font-family:var(--font-ui)">· igual a la del celular</span>' : '') : (['transmitida', 'en_cierre', 'anulada', 'rechazada'].includes(v.estado) ? '<span class="muted" style="font-family:var(--font-ui)" title="La constancia llegó al servidor, pero el registro no trae la hora de recepción">No registrada</span>' : '<span class="muted" style="font-family:var(--font-ui)">Aún no llega</span>')}</dd>
+              <dt>Periodo</dt><dd>${esc(D.periodos.find((p) => p.id === v.periodo).nombre)}${v.planilla ? ` · planilla ${esc(v.planilla)}` : ''}</dd>
+            </dl>
+          </section>
+          ${v.fotos ? `<section><h3>Fotos (${v.fotos})</h3>${enCelular ? `<div class="callout">${v.fotos === 1 ? 'La foto está' : 'Las ' + v.fotos + ' fotos están'} en el celular de ${esc(nombreCorto(o))} y ${v.fotos === 1 ? 'llega' : 'llegan'} con la constancia cuando se transmita.</div>` : `<div class="photo-grid">${Array.from({ length: v.fotos }).map((_, i) => `<div class="photo-ph">Foto ${i + 1}<br>${v.tipo === 'fallida' ? 'evidencia del sitio' : 'residuos entregados'}</div>`).join('')}</div>`}</section>` : ''}
+          <section><h3>Firmas</h3>
+            ${enCelular ? `<div class="callout">Firmada en pantalla en el celular por ${esc(v.entrega_nombre)} (quien entrega) y ${esc(o.nombre)} (Comserva). Las imágenes de las firmas llegan con la constancia cuando se transmita.</div>`
+              : v.firmas ? `<div class="sig-grid"><div><div class="sig-box">${D.firmaSVG(v.id + '-cli', '#1b2a66')}</div><div class="cap">${esc(v.entrega_nombre)} · quien entrega</div></div><div><div class="sig-box">${D.firmaSVG(v.id + '-op', '#1f5e43')}</div><div class="cap">${esc(o.nombre)} · Comserva</div></div></div>`
+              : v.tipo === 'fallida' ? `<div class="callout">Sin firmas: nadie recibió la visita. Queda el motivo, la foto, la hora, el GPS${v.testigo ? ' y el testigo (' + esc(v.testigo) + ')' : ''} como evidencia.</div>`
+              : '<div class="callout">Todavía sin firmas (borrador).</div>'}
+          </section>
+          <section><h3>Línea de tiempo</h3>${lineaTiempo(v)}</section>
+        </div>
+        <div class="d-foot">
+          ${enCelular ? `<span class="muted" style="font-size:12.5px;align-self:center">Sin PDF ni reenvío: la constancia todavía no está en el servidor.</span><button class="btn" style="margin-left:auto" data-toast="Recordatorio enviado por WhatsApp a ${esc(o.nombre)} (${esc(o.telefono)}) para que conecte el celular y transmita la constancia ${v.consecutivo}.">Recordar al operario</button>` : ''}
+          ${!enCelular && v.consecutivo && v.estado !== 'borrador' ? `<a class="btn" href="../documentos/constancia.html#${esc(v.id)}">Ver constancia PDF</a>` : ''}
+          ${!enCelular && v.consecutivo && !['borrador', 'anulada', 'rechazada'].includes(v.estado) ? `<button class="btn" data-toast="Constancia ${v.consecutivo} reenviada a ${esc(c.whatsapp || c.email || 'el contacto del cliente')}${c.email ? ' y a ' + esc(c.email) : ''}">Reenviar al cliente</button>` : ''}
+          ${puedeAnular ? `<button class="btn danger" data-anular="${esc(v.id)}" ${v.estado === 'en_cierre' ? 'disabled title="Periodo cerrado: requiere reabrirlo con autorización de la gerencia"' : ''} style="margin-left:auto">Anular con motivo</button>` : ''}
+        </div>
+      </aside>`;
+    const dr = $('.drawer'); dr.querySelector('.close').focus();
+    $('#overlay').querySelectorAll('[data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDetalle));
+    $('#overlay').querySelectorAll('[data-toast]').forEach((el) => el.addEventListener('click', () => toast(el.dataset.toast)));
+    $('#overlay').querySelectorAll('[data-abrir]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); abrir(el.dataset.abrir); }));
+    const b = $('#overlay [data-anular]'); if (b && !b.disabled) b.addEventListener('click', () => modalAnular(v.id));
+  }
+  function abrir(id) { if (!byId(id)) return; renderDetalle(id); document.querySelectorAll('tr.row').forEach((tr) => tr.classList.toggle('selected', tr.dataset.id === id)); }
+  function cerrarDetalle() { $('#overlay').innerHTML = ''; document.querySelectorAll('tr.row.selected').forEach((tr) => tr.classList.remove('selected')); }
+
+  // ---------- anulación ----------
+  function modalAnular(id) {
+    const v = byId(id); const c = D.cliente(v.cliente);
+    const m = document.createElement('div'); m.className = 'modal-backdrop'; m.id = 'modal';
+    m.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+      <div class="modal-head" id="m-title">Anular la constancia ${v.consecutivo}</div>
+      <div class="modal-body">
+        <div class="callout warn">La constancia anulada se conserva con marca de agua y motivo; no se borra. Si la recolección sí ocurrió, el operario debe emitir una nueva constancia desde su celular.</div>
+        <div class="summary">
+          <div><span class="muted">Cliente:</span> <b>${esc(c.nombre_comercial)}</b> · NIT ${esc(D.nitCompleto(c))}</div>
+          <div><span class="muted">Fecha:</span> ${D.fmtFechaCorta(v.fecha)} ${esc(v.hora)} · <span class="muted">Operario:</span> ${esc(nombreCorto(D.operario(v.operario)))}</div>
+          <div><span class="muted">Kilos:</span> ${v.tipo === 'fallida' ? 'visita fallida' : D.fmtKg(D.totalKg(v)) + ' kg en ' + Object.keys(v.kilos).length + ' categorías'}</div>
+        </div>
+        <div class="field"><label for="m-motivo" class="req">Motivo de la anulación</label><textarea class="textarea" id="m-motivo" placeholder="Ejemplo: error de digitación en los kilos de biológicos; el operario emitirá una nueva constancia."></textarea><span class="help" id="m-err">Obligatorio. Queda en la auditoría con su usuario y la hora.</span></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-x>Cancelar</button><button class="btn danger" id="m-ok">Anular constancia ${v.consecutivo}</button></div>
+    </div>`;
+    document.body.appendChild(m);
+    const ta = m.querySelector('#m-motivo'); ta.focus();
+    const cerrar = () => m.remove();
+    m.querySelector('[data-x]').addEventListener('click', cerrar);
+    m.addEventListener('click', (e) => { if (e.target === m) cerrar(); });
+    m.querySelector('#m-ok').addEventListener('click', () => {
+      const motivo = ta.value.trim();
+      if (motivo.length < 8) { ta.style.borderColor = 'var(--danger)'; m.querySelector('#m-err').style.color = 'var(--danger)'; m.querySelector('#m-err').textContent = 'Escriba el motivo (mínimo 8 caracteres) para poder anular.'; ta.focus(); return; }
+      v.estado = 'anulada'; v.anulada_por = 'Lucrecia Quintero'; v.anulada_en = ahora(); v.anulacion_motivo = motivo;
+      AUD.unshift({ en: v.anulada_en, quien: 'Lucrecia Quintero', accion: `Anuló visita ${v.consecutivo}`, entidad: `Visita · ${c.nombre_comercial}`, detalle: `Motivo: ${motivo}`, _local: true });
+      cerrar(); renderTabla(); renderDetalle(v.id);
+      toast(`Visita ${v.consecutivo} anulada. Pida al operario emitir una nueva si corresponde.`);
+    });
+  }
+
+  // ---------- eventos ----------
+  $('#f-q').addEventListener('input', (e) => { filtro.q = e.target.value; ctxCliente = null; renderTabla(); });
+  $('#f-periodo').addEventListener('change', (e) => { filtro.periodo = e.target.value; renderTabla(); });
+  $('#f-operario').addEventListener('change', (e) => { filtro.operario = e.target.value; renderTabla(); });
+  $('#f-tipo').addEventListener('change', (e) => { filtro.tipo = e.target.value; renderTabla(); });
+  $('#chips').addEventListener('click', (e) => { const b = e.target.closest('[data-chip]'); if (!b) return; filtro.estado = b.dataset.chip; renderTabla(); });
+  $('#tbody').addEventListener('click', (e) => {
+    if (e.target.closest('[data-stop]')) return;
+    const tr = e.target.closest('tr.row'); if (!tr) return; abrir(tr.dataset.id);
+  });
+  $('#tbody').addEventListener('keydown', (e) => { const tr = e.target.closest('tr.row'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); abrir(tr.dataset.id); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = $('#modal'); if (m) m.remove(); else cerrarDetalle(); } });
+
+  // ---------- hash: #v-id · #1150 · #estado=cerrada · #cerrada · #cliente=c-tinta ----------
+  function aplicarHash() {
+    const h = decodeURIComponent(location.hash.replace(/^#/, '')).trim();
+    if (!h) return;
+    let m;
+    if ((m = h.match(/^(?:estado=)?(todas|transmitida|cerrada|rechazada|anulada|fallida|borrador)$/))) { filtro.estado = m[1]; renderTabla(); return; }
+    if ((m = h.match(/^cliente=(.+)$/))) {
+      const c = D.cliente(m[1]); if (!c) return;
+      ctxCliente = c.id; filtro.q = c.nombre_comercial; filtro.estado = 'todas'; filtro.operario = ''; filtro.tipo = '';
+      // Si el cliente no tiene ningún registro en el periodo abierto (ni fallidas), se muestra todo su historial en vez de una tabla vacía.
+      filtro.periodo = D.visitasDe(c.id, P.id, { todas: true }).length ? P.id : '';
+      renderFiltros(); renderTabla(); return;
+    }
+    let v = byId(h) || (/^\d+$/.test(h) ? V.find((x) => String(x.consecutivo) === h) : null);
+    if (v) { if (filtro.periodo && v.periodo !== filtro.periodo) { filtro.periodo = v.periodo; renderFiltros(); } filtro.estado = 'todas'; renderTabla(); abrir(v.id); }
+  }
+  window.addEventListener('hashchange', aplicarHash);
+
+  renderFiltros(); renderTabla(); aplicarHash();
+})();
+</script>
+</body>
+</html>
