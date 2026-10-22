@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>App del operario · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .stage { display: grid; grid-template-columns: 300px 1fr; gap: 24px; padding: 24px var(--gutter) 60px; max-width: 1180px; margin: 0 auto; }
+  @media (max-width: 860px) { .stage { grid-template-columns: 1fr; } .guide { order: 2; } }
+  .guide { display: flex; flex-direction: column; gap: 12px; }
+  .guide .screens a { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 8px; color: var(--fg-2); font-size: 13px; }
+  .guide .screens a:hover { background: var(--surface-2); text-decoration: none; }
+  .guide .screens a.on { background: var(--accent-soft); color: var(--accent-soft-fg); font-weight: 600; }
+  .guide .screens a small { color: var(--fg-3); }
+  .guide .note { font-size: 12.5px; color: var(--fg-2); }
+  .guide .note b { color: var(--fg); }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .sim { display: flex; gap: 10px; align-items: center; font-size: 12.5px; color: var(--fg-2); flex-wrap: wrap; justify-content: center; }
+  .sim label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  canvas.pad { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+  .err { color: #b3261e; font-size: 12px; }
+  .req::after { content: ' *'; color: #b3261e; }
+  .hero-ok { text-align: center; padding: 18px 10px 6px; }
+  .hero-ok .circle { width: 74px; height: 74px; border-radius: 50%; background: #dcefe4; color: #123d2b; display: grid; place-items: center; font-size: 34px; margin: 0 auto 10px; }
+  .hero-ok h2 { font-size: 20px; }
+  .hero-ok .no { font-family: var(--font-mono); font-size: 26px; color: #b3261e; margin: 6px 0; }
+  .grp { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6f7c75; font-weight: 700; padding: 10px 0 4px; }
+  .seg { display: flex; background: #e6ebe8; border-radius: 12px; padding: 3px; }
+  .seg button { flex: 1; border: 0; background: transparent; padding: 8px; border-radius: 10px; font-weight: 600; font-size: 13px; color: #46524c; cursor: pointer; }
+  .seg button.on { background: #fff; color: #123d2b; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .m-item.route .avatar { background: #f0f3f1; }
+  .m-item.route.done .avatar { background: #dcefe4; }
+  .m-item.route.now { border-color: var(--verde-600); box-shadow: 0 0 0 3px rgba(43,106,75,.12); }
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-row .m-card { padding: 10px 12px; }
+  .stat-row .k { font-size: 11px; color: #6f7c75; }
+  .stat-row .v { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .warn-row { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: #fbf0d2; color: #6b4a04; font-size: 12.5px; }
+  .warn-row.danger { background: #fbe3e1; color: #8c1d17; }
+  .warn-row.info { background: #dfeafa; color: #163f6e; }
+  .fab { position: absolute; right: 16px; bottom: 86px; width: 56px; height: 56px; border-radius: 18px; background: var(--verde-600); color: #fff; font-size: 28px; display: grid; place-items: center; box-shadow: 0 8px 20px rgba(18,61,43,.35); border: 0; cursor: pointer; }
+  .search { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #c8d0cb; border-radius: 12px; padding: 10px 12px; }
+  .search input { border: 0; outline: 0; flex: 1; font-size: 15px; background: transparent; }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: #46524c; }
+  .check input { width: 18px; height: 18px; margin-top: 1px; }
+  .link-btn { background: none; border: 0; color: var(--verde-600); font-weight: 600; font-size: 13px; cursor: pointer; padding: 0; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+
+<div class="stage">
+  <aside class="guide">
+    <div class="card pad">
+      <div class="eyebrow">App del operario · Android e iPhone</div>
+      <h1 style="margin-top:4px">Flujo de la visita en el celular</h1>
+      <p class="note" style="margin-top:8px">Mockup navegable con datos de prueba. El operario que inició sesión es <b>Dubeny</b>, hoy es <b>jueves 22 de octubre de 2026</b> y hay una visita en borrador en Veterinaria Huellas. Todo lo que se escribe aquí vive solo en esta página.</p>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Pantallas</h3><small id="screen-count"></small></div>
+      <div class="card-body screens" id="screen-list" style="padding:8px"></div>
+    </div>
+    <div class="card pad note" id="screen-note"></div>
+    <div class="card pad note">
+      <b>Reglas que aplica la app</b>
+      <ul style="margin:6px 0 0 16px; padding:0; display:grid; gap:4px">
+        <li>Una recolección no se cierra sin al menos una categoría con kilos ni sin las dos firmas (o la constancia de "no hay quien firme" con motivo). Si el cliente atendió pero no entregó residuos, se registra una visita sin residuos (0 kg); si no se pudo recoger, una visita fallida.</li>
+        <li>La jornada define vehículo, conductor y auxiliar; todas las visitas del día los heredan.</li>
+        <li>El total de kilos lo suma la app; el operario no lo digita.</li>
+        <li>El consecutivo sale del rango reservado del operario, con o sin señal.</li>
+        <li>Lo cerrado no se edita: solo se puede solicitar anulación a la oficina.</li>
+        <li>Las categorías Animales y Explosivos se aceptan pero avisan que no tienen tratamiento definido.</li>
+      </ul>
+    </div>
+  </aside>
+
+  <div class="phone-wrap">
+    <div class="sim">
+      <label><input type="checkbox" id="sim-offline"> Simular sin señal</label>
+      <label><input type="checkbox" id="sim-dark" disabled title="La app es clara; el tema del sistema no la afecta"> Tema oscuro (no aplica)</label>
+      <button class="btn sm" id="reset">Reiniciar demo</button>
+    </div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen" id="screen"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  document.getElementById('bar').innerHTML = D.mockBar('App móvil');
+
+  const OP = D.operario('op-dubeny');
+  const state = {
+    screen: 'hoy',
+    offline: false,
+    flow: null,            // visita en construcción
+    recibo: null,
+    fallida: null,
+    nuevo: null,
+    seleccion: null,
+    jornada: { placa: D.vehiculos[0].placa, auxiliar: 'op-jesus', iniciada: true },
+    sinres: null,
+    emitidas: [],          // constancias generadas en la demo
+    recibosEmitidos: [],
+    siguienteConstancia: OP.rango_constancias.siguiente,
+    siguienteRecibo: OP.rango_recibos.siguiente,
+    filtroVisitas: 'todas',
+  };
+
+  const SCREENS = [
+    ['login', 'Inicio de sesión', 'Usuario y clave por operario. El celular queda registrado como dispositivo autorizado.'],
+    ['jornada', 'Inicio de jornada', 'Antes de la primera visita el operario confirma vehículo, conductor y auxiliar del día; todas las visitas los heredan. Con señal, la app descarga catálogos y bloques de consecutivos.'],
+    ['hoy', 'Hoy (ruta del día)', 'Resumen del día: ruta según la frecuencia de cada cliente, pendientes de envío y accesos rápidos. La campana de sincronización muestra la cola.'],
+    ['cliente', 'Elegir cliente', 'Búsqueda por nombre o NIT sobre el catálogo descargado. Funciona sin señal. Permite crear un cliente nuevo que queda pendiente de validar.'],
+    ['kilos', 'Visita · kilos por categoría', 'Las 9 categorías del catálogo único, agrupadas como en la planilla. El total se calcula solo. Bolsas y guardianes; placa y auxiliar vienen de la jornada. Desde aquí también se registra una visita sin residuos o fallida.'],
+    ['sinresiduos', 'Visita sin residuos', 'El cliente atendió pero no entregó residuos. Queda con 0 kg, motivo y firma de quien atiende; cuenta para la frecuencia y aparece en la planilla.'],
+    ['evidencia', 'Visita · evidencia', 'GPS y hora automáticos. Fotos opcionales (máximo 3); suben aparte cuando hay buena señal.'],
+    ['firmas', 'Visita · firmas', 'Aviso de tratamiento de datos, nombre y documento de quien entrega, firma del cliente y del operario. Si nadie puede firmar, queda el motivo.'],
+    ['resumen', 'Visita · confirmar', 'Último vistazo antes de cerrar. Al cerrar se asigna el consecutivo y la visita ya no se puede editar.'],
+    ['constancia', 'Constancia emitida', 'Número definitivo del rango del operario. Se comparte el PDF por WhatsApp o correo aunque no haya señal. Desde aquí se registra el pago en efectivo.'],
+    ['recibo', 'Recibo de caja', 'Solo si el cliente tiene una factura electrónica validada por la DIAN con saldo: la app muestra las facturas con saldo de referencia, el operario elige el tipo (anticipo, abono, pago de factura o pago total de cartera) y el valor se aplica a esas facturas sin superar el saldo. Sin factura no se emite nada. Consecutivo del rango de recibos; el archivo plano RC lo genera la oficina.'],
+    ['fallida', 'Visita fallida', 'Deja evidencia de que el operario fue: motivo, foto obligatoria, GPS, hora y testigo opcional. También genera constancia.'],
+    ['visitas', 'Mis visitas', 'Historial del operario con el estado de cada registro. Filtros por pendientes y rechazadas.'],
+    ['detalle', 'Detalle de visita', 'Solo lectura. Permite reenviar la constancia y solicitar anulación a la oficina con motivo.'],
+    ['sync', 'Sincronización', 'Cola de envío con reintentos, registros rechazados por el servidor, catálogos descargados y rango de consecutivos disponible.'],
+    ['nuevo', 'Cliente nuevo en campo', 'Datos mínimos para poder registrar la visita hoy. La oficina valida, completa la tarifa y la visita se reprocesa.'],
+    ['mas', 'Más', 'Perfil, dispositivo, rangos asignados, política de datos y cierre de sesión.'],
+  ];
+
+  // ---------- utilidades ----------
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function toast(msg) {
+    const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2600);
+  }
+  function statusbar() {
+    return `<div class="statusbar"><span>08:0${state.screen === 'hoy' ? '4' : '9'}</span><span>${state.offline ? '✕ Sin señal' : '▲ LTE'} · 86%</span></div>`;
+  }
+  function tabbar(on) {
+    const items = [['hoy', '⌂', 'Hoy'], ['visitas', '☰', 'Visitas'], ['sync', '⇅', 'Sincronizar'], ['mas', '⋯', 'Más']];
+    const pend = pendientes().length;
+    return `<div class="tabbar">${items.map(([k, i, t]) => `<a href="#" data-go="${k}" class="${on === k ? 'on' : ''}"><span class="ico">${i}</span>${t}${k === 'sync' && pend ? ` (${pend})` : ''}</a>`).join('')}</div>`;
+  }
+  function appbar(title, opts = {}) {
+    return `<div class="appbar">${opts.back ? `<button class="back" data-go="${opts.back}" aria-label="Volver">‹</button>` : ''}<div style="flex:1;min-width:0"><h1>${title}</h1>${opts.sub ? `<div class="sub">${opts.sub}</div>` : ''}</div>${opts.right || ''}</div>`;
+  }
+  function pendientes() { return D.visitas.filter((v) => v.operario === OP.id && v.estado === 'cerrada').concat(state.emitidas.filter((e) => e.estado === 'cerrada')); }
+  function rechazadas() { return D.visitas.filter((v) => v.estado === 'rechazada'); }
+  function pillEstado(e) {
+    const map = { borrador: ['', 'Borrador'], cerrada: ['warn', 'Guardada en el celular'], transmitida: ['ok', 'Transmitida'], rechazada: ['danger', 'Rechazada'], en_cierre: ['info', 'En el cierre'], anulada: ['danger', 'Anulada'] };
+    const [cls, txt] = map[e] || ['', e];
+    return `<span class="pill-state ${cls}">${txt}</span>`;
+  }
+  function nuevoFlow(clienteId) {
+    const c = D.cliente(clienteId);
+    return { cliente: c, kilos: {}, bolsas: '', guardianes: '', placa: D.vehiculos[0].placa, auxiliar: 'op-jesus', obs: '', fotos: 0, gps: c.id === 'c-saludvital' ? [1.6152, -75.6113] : [1.6170 + Math.random() * 0.01, -75.6100 - Math.random() * 0.01], hora: '08:0' + (3 + Math.floor(Math.random() * 6)), entrega_nombre: '', entrega_documento: '', sinFirma: false, motivoSinFirma: '', aviso: false, firmaCliente: false, firmaOperario: false };
+  }
+  const totalFlow = (f) => Object.values(f.kilos).reduce((a, b) => a + (Number(b) || 0), 0);
+  // v5 · recibo de caja: solo con factura registrada. Las facturas con saldo vienen en los catálogos sincronizados.
+  function nuevoRecibo(c) { return { cliente: c, tipo: '', valor: '', aplic: {}, concepto: '', pagador: '', pagador_documento: '', firma: false }; }
+  const facturasSaldo = (c) => D.facturasConSaldo(c.id, state.recibosEmitidos.filter((r) => r.emitido).map((r) => ({ estado: 'emitido', aplicaciones: r.aplicaciones || [] })));
+  const TIPOS_RC = [['anticipo', 'Anticipo', 'Paga antes del vencimiento'], ['abono', 'Abono', 'Una parte de la factura'], ['pago_factura', 'Pago de factura', 'Una factura completa'], ['pago_total', 'Pago total', 'Toda la cartera con saldo']];
+  function aplicarTipo(r, fs) {
+    r.aplic = {};
+    if (r.tipo === 'pago_total') { fs.forEach((f) => { r.aplic[f.id] = f.saldo; }); r.valor = String(fs.reduce((a, f) => a + f.saldo, 0)); }
+    else if (r.tipo === 'pago_factura' || r.tipo === 'anticipo') { const f = r.tipo === 'anticipo' ? (fs.find((x) => !x.vencida) || fs[0]) : fs[0]; if (f) { r.aplic[f.id] = f.saldo; r.valor = String(f.saldo); } }
+    else if (r.tipo === 'abono') { const f = fs[0]; if (f) r.aplic[f.id] = 0; r.valor = ''; }
+    r.concepto = conceptoRC(r);
+  }
+  function conceptoRC(r) {
+    const fs = Object.keys(r.aplic).map((id) => D.factura(id)).filter(Boolean);
+    const t = { anticipo: 'Anticipo a', abono: 'Abono a', pago_factura: 'Pago de', pago_total: 'Pago total de cartera:' }[r.tipo] || 'Pago de';
+    return fs.length ? `${t} ${fs.length > 1 ? 'las facturas' : 'la factura'} ${fs.map((f) => f.numero).join(', ')}` : '';
+  }
+
+  // ---------- pantallas ----------
+  const views = {
+    login() {
+      return `${statusbar()}
+      <div class="app-body" style="justify-content:center; gap:18px; padding:24px">
+        <div style="text-align:center">
+          <div style="width:72px;height:72px;border-radius:22px;background:var(--verde-600);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;margin:0 auto 12px">CS</div>
+          <h2 style="font-size:22px">RH digital Comserva</h2>
+          <div class="sub" style="color:#6f7c75;font-size:13px">Registro de recolección de residuos</div>
+        </div>
+        <div class="m-field"><label>Usuario</label><input class="m-input" value="dubeny" id="login-user"></div>
+        <div class="m-field"><label>Contraseña</label><input class="m-input" type="password" value="••••••••"></div>
+        <label class="check"><input type="checkbox" checked> Recordar este celular (Samsung Galaxy A35) como dispositivo autorizado</label>
+        <button class="m-big-btn" data-go="jornada">Entrar</button>
+        <button class="link-btn" data-toast="La oficina restablece la clave desde el panel">Olvidé mi contraseña</button>
+        <small style="text-align:center;color:#6f7c75">Versión 1.0.0 (fase 1 · núcleo) · ${state.offline ? 'Sin señal: entra con la última sesión guardada' : 'Conectado'}</small>
+      </div>`;
+    },
+
+    jornada() {
+      const j = state.jornada;
+      const rango = OP.rango_constancias;
+      return `${statusbar()}
+      ${appbar('Inicio de jornada', { sub: D.cap(D.fmtFecha(D.HOY, { dia: true })) })}
+      <div class="app-body">
+        <div class="warn-row info">Confirma con quién y en qué vehículo sales. Todas las visitas de hoy heredan estos datos; en una visita puntual se pueden cambiar con motivo.</div>
+        <div class="m-field"><label>Vehículo</label><select class="m-input" id="jr-placa">${D.vehiculos.map((v) => `<option value="${v.placa}" ${v.placa === j.placa ? 'selected' : ''}>${v.placa} · ${esc(v.descripcion)}</option>`).join('')}</select></div>
+        <div class="m-field"><label>Conductor</label><input class="m-input" value="${esc(OP.nombre)} (tú)" readonly></div>
+        <div class="m-field"><label>Auxiliar</label><select class="m-input" id="jr-aux"><option value="">Sin auxiliar hoy</option>${D.operarios.filter((o) => o.id !== OP.id).map((o) => `<option value="${o.id}" ${o.id === j.auxiliar ? 'selected' : ''}>${esc(o.nombre)}</option>`).join('')}</select></div>
+        <div class="m-card"><h3>Listo para salir</h3>
+          <div class="m-kv" style="margin-top:8px">
+            <span class="k">Catálogos</span><span class="v">${state.offline ? 'de ayer 06:48 (sin señal)' : 'actualizados hoy 06:48'}</span>
+            <span class="k">Bloque de constancias</span><span class="v">${state.siguienteConstancia}–${rango.hasta} · reserva 1251–1300</span>
+            <span class="k">Bloque de recibos</span><span class="v">${state.siguienteRecibo}–${OP.rango_recibos.hasta}</span>
+            <span class="k">Visitas programadas</span><span class="v">${D.ruta_hoy.length}</span>
+            <span class="k">Certificado mercancías peligrosas</span><span class="v">vence 14 mar 2027</span>
+          </div></div>
+        <label class="check"><input type="checkbox" checked> Hice la inspección del vehículo y llevo tarjetas de emergencia</label>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" id="jr-iniciar">Iniciar jornada</button></div>`;
+    },
+
+    hoy() {
+      const pend = pendientes().length, rech = rechazadas().length;
+      const hoyVisitas = D.visitas.filter((v) => v.fecha === D.HOY && v.operario === OP.id).length + state.emitidas.length;
+      const kgHoy = D.visitas.filter((v) => v.fecha === D.HOY && v.operario === OP.id && v.estado !== 'borrador').reduce((a, v) => a + D.totalKg(v), 0) + state.emitidas.reduce((a, e) => a + e.kg, 0);
+      const efectivoHoy = state.recibosEmitidos.reduce((a, r) => a + r.valor, 0);
+      const ruta = D.ruta_hoy.map((r, i) => {
+        const c = D.cliente(r.cliente);
+        const hecha = state.emitidas.find((e) => e.cliente.id === c.id);
+        const cls = hecha ? 'done' : (i === 0 ? 'now' : '');
+        return `<a href="#" class="m-item route ${cls}" data-visita-cliente="${c.id}">
+          <div class="avatar">${hecha ? '✓' : r.hora_sugerida}</div>
+          <div class="body"><div class="title">${esc(c.nombre_comercial)}</div><div class="sub">${esc(c.direccion)} · ${D.FRECUENCIA_LABEL[c.frecuencia]}${r.nota ? ' · ' + esc(r.nota) : ''}</div></div>
+          <div class="right">${hecha ? '<span class="pill-state ok">Hecha</span>' : (i === 0 ? '<span class="pill-state info">Borrador</span>' : '')}</div>
+        </a>`;
+      }).join('');
+      return `${statusbar()}
+      ${appbar('Hola, Dubeny', { sub: D.cap(D.fmtFecha(D.HOY, { dia: true })) + ' · ' + esc(state.jornada.placa) + (state.jornada.auxiliar ? ' · con ' + esc(D.operario(state.jornada.auxiliar).nombre.split(' ')[0]) : ''), right: `<button class="back" data-go="sync" aria-label="Sincronización" title="Sincronización">⇅${pend ? `<span style="position:absolute;margin:-18px 0 0 14px;background:#b87d0a;color:#fff;border-radius:999px;font-size:10px;padding:0 5px">${pend}</span>` : ''}</button>` })}
+      <div class="app-body">
+        ${state.offline ? `<div class="warn-row">✕ Sin señal. Puedes seguir trabajando: las visitas se guardan en el celular y se envían solas cuando vuelva la conexión.</div>` : ''}
+        ${pend ? `<a href="#" class="warn-row" data-go="sync">⇅ ${pend} visita${pend > 1 ? 's' : ''} guardada${pend > 1 ? 's' : ''} en el celular, pendiente${pend > 1 ? 's' : ''} de enviar</a>` : ''}
+        ${rech ? `<a href="#" class="warn-row danger" data-go="sync">! ${rech} visita rechazada por el servidor: revisa el motivo</a>` : ''}
+        <div class="stat-row">
+          <div class="m-card"><div class="k">Visitas hoy</div><div class="v">${hoyVisitas}</div></div>
+          <div class="m-card"><div class="k">Kilos hoy</div><div class="v">${D.fmtKg(kgHoy, 1)}</div></div>
+          <div class="m-card"><div class="k">Efectivo hoy</div><div class="v" style="font-size:16px">${D.fmtCOP(efectivoHoy)}</div></div>
+        </div>
+        <div class="m-section">Ruta de hoy · ${D.ruta_hoy.length} clientes</div>
+        <div class="m-list">${ruta}</div>
+        <div class="m-section">Acciones</div>
+        <button class="m-big-btn" data-go="cliente">＋ Nueva visita</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="m-big-btn secondary" style="font-size:14px;padding:12px" data-recibo="">Recibo de caja</button>
+          <button class="m-big-btn danger" style="font-size:14px;padding:12px" data-fallida="">Visita fallida</button>
+        </div>
+      </div>
+      ${tabbar('hoy')}`;
+    },
+
+    cliente() {
+      const q = (state.busq || '').toLowerCase();
+      const lista = D.clientes.filter((c) => !q || c.nombre_comercial.toLowerCase().includes(q) || c.razon_social.toLowerCase().includes(q) || c.nit.includes(q));
+      return `${statusbar()}
+      ${appbar('¿A quién visitas?', { back: 'hoy', sub: 'Catálogo descargado: ' + D.clientes.length + ' clientes' })}
+      <div class="app-body">
+        <div class="search">🔍 <input id="busq" placeholder="Nombre o NIT" value="${esc(state.busq || '')}"></div>
+        <div class="m-list">
+          ${lista.map((c) => `<a href="#" class="m-item" data-visita-cliente="${c.id}">
+            <div class="avatar">${D.iniciales(c.nombre_comercial)}</div>
+            <div class="body"><div class="title">${esc(c.nombre_comercial)}</div><div class="sub">NIT ${D.nitCompleto(c)} · ${esc(c.ciudad)} · ${D.FRECUENCIA_LABEL[c.frecuencia]}</div></div>
+            <div class="right">${c.estado === 'pendiente_validar' ? '<span class="pill-state warn">Por validar</span>' : ''}${c.cartera === 'en_mora' ? '<span class="pill-state danger">En mora</span>' : ''}</div>
+          </a>`).join('')}
+        </div>
+        <button class="m-big-btn secondary" data-go="nuevo">＋ Cliente nuevo (pendiente de validar)</button>
+      </div>`;
+    },
+
+    kilos() {
+      const f = state.flow; const c = f.cliente;
+      const grupos = [...new Set(D.categorias.map((x) => x.grupo))];
+      const total = totalFlow(f);
+      const ultima = D.visitas.filter((v) => v.cliente === c.id && v.tipo === 'recoleccion' && v.estado !== 'anulada' && v.estado !== 'borrador').sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
+      return `${statusbar()}
+      ${appbar(esc(c.nombre_comercial), { back: 'cliente', sub: `${esc(c.sede)} · ${esc(c.direccion)}` })}
+      <div class="app-body">
+        <div class="steps"><span class="step on">1 Kilos</span><span class="step">2 Evidencia</span><span class="step">3 Firmas</span><span class="step">4 Confirmar</span></div>
+        ${ultima ? `<div class="warn-row info">Última visita: ${D.fmtFechaCorta(ultima.fecha)} · ${D.fmtKg(D.totalKg(ultima))} kg</div>` : ''}
+        ${c.estado === 'pendiente_validar' ? `<div class="warn-row">Cliente creado en campo, pendiente de validar. La visita se registra, pero la oficina debe completar NIT y tarifa.</div>` : ''}
+        <div class="m-card">
+          ${grupos.map((g) => `<div class="grp">${esc(g)}</div>` + D.categorias.filter((x) => x.grupo === g).map((cat) => `
+            <div class="kg-row">
+              <div class="name">${esc(cat.nombre)} <small>${esc(cat.codigo)} · ${esc(cat.ayuda)}</small>${!cat.en_acta ? '<small style="color:#b87d0a">Sin tratamiento definido: avisa a la oficina</small>' : ''}</div>
+              <input class="m-input num" inputmode="decimal" placeholder="0,00" data-kg="${cat.codigo}" value="${f.kilos[cat.codigo] ?? ''}">
+            </div>`).join('')).join('')}
+        </div>
+        <div class="kg-total"><span>Total de la visita</span><b>${D.fmtKg(total)} kg</b></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="m-field"><label>N.º de bolsas</label><input class="m-input num" inputmode="numeric" data-f="bolsas" value="${esc(f.bolsas)}"></div>
+          <div class="m-field"><label>N.º de guardianes</label><input class="m-input num" inputmode="numeric" data-f="guardianes" value="${esc(f.guardianes)}"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="m-field"><label>Placa del vehículo</label><select class="m-input" data-f="placa">${D.vehiculos.map((v) => `<option ${v.placa === f.placa ? 'selected' : ''}>${v.placa}</option>`).join('')}</select></div>
+          <div class="m-field"><label>Auxiliar</label><select class="m-input" data-f="auxiliar"><option value="">Ninguno</option>${D.operarios.filter((o) => o.id !== OP.id).map((o) => `<option value="${o.id}" ${o.id === f.auxiliar ? 'selected' : ''}>${esc(o.nombre.split(' ')[0])}</option>`).join('')}</select></div>
+        </div>
+        <div class="m-field"><label>Observaciones</label><textarea class="m-input" rows="2" data-f="obs" placeholder="Opcional">${esc(f.obs)}</textarea></div>
+        <div class="err" id="kg-err"></div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn secondary" style="flex:0 0 auto;padding:14px 10px;font-size:13px" data-sinresiduos="${c.id}">Sin residuos</button><button class="m-big-btn danger" style="flex:0 0 auto;padding:14px 10px;font-size:13px" data-fallida="${c.id}">Fallida</button><button class="m-big-btn" id="kg-next">Continuar</button></div>`;
+    },
+
+    sinresiduos() {
+      const s = state.sinres;
+      return `${statusbar()}
+      ${appbar('Visita sin residuos', { back: 'kilos', sub: esc(s.cliente.nombre_comercial) })}
+      <div class="app-body">
+        <div class="warn-row info">El cliente atendió pero hoy no entrega residuos. La visita queda con 0 kg, cuenta para la frecuencia y aparece en la planilla mensual.</div>
+        <div class="m-field"><label class="req">¿Por qué no hay residuos?</label>
+          <div class="m-list">${['No generaron residuos en este periodo', 'Ya los entregaron a otro gestor autorizado', 'Cerrado por vacaciones programadas', 'Otro'].map((m) => `<label class="m-item" style="padding:10px 14px"><input type="radio" name="sr-motivo" value="${m}" ${s.motivo === m ? 'checked' : ''}> <span>${m}</span></label>`).join('')}</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="m-field"><label class="req">Quien atiende</label><input class="m-input" id="sr-nombre" value="${esc(s.nombre)}" placeholder="Nombre"></div><div class="m-field"><label>Documento</label><input class="m-input" inputmode="numeric" placeholder="Opcional"></div></div>
+        <div class="m-field"><label class="req">Firma de quien atiende</label><div class="sig-pad" id="pad-sr">${s.firma ? D.firmaSVG(s.cliente.id + 'sr') : 'Firme aquí con el dedo'}<canvas class="pad"></canvas></div><button class="link-btn" data-firma-sr="1">Usar firma de ejemplo</button></div>
+        <div class="m-card"><h3>Foto (opcional)</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">${[0, 1, 2].map((i) => i < s.fotos ? `<div class="photo-ph" style="background:#dcefe4">📷 Foto ${i + 1}</div>` : `<button class="photo-ph" data-sr-foto="1" style="border:1.5px dashed #c8d0cb;cursor:pointer">＋ Foto</button>`).join('')}</div></div>
+        <div class="err" id="sr-err"></div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" id="sr-registrar">Registrar visita sin residuos</button></div>`;
+    },
+
+    evidencia() {
+      const f = state.flow;
+      return `${statusbar()}
+      ${appbar('Evidencia', { back: 'kilos', sub: esc(f.cliente.nombre_comercial) })}
+      <div class="app-body">
+        <div class="steps"><span class="step done">1 Kilos</span><span class="step on">2 Evidencia</span><span class="step">3 Firmas</span><span class="step">4 Confirmar</span></div>
+        <div class="m-card">
+          <h3>Ubicación y hora</h3>
+          <div class="m-kv" style="margin-top:8px">
+            <span class="k">GPS</span><span class="v">${f.gps[0].toFixed(5)}, ${f.gps[1].toFixed(5)}</span>
+            <span class="k">Precisión</span><span class="v">± 9 m</span>
+            <span class="k">Hora del celular</span><span class="v">${D.fmtFechaCorta(D.HOY)} ${f.hora}</span>
+            <span class="k">Hora del servidor</span><span class="v">${state.offline ? 'Se asigna al sincronizar' : D.fmtFechaCorta(D.HOY) + ' ' + f.hora}</span>
+          </div>
+          <small style="color:#6f7c75;display:block;margin-top:8px">Se toman solas al cerrar. Si el reloj del celular difiere del servidor por más de ${D.parametros.tolerancia_reloj_min} minutos, la oficina lo ve marcado.</small>
+        </div>
+        <div class="m-card">
+          <h3>Fotos (opcional, máximo ${D.parametros.max_fotos})</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+            ${[0, 1, 2].map((i) => i < f.fotos ? `<div class="photo-ph" style="background:#dcefe4">📷 Foto ${i + 1}<br><small>${f.hora} · GPS</small></div>` : `<button class="photo-ph" data-foto="1" style="border:1.5px dashed #c8d0cb;cursor:pointer">＋ Tomar foto</button>`).join('')}
+          </div>
+          <small style="color:#6f7c75;display:block;margin-top:8px">Las fotos se comprimen y suben aparte, cuando haya buena señal. La visita no espera por ellas.</small>
+        </div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" data-go="firmas">Continuar</button></div>`;
+    },
+
+    firmas() {
+      const f = state.flow;
+      return `${statusbar()}
+      ${appbar('Firmas', { back: 'evidencia', sub: esc(f.cliente.nombre_comercial) })}
+      <div class="app-body">
+        <div class="steps"><span class="step done">1 Kilos</span><span class="step done">2 Evidencia</span><span class="step on">3 Firmas</span><span class="step">4 Confirmar</span></div>
+        <div class="m-card" style="background:#f7f9f8">
+          <label class="check"><input type="checkbox" id="aviso" ${f.aviso ? 'checked' : ''}><span><b>Aviso de tratamiento de datos.</b> ${esc(D.parametros.aviso_datos)}</span></label>
+        </div>
+        <div class="m-card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3>Quien entrega por el cliente</h3><label class="check" style="font-size:12px"><input type="checkbox" id="sinfirma" ${f.sinFirma ? 'checked' : ''}> No hay quien firme</label></div>
+          ${f.sinFirma ? `
+            <div class="m-field" style="margin-top:10px"><label class="req">Motivo</label><select class="m-input" id="motivo-sinfirma"><option ${f.motivoSinFirma === 'Dejaron los residuos en el punto acordado sin personal' ? 'selected' : ''}>Dejaron los residuos en el punto acordado sin personal</option><option ${f.motivoSinFirma === 'La persona se negó a firmar' ? 'selected' : ''}>La persona se negó a firmar</option><option>Otro</option></select></div>
+            <div class="warn-row" style="margin-top:8px">La constancia saldrá con el motivo, el GPS, la hora y la firma del operario. Toma al menos una foto como evidencia.</div>` : `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <div class="m-field"><label class="req">Nombre</label><input class="m-input" data-f="entrega_nombre" value="${esc(f.entrega_nombre)}" placeholder="Nombre completo"></div>
+              <div class="m-field"><label class="req">Documento</label><input class="m-input" inputmode="numeric" data-f="entrega_documento" value="${esc(f.entrega_documento)}" placeholder="Cédula"></div>
+            </div>
+            <div class="m-field" style="margin-top:10px"><label class="req">Firma de quien entrega</label>
+              <div class="sig-pad" id="pad-cliente">${f.firmaCliente ? D.firmaSVG(f.cliente.id + 'cli') : 'Firme aquí con el dedo'}<canvas class="pad"></canvas><button class="clear" data-clear="firmaCliente">Borrar</button></div>
+              <button class="link-btn" data-firma="firmaCliente">Usar firma de ejemplo</button>
+            </div>`}
+        </div>
+        <div class="m-card">
+          <h3>Funcionario de Comserva</h3>
+          <div class="sub" style="color:#6f7c75;font-size:12.5px">${esc(OP.nombre)} · ${esc(OP.cargo)} · placa ${esc(f.placa)}</div>
+          <div class="m-field" style="margin-top:10px"><label class="req">Firma del operario</label>
+            <div class="sig-pad" id="pad-op">${f.firmaOperario ? D.firmaSVG(OP.id, '#123d2b') : 'Firme aquí con el dedo'}<canvas class="pad"></canvas><button class="clear" data-clear="firmaOperario">Borrar</button></div>
+            <button class="link-btn" data-firma="firmaOperario">Usar firma de ejemplo</button>
+          </div>
+        </div>
+        <div class="err" id="firma-err"></div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" id="firma-next">Revisar y cerrar</button></div>`;
+    },
+
+    resumen() {
+      const f = state.flow; const total = totalFlow(f);
+      const cats = D.categorias.filter((c) => Number(f.kilos[c.codigo]) > 0);
+      return `${statusbar()}
+      ${appbar('Confirmar visita', { back: 'firmas', sub: esc(f.cliente.nombre_comercial) })}
+      <div class="app-body">
+        <div class="steps"><span class="step done">1 Kilos</span><span class="step done">2 Evidencia</span><span class="step done">3 Firmas</span><span class="step on">4 Confirmar</span></div>
+        <div class="m-card">
+          <h3>Kilos por categoría</h3>
+          <div class="m-kv" style="margin-top:8px">${cats.map((c) => `<span class="k">${esc(c.nombre)}</span><span class="v">${D.fmtKg(f.kilos[c.codigo])} kg</span>`).join('')}</div>
+          <div class="kg-total" style="margin-top:10px"><span>Total</span><b>${D.fmtKg(total)} kg</b></div>
+        </div>
+        <div class="m-card">
+          <div class="m-kv">
+            <span class="k">Bolsas / guardianes</span><span class="v">${f.bolsas || 0} / ${f.guardianes || 0}</span>
+            <span class="k">Vehículo</span><span class="v">${esc(f.placa)}</span>
+            <span class="k">Funcionario</span><span class="v">${esc(OP.nombre.split(' ').slice(0, 2).join(' '))}${f.auxiliar ? ' + ' + esc(D.operario(f.auxiliar).nombre.split(' ')[0]) : ''}</span>
+            <span class="k">Entrega</span><span class="v">${f.sinFirma ? 'Sin firma: ' + esc(f.motivoSinFirma || 'motivo registrado') : esc(f.entrega_nombre) + ' · ' + esc(f.entrega_documento)}</span>
+            <span class="k">Fotos</span><span class="v">${f.fotos}</span>
+            <span class="k">Hora y GPS</span><span class="v">${f.hora} · ${f.gps[0].toFixed(4)}, ${f.gps[1].toFixed(4)}</span>
+          </div>
+        </div>
+        <div class="warn-row">Al cerrar, la visita recibe el consecutivo <b>&nbsp;${state.siguienteConstancia}&nbsp;</b> y ya no se puede editar. Si hay un error después, la oficina la anula y se emite otra.</div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" id="cerrar">Cerrar y generar constancia</button></div>`;
+    },
+
+    constancia() {
+      const e = state.ultima;
+      return `${statusbar()}
+      ${appbar('Constancia de visita', { right: `<button class="back" data-go="hoy" aria-label="Cerrar">✕</button>` })}
+      <div class="app-body">
+        <div class="hero-ok">
+          <div class="circle">✓</div>
+          <h2>${e.tipo === 'fallida' ? 'Visita fallida registrada' : e.tipo === 'sin_residuos' ? 'Visita sin residuos registrada' : 'Visita cerrada'}</h2>
+          <div class="no">N.º ${e.consecutivo}</div>
+          ${pillEstado(e.estado)}
+          <p style="font-size:12.5px;color:#6f7c75;margin-top:8px">${e.estado === 'cerrada' ? 'Sin señal: la constancia ya tiene su número definitivo y se enviará sola al servidor cuando vuelva la conexión.' : 'Recibida por el servidor a las ' + e.hora + '. El cliente ya la puede ver en su portal.'}</p>
+        </div>
+        <div class="m-card">
+          <div class="m-kv">
+            <span class="k">Cliente</span><span class="v">${esc(e.cliente.nombre_comercial)}</span>
+            ${e.tipo !== 'recoleccion' ? `<span class="k">Motivo</span><span class="v">${esc(e.motivo)}</span>` : `<span class="k">Total</span><span class="v">${D.fmtKg(e.kg)} kg</span>`}
+            ${e.tipo === 'sin_residuos' ? `<span class="k">Kilos</span><span class="v">0,00 kg (cuenta como visita)</span>` : ''}
+            <span class="k">Fecha y hora</span><span class="v">${D.fmtFechaCorta(D.HOY)} ${e.hora}</span>
+            <span class="k">PDF</span><span class="v mono" style="font-weight:400;font-size:11px">${D.hashFake(e.consecutivo).slice(0, 16)}…</span>
+          </div>
+        </div>
+        <button class="m-big-btn" data-toast="Se abre la hoja de compartir de Android con el PDF adjunto; el operario elige el chat de WhatsApp del cliente (${esc(e.cliente.whatsapp || 'sin número')})">Compartir por WhatsApp</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="m-big-btn secondary" style="font-size:14px;padding:12px" data-toast="${e.cliente.email ? 'Correo enviado a ' + esc(e.cliente.email) + ' desde el servidor' : 'El cliente no tiene correo registrado'}">Enviar por correo</button>
+          <a class="m-big-btn secondary" style="font-size:14px;padding:12px;text-decoration:none" href="../documentos/constancia.html#${e.tipo === 'fallida' ? 'v-ram-1007' : 'v-cof-1017'}" target="_blank">Ver PDF</a>
+        </div>
+        ${e.tipo !== 'fallida' ? `<button class="m-big-btn secondary" data-recibo="${e.cliente.id}">💵 Registrar pago en efectivo</button>` : ''}
+        <button class="link-btn" data-go="hoy" style="text-align:center;padding:8px">Volver a hoy</button>
+      </div>`;
+    },
+
+    recibo() {
+      const r = state.recibo;
+      const c = r.cliente;
+      const valor = Number(String(r.valor).replace(/\D/g, '')) || 0;
+      if (r.emitido) {
+        return `${statusbar()}
+        ${appbar('Recibo de caja', { right: `<button class="back" data-go="hoy" aria-label="Cerrar">✕</button>` })}
+        <div class="app-body">
+          <div class="hero-ok"><div class="circle">✓</div><h2>Recibo emitido</h2><div class="no">N.º ${r.consecutivo}</div>${pillEstado(state.offline ? 'cerrada' : 'transmitida')}
+          <p style="font-size:12.5px;color:#6f7c75;margin-top:8px">${state.offline ? 'Se registrará en la oficina al volver la señal.' : 'Lucrecia ya lo ve en el recaudo del día.'}</p></div>
+          <div class="m-card"><div class="m-kv"><span class="k">Recibí de</span><span class="v">${esc(r.pagador)}</span><span class="k">Tipo</span><span class="v">${esc(D.TIPO_RECIBO_LABEL[r.tipo] || '')}</span><span class="k">Valor</span><span class="v">${D.fmtCOP(valor)}</span><span class="k">Aplicado a</span><span class="v" style="font-weight:400;text-align:right">${(r.aplicaciones || []).map((a) => `${esc(D.factura(a.factura).numero)} ${D.fmtCOP(a.valor)}`).join('<br>')}</span><span class="k">Concepto</span><span class="v" style="font-weight:400;text-align:right">${esc(r.concepto)}</span></div></div>
+          <div class="warn-row info">Siguiente paso en la oficina: confirmar la entrega del efectivo y generar el movimiento contable RC para que Helisa lo cruce con la factura.</div>
+          <button class="m-big-btn" data-toast="Se abre la hoja de compartir con el PDF del recibo">Compartir por WhatsApp</button>
+          <a class="m-big-btn secondary" style="text-decoration:none" href="../documentos/recibo.html#r-35686" target="_blank">Ver PDF</a>
+          <button class="link-btn" data-go="hoy" style="text-align:center;padding:8px">Volver a hoy</button>
+        </div>`;
+      }
+      const fs = c ? facturasSaldo(c) : [];
+      const sumaAplic = Object.values(r.aplic).reduce((a, v) => a + (Number(v) || 0), 0);
+      if (c && !fs.length) {
+        return `${statusbar()}
+        ${appbar('Recibo de caja', { back: 'hoy', sub: 'Solo con factura validada' })}
+        <div class="app-body">
+          <div class="m-field"><label class="req">Recibí de (cliente)</label>
+            <select class="m-input" id="rc-cliente">${D.clientes.filter((x) => x.estado === 'activo').map((x) => `<option value="${x.id}" ${c.id === x.id ? 'selected' : ''}>${esc(x.nombre_comercial)}</option>`).join('')}</select>
+            <small style="color:#6f7c75">NIT ${D.nitCompleto(c)}</small></div>
+          <div class="hero-ok"><div class="circle" style="background:#fbe3e1;color:#8c1d17">⛔</div><h2>No se puede emitir recibo</h2>
+            <p style="font-size:13px;color:#46524c;margin-top:8px;text-align:left">${D.clienteTieneFactura(c.id) ? `<b>${esc(c.nombre_comercial)}</b> no tiene facturas con saldo: todo lo facturado ya está pagado o aplicado. Si el cliente quiere pagar por adelantado, la oficina decide cómo registrarlo cuando exista la factura.` : `<b>${esc(c.nombre_comercial)}</b> todavía no tiene factura registrada en Helisa. El recibo de caja solo existe después de la factura: cuando la oficina importe el archivo plano y registre el número FVE, aparecerá aquí al sincronizar.`}</p></div>
+          <div class="warn-row info">No se consume consecutivo. Puede dejar constancia en la visita (observaciones) y avisar a la oficina.</div>
+          <button class="m-big-btn secondary" data-go="hoy">Volver a hoy</button>
+        </div>`;
+      }
+      return `${statusbar()}
+      ${appbar('Recibo de caja', { back: 'hoy', sub: 'Solo con factura validada · efectivo' })}
+      <div class="app-body">
+        <div class="m-field"><label class="req">Recibí de (cliente)</label>
+          <select class="m-input" id="rc-cliente">${D.clientes.filter((x) => x.estado === 'activo').map((x) => `<option value="${x.id}" ${c && c.id === x.id ? 'selected' : ''}>${esc(x.nombre_comercial)}</option>`).join('')}</select>
+          ${c ? `<small style="color:#6f7c75">NIT ${D.nitCompleto(c)} · ${fs.length} factura${fs.length > 1 ? 's' : ''} con saldo · ${D.fmtCOP(fs.reduce((a, f) => a + f.saldo, 0))}</small>` : ''}
+        </div>
+        <div class="m-field"><label class="req">Tipo de pago</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${TIPOS_RC.map(([k, t, sub]) => `<button type="button" class="m-big-btn ${r.tipo === k ? '' : 'secondary'}" style="padding:10px 8px;font-size:13px;display:grid;gap:2px;text-align:left" data-rc-tipo="${k}"><span>${t}</span><span style="font-size:11px;font-weight:400;opacity:.8">${sub}</span></button>`).join('')}</div></div>
+        <div class="m-field"><label class="req">Aplicar a</label>
+          ${fs.map((f) => `<label class="m-item" style="display:flex;gap:10px;align-items:center;${r.aplic[f.id] !== undefined ? 'border-color:var(--verde-600)' : ''}"><input type="checkbox" data-rc-f="${f.id}" ${r.aplic[f.id] !== undefined ? 'checked' : ''} style="width:18px;height:18px"><div class="body" style="flex:1"><div class="title">${esc(f.numero)} · ${esc(D.fmtMes(f.periodo))}</div><div class="sub">Total ${D.fmtCOP(f.total)} · saldo ${D.fmtCOP(f.saldo)}${f.vencida ? ' · <b style="color:#b3261e">vencida</b>' : ` · vence ${D.fmtFechaCorta(f.vence)}`}</div></div>${r.tipo === 'abono' && r.aplic[f.id] !== undefined ? `<input class="m-input num" style="width:110px;font-size:15px" inputmode="numeric" data-rc-ap="${f.id}" value="${r.aplic[f.id] ? D.fmtNum(r.aplic[f.id]) : ''}" placeholder="$">` : (r.aplic[f.id] !== undefined ? `<b>${D.fmtCOP(r.aplic[f.id])}</b>` : '')}</label>`).join('')}
+          <small style="color:#6f7c75">El saldo de referencia es total menos recibos y pagos marcados; la cartera oficial es la de Helisa.</small></div>
+        <div class="m-field"><label class="req">Valor recibido</label><input class="m-input num" style="font-size:24px" inputmode="numeric" id="rc-valor" value="${valor ? D.fmtNum(valor) : ''}" placeholder="$ 0" ${r.tipo === 'pago_total' || r.tipo === 'pago_factura' ? 'readonly' : ''}>
+          <small style="color:#6f7c75">${valor ? D.numeroALetras(valor) : 'La suma en letras se escribe sola'}${sumaAplic && valor && sumaAplic !== valor ? ` · <b style="color:#b3261e">aplicado ${D.fmtCOP(sumaAplic)} ≠ recibido</b>` : ''}</small></div>
+        <div class="m-field"><label class="req">Por concepto de</label><textarea class="m-input" rows="2" id="rc-concepto">${esc(r.concepto)}</textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="m-field"><label class="req">Quien paga</label><input class="m-input" id="rc-pagador" value="${esc(r.pagador)}" placeholder="Nombre"></div>
+          <div class="m-field"><label>Documento</label><input class="m-input" inputmode="numeric" id="rc-doc" value="${esc(r.pagador_documento)}"></div>
+        </div>
+        <div class="m-field"><label class="req">Firma del operario (quien recibe el dinero)</label>
+          <div class="sig-pad" id="pad-rc">${r.firma ? D.firmaSVG(OP.id, '#123d2b') : 'Firme aquí con el dedo'}<canvas class="pad"></canvas></div>
+          <button class="link-btn" data-firma-rc="1">Usar firma de ejemplo</button></div>
+        <div class="warn-row info">Consecutivo del rango de recibos de ${esc(OP.nombre.split(' ')[0])}: <b>&nbsp;${state.siguienteRecibo}</b>. El dinero se entrega en la oficina; la oficina genera el movimiento contable para que Helisa cruce el pago con la factura.</div>
+        <div class="err" id="rc-err"></div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" id="rc-emitir">Emitir recibo</button></div>`;
+    },
+
+    fallida() {
+      const f = state.fallida;
+      return `${statusbar()}
+      ${appbar('Visita fallida', { back: 'hoy', sub: 'Deja constancia de que fuiste' })}
+      <div class="app-body">
+        <div class="m-field"><label class="req">Cliente</label><select class="m-input" id="vf-cliente">${D.clientes.filter((x) => x.estado === 'activo').map((x) => `<option value="${x.id}" ${f.cliente && f.cliente.id === x.id ? 'selected' : ''}>${esc(x.nombre_comercial)}</option>`).join('')}</select></div>
+        <div class="m-field"><label class="req">¿Qué pasó?</label>
+          <div class="m-list">${['Establecimiento cerrado', 'No tenían residuos para entregar', 'No permitieron el ingreso', 'Residuos mal empacados: no se recogen', 'Otro'].map((m) => `<label class="m-item" style="padding:10px 14px"><input type="radio" name="vf-motivo" value="${m}" ${f.motivo === m ? 'checked' : ''}> <span>${m}</span></label>`).join('')}</div></div>
+        <div class="m-field"><label>Detalle</label><textarea class="m-input" rows="2" id="vf-detalle" placeholder="Ejemplo: aviso en la puerta de vacaciones hasta el 13 de octubre">${esc(f.detalle)}</textarea></div>
+        <div class="m-card"><h3>Evidencia <small style="font-weight:400;color:#b3261e">(foto obligatoria)</small></h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">${[0, 1, 2].map((i) => i < f.fotos ? `<div class="photo-ph" style="background:#dcefe4">📷 Foto ${i + 1}</div>` : `<button class="photo-ph" data-vf-foto="1" style="border:1.5px dashed #c8d0cb;cursor:pointer">＋ Foto</button>`).join('')}</div>
+          <div class="m-kv" style="margin-top:10px"><span class="k">GPS</span><span class="v">1.61603, -75.60901 (± 7 m)</span><span class="k">Hora</span><span class="v">${D.fmtFechaCorta(D.HOY)} 10:34</span></div></div>
+        <div class="m-card"><h3>Testigo (opcional)</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><input class="m-input" id="vf-testigo" placeholder="Nombre" value="${esc(f.testigo)}"><input class="m-input" placeholder="Documento o cargo" value="${esc(f.testigo_doc)}"></div>
+          <div class="sig-pad" style="height:90px;margin-top:8px">${f.firmaTestigo ? D.firmaSVG('testigo') : 'Firma del testigo (si quiere)'}<canvas class="pad"></canvas></div>
+          <button class="link-btn" data-firma-vf="1">Usar firma de ejemplo</button></div>
+        <div class="err" id="vf-err"></div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn danger" id="vf-registrar">Registrar visita fallida</button></div>`;
+    },
+
+    visitas() {
+      const mias = D.visitas.filter((v) => v.operario === OP.id || v.auxiliar === OP.id).slice().sort((a, b) => (b.fecha + (b.hora || '')).localeCompare(a.fecha + (a.hora || '')));
+      const demo = state.emitidas.slice().reverse().map((e) => ({ id: e.id, demo: e, cliente: e.cliente.id, fecha: D.HOY, hora: e.hora, tipo: e.tipo, estado: e.estado, kilos: e.kilos || {}, consecutivo: e.consecutivo }));
+      let lista = demo.concat(mias);
+      if (state.filtroVisitas === 'pendientes') lista = lista.filter((v) => v.estado === 'cerrada' || v.estado === 'borrador');
+      if (state.filtroVisitas === 'rechazadas') lista = lista.filter((v) => v.estado === 'rechazada' || v.estado === 'anulada');
+      const grupos = {};
+      lista.forEach((v) => { (grupos[v.fecha] = grupos[v.fecha] || []).push(v); });
+      return `${statusbar()}
+      ${appbar('Mis visitas', { sub: `${lista.length} registros` })}
+      <div class="app-body">
+        <div class="seg">${[['todas', 'Todas'], ['pendientes', 'Pendientes'], ['rechazadas', 'Rechazadas']].map(([k, t]) => `<button class="${state.filtroVisitas === k ? 'on' : ''}" data-filtro="${k}">${t}</button>`).join('')}</div>
+        ${Object.keys(grupos).map((fecha) => `<div class="m-section">${esc(D.cap(D.fmtFecha(fecha, { dia: true })))}</div><div class="m-list">${grupos[fecha].map((v) => {
+          const c = D.cliente(v.cliente);
+          return `<a href="#" class="m-item" data-detalle="${v.id}">
+            <div class="avatar" style="${v.tipo === 'fallida' ? 'background:#fbe3e1;color:#b3261e' : ''}">${v.tipo === 'fallida' ? '!' : D.iniciales(c.nombre_comercial)}</div>
+            <div class="body"><div class="title">${esc(c.nombre_comercial)}</div><div class="sub">${v.hora || ''} · ${v.tipo === 'fallida' ? 'Visita fallida' : D.fmtKg(D.totalKg(v)) + ' kg'}${v.consecutivo ? ' · N.º ' + v.consecutivo : ''}</div></div>
+            <div class="right">${pillEstado(v.estado)}</div>
+          </a>`;
+        }).join('')}</div>`).join('')}
+      </div>
+      <button class="fab" data-go="cliente" aria-label="Nueva visita">＋</button>
+      ${tabbar('visitas')}`;
+    },
+
+    detalle() {
+      const v = state.detalle; const c = D.cliente(v.cliente);
+      const cats = D.categorias.filter((k) => (v.kilos || {})[k.codigo] > 0);
+      return `${statusbar()}
+      ${appbar(v.tipo === 'fallida' ? 'Visita fallida' : 'Visita N.º ' + (v.consecutivo ?? 'sin número'), { back: 'visitas', sub: esc(c.nombre_comercial) })}
+      <div class="app-body">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${pillEstado(v.estado)}<small style="color:#6f7c75">${D.fmtFechaCorta(v.fecha)} ${v.hora || ''}</small></div>
+        ${v.estado === 'rechazada' ? `<div class="warn-row danger">Rechazada por el servidor: ${esc(v.rechazo)}</div>` : ''}
+        ${v.estado === 'anulada' ? `<div class="warn-row danger">Anulada por ${esc(v.anulada_por)} el ${esc(v.anulada_en)}. ${esc(v.anulacion_motivo)}</div>` : ''}
+        ${v.estado === 'cerrada' ? `<div class="warn-row">En cola de envío desde ${esc(v.pendiente_desde || 'hoy')}. ${v.intentos ? v.intentos + ' intentos; último error: ' + esc(v.ultimo_error) : ''}</div>` : ''}
+        ${v.alerta ? `<div class="warn-row">${esc(v.alerta)}</div>` : ''}
+        ${v.tipo === 'fallida' ? `<div class="m-card"><h3>Motivo</h3><p style="margin-top:6px">${esc(v.motivo_fallida || v.demo?.motivo)}</p>${v.testigo ? `<small style="color:#6f7c75">Testigo: ${esc(v.testigo)}</small>` : ''}</div>` : `
+        <div class="m-card"><h3>Kilos</h3><div class="m-kv" style="margin-top:8px">${cats.map((k) => `<span class="k">${esc(k.nombre)}</span><span class="v">${D.fmtKg(v.kilos[k.codigo])} kg</span>`).join('')}</div><div class="kg-total" style="margin-top:10px"><span>Total</span><b>${D.fmtKg(D.totalKg(v))} kg</b></div></div>`}
+        <div class="m-card"><div class="m-kv">
+          <span class="k">Bolsas / guardianes</span><span class="v">${v.bolsas ?? 0} / ${v.guardianes ?? 0}</span>
+          <span class="k">Vehículo</span><span class="v">${esc(v.placa || '')}</span>
+          <span class="k">Entrega</span><span class="v">${esc(v.entrega_nombre || (v.demo && v.demo.entrega) || '—')}</span>
+          <span class="k">GPS</span><span class="v">${v.gps ? v.gps[0].toFixed(4) + ', ' + v.gps[1].toFixed(4) : '—'}</span>
+          <span class="k">Fotos</span><span class="v">${v.fotos ?? 0}</span>
+        </div></div>
+        ${v.firmas ? `<div class="m-card"><h3>Firmas</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px"><div class="sig-box">${D.firmaSVG(v.id + 'cli')}<small style="display:block;text-align:center;color:#6f7c75">${esc((v.entrega_nombre || '').split(' ').slice(0, 2).join(' '))}</small></div><div class="sig-box">${D.firmaSVG(v.operario, '#123d2b')}<small style="display:block;text-align:center;color:#6f7c75">${esc(D.operario(v.operario).nombre.split(' ')[0])}</small></div></div></div>` : ''}
+        ${['transmitida', 'en_cierre', 'cerrada'].includes(v.estado) ? `<button class="m-big-btn secondary" data-toast="Se abre la hoja de compartir con el PDF">Reenviar constancia</button><button class="m-big-btn secondary" style="color:#b3261e;border-color:#b3261e" data-toast="Solicitud enviada a la oficina. La visita sigue vigente hasta que Lucrecia la anule con motivo.">Solicitar anulación</button>` : ''}
+        ${v.estado === 'rechazada' ? `<button class="m-big-btn secondary" data-toast="Reenviada. Seguirá rechazada hasta que la oficina valide el cliente.">Reintentar envío</button>` : ''}
+      </div>`;
+    },
+
+    sync() {
+      const pend = pendientes(); const rech = rechazadas();
+      const rango = OP.rango_constancias; const usados = state.siguienteConstancia - rango.desde;
+      return `${statusbar()}
+      ${appbar('Sincronización', { sub: state.offline ? 'Sin señal' : 'Conectado · última: hoy 08:01' })}
+      <div class="app-body">
+        <button class="m-big-btn ${state.offline ? 'secondary' : ''}" id="sync-now">${state.offline ? 'Sin señal: se reintenta solo' : '⇅ Sincronizar ahora'}</button>
+        <div class="m-section">Cola de envío · ${pend.length}</div>
+        <div class="m-list">${pend.length ? pend.map((v) => `<a href="#" class="m-item" data-detalle="${v.id}"><div class="avatar" style="background:#fbf0d2;color:#8a5d05">⇅</div><div class="body"><div class="title">${esc((v.cliente && v.cliente.nombre_comercial) || D.cliente(v.cliente).nombre_comercial)} · N.º ${v.consecutivo}</div><div class="sub">${v.intentos ? v.intentos + ' intentos · ' + esc(v.ultimo_error) : 'Esperando conexión'}</div></div><span class="chev">›</span></a>`).join('') : '<div class="m-card" style="color:#6f7c75;font-size:13px">Nada pendiente. Todo está en el servidor.</div>'}</div>
+        <div class="m-section">Rechazadas por el servidor · ${rech.length}</div>
+        <div class="m-list">${rech.map((v) => `<a href="#" class="m-item" data-detalle="${v.id}"><div class="avatar" style="background:#fbe3e1;color:#b3261e">!</div><div class="body"><div class="title">${esc(D.cliente(v.cliente).nombre_comercial)} · N.º ${v.consecutivo}</div><div class="sub">${esc(v.rechazo)}</div></div><span class="chev">›</span></a>`).join('')}</div>
+        <div class="m-section">Catálogos en el celular</div>
+        <div class="m-card"><div class="m-kv">
+          <span class="k">Clientes</span><span class="v">${D.clientes.length} · hoy 06:48</span>
+          <span class="k">Categorías</span><span class="v">${D.categorias.length} · 1 oct</span>
+          <span class="k">Vehículos</span><span class="v">${D.vehiculos.length}</span>
+          <span class="k">Constancias (rango)</span><span class="v">${rango.desde}–${rango.hasta} · ${rango.hasta - state.siguienteConstancia + 1} libres</span>
+          <span class="k">Recibos (rango)</span><span class="v">${OP.rango_recibos.desde}–${OP.rango_recibos.hasta} · ${OP.rango_recibos.hasta - state.siguienteRecibo + 1} libres</span>
+          <span class="k">Fotos pendientes</span><span class="v">2 (solo con wifi)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px"><span>Subir fotos solo con wifi</span><span class="toggle on"></span></div>
+        <small style="color:#6f7c75;display:block;margin-top:8px">Cuando queden menos de 10 números libres y haya señal, la app pide otro rango. Si se agotan sin señal, usa un número provisional que el servidor reemplaza y lo anota en la auditoría.</small></div>
+        <div class="m-section">Historial</div>
+        <ul class="timeline" style="font-size:12.5px"><li><div>Catálogos actualizados <span class="when">hoy 06:48</span></div></li><li class="muted"><div>Constancia 1186 transmitida <span class="when">sáb 17 oct 10:14</span></div></li><li class="muted"><div>Visita 1158 rechazada: cliente pendiente de validar <span class="when">vie 16 oct 17:12</span></div></li></ul>
+      </div>
+      ${tabbar('sync')}`;
+    },
+
+    nuevo() {
+      const n = state.nuevo;
+      return `${statusbar()}
+      ${appbar('Cliente nuevo', { back: 'cliente', sub: 'Queda pendiente de validar por la oficina' })}
+      <div class="app-body">
+        <div class="warn-row info">Con estos datos puedes registrar la visita hoy. La oficina completa NIT, tarifa y frecuencia antes del cierre; mientras tanto la visita aparece como "rechazada: cliente por validar" y se reprocesa sola.</div>
+        <div class="m-field"><label class="req">Razón social o nombre</label><input class="m-input" id="nc-nombre" value="${esc(n.nombre)}"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="m-field"><label class="req">NIT o cédula</label><input class="m-input" inputmode="numeric" id="nc-nit" value="${esc(n.nit)}"></div><div class="m-field"><label>Dígito de verificación</label><input class="m-input" inputmode="numeric" placeholder="Si lo sabe"></div></div>
+        <div class="m-field"><label class="req">Dirección</label><input class="m-input" id="nc-dir" value="${esc(n.direccion)}"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="m-field"><label class="req">Ciudad</label><input class="m-input" value="Florencia"></div><div class="m-field"><label>Frecuencia</label><select class="m-input"><option>Mensual</option><option>Quincenal</option><option>Semanal</option></select></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="m-field"><label>Contacto</label><input class="m-input" value="${esc(n.contacto)}"></div><div class="m-field"><label>WhatsApp</label><input class="m-input" inputmode="tel" value="${esc(n.whatsapp)}"></div></div>
+        <div class="err" id="nc-err"></div>
+      </div>
+      <div class="app-foot"><button class="m-big-btn" id="nc-guardar">Guardar y registrar visita</button></div>`;
+    },
+
+    mas() {
+      return `${statusbar()}
+      ${appbar('Más')}
+      <div class="app-body">
+        <div class="m-card" style="display:flex;gap:12px;align-items:center"><div class="avatar" style="width:48px;height:48px;border-radius:14px;background:#dcefe4;color:#123d2b;display:grid;place-items:center;font-weight:700">${esc(D.iniciales(OP.nombre))}</div><div><b>${esc(OP.nombre)}</b><div class="sub" style="color:#6f7c75;font-size:12.5px">${esc(OP.cargo)}${OP.documento ? ' · C.C. ' + esc(OP.documento) : ''}</div></div></div>
+        <div class="m-list">
+          <a href="#" class="m-item" data-go="sync"><div class="body"><div class="title">Dispositivo autorizado</div><div class="sub">${esc(OP.dispositivo)} · app 1.0.0</div></div><span class="chev">›</span></a>
+          <a href="#" class="m-item" data-toast="Rangos asignados por la oficina"><div class="body"><div class="title">Mis rangos de consecutivos</div><div class="sub">Constancias ${OP.rango_constancias.desde}–${OP.rango_constancias.hasta} · Recibos ${OP.rango_recibos.desde}–${OP.rango_recibos.hasta}</div></div><span class="chev">›</span></a>
+          <a href="#" class="m-item" data-toast="Abre la política de tratamiento de datos"><div class="body"><div class="title">Política de tratamiento de datos</div><div class="sub">Ley 1581 de 2012</div></div><span class="chev">›</span></a>
+          <a href="#" class="m-item" data-toast="Se cambia la clave con la clave actual"><div class="body"><div class="title">Cambiar contraseña</div></div><span class="chev">›</span></a>
+          <a href="#" class="m-item" data-go="login" style="color:#b3261e"><div class="body"><div class="title">Cerrar sesión</div><div class="sub">${pendientes().length ? 'Hay registros sin enviar: se conservan cifrados en el celular' : 'No hay registros pendientes'}</div></div><span class="chev">›</span></a>
+        </div>
+        <small style="text-align:center;color:#6f7c75">Comserva S.A.S. · NIT 828.002.730-1 · Licencia 0038 de 2006</small>
+      </div>
+      ${tabbar('mas')}`;
+    },
+  };
+
+  // ---------- render y eventos ----------
+  function render() {
+    const root = $('#screen');
+    root.innerHTML = views[state.screen]();
+    root.querySelectorAll('.app-body').forEach((b) => { b.scrollTop = 0; });
+    renderGuide();
+    bind(root);
+  }
+  function renderGuide() {
+    $('#screen-list').innerHTML = SCREENS.map(([k, t], i) => `<a href="#" data-go="${k}" class="${state.screen === k ? 'on' : ''}"><span>${i + 1}. ${t}</span></a>`).join('');
+    $('#screen-count').textContent = SCREENS.length + ' pantallas';
+    const s = SCREENS.find((x) => x[0] === state.screen);
+    $('#screen-note').innerHTML = `<b>${s[1]}</b><p style="margin-top:6px">${s[2]}</p>`;
+    $('#screen-list').querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); go(a.dataset.go); }));
+  }
+  function go(screen) {
+    if (['kilos', 'evidencia', 'firmas', 'resumen'].includes(screen) && !state.flow) state.flow = nuevoFlow('c-saludvital');
+    if (screen === 'constancia' && !state.ultima) state.ultima = { consecutivo: 1186, estado: 'transmitida', cliente: D.cliente('c-cofema'), kg: 99.5, hora: '10:12', tipo: 'recoleccion' };
+    if (screen === 'recibo' && !state.recibo) state.recibo = nuevoRecibo(D.cliente('c-economia'));
+    if (screen === 'fallida' && !state.fallida) state.fallida = { cliente: D.cliente('c-ramirez'), motivo: '', detalle: '', fotos: 0, testigo: '', testigo_doc: '', firmaTestigo: false };
+    if (screen === 'sinresiduos' && !state.sinres) state.sinres = { cliente: D.cliente('c-tinta'), motivo: '', nombre: '', firma: false, fotos: 0 };
+    if (screen === 'nuevo' && !state.nuevo) state.nuevo = { nombre: '', nit: '', direccion: '', contacto: '', whatsapp: '' };
+    if (screen === 'detalle' && !state.detalle) state.detalle = D.visitas.find((v) => v.id === 'v-cof-1017');
+    state.screen = screen; render();
+  }
+
+  function bind(root) {
+    root.querySelectorAll('[data-go]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); go(el.dataset.go); }));
+    root.querySelectorAll('[data-toast]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); toast(el.dataset.toast); }));
+    root.querySelectorAll('[data-visita-cliente]').forEach((el) => el.addEventListener('click', (e) => {
+      e.preventDefault(); const id = el.dataset.visitaCliente;
+      if (state.flow && state.flow.cliente.id === id) { go('kilos'); return; }
+      state.flow = nuevoFlow(id);
+      if (id === 'c-saludvital' && !state.emitidas.find((x) => x.cliente.id === id)) { state.flow.kilos = { BIO: '16,4' }; state.flow.bolsas = '4'; }
+      go('kilos');
+    }));
+    root.querySelectorAll('[data-detalle]').forEach((el) => el.addEventListener('click', (e) => {
+      e.preventDefault(); const id = el.dataset.detalle;
+      const demo = state.emitidas.find((x) => x.id === id);
+      state.detalle = demo ? { id, demo, cliente: demo.cliente.id, fecha: D.HOY, hora: demo.hora, tipo: demo.tipo, estado: demo.estado, kilos: demo.kilos || {}, consecutivo: demo.consecutivo, bolsas: demo.bolsas, guardianes: demo.guardianes, placa: demo.placa, entrega_nombre: demo.entrega, gps: demo.gps, fotos: demo.fotos, firmas: demo.tipo !== 'fallida', operario: OP.id, motivo_fallida: demo.motivo } : D.visitas.find((v) => v.id === id);
+      go('detalle');
+    }));
+    root.querySelectorAll('[data-filtro]').forEach((el) => el.addEventListener('click', () => { state.filtroVisitas = el.dataset.filtro; render(); }));
+    root.querySelectorAll('[data-recibo]').forEach((el) => el.addEventListener('click', (e) => {
+      e.preventDefault(); const cid = el.dataset.recibo || 'c-economia'; const c = D.cliente(cid);
+      state.recibo = nuevoRecibo(c); go('recibo');
+    }));
+    root.querySelectorAll('[data-fallida]').forEach((el) => el.addEventListener('click', (e) => {
+      e.preventDefault(); const cid = el.dataset.fallida || 'c-ramirez';
+      state.fallida = { cliente: D.cliente(cid), motivo: '', detalle: '', fotos: 0, testigo: '', testigo_doc: '', firmaTestigo: false }; go('fallida');
+    }));
+    root.querySelectorAll('[data-sinresiduos]').forEach((el) => el.addEventListener('click', (e) => {
+      e.preventDefault(); const cid = el.dataset.sinresiduos || 'c-tinta';
+      state.sinres = { cliente: D.cliente(cid), motivo: '', nombre: '', firma: false, fotos: 0 }; go('sinresiduos');
+    }));
+    root.querySelectorAll('[name="sr-motivo"]').forEach((r) => r.addEventListener('change', () => { state.sinres.motivo = r.value; }));
+    const srNombre = $('#sr-nombre', root); if (srNombre) srNombre.addEventListener('input', () => { state.sinres.nombre = srNombre.value; });
+    root.querySelectorAll('[data-firma-sr]').forEach((b) => b.addEventListener('click', () => { state.sinres.firma = true; render(); }));
+    root.querySelectorAll('[data-sr-foto]').forEach((b) => b.addEventListener('click', () => { state.sinres.fotos = Math.min(3, state.sinres.fotos + 1); render(); }));
+    const srReg = $('#sr-registrar', root);
+    if (srReg) srReg.addEventListener('click', () => {
+      const s = state.sinres; const err = $('#sr-err', root);
+      if (!s.motivo) { err.textContent = 'Elige el motivo.'; return; }
+      if (!s.nombre.trim()) { err.textContent = 'Escribe quién atiende.'; return; }
+      if (!s.firma) { err.textContent = 'Falta la firma de quien atiende.'; return; }
+      const n = state.siguienteConstancia++;
+      const e = { id: 'demo-' + n, consecutivo: n, estado: state.offline ? 'cerrada' : 'transmitida', cliente: s.cliente, kg: 0, kilos: {}, hora: '09:4' + (1 + Math.floor(Math.random() * 8)), tipo: 'sin_residuos', motivo: s.motivo, entrega: s.nombre, fotos: s.fotos, gps: [1.6138, -75.6122], placa: state.jornada.placa };
+      state.emitidas.push(e); state.ultima = e; state.sinres = null; state.flow = null; go('constancia');
+    });
+    const jrIniciar = $('#jr-iniciar', root);
+    if (jrIniciar) jrIniciar.addEventListener('click', () => {
+      state.jornada = { placa: $('#jr-placa', root).value, auxiliar: $('#jr-aux', root).value, iniciada: true };
+      toast('Jornada iniciada: ' + state.jornada.placa); go('hoy');
+    });
+
+    const busq = $('#busq', root);
+    if (busq) { busq.addEventListener('input', () => { state.busq = busq.value; const pos = busq.selectionStart; render(); const b2 = $('#busq'); b2.focus(); b2.setSelectionRange(pos, pos); }); }
+
+    // kilos
+    root.querySelectorAll('[data-kg]').forEach((inp) => inp.addEventListener('input', () => {
+      state.flow.kilos[inp.dataset.kg] = inp.value.replace(',', '.');
+      const total = totalFlow(state.flow); $('.kg-total b', root).textContent = D.fmtKg(total) + ' kg';
+    }));
+    root.querySelectorAll('[data-f]').forEach((inp) => inp.addEventListener('input', () => { state.flow[inp.dataset.f] = inp.value; }));
+    const kgNext = $('#kg-next', root);
+    if (kgNext) kgNext.addEventListener('click', () => {
+      const f = state.flow; const total = totalFlow(f);
+      const err = $('#kg-err', root);
+      if (!(total > 0)) { err.textContent = 'Registra kilos en al menos una categoría. Si no hay residuos, registra una visita fallida.'; return; }
+      const bad = Object.entries(f.kilos).find(([, v]) => v !== '' && (isNaN(Number(v)) || Number(v) < 0));
+      if (bad) { err.textContent = 'Hay un valor de kilos no válido.'; return; }
+      go('evidencia');
+    });
+    root.querySelectorAll('[data-foto]').forEach((b) => b.addEventListener('click', () => { state.flow.fotos = Math.min(3, state.flow.fotos + 1); render(); }));
+    root.querySelectorAll('[data-vf-foto]').forEach((b) => b.addEventListener('click', () => { state.fallida.fotos = Math.min(3, state.fallida.fotos + 1); render(); }));
+
+    // firmas
+    const aviso = $('#aviso', root); if (aviso) aviso.addEventListener('change', () => { state.flow.aviso = aviso.checked; });
+    const sinfirma = $('#sinfirma', root); if (sinfirma) sinfirma.addEventListener('change', () => { state.flow.sinFirma = sinfirma.checked; render(); });
+    const motivoSF = $('#motivo-sinfirma', root); if (motivoSF) { state.flow.motivoSinFirma = motivoSF.value; motivoSF.addEventListener('change', () => { state.flow.motivoSinFirma = motivoSF.value; }); }
+    root.querySelectorAll('[data-firma]').forEach((b) => b.addEventListener('click', () => { state.flow[b.dataset.firma] = true; render(); }));
+    root.querySelectorAll('[data-clear]').forEach((b) => b.addEventListener('click', () => { state.flow[b.dataset.clear] = false; render(); }));
+    root.querySelectorAll('.sig-pad').forEach((pad) => enablePad(pad));
+    const firmaNext = $('#firma-next', root);
+    if (firmaNext) firmaNext.addEventListener('click', () => {
+      const f = state.flow; const err = $('#firma-err', root);
+      if (!f.aviso) { err.textContent = 'Marca el aviso de tratamiento de datos antes de firmar.'; return; }
+      if (!f.sinFirma && (!f.entrega_nombre.trim() || !f.entrega_documento.trim())) { err.textContent = 'Escribe nombre y documento de quien entrega.'; return; }
+      if (!f.sinFirma && !f.firmaCliente) { err.textContent = 'Falta la firma de quien entrega.'; return; }
+      if (!f.firmaOperario) { err.textContent = 'Falta tu firma.'; return; }
+      go('resumen');
+    });
+
+    const cerrar = $('#cerrar', root);
+    if (cerrar) cerrar.addEventListener('click', () => {
+      const f = state.flow; const n = state.siguienteConstancia++;
+      const kilos = {}; Object.entries(f.kilos).forEach(([k, v]) => { if (Number(v) > 0) kilos[k] = Number(v); });
+      const e = { id: 'demo-' + n, consecutivo: n, estado: state.offline ? 'cerrada' : 'transmitida', cliente: f.cliente, kg: totalFlow(f), kilos, hora: f.hora, tipo: 'recoleccion', bolsas: f.bolsas, guardianes: f.guardianes, placa: f.placa, entrega: f.sinFirma ? 'Sin firma: ' + f.motivoSinFirma : f.entrega_nombre + ' · ' + f.entrega_documento, gps: f.gps, fotos: f.fotos };
+      state.emitidas.push(e); state.ultima = e; state.flow = null; go('constancia');
+    });
+
+    // recibo
+    const rcCliente = $('#rc-cliente', root); if (rcCliente) rcCliente.addEventListener('change', () => { state.recibo = nuevoRecibo(D.cliente(rcCliente.value)); render(); });
+    root.querySelectorAll('[data-rc-tipo]').forEach((b) => b.addEventListener('click', () => { const r = state.recibo; r.tipo = b.dataset.rcTipo; aplicarTipo(r, facturasSaldo(r.cliente)); render(); }));
+    root.querySelectorAll('[data-rc-f]').forEach((cb) => cb.addEventListener('change', () => { const r = state.recibo; const fs = facturasSaldo(r.cliente); const f = fs.find((x) => x.id === cb.dataset.rcF); if (!r.tipo) r.tipo = 'abono'; if (cb.checked) { if (r.tipo !== 'abono' && r.tipo !== 'pago_total') r.aplic = {}; r.aplic[f.id] = r.tipo === 'abono' ? 0 : f.saldo; } else delete r.aplic[f.id]; if (r.tipo !== 'abono') r.valor = String(Object.values(r.aplic).reduce((a, v) => a + v, 0)); r.concepto = conceptoRC(r); render(); }));
+    root.querySelectorAll('[data-rc-ap]').forEach((inp) => inp.addEventListener('change', () => { const r = state.recibo; const n = Number(inp.value.replace(/\D/g, '')) || 0; r.aplic[inp.dataset.rcAp] = n; r.valor = String(Object.values(r.aplic).reduce((a, v) => a + v, 0)); render(); }));
+    const rcValor = $('#rc-valor', root); if (rcValor) rcValor.addEventListener('input', () => { state.recibo.valor = rcValor.value; const n = Number(rcValor.value.replace(/\D/g, '')) || 0; rcValor.nextElementSibling.textContent = n ? D.numeroALetras(n) : 'La suma en letras se escribe sola'; });
+    const rcConcepto = $('#rc-concepto', root); if (rcConcepto) rcConcepto.addEventListener('input', () => { state.recibo.concepto = rcConcepto.value; });
+    const rcPag = $('#rc-pagador', root); if (rcPag) rcPag.addEventListener('input', () => { state.recibo.pagador = rcPag.value; });
+    const rcDoc = $('#rc-doc', root); if (rcDoc) rcDoc.addEventListener('input', () => { state.recibo.pagador_documento = rcDoc.value; });
+    root.querySelectorAll('[data-firma-rc]').forEach((b) => b.addEventListener('click', () => { state.recibo.firma = true; render(); }));
+    const rcEmitir = $('#rc-emitir', root);
+    if (rcEmitir) rcEmitir.addEventListener('click', () => {
+      const r = state.recibo; const err = $('#rc-err', root); const valor = Number(String(r.valor).replace(/\D/g, '')) || 0;
+      const fs = facturasSaldo(r.cliente);
+      if (!fs.length) { err.textContent = 'Este cliente no tiene factura validada con saldo.'; return; }
+      if (!r.tipo) { err.textContent = 'Elige el tipo de pago.'; return; }
+      const aps = Object.entries(r.aplic).map(([factura, v]) => ({ factura, valor: Number(v) || 0 })).filter((a) => a.valor > 0);
+      if (!aps.length) { err.textContent = 'Elige la factura a la que aplica el pago.'; return; }
+      const exceso = aps.find((a) => a.valor > (fs.find((f) => f.id === a.factura) || { saldo: 0 }).saldo);
+      if (exceso) { err.textContent = `El valor aplicado a ${D.factura(exceso.factura).numero} supera su saldo de referencia.`; return; }
+      if (!valor) { err.textContent = 'Escribe el valor recibido.'; return; }
+      if (aps.reduce((a, x) => a + x.valor, 0) !== valor) { err.textContent = 'El valor recibido debe ser igual a lo aplicado a las facturas.'; return; }
+      r.aplicaciones = aps;
+      if (!r.concepto.trim()) { err.textContent = 'Escribe el concepto.'; return; }
+      if (!r.pagador.trim()) { err.textContent = 'Escribe quién paga.'; return; }
+      if (!r.firma) { err.textContent = 'Falta tu firma.'; return; }
+      r.emitido = true; r.consecutivo = state.siguienteRecibo++; r.valor = valor; state.recibosEmitidos.push(r); render();
+    });
+
+    // fallida
+    const vfCliente = $('#vf-cliente', root); if (vfCliente) vfCliente.addEventListener('change', () => { state.fallida.cliente = D.cliente(vfCliente.value); });
+    root.querySelectorAll('[name="vf-motivo"]').forEach((r) => r.addEventListener('change', () => { state.fallida.motivo = r.value; }));
+    const vfDet = $('#vf-detalle', root); if (vfDet) vfDet.addEventListener('input', () => { state.fallida.detalle = vfDet.value; });
+    const vfTes = $('#vf-testigo', root); if (vfTes) vfTes.addEventListener('input', () => { state.fallida.testigo = vfTes.value; });
+    root.querySelectorAll('[data-firma-vf]').forEach((b) => b.addEventListener('click', () => { state.fallida.firmaTestigo = true; render(); }));
+    const vfReg = $('#vf-registrar', root);
+    if (vfReg) vfReg.addEventListener('click', () => {
+      const f = state.fallida; const err = $('#vf-err', root);
+      if (!f.motivo) { err.textContent = 'Elige qué pasó.'; return; }
+      if (!f.fotos) { err.textContent = 'La foto es obligatoria en una visita fallida.'; return; }
+      const n = state.siguienteConstancia++;
+      const e = { id: 'demo-' + n, consecutivo: n, estado: state.offline ? 'cerrada' : 'transmitida', cliente: f.cliente, kg: 0, hora: '10:34', tipo: 'fallida', motivo: f.motivo + (f.detalle ? '. ' + f.detalle : ''), fotos: f.fotos, gps: [1.61603, -75.60901] };
+      state.emitidas.push(e); state.ultima = e; state.fallida = null; go('constancia');
+    });
+
+    // cliente nuevo
+    const ncGuardar = $('#nc-guardar', root);
+    if (ncGuardar) ncGuardar.addEventListener('click', () => {
+      const nombre = $('#nc-nombre', root).value.trim(), nit = $('#nc-nit', root).value.trim(), dir = $('#nc-dir', root).value.trim();
+      const err = $('#nc-err', root);
+      if (!nombre || !nit || !dir) { err.textContent = 'Nombre, NIT o cédula y dirección son obligatorios.'; return; }
+      const c = { id: 'c-demo-' + Date.now(), nit, dv: '', razon_social: nombre, nombre_comercial: nombre, sede: 'Local', direccion: dir, ciudad: 'Florencia', departamento: 'Caquetá', contacto: '', telefono: '', whatsapp: '', email: '', frecuencia: 'mensual', estado: 'pendiente_validar', cartera: 'sin_info', tarifas: [] };
+      D.clientes.push(c); state.nuevo = null; state.flow = nuevoFlow(c.id); go('kilos');
+    });
+
+    const syncNow = $('#sync-now', root);
+    if (syncNow) syncNow.addEventListener('click', () => {
+      if (state.offline) { toast('Sin señal. La cola se reintenta sola cada minuto.'); return; }
+      pendientes().forEach((v) => { v.estado = 'transmitida'; });
+      toast('Sincronizado: cola enviada y catálogos actualizados'); render();
+    });
+  }
+
+  // firma a mano alzada (canvas) dentro de .sig-pad
+  function enablePad(pad) {
+    const cv = pad.querySelector('canvas'); if (!cv) return;
+    const ctx = cv.getContext('2d'); let drawing = false; let drew = false;
+    const resize = () => { const r = pad.getBoundingClientRect(); cv.width = r.width * devicePixelRatio; cv.height = r.height * devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio); ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#1b2a66'; };
+    resize();
+    const pos = (ev) => { const r = cv.getBoundingClientRect(); const p = ev.touches ? ev.touches[0] : ev; return [p.clientX - r.left, p.clientY - r.top]; };
+    const start = (ev) => { drawing = true; const [x, y] = pos(ev); ctx.beginPath(); ctx.moveTo(x, y); ev.preventDefault(); };
+    const move = (ev) => { if (!drawing) return; const [x, y] = pos(ev); ctx.lineTo(x, y); ctx.stroke(); drew = true; ev.preventDefault(); };
+    const end = () => {
+      if (!drawing) return; drawing = false;
+      if (!drew) return;
+      if (pad.id === 'pad-cliente') state.flow.firmaCliente = true;
+      if (pad.id === 'pad-op') state.flow.firmaOperario = true;
+      if (pad.id === 'pad-rc') state.recibo.firma = true;
+      const ph = pad.childNodes[0]; if (ph && ph.nodeType === 3) ph.textContent = '';
+    };
+    cv.addEventListener('mousedown', start); cv.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+    cv.addEventListener('touchstart', start, { passive: false }); cv.addEventListener('touchmove', move, { passive: false }); cv.addEventListener('touchend', end);
+  }
+
+  $('#sim-offline').addEventListener('change', (e) => { state.offline = e.target.checked; render(); });
+  $('#reset').addEventListener('click', () => { location.reload(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

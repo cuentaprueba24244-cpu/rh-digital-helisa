@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nota crédito electrónica · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  .sheet.nc { padding: 12mm 13mm 28mm; font-size: 9.5pt; overflow: hidden; }
+  .nc .wm { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 0; }
+  .nc .wm span { font-size: 50pt; font-weight: 800; letter-spacing: .08em; color: rgba(179, 38, 30, .07); transform: rotate(-28deg); white-space: nowrap; font-family: var(--font-doc); }
+  .nc > *:not(.wm):not(.nc-foot) { position: relative; z-index: 1; }
+  .nc-top { display: grid; grid-template-columns: 1fr 70mm; gap: 8mm; align-items: start; }
+  .nc-emisor { display: grid; grid-template-columns: 20mm 1fr; gap: 4mm; align-items: start; }
+  .nc-logo { width: 20mm; height: 20mm; border-radius: 50%; background: #1f5e43; color: #fff; display: grid; place-items: center; font-family: var(--font-doc-display); font-weight: 700; font-size: 8.5pt; text-align: center; line-height: 1.05; }
+  .nc-emisor h1 { font-size: 12pt; margin: 0 0 1mm; }
+  .nc-emisor p { font-size: 8.5pt; color: #333; line-height: 1.35; }
+  .nc-box { border: 1.5px solid #8a3b12; border-radius: 3mm; overflow: hidden; }
+  .nc-box .t { background: #8a3b12; color: #fff; text-align: center; font-weight: 700; font-size: 9pt; letter-spacing: .06em; padding: 1.6mm 2mm; }
+  .nc-box .n { text-align: center; font-family: var(--font-mono); font-size: 19pt; color: #b3261e; padding: 1.5mm 0 1mm; }
+  .nc-box dl { display: grid; grid-template-columns: auto 1fr; gap: .6mm 3mm; margin: 0; padding: 1.5mm 3mm 2.5mm; font-size: 8pt; }
+  .nc-box dt { color: #555; }
+  .nc-box dd { margin: 0; text-align: right; font-weight: 600; }
+  .nc-test { margin: 4mm 0 3mm; border: 1.5px dashed #b87d0a; background: #fbf0d2; color: #6b4a06; border-radius: 2mm; padding: 1.8mm 3mm; font-size: 8.3pt; font-weight: 600; text-align: center; }
+  .nc-ref { border: 1.5px solid #1f5e43; border-radius: 2mm; padding: 2.5mm 3.5mm; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2mm 5mm; font-size: 8.5pt; background: #f3f8f5; }
+  .nc-ref .hd { grid-column: 1 / -1; font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: #1f5e43; font-weight: 700; }
+  .nc-ref b { display: block; font-size: 7pt; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .nc-ref .cufe { grid-column: 1 / -1; font-family: var(--font-mono); font-size: 7.6pt; word-break: break-all; }
+  .nc-parte { border: 1px solid #bbb; border-radius: 2mm; padding: 2.5mm 3.5mm; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2mm 5mm; font-size: 8.5pt; margin-top: 3mm; }
+  .nc-parte .hd { grid-column: 1 / -1; font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: #1f5e43; font-weight: 700; }
+  .nc-parte .big { grid-column: span 2; font-weight: 700; font-size: 10pt; }
+  .nc-parte b { display: block; font-size: 7pt; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .nc-motivo { margin-top: 3mm; border-left: 3px solid #8a3b12; padding: 1.5mm 3mm; background: #faf3ef; font-size: 9pt; }
+  .nc-motivo b { color: #8a3b12; }
+  .nc-lines { margin-top: 3mm; }
+  .nc-lines table th { background: #f3e9e3; }
+  .nc-lines td.num { white-space: nowrap; }
+  .nc-bottom { display: grid; grid-template-columns: 1fr 66mm; gap: 6mm; margin-top: 3.5mm; align-items: start; }
+  .nc-aprob { border: 1px solid #bbb; border-radius: 2mm; padding: 2.5mm 3.5mm; font-size: 8.5pt; display: grid; gap: 1.5mm; }
+  .nc-aprob .hd { font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: #1f5e43; font-weight: 700; }
+  .nc-tot { border: 1.5px solid #8a3b12; border-radius: 2mm; overflow: hidden; }
+  .nc-tot dl { display: grid; grid-template-columns: 1fr auto; margin: 0; }
+  .nc-tot dt, .nc-tot dd { padding: 1.3mm 3mm; border-bottom: 1px solid #ddd; font-size: 8.8pt; margin: 0; }
+  .nc-tot dd { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .nc-tot .pay { background: #8a3b12; color: #fff; font-weight: 700; font-size: 10pt; border: 0; }
+  .nc-cude { display: grid; grid-template-columns: 28mm 1fr; gap: 5mm; align-items: center; margin-top: 4mm; border-top: 1px dashed #999; padding-top: 3.5mm; }
+  .nc-cude .qr { width: 28mm; height: 28mm; }
+  .nc-cude .k { font-size: 7.5pt; letter-spacing: .06em; text-transform: uppercase; color: #555; font-weight: 700; }
+  .nc-cude .v { font-family: var(--font-mono); font-size: 7.6pt; word-break: break-all; line-height: 1.45; margin-bottom: 1.6mm; }
+  .nc-cude .small { font-size: 7.5pt; color: #444; line-height: 1.4; }
+  .nc-foot { position: absolute; left: 13mm; right: 13mm; bottom: 9mm; border-top: 1px solid #999; padding-top: 2mm; font-size: 7.4pt; color: #333; display: flex; justify-content: space-between; gap: 6mm; z-index: 1; }
+  .nc-state { max-width: 210mm; width: 100%; }
+  .nc-state .card-body { display: grid; gap: 8px; font-size: 13px; }
+  .nc-state .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  @media print { @page { size: A4 portrait; margin: 0; } .sheet.nc { zoom: 1 !important; width: 210mm !important; min-height: 0 !important; height: 295mm !important; padding: 12mm 13mm 28mm !important; } .nc-state { display: none !important; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Nota</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage">
+  <div class="sheet nc" id="sheet" aria-live="polite"></div>
+  <section class="card nc-state no-print" id="estado"></section>
+</div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA, F = D.fe, E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtNum, fmtFechaCorta } = D;
+  const fh = (s) => (s ? `${fmtFechaCorta(s)} ${s.slice(11, 16)}` : '—');
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+  const lista = F.notas.slice().sort((a, b) => a.numero.localeCompare(b.numero));
+  const sel = document.getElementById('sel');
+  sel.innerHTML = lista.map((n) => `<option value="${n.id}">${esc(n.numero)} · ${esc(D.factura(n.factura).numero)} · ${esc(D.cliente(n.cliente).nombre_comercial)} · ${fmtCOP(n.total)} · ${esc(F.ESTADO[n.estado])}</option>`).join('');
+  const actual = () => lista.find((n) => n.id === decodeURIComponent(location.hash.slice(1))) || lista[0];
+
+  function render() {
+    const n = actual(); sel.value = n.id;
+    const f = D.factura(n.factura); const c = D.cliente(n.cliente); const fi = c.fiscal || {};
+    const validada = n.estado === 'validada';
+    const ls = n.lineas.length ? n.lineas : [{ descripcion: n.concepto_txt.toUpperCase(), unidad: '94', cantidad: 1, unitario: n.subtotal, base: n.subtotal, iva_pct: 19, iva: n.iva }];
+    document.title = `${n.tipo === 'NC' ? 'Nota crédito' : 'Nota débito'} ${n.numero} · ${c.nombre_comercial}`;
+    document.getElementById('state').textContent = `${F.ESTADO[n.estado]} · ${fmtCOP(n.total)} · afecta la ${f.numero}`;
+    document.getElementById('sheet').innerHTML = `
+      <div class="wm"><span>${validada ? 'DATOS DE PRUEBA' : 'BORRADOR · POR APROBAR'}</span></div>
+      <div class="nc-top">
+        <div class="nc-emisor"><div class="nc-logo">Com<br>Serva</div><div><h1>${esc(E.razon_social)}</h1><p><b>NIT ${esc(E.nit)}</b> · ${esc(E.responsable_iva)} · actividad económica ${esc(F.emisor.ciiu)}<br>${esc(E.direccion)} · ${esc(E.ciudad)}<br>Tel. ${esc(E.telefonos)} · ${esc(E.email)}</p></div></div>
+        <div class="nc-box">
+          <div class="t">${n.tipo === 'NC' ? 'NOTA CRÉDITO ELECTRÓNICA' : 'NOTA DÉBITO ELECTRÓNICA'}</div>
+          <div class="n">${esc(n.numero)}</div>
+          <dl><dt>Numeración</dt><dd>Interna</dd><dt>Solicitud</dt><dd>${fh(n.solicitada_en)}</dd><dt>Aprobación (Gerencia)</dt><dd>${n.aprobada_en ? fh(n.aprobada_en) : 'Pendiente'}</dd><dt>Validación DIAN</dt><dd>${n.validada_en ? fh(n.validada_en) : 'Pendiente'}</dd></dl>
+        </div>
+      </div>
+      <div class="nc-test">DOCUMENTO DE PRUEBA · ambiente de pruebas · CUDE ficticio · sin validez fiscal${validada ? '' : ' · todavía no se envía a la DIAN'}</div>
+      <div class="nc-ref">
+        <div class="hd">Factura electrónica que se corrige</div>
+        <div><b>Prefijo y número</b>${esc(f.numero)}</div>
+        <div><b>Fecha</b>${fmtFechaCorta(f.fecha)}</div>
+        <div><b>Total de la factura</b>${fmtCOP(f.total)}</div>
+        <div><b>Concepto de corrección</b>${esc(n.concepto)} · ${esc(n.concepto_txt)}</div>
+        <div class="cufe"><b>CUFE de la factura (de prueba)</b>${esc(f.cufe)}</div>
+      </div>
+      <div class="nc-parte">
+        <div class="hd">Adquirente</div>
+        <div class="big">${esc(c.razon_social)}</div>
+        <div><b>${esc(fi.tipo_documento || 'NIT')}</b>${esc(D.nitCompleto(c))}</div>
+        <div><b>Dirección</b>${esc(fi.direccion || c.direccion)}</div>
+        <div><b>Municipio</b>${esc(c.ciudad)} · ${esc(fi.municipio_dane || '')}</div>
+        <div><b>Correo de recepción</b>${esc(fi.correo_fe || 'Entrega impresa')}</div>
+      </div>
+      <div class="nc-motivo"><b>Motivo:</b> ${esc(n.motivo)}</div>
+      <div class="nc-lines"><table>
+        <thead><tr><th>#</th><th>Descripción</th><th>Unidad</th><th class="num">Cantidad</th><th class="num">Valor unitario</th><th class="num">IVA %</th><th class="num">Valor IVA</th><th class="num">Valor</th></tr></thead>
+        <tbody>${ls.map((l, i) => `<tr><td>${i + 1}</td><td>${esc(l.descripcion)}</td><td>${esc(l.unidad || '94')}</td><td class="num">${l.unidad === 'KGM' ? fmtKg(l.cantidad) : fmtNum(l.cantidad)}</td><td class="num">${fmtCOP(l.unitario)}</td><td class="num">${l.iva_pct}</td><td class="num">${fmtCOP(l.iva)}</td><td class="num">${fmtCOP(l.base)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <div class="nc-bottom">
+        <div class="nc-aprob">
+          <div class="hd">Control</div>
+          <div>Solicitó: <b>${esc(n.solicitada_por)}</b> (Facturación) · ${fh(n.solicitada_en)}</div>
+          <div>Aprobó: <b>${esc(n.aprobada_por || 'pendiente')}</b>${n.aprobada_por ? ' (Gerencia) · ' + fh(n.aprobada_en) : ' · la aprueba Gerencia antes de enviarla'}</div>
+          <div>Efecto: ${n.tipo === 'NC' ? (n.concepto === '2' ? `anula la ${esc(f.numero)}; su número no se reutiliza y el cierre se puede reabrir` : `rebaja ${fmtCOP(n.total)} del saldo de la ${esc(f.numero)}`) : `suma ${fmtCOP(n.total)} al saldo de la ${esc(f.numero)}`}. En Helisa se contabiliza al revés de la factura (crédito a 1305).</div>
+        </div>
+        <div class="nc-tot"><dl><dt>Valor</dt><dd>${fmtCOP(n.subtotal)}</dd><dt>IVA 19 %</dt><dd>${fmtCOP(n.iva)}</dd><dt class="pay">Total de la nota</dt><dd class="pay">${fmtCOP(n.total)}</dd></dl></div>
+      </div>
+      <div class="nc-cude">
+        ${n.cude ? D.qrSVG(n.cude, 106) : '<div style="width:28mm;height:28mm;border:1.5px dashed #999;border-radius:2mm;display:grid;place-items:center;font-size:7.5pt;color:#777;text-align:center;padding:2mm">QR cuando la DIAN valide la nota</div>'}
+        <div><div class="k">CUDE · código único de documento electrónico (de prueba)</div><div class="v">${n.cude ? esc(n.cude) : 'Se asigna cuando la DIAN valide la nota.'}</div>
+        <div class="small">Las notas se generan, firman y validan como la factura y se entregan al cliente por el mismo medio. No admiten notas después de la aceptación expresa (033) o tácita (034) de la factura. QR simulado.</div></div>
+      </div>
+      <div class="nc-foot"><span>Generado por: RH digital Comserva · proveedor tecnológico: por elegir (simulado)</span><span>Página 1 de 1</span></div>`;
+    document.getElementById('estado').innerHTML = `<div class="card-head"><h3>${esc(n.numero)} en el sistema</h3><span class="badge ${F.CLASE[n.estado]}">${esc(F.ESTADO[n.estado])}</span></div>
+      <div class="card-body"><div class="row">${validada ? `Validada por la DIAN el ${fh(n.validada_en)} · ${n.asiento ? 'contabilizada en Helisa' : 'falta contabilizarla en Helisa'}.` : 'Espera la aprobación de Gerencia en Facturación electrónica → Notas crédito y débito.'}</div>
+      <div class="row"><a class="btn sm" href="../panel/facturacion.html#notas|${n.id}">Ver en Facturación electrónica</a><a class="btn sm" href="factura-electronica.html#${f.id}">Factura ${esc(f.numero)}</a><a class="btn sm ghost" href="../panel/trazabilidad.html#${c.id}|${f.periodo}|fe">Trazabilidad</a></div></div>`;
+    fit();
+  }
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => { const z = Math.min(1, avail / 793.7); s.style.zoom = z < 1 ? z.toFixed(3) : ''; s.style.maxWidth = z < 1 ? 'none' : ''; });
+  }
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>

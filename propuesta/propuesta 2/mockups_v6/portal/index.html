@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal del cliente · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* estilos propios del portal (complemento C1); los componentes vienen de ../assets/style.css */
+  .p-top { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .p-top .in { max-width: 1040px; margin: 0 auto; padding: 10px var(--gutter); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .p-top .brand { padding: 0; }
+  .p-top .who { margin-left: auto; display: flex; align-items: center; gap: 14px; font-size: 13px; flex-wrap: wrap; }
+  .p-top .who .me { text-align: right; line-height: 1.25; }
+  .p-top .who .me b { display: block; }
+  .p-top .who .me small { color: var(--fg-3); }
+  .p-wrap { max-width: 1040px; margin: 0 auto; padding: 18px var(--gutter) 60px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .p-wrap > * { min-width: 0; }
+  @media (max-width: 640px) { .p-wrap .grid.cols-2, .p-wrap .grid.cols-3 { grid-template-columns: minmax(0, 1fr); } }
+  .kv dd { overflow-wrap: anywhere; }
+  .login-stage { display: grid; place-items: center; padding: 10px var(--gutter) 60px; }
+  .login-card { width: min(460px, 100%); padding: 26px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .login-brand { display: flex; align-items: center; gap: 12px; }
+  .login-brand .logo { width: 46px; height: 46px; border-radius: 13px; background: var(--verde-600); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 17px; flex: none; }
+  .login-brand b { display: block; font-size: 15px; }
+  .login-brand small { display: block; color: var(--fg-3); }
+  .login-card h1 { font-size: 24px; }
+  .demo-box { border: 1px dashed var(--border-2); border-radius: var(--radius-sm); padding: 10px 12px; background: var(--surface-2); }
+  .link { background: none; border: 0; color: var(--accent); font-weight: 600; cursor: pointer; padding: 0; font-size: 13px; }
+  .link:hover { text-decoration: underline; }
+  .login-links { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+  .client-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+  .client-head h1 { font-size: 24px; margin-top: 2px; }
+  .client-head .meta { color: var(--fg-2); margin-top: 8px; display: grid; gap: 3px; font-size: 13px; }
+  .client-head .meta b { color: var(--fg); font-weight: 600; }
+  .cartera { display: grid; gap: 6px; justify-items: end; text-align: right; }
+  .cartera small { color: var(--fg-3); }
+  .locked { border: 1px solid var(--danger); border-radius: var(--radius-sm); padding: 12px 14px; background: var(--danger-soft); display: grid; gap: 8px; margin-top: 10px; }
+  .locked b { color: var(--danger); }
+  .locked p { color: var(--fg); }
+  .card-body p + p { margin-top: 8px; }
+  .card-body .btn-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .doc-no { font-family: var(--font-mono); color: var(--danger); font-weight: 600; }
+  table.tbl tr.grp td { background: var(--surface-2); font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-2); padding-top: 7px; padding-bottom: 7px; }
+  table.tbl tr.grp:hover td { background: var(--surface-2); }
+  .tbl-wide { min-width: 640px; }
+  .empty { padding: 14px; border: 1px dashed var(--border-2); border-radius: var(--radius-sm); color: var(--fg-2); font-size: 13px; background: var(--surface-2); }
+  .p-foot { border-top: 1px solid var(--border); padding-top: 14px; display: grid; gap: 6px; font-size: 12.5px; color: var(--fg-2); }
+  .kv.wide { grid-template-columns: 160px 1fr; }
+  @media (max-width: 640px) { .kv.wide { grid-template-columns: 1fr; gap: 2px 0; } .kv.wide dt { margin-top: 8px; } .cartera { justify-items: start; text-align: left; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Portal (C1)');
+
+  // Clientes disponibles en la demo (en producción cada cliente entra con su propio usuario)
+  const DEMO = [
+    { id: 'c-cofema', label: 'Cofema S.A. (al día)' },
+    { id: 'c-saludvital', label: 'IPS Salud Vital (en mora)' },
+  ];
+  const CERRADO = D.periodos.filter((p) => p.estado === 'cerrado').sort((a, b) => b.id.localeCompare(a.id))[0];
+  const ABIERTO = D.periodos.find((p) => p.estado === 'abierto');
+  const TEL = D.empresa.telefonos.split('·')[0].trim();
+  const mesDe = (pid) => D.MESES[Number(pid.slice(5, 7)) - 1];
+  const CARTERA_BADGE = { al_dia: 'ok', en_mora: 'danger', sin_info: 'plain' };
+
+  const state = { cliente: null };
+  const root = document.getElementById('root');
+
+  function toast(msg) {
+    const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+
+  // Visitas que el cliente puede ver: las que ya recibió el servidor (no borradores, ni pendientes de envío, ni anuladas, ni rechazadas)
+  function visitasVisibles(c, periodoId) {
+    return D.visitas
+      .filter((v) => v.cliente === c.id && v.periodo === periodoId && ['transmitida', 'en_cierre'].includes(v.estado))
+      .sort((a, b) => (b.fecha + b.hora).localeCompare(a.fecha + a.hora));
+  }
+  function actaDe(c, periodoId) { return D.actas.find((a) => a.cliente === c.id && a.periodo === periodoId) || null; }
+
+  // ---------- fragmentos comunes ----------
+  function calloutFase2() {
+    return `<div class="callout info no-print"><b>Complemento C1 · Acta y portal.</b> El portal del cliente no hace parte de la fase 1 y se puede contratar después en cualquiera de las dos propuestas; se muestra para que Comserva vea hacia dónde va el sistema. Cada cliente entra con su propio usuario y <b>solo ve la información de su empresa</b>: constancias, planillas, recibos y el acta del mes, que se entrega únicamente cuando la cartera está al día.</div>`;
+  }
+  function topbar(c) {
+    return `<header class="p-top"><div class="in">
+      <div class="brand"><div class="logo">CS</div><div><b>Comserva S.A.S.</b><small>Portal del cliente · RH digital</small></div></div>
+      <div class="who">
+        ${c ? `<div class="me"><b>${esc(c.nombre_comercial)}</b><small>${esc(c.email || 'Sin correo registrado')}</small></div><button class="btn sm" id="salir" type="button">Salir</button>` : `<a href="verificar.html">Verificar un documento</a>`}
+      </div>
+    </div></header>`;
+  }
+
+  // ---------- vista 1: inicio de sesión ----------
+  function renderLogin() {
+    const c0 = D.cliente(DEMO[0].id);
+    return `${topbar(null)}
+    <div class="p-wrap" style="padding-bottom:0">${calloutFase2()}</div>
+    <div class="login-stage">
+      <form class="card login-card" id="login" novalidate>
+        <div class="login-brand"><div class="logo">CS</div><div><b>Comserva S.A.S.</b><small>Portal del cliente</small></div></div>
+        <div>
+          <h1>Entrar</h1>
+          <p class="muted" style="margin-top:4px">Consulte y descargue las constancias de visita, la planilla mensual, los recibos y el acta de gestión de su empresa.</p>
+        </div>
+        <div class="field"><label for="email">Correo electrónico</label><input id="email" class="input" type="email" value="${esc(c0.email)}" autocomplete="username"></div>
+        <div class="field"><label for="pass">Contraseña</label><input id="pass" class="input" type="password" value="demo-2026" autocomplete="current-password"></div>
+        <div class="demo-box no-print">
+          <div class="field"><label for="como">Entrar como (selector solo para la demo)</label>
+            <select id="como" class="select">${DEMO.map((d) => `<option value="${d.id}">${esc(d.label)}</option>`).join('')}</select>
+            <div class="help">En producción no existe este selector: el usuario y la clave determinan la empresa.</div>
+          </div>
+        </div>
+        <button class="btn primary lg block" type="submit">Entrar</button>
+        <div class="login-links">
+          <button type="button" class="link" data-toast="Le enviamos un enlace al correo registrado para crear una clave nueva.">Olvidé mi contraseña</button>
+          <span class="muted">¿Aún no tiene usuario? Solicítelo a Comserva al ${esc(TEL)}.</span>
+        </div>
+      </form>
+    </div>`;
+  }
+
+  // ---------- vista 2: mis documentos ----------
+  function headCliente(c) {
+    const tarifa = D.tarifaVigente(c);
+    return `<section class="card pad client-head">
+      <div>
+        <div class="eyebrow">Mis documentos</div>
+        <h1>${esc(c.nombre_comercial)}</h1>
+        <div class="meta">
+          <span>${esc(c.razon_social)} · <b>NIT ${esc(D.nitCompleto(c))}</b></span>
+          <span>Sede: <b>${esc(c.sede)}</b> · ${esc(c.direccion)}, ${esc(c.ciudad)} (${esc(c.departamento)})</span>
+          <span>Recolección ${esc(D.FRECUENCIA_LABEL[c.frecuencia].toLowerCase())}${c.dia_visita ? ', día ' + esc(c.dia_visita.toLowerCase()) : ''}${tarifa ? ' · ' + esc(tarifa.plazo) : ''}</span>
+        </div>
+      </div>
+      <div class="cartera">
+        <span class="badge ${CARTERA_BADGE[c.cartera] || 'plain'}">Cartera: ${esc(D.CARTERA_LABEL[c.cartera])}</span>
+        <small>Fuente: ${esc(c.cartera_fuente || 'sin información')}</small>
+        ${c.cartera === 'en_mora' ? `<small>Para ponerse al día comuníquese al ${esc(TEL)}.</small>` : ''}
+      </div>
+    </section>`;
+  }
+
+  function statsCliente(c) {
+    const cer = D.totalizar(c.id, CERRADO.id);
+    const abi = D.totalizar(c.id, ABIERTO.id);
+    const acta = actaDe(c, CERRADO.id);
+    return `<div class="grid cols-3">
+      <div class="card stat"><div class="label">${esc(CERRADO.nombre)} · cerrado</div><div class="value">${D.fmtKg(cer.kg)} kg</div><div class="delta">${cer.visitas.length} visita${cer.visitas.length === 1 ? '' : 's'}${acta ? ' · acta N.º ' + acta.consecutivo : ''}</div></div>
+      <div class="card stat"><div class="label">${esc(ABIERTO.nombre)} · en curso</div><div class="value">${D.fmtKg(abi.kg)} kg</div><div class="delta">${abi.visitas.length} visita${abi.visitas.length === 1 ? '' : 's'} hasta hoy · cierre el ${esc(D.fmtFecha(ABIERTO.fin))}</div></div>
+      <div class="card stat"><div class="label">Próxima recolección</div><div class="value" style="font-size:20px">${esc(c.dia_visita || 'Por programar')}</div><div class="delta">Frecuencia ${esc(D.FRECUENCIA_LABEL[c.frecuencia].toLowerCase())} · vehículo con licencia ambiental</div></div>
+    </div>`;
+  }
+
+  function cardActa(c) {
+    const acta = actaDe(c, CERRADO.id);
+    const cierre = D.cierreCliente(c.id, CERRADO.id);
+    const alDia = c.cartera === 'al_dia';
+    let body;
+    if (acta && acta.publicada && alDia) {
+      body = `<p>Acta de gestión integral de residuos N.º <span class="doc-no">${acta.consecutivo}</span>, aprobada y firmada por ${esc(acta.aprobada_por)} el ${esc(D.fmtFecha(acta.fecha))}. Certifica el transporte, tratamiento y disposición final de <b>${D.fmtKg(cierre.kg)} kg</b> recolectados en ${cierre.visitas.length} visitas entre el ${esc(D.fmtFecha(CERRADO.inicio))} y el ${esc(D.fmtFecha(CERRADO.fin))}.</p>
+        <div class="btn-row"><a class="btn primary" href="../documentos/acta.html#${c.id}|${CERRADO.id}">Descargar acta N.º ${acta.consecutivo}</a><span class="badge ok">Disponible</span></div>`;
+    } else if (acta) {
+      const m = /(FVE\s*\d+).*vencida el (.+)$/i.exec(acta.retenida_motivo || '');
+      const detalleFactura = m ? ` Factura pendiente: ${m[1]}, vencida el ${m[2]}.` : '';
+      body = `<p>El acta N.º <span class="doc-no">${acta.consecutivo}</span> ya fue aprobada por ${esc(acta.aprobada_por)} y certifica <b>${D.fmtKg(cierre.kg)} kg</b> en ${cierre.visitas.length} visitas.</p>
+        <div class="locked" role="note">
+          <b>Acta retenida por cartera</b>
+          <p>El acta de ${esc(mesDe(CERRADO.id))} está lista pero se entrega cuando la cuenta esté al día.${esc(detalleFactura)} Contacto: ${esc(TEL)}</p>
+          <div class="btn-row" style="margin-top:2px"><button class="btn primary" type="button" disabled aria-disabled="true" title="Se habilita cuando la cartera esté al día">Descargar acta N.º ${acta.consecutivo}</button><span class="badge danger">Retenida</span></div>
+        </div>`;
+    } else {
+      body = `<div class="empty">No hay acta de ${esc(mesDe(CERRADO.id))} para su empresa en estos datos de prueba.</div>`;
+    }
+    return `<div class="card">
+      <div class="card-head"><h3>Acta del mes</h3><span class="badge info plain">${esc(CERRADO.nombre)}</span></div>
+      <div class="card-body">${body}
+        <p class="muted" style="margin-top:12px">El acta de ${esc(mesDe(ABIERTO.id))} se genera al cerrar el periodo, el ${esc(D.fmtFecha(ABIERTO.fin))}, y la firma la gerencia antes de publicarse aquí.</p>
+      </div>
+    </div>`;
+  }
+
+  function cardPlanilla(c) {
+    const cer = D.totalizar(c.id, CERRADO.id);
+    const abi = D.totalizar(c.id, ABIERTO.id);
+    const planillaNo = D.numeroRH(c.id, CERRADO.id) || cer.visitas.map((v) => v.planilla).find(Boolean);
+    return `<div class="card">
+      <div class="card-head"><h3>Planilla mensual</h3><span class="badge info plain">${esc(CERRADO.nombre)}</span></div>
+      <div class="card-body">
+        <p>Formulario RHPS${planillaNo ? ' N.º <span class="doc-no">' + esc(planillaNo) + '</span>' : ''} con una fila por visita del periodo: <b>${cer.visitas.length} visita${cer.visitas.length === 1 ? '' : 's'}</b> y <b>${D.fmtKg(cer.kg)} kg</b> en total. Es la misma hoja que antes se diligenciaba en papel, ahora con las firmas tomadas en pantalla.</p>
+        <div class="btn-row"><a class="btn primary" href="../documentos/planilla.html#${c.id}|${CERRADO.id}">Ver planilla de ${esc(mesDe(CERRADO.id))}</a></div>
+        <p class="muted" style="margin-top:12px">La planilla de ${esc(mesDe(ABIERTO.id))} lleva ${abi.visitas.length} visita${abi.visitas.length === 1 ? '' : 's'} (${D.fmtKg(abi.kg)} kg) y se completa visita a visita. <a href="../documentos/planilla.html#${c.id}|${ABIERTO.id}">Ver avance</a>.</p>
+      </div>
+    </div>`;
+  }
+
+  function filaVisita(v) {
+    const op = D.operario(v.operario);
+    if (v.tipo === 'fallida') {
+      return `<tr>
+        <td>${esc(D.fmtFecha(v.fecha, { dia: true }))}<span class="sub">${esc(v.hora)}</span></td>
+        <td class="num"><span class="doc-no">${v.consecutivo}</span></td>
+        <td><span class="badge warn">Visita fallida</span><span class="sub">${esc(v.motivo_fallida || '')}${v.testigo ? ' · Testigo: ' + esc(v.testigo) : ''}</span></td>
+        <td class="num muted">—</td>
+        <td><a class="btn sm" href="../documentos/constancia.html#${v.id}">Ver constancia</a></td>
+      </tr>`;
+    }
+    const detalle = Object.entries(v.kilos).map(([k, kg]) => `${esc(D.categoria(k).nombre)} ${D.fmtKg(kg)}`).join(' · ');
+    return `<tr>
+      <td>${esc(D.fmtFecha(v.fecha, { dia: true }))}<span class="sub">${esc(v.hora)} · ${esc(op ? op.nombre : '')}</span></td>
+      <td class="num"><span class="doc-no">${v.consecutivo}</span></td>
+      <td>${detalle}<span class="sub">${v.bolsas} bolsa${v.bolsas === 1 ? '' : 's'}${v.guardianes ? ' · ' + v.guardianes + ' guardián' + (v.guardianes === 1 ? '' : 'es') : ''} · placa ${esc(v.placa)}</span>${v.alerta ? `<span class="sub" style="color:var(--warn)">${esc(v.alerta)}</span>` : ''}</td>
+      <td class="num"><b>${D.fmtKg(D.totalKg(v))}</b></td>
+      <td><a class="btn sm" href="../documentos/constancia.html#${v.id}">Ver constancia</a></td>
+    </tr>`;
+  }
+
+  function cardConstancias(c) {
+    const grupos = [ABIERTO, CERRADO].map((p) => ({ p, vs: visitasVisibles(c, p.id) }));
+    const total = grupos.reduce((a, g) => a + g.vs.length, 0);
+    const filas = grupos.map((g) => {
+      const kg = g.vs.reduce((a, v) => a + D.totalKg(v), 0);
+      return `<tr class="grp"><td colspan="3">${esc(g.p.nombre)} · ${g.p.estado === 'abierto' ? 'periodo en curso' : 'periodo cerrado'}</td><td class="num">${D.fmtKg(kg)}</td><td></td></tr>` +
+        (g.vs.length ? g.vs.map(filaVisita).join('') : `<tr><td colspan="5" class="muted">Sin visitas recibidas en este periodo.</td></tr>`);
+    }).join('');
+    return `<div class="card">
+      <div class="card-head"><h3>Constancias de visita</h3><small class="muted">${total} constancia${total === 1 ? '' : 's'} en ${esc(mesDe(CERRADO.id))} y ${esc(mesDe(ABIERTO.id))}</small></div>
+      <div class="table-wrap">
+        <table class="tbl tbl-wide">
+          <thead><tr><th>Fecha</th><th class="num">Constancia</th><th>Residuos entregados</th><th class="num">Kilos</th><th>Documento</th></tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+      </div>
+      <div class="card-body muted" style="font-size:12.5px;padding-top:10px">Cada constancia lleva la firma de quien entregó los residuos y la del operario de Comserva, la hora y la ubicación de la visita. Si una visita quedó anulada, aquí aparece solo la constancia que la reemplazó.</div>
+    </div>`;
+  }
+
+  function cardRecibos(c) {
+    const rs = D.recibos.filter((r) => r.cliente === c.id).sort((a, b) => (b.fecha + b.hora).localeCompare(a.fecha + a.hora));
+    const tarifa = D.tarifaVigente(c);
+    let body;
+    if (!rs.length) {
+      body = `<div class="empty">No tiene recibos de caja. Los recibos solo se emiten cuando el pago se hace en efectivo al operario; su empresa paga ${tarifa ? '<b>' + esc(tarifa.plazo.toLowerCase()) + '</b>' : 'por otro medio'} y los pagos se registran en Helisa.</div>`;
+    } else {
+      body = `<div class="table-wrap"><table class="tbl tbl-wide">
+        <thead><tr><th>Fecha</th><th class="num">Recibo</th><th>Concepto</th><th class="num">Valor</th><th></th></tr></thead>
+        <tbody>${rs.map((r) => `<tr>
+          <td>${esc(D.fmtFechaCorta(r.fecha))}<span class="sub">${esc(r.hora)}</span></td>
+          <td class="num"><span class="doc-no">${r.consecutivo}</span></td>
+          <td>${esc(r.concepto)}${r.estado === 'anulado' ? `<span class="sub" style="color:var(--danger)">Anulado: ${esc(r.anulacion_motivo || '')}</span>` : ''}</td>
+          <td class="num"><b>${D.fmtCOP(r.valor)}</b></td>
+          <td>${r.estado === 'anulado' ? '<span class="badge danger">Anulado</span>' : `<a class="btn sm" href="../documentos/recibo.html#${r.id}">Ver recibo</a>`}</td>
+        </tr>`).join('')}</tbody></table></div>`;
+    }
+    return `<div class="card">
+      <div class="card-head"><h3>Recibos de caja</h3><small class="muted">Pagos en efectivo</small></div>
+      <div class="card-body">${body}</div>
+    </div>`;
+  }
+
+  function cardHistorico(c) {
+    const alDia = c.cartera === 'al_dia';
+    const periodos = D.periodos.slice().sort((a, b) => b.id.localeCompare(a.id));
+    let sinDatos = false;
+    const filas = periodos.map((p) => {
+      const t = D.totalizar(c.id, p.id);
+      const a = actaDe(c, p.id);
+      const hayDatos = t.visitas.length > 0 || t.fallidas > 0;
+      let actaCell;
+      if (p.estado === 'abierto') actaCell = `<span class="muted">Al cierre (${esc(D.fmtFechaCorta(p.fin))})</span>`;
+      else if (a && a.publicada && alDia) actaCell = `<a href="../documentos/acta.html#${c.id}|${p.id}">Sí · N.º ${a.consecutivo}</a>`;
+      else if (a) actaCell = `<span class="badge danger">Retenida</span>`;
+      else if (!hayDatos) { sinDatos = true; actaCell = '<span class="muted">—</span>'; }
+      else actaCell = '<span class="muted">No</span>';
+      return `<tr>
+        <td>${esc(p.nombre)}<span class="sub">${esc(D.fmtFechaCorta(p.inicio))} – ${esc(D.fmtFechaCorta(p.fin))}${p.estado === 'abierto' ? ' · en curso' : ''}</span></td>
+        <td class="num">${hayDatos ? t.visitas.length + (t.fallidas ? '<span class="sub">+' + t.fallidas + ' fallida' + (t.fallidas === 1 ? '' : 's') + '</span>' : '') : '<span class="muted">—</span>'}</td>
+        <td class="num">${hayDatos ? '<b>' + D.fmtKg(t.kg) + '</b>' : '<span class="muted">—</span>'}</td>
+        <td>${actaCell}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="card">
+      <div class="card-head"><h3>Histórico</h3><small class="muted">Por periodo de facturación (27 al 26)</small></div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>Periodo</th><th class="num">Visitas</th><th class="num">Kilos</th><th>Acta disponible</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table></div>
+      ${sinDatos ? '<div class="card-body muted" style="font-size:12.5px;padding-top:10px">Los periodos marcados con — son anteriores al inicio de los datos de prueba de esta demo.</div>' : ''}
+    </div>`;
+  }
+
+  function cardDatos(c) {
+    const tarifa = D.tarifaVigente(c);
+    const kv = [
+      ['Razón social', c.razon_social],
+      ['NIT', D.nitCompleto(c)],
+      ['Nombre comercial', c.nombre_comercial],
+      ['Sede', c.sede],
+      ['Dirección', `${c.direccion}, ${c.ciudad} (${c.departamento})`],
+      ['Persona de contacto', c.contacto],
+      ['Teléfono', c.telefono],
+      ['WhatsApp', c.whatsapp || '—'],
+      ['Correo para documentos', c.email || 'Sin correo registrado'],
+      ['Frecuencia de recolección', `${D.FRECUENCIA_LABEL[c.frecuencia]}${c.dia_visita ? ' · ' + c.dia_visita : ''}`],
+      ['Forma de pago', tarifa ? tarifa.plazo : '—'],
+      ['Cliente desde', D.fmtFecha(c.creado)],
+    ];
+    return `<section class="card">
+      <div class="card-head"><h3>Sus datos</h3><button class="btn sm" type="button" data-toast="Solicitud enviada a Comserva. Le confirmarán el cambio al correo registrado; mientras tanto los documentos salen con los datos actuales.">Solicitar corrección</button></div>
+      <div class="card-body">
+        <dl class="kv wide">${kv.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+        <p class="muted" style="margin-top:12px;font-size:12.5px">Estos datos son los que aparecen en sus constancias, planillas y actas. Si algo está mal, pida la corrección: la oficina de Comserva la aplica y los documentos siguientes salen corregidos.</p>
+      </div>
+    </section>`;
+  }
+
+  function foot() {
+    return `<footer class="p-foot">
+      <p><b>Verifique cualquier documento</b> en <a href="verificar.html">verificar.html</a>: escriba el código de 16 caracteres que aparece junto al QR de la constancia, el recibo o el acta.</p>
+      <p>${esc(D.empresa.nombre_corto)} · NIT ${esc(D.empresa.nit)} · ${esc(D.empresa.licencia)} · ${esc(D.empresa.telefonos)} · ${esc(D.empresa.email)}</p>
+      <p class="muted">Privacidad: ${esc(D.empresa.nombre_corto)} trata los datos de contacto, las firmas y la ubicación de las visitas únicamente para dejar constancia del servicio, conforme a la Ley 1581 de 2012 y su política de tratamiento de datos. En este portal usted solo ve la información de su propia empresa. Puede consultar, actualizar o suprimir sus datos escribiendo a ${esc(D.empresa.email)}.</p>
+    </footer>`;
+  }
+
+  function renderDocs(c) {
+    return `${topbar(c)}
+    <main class="p-wrap">
+      ${calloutFase2()}
+      ${headCliente(c)}
+      ${statsCliente(c)}
+      <div class="grid cols-2">${cardActa(c)}${cardPlanilla(c)}</div>
+      ${cardConstancias(c)}
+      <div class="grid cols-2">${cardRecibos(c)}${cardHistorico(c)}</div>
+      ${cardDatos(c)}
+      ${foot()}
+    </main>`;
+  }
+
+  // ---------- render y eventos ----------
+  function render() {
+    const c = state.cliente ? D.cliente(state.cliente) : null;
+    root.innerHTML = c ? renderDocs(c) : renderLogin();
+    document.title = c ? `${c.nombre_comercial} · Portal del cliente · Comserva` : 'Portal del cliente · Comserva';
+    bind();
+  }
+
+  function bind() {
+    root.querySelectorAll('[data-toast]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); toast(el.dataset.toast); }));
+    const login = $('#login');
+    if (login) {
+      const sel = $('#como'), email = $('#email');
+      sel.addEventListener('change', () => { const c = D.cliente(sel.value); email.value = c.email || ''; });
+      login.addEventListener('submit', (e) => {
+        e.preventDefault();
+        state.cliente = sel.value;
+        history.replaceState(null, '', '#' + state.cliente);
+        render();
+        window.scrollTo(0, 0);
+        toast(`Bienvenido, ${D.cliente(state.cliente).nombre_comercial}. Sesión iniciada.`);
+      });
+    }
+    const salir = $('#salir');
+    if (salir) salir.addEventListener('click', () => {
+      state.cliente = null;
+      history.replaceState(null, '', location.pathname);
+      render();
+      window.scrollTo(0, 0);
+      toast('Sesión cerrada.');
+    });
+  }
+
+  function desdeHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    state.cliente = DEMO.some((d) => d.id === h) ? h : null;
+  }
+  window.addEventListener('hashchange', () => { desdeHash(); render(); });
+  desdeHash();
+  render();
+})();
+</script>
+</body>
+</html>

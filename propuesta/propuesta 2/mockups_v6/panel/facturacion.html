@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facturación electrónica · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* Página de la Fase 2 (propuesta 2). Componentes comunes en style.css, bloque «v6 · PROPUESTA 2 · FACTURACIÓN ELECTRÓNICA». */
+  .main > * { min-width: 0; }
+  .page-head { align-items: flex-start; }
+  .page-head .lead { max-width: 74ch; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .tabs button { border: 0; background: transparent; padding: 10px 14px 9px; font-size: 13.5px; font-weight: 600; color: var(--fg-3); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1px; display: inline-flex; gap: 7px; align-items: center; }
+  .tabs button:hover { color: var(--fg); }
+  .tabs button.on { color: var(--fg); border-bottom-color: var(--accent); }
+  .tabs .cnt { font-size: 11px; font-weight: 700; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 0 7px; color: var(--fg-2); }
+  .tabs .cnt.warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+  .split { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 1300px) { .split { grid-template-columns: minmax(0, 1fr); } }
+  .split > * { min-width: 0; }
+  .card-head h2 small, .card-head h3 small { font-weight: 400; color: var(--fg-3); font-size: 12px; margin-left: 6px; }
+  table.tbl.pf td { vertical-align: middle; }
+  table.tbl.pf tr.row { cursor: pointer; }
+  table.tbl.pf tr.row.sel td { background: var(--accent-soft); }
+  table.tbl.pf tr.row:focus-visible td { background: var(--surface-2); }
+  table.tbl.pf td.chk, table.tbl.pf th.chk { width: 34px; padding-right: 0; }
+  .chk input { width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer; }
+  .chk .lock { color: var(--danger); font-size: 13px; }
+  .who b { display: block; font-weight: 600; }
+  .who small { color: var(--fg-3); font-size: 11.5px; }
+  .fe-lines { list-style: none; margin: 0; padding: 0; }
+  .fe-lines li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .fe-lines .d b { display: block; font-weight: 600; font-size: 12.5px; line-height: 1.3; }
+  .fe-lines .d small { display: block; color: var(--fg-3); font-size: 11.5px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .fe-lines .v { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 13px; white-space: nowrap; }
+  table.tbl.pf .who b { white-space: nowrap; }
+  table.tbl.pf td:last-child { white-space: nowrap; }
+  .esq { font-size: 10.5px; font-weight: 600; padding: 0 6px; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--border); color: var(--fg-2); white-space: nowrap; }
+  .fis { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .fis.ok { color: var(--accent); }
+  .fis.no { color: var(--danger); }
+  .lote-bar { display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 var(--radius) var(--radius); }
+  .lote-bar .sum { font-size: 13px; color: var(--fg-2); }
+  .lote-bar .sum b { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .lote-bar .spacer { flex: 1; }
+  .por-cerrar { padding: 12px 16px; border-top: 1px dashed var(--border); font-size: 12.5px; color: var(--fg-3); }
+  .por-cerrar b { color: var(--fg-2); }
+  .prev .card-body { display: grid; gap: 14px; }
+  .prev .fe-check { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); column-gap: 14px; }
+  .prev h4 { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 6px; }
+  .cmp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .cmp > div { padding: 9px 12px; border-right: 1px solid var(--border); min-width: 0; }
+  .cmp > div:last-child { border-right: 0; }
+  .cmp small { display: block; font-size: 11px; color: var(--fg-3); }
+  .cmp b { font-variant-numeric: tabular-nums; font-size: 14px; }
+  .cmp .good { color: var(--accent); }
+  .kv2 { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 5px 14px; font-size: 12.5px; }
+  .kv2 dt { color: var(--fg-3); }
+  .kv2 dd { margin: 0; overflow-wrap: anywhere; }
+  .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .lote-live { display: grid; gap: 6px; }
+  .spin { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite; vertical-align: -1px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+  /* emitidas */
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filters .chip b { margin-left: 4px; font-variant-numeric: tabular-nums; }
+  table.tbl.em td { vertical-align: middle; }
+  table.tbl.em tr.row { cursor: pointer; }
+  table.tbl.em .mono { font-size: 12.5px; }
+  table.tbl.em td:first-child { white-space: nowrap; }
+  .ent { font-size: 12px; white-space: nowrap; }
+  .ent.bad { color: var(--danger); font-weight: 600; }
+  .ent.wait { color: var(--warn); font-weight: 600; }
+  /* drawer */
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(10, 20, 15, .38); z-index: 90; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(760px, 100%); background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 95; display: flex; flex-direction: column; }
+  .drawer .d-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 14px; align-items: flex-start; }
+  .drawer .d-head .no { font-family: var(--font-mono); font-size: 24px; font-weight: 500; line-height: 1.1; }
+  .drawer .d-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2); background: var(--surface); cursor: pointer; font-size: 15px; flex: none; }
+  .drawer .d-body { padding: 16px 20px 24px; overflow: auto; flex: 1; display: grid; gap: 18px; align-content: start; }
+  .drawer .d-body > * { min-width: 0; }
+  .drawer .d-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .drawer section h4 { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .steps-h { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
+  .steps-h .s { position: relative; text-align: center; font-size: 11.5px; color: var(--fg-3); padding-top: 26px; line-height: 1.3; }
+  .steps-h .s::before { content: ''; position: absolute; top: 9px; left: -50%; width: 100%; border-top: 2px solid var(--fe, var(--border-2)); }
+  .steps-h .s:first-child::before { display: none; }
+  .steps-h .s i { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; border-radius: 50%; background: var(--fe, var(--surface)); border: 2px solid var(--fe, var(--border-2)); z-index: 1; }
+  .steps-h .s[data-fe="pend"] i { background: var(--surface); border-style: dashed; border-color: var(--border-2); }
+  .steps-h .s[data-fe="pend"]::before { border-top-style: dashed; border-top-color: var(--border-2); }
+  .steps-h .s b { display: block; color: var(--fg); font-weight: 600; font-size: 12px; }
+  .cufe-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+  .cufe-row .qr { width: 84px; height: 84px; border: 1px solid var(--border); border-radius: 6px; padding: 3px; background: #fff; }
+  .docs { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .docs li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .docs li:last-child { border-bottom: 0; }
+  .docs .ext { width: 34px; height: 28px; border-radius: 6px; display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: .04em; background: var(--surface-2); color: var(--fg-2); border: 1px solid var(--border); }
+  .docs small { display: block; color: var(--fg-3); font-size: 11.5px; overflow-wrap: anywhere; }
+  .xml { margin: 0; max-width: 100%; font-variant-ligatures: none; max-height: 340px; overflow: auto; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; white-space: pre; color: var(--fg-2); }
+  .xml .c { color: var(--fg-3); }
+  .xml .t { color: var(--info); }
+  .ev-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .ev-list li { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+  .ev-list li:last-child { border-bottom: 0; }
+  .ev-list .code { font-family: var(--font-mono); font-weight: 600; font-size: 12px; padding: 2px 6px; border-radius: 5px; text-align: center; background: var(--surface-2); border: 1px solid var(--border); color: var(--fg-3); }
+  .ev-list li.done .code { background: var(--ok-soft); color: var(--accent-soft-fg); border-color: transparent; }
+  .ev-list li.go .code { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+  .ev-list small { display: block; color: var(--fg-3); font-size: 11.5px; }
+  /* RADIAN */
+  .ev-cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 1100px) { .ev-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .ev-cards { grid-template-columns: minmax(0, 1fr); } }
+  .ev-card { padding: 12px 14px; display: grid; gap: 4px; align-content: start; }
+  .ev-card .code { font-family: var(--font-mono); font-size: 18px; font-weight: 600; color: var(--accent); }
+  .ev-card b { font-size: 13px; }
+  .ev-card small { color: var(--fg-3); font-size: 12px; line-height: 1.35; }
+  table.tbl.rad-t th, table.tbl.rad-t td { padding: 8px 9px; }
+  table.tbl.rad-t td { vertical-align: middle; }
+  /* notas */
+  table.tbl.nt td { vertical-align: top; }
+  .rules { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--fg-2); }
+  /* configuración */
+  .cfg { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 1100px) { .cfg { grid-template-columns: minmax(0, 1fr); } }
+  .prov { display: grid; gap: 8px; }
+  .prov label { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+  .prov label.on { border-color: var(--accent); background: var(--accent-soft); }
+  .prov input { accent-color: var(--accent); margin-top: 3px; }
+  .prov b { display: block; font-size: 13.5px; }
+  .prov small { color: var(--fg-3); font-size: 12px; }
+  .meter { height: 8px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; margin-top: 6px; }
+  .meter i { display: block; height: 100%; background: var(--accent); }
+  .meter i.warn { background: var(--warn); }
+  .res-st { font-size: 12px; font-weight: 600; }
+  .inline-num { width: 72px !important; display: inline-block; padding: 4px 8px !important; text-align: right; }
+  .modal .modal-body p { font-size: 13.5px; color: var(--fg-2); }
+  .modal.wide { width: min(720px, 100%); }
+  .err { color: var(--danger); font-size: 12.5px; min-height: 1em; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .muted-note { font-size: 12px; color: var(--fg-3); }
+  @media (max-width: 720px) {
+    table.tbl.pf th:nth-child(4), table.tbl.pf td:nth-child(4) { display: none; }
+    table.tbl.pf th, table.tbl.pf td { padding: 8px 6px; }
+    table.tbl.pf .who b { white-space: normal; }
+    table.tbl.pf td:last-child .badge { font-size: 10.5px; padding: 1px 7px; }
+    .drawer .d-head .no { font-size: 20px; }
+    .cmp { grid-template-columns: minmax(0, 1fr); }
+    .cmp > div { border-right: 0; border-bottom: 1px solid var(--border); }
+    .cmp > div:last-child { border-bottom: 0; }
+    .cufe-row { grid-template-columns: minmax(0, 1fr); }
+    .ev-list li { grid-template-columns: 50px minmax(0, 1fr); }
+    .ev-list li > :last-child { grid-column: 2; }
+    .docs li { grid-template-columns: minmax(0, 1fr) auto; }
+    .docs .ext { display: none; }
+    .fe-ribbon .alert { margin-left: 0; }
+    .tabs button { padding: 9px 10px 8px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Periodo · Fase 2 · factura electrónica por proveedor tecnológico</div>
+        <h1 style="margin-top:4px">Facturación electrónica</h1>
+        <p class="lead">Del cierre de cada cliente sale una <b>prefactura</b>. Lucrecia la revisa y la emite <b>por lote</b>: el proveedor tecnológico firma, valida con la DIAN y devuelve el <b>CUFE</b>, el XML, el PDF y el QR, y entrega la factura al cliente. Aquí se siguen los <b>eventos RADIAN</b>, se hacen las <b>notas crédito y débito</b> y se configura la numeración. Helisa queda para la contabilidad.</p>
+      </div>
+      <div class="chips" id="periodos" role="tablist" aria-label="Periodo"></div>
+    </div>
+    <div class="fe-ribbon" id="ribbon"></div>
+    <section class="fe-flow" id="flow" aria-label="Estados de la factura"></section>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones"></nav>
+    <div id="content"></div>
+  </main>
+</div>
+<div id="overlay"></div>
+<div id="modal-root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['facturacion.html','◈','Facturación electrónica'],['planos.html','⇄','Contabilidad en Helisa'],['trazabilidad.html','⛓︎','Trazabilidad']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA, F = D.fe;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtNum, fmtFecha, fmtFechaCorta } = D;
+  document.getElementById('bar').innerHTML = D.mockBar('Facturación electrónica');
+  document.getElementById('sidebar').innerHTML = sidebar('facturacion.html');
+
+  // ---------- utilidades ----------
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const fh = (s) => (s ? `${fmtFechaCorta(s)} · ${s.slice(11, 16)}` : '—');
+  const fc = (s) => (s ? fmtFechaCorta(s).slice(0, 5) + (s.length > 10 ? ' ' + s.slice(11, 16) : '') : '');
+  const cant = (l) => (l.unidad === 'KGM' ? fmtKg(l.cantidad) : fmtNum(l.cantidad));
+  const badgeFE = (st) => `<span class="badge ${F.CLASE[st] || 'plain'}${st === 'bloqueada' ? ' outline' : ''}${st === 'anulada' ? ' strike' : ''}">${esc(F.ESTADO[st] || st)}</span>`;
+  const corto = (h, n = 10) => (h ? h.slice(0, n) + '…' + h.slice(-4) : '');
+  let reloj = 9 * 60 + 30; // hora simulada de las acciones de la demostración (empieza a las 09:30 de hoy)
+  const ahora = () => { reloj += 1; return `${D.HOY} ${String(Math.floor(reloj / 60)).padStart(2, '0')}:${String(reloj % 60).padStart(2, '0')}`; };
+  function toast(msg) { $$('.toast').forEach((t) => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4200); }
+
+  // ---------- estado en memoria (nada se guarda: cada recarga vuelve al inicio) ----------
+  const S = {
+    facturas: F.emitidas().map(clone),
+    notas: clone(F.notas),
+    lotes: clone(F.lotes),
+    config: clone(F.config),
+    revisadas: new Set(),
+    fiscalOk: new Set(),     // clientes desbloqueados en esta sesión (correo confirmado o entrega impresa autorizada)
+    devueltas: new Set(),
+    procesando: new Set(),   // facturas esperando respuesta simulada
+    ivaConcepto: Object.fromEntries(F.conceptos.map((k) => [k.codigo, String(k.iva_pct)])),
+    siguiente: F.numeracion().siguiente,
+  };
+  const PERIODOS = D.periodos.filter((p) => p.id !== '2026-08').slice().reverse(); // octubre y septiembre (agosto es anterior al sistema)
+  const state = { periodo: '2026-10', tab: 'prefacturas', sel: null, filtro: 'todas', drawer: null, xml: false };
+  const facturaS = (id) => S.facturas.find((f) => f.id === id);
+  const notasDe = (fid) => S.notas.filter((n) => n.factura === fid);
+  const cliente = D.cliente;
+  function saldo(f) {
+    if (f.estado_dian === 'anulada') return 0;
+    if (f.estado_dian !== 'validada') return f.total;
+    const ajuste = notasDe(f.id).filter((n) => n.estado === 'validada').reduce((a, n) => a + (n.tipo === 'NC' ? -n.total : n.total), 0);
+    const pagos = D.recibos.filter((r) => r.estado !== 'anulado').reduce((a, r) => a + (r.aplicaciones || []).filter((x) => x.factura === f.id).reduce((s, x) => s + x.valor, 0), 0);
+    return Math.max(0, D.r2(f.total + ajuste - pagos - (f.pagada_otro_medio || 0)));
+  }
+  function radian(f) { return F.radian(f); }
+
+  // Prefacturas del periodo con lo que pasó en esta sesión
+  function prefacturas(pid) {
+    return F.prefacturas(pid).map((pf) => {
+      const f = S.facturas.find((x) => x.cliente === pf.cliente.id && x.periodo === pid) || null;
+      const fiscalOk = pf.fiscal.completo || S.fiscalOk.has(pf.cliente.id);
+      const estado = f ? f.estado_dian : (S.devueltas.has(pf.id) ? 'devuelta' : (fiscalOk ? 'borrador' : 'bloqueada'));
+      return { ...pf, factura: f, estado, fiscalOk, revisada: !!f || S.revisadas.has(pf.id) };
+    });
+  }
+  function conteo(pid) {
+    const c = { borrador: 0, bloqueada: 0, enviada: 0, validada: 0, rechazada: 0, contingencia: 0, anulada: 0, devuelta: 0 };
+    prefacturas(pid).forEach((p) => { c[p.estado] = (c[p.estado] || 0) + 1; });
+    return c;
+  }
+  const porCerrar = (pid) => { const p = D.byId(D.periodos, pid); return D.clientes.filter((c) => c.estado === 'activo' && (!c.creado || c.creado <= p.fin) && !D.cierreDe(c.id, pid)); };
+
+  // ---------- cabecera, cinta de prueba y flujo de estados ----------
+  function renderPeriodos() {
+    $('#periodos').innerHTML = PERIODOS.map((p) => `<button type="button" class="chip${p.id === state.periodo ? ' on' : ''}" role="tab" aria-selected="${p.id === state.periodo}" data-p="${p.id}">${esc(p.nombre)} <span class="muted">· ${p.estado === 'abierto' ? 'abierto' : 'cerrado'}</span></button>`).join('');
+    $$('#periodos [data-p]').forEach((b) => b.addEventListener('click', () => { state.periodo = b.dataset.p; state.sel = null; state.filtro = 'todas'; render(); }));
+  }
+  function renderRibbon() {
+    const nm = F.numeracion(F.resoluciones[0], S.facturas.length);
+    const prov = F.proveedores.find((p) => p.id === S.config.proveedor);
+    $('#ribbon').innerHTML = `<span class="tag">Datos de prueba</span><span><b>Ambiente de pruebas</b> · proveedor tecnológico <b>simulado</b> (${esc(prov.id === 'por_elegir' ? 'por elegir: Plemsi o Dataico' : prov.nombre)}) · prefijo <b>RHD</b> de prueba · CUFE, XML y PDF ficticios: nada se envía a la DIAN.</span>${nm.alertas.length ? `<span class="alert">⚠ ${esc(nm.alertas.join(' · '))}</span>` : ''}<a href="#config" data-goto="config">Configuración</a>`;
+    $$('#ribbon [data-goto]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); state.tab = 'config'; render(); }));
+  }
+  function renderFlow() {
+    const c = conteo(state.periodo);
+    const ext = c.bloqueada ? ` · ${c.bloqueada} bloqueada${c.bloqueada > 1 ? 's' : ''}` : '';
+    const step = (st, n, t, sub) => `<button type="button" class="fe-step${(state.tab === 'emitidas' && state.filtro === st) ? ' on' : ''}" data-fe="${st}" data-flow="${st}"${n ? '' : ' data-zero'}><span class="n">${n}</span><span class="t">${t}</span><small>${sub}</small></button>`;
+    const rech = S.facturas.filter((f) => f.periodo === state.periodo && f.rechazo).length;
+    $('#flow').innerHTML = step('borrador', c.borrador + c.bloqueada, 'Borrador', c.borrador ? `${c.borrador} por revisar${ext}` : (c.bloqueada ? `${c.bloqueada} bloqueada${c.bloqueada > 1 ? 's' : ''} por datos fiscales` : 'prefacturas por revisar'))
+      + '<span class="arrow" aria-hidden="true">→</span>'
+      + step('enviada', c.enviada, 'Enviada', 'al proveedor, esperando a la DIAN')
+      + '<span class="arrow second" aria-hidden="true">→</span>'
+      + `<div class="results">${step('validada', c.validada, 'Validada DIAN', 'con CUFE, XML, PDF y QR')}${step('rechazada', c.rechazada, 'Rechazada', rech ? `${rech} corregida${rech > 1 ? 's' : ''} y reenviada${rech > 1 ? 's' : ''}` : 'se corrige y se reenvía')}${step('contingencia', c.contingencia, 'Contingencia', 'la DIAN no respondió')}</div>`;
+    $$('#flow [data-flow]').forEach((b) => b.addEventListener('click', () => {
+      const st = b.dataset.flow;
+      if (st === 'borrador') { state.tab = 'prefacturas'; } else { state.tab = 'emitidas'; state.filtro = st; }
+      render();
+    }));
+  }
+  const TABS = [['prefacturas', 'Prefacturas y emisión'], ['emitidas', 'Facturas emitidas'], ['radian', 'Eventos RADIAN'], ['notas', 'Notas crédito y débito'], ['config', 'Configuración']];
+  function renderTabs() {
+    const c = conteo(state.periodo);
+    const cnt = { prefacturas: [c.borrador + c.bloqueada, c.borrador + c.bloqueada ? 'warn' : ''], emitidas: [S.facturas.filter((f) => f.periodo === state.periodo).length, ''], radian: [S.facturas.filter((f) => f.periodo === state.periodo && f.estado_dian === 'validada' && radian(f).tacita && radian(f).tacita.disponible).length, ''], notas: [S.notas.filter((n) => n.estado === 'por_aprobar').length, 'warn'], config: [F.numeracion(F.resoluciones[0], S.facturas.length).alertas.length, 'warn'] };
+    $('#tabs').innerHTML = TABS.map(([k, t]) => `<button type="button" role="tab" aria-selected="${state.tab === k}" class="${state.tab === k ? 'on' : ''}" data-tab="${k}">${t}${cnt[k] && cnt[k][0] ? `<span class="cnt ${cnt[k][1]}">${cnt[k][0]}</span>` : ''}</button>`).join('');
+    $$('#tabs [data-tab]').forEach((b) => b.addEventListener('click', () => { state.tab = b.dataset.tab; history.replaceState(null, '', '#' + state.tab); render(); }));
+  }
+
+  // ---------- 1 · PREFACTURAS Y EMISIÓN POR LOTE ----------
+  function filaPF(pf) {
+    const f = pf.factura;
+    const puede = pf.estado === 'borrador';
+    const chk = puede ? `<label class="chk" title="Revisada: entra en el lote"><input type="checkbox" data-rev="${pf.id}" ${pf.revisada ? 'checked' : ''} aria-label="Marcar revisada la prefactura de ${esc(pf.cliente.nombre_comercial)}"></label>` : (pf.estado === 'bloqueada' ? '<span class="lock" title="Bloqueada: faltan datos fiscales" aria-label="Bloqueada">🔒</span>' : '');
+    const proc = f && S.procesando.has(f.id);
+    return `<tr class="row${state.sel === pf.id ? ' sel' : ''}" data-pf="${pf.id}" tabindex="0">
+      <td class="chk">${chk}</td>
+      <td><div class="who"><b>${esc(pf.cliente.nombre_comercial)}</b><small>RH ${esc(pf.rh)} · <span class="esq">${esc(D.ESQUEMA_TARIFA_CORTO[pf.esquema])}</span></small></div></td>
+      <td class="num"><b>${fmtCOP(pf.total)}</b><span class="sub">IVA ${fmtCOP(pf.iva)}</span></td>
+      <td>${pf.fiscalOk ? '<span class="fis ok">✓ Completos</span>' : `<span class="fis no" title="${esc(pf.fiscal.faltan.map((i) => i.valor).join('; '))}">✗ Falta ${esc(pf.fiscal.faltan[0].k === 'entrega' ? 'medio de entrega' : pf.fiscal.faltan[0].etiqueta.toLowerCase())}</span>`}</td>
+      <td>${proc ? '<span class="badge info"><span class="spin"></span> Enviando</span>' : badgeFE(pf.estado === 'devuelta' ? 'borrador' : pf.estado)}${f ? `<span class="sub mono">${esc(f.numero)}</span>` : (pf.estado === 'devuelta' ? '<span class="sub">devuelta al cierre</span>' : (pf.estado === 'borrador' ? `<span class="sub">${pf.revisada ? 'revisada · lista' : 'por revisar'}</span>` : ''))}</td>
+    </tr>`;
+  }
+  function renderPrefacturas() {
+    const p = D.byId(D.periodos, state.periodo);
+    const pfs = prefacturas(state.periodo);
+    if (!state.sel || !pfs.some((x) => x.id === state.sel)) state.sel = (pfs.find((x) => x.estado === 'borrador') || pfs.find((x) => x.estado === 'bloqueada') || pfs[0] || {}).id || null;
+    const listas = pfs.filter((x) => x.estado === 'borrador' && x.revisada);
+    const borr = pfs.filter((x) => x.estado === 'borrador');
+    const pc = porCerrar(state.periodo);
+    const sel = pfs.find((x) => x.id === state.sel);
+    return `<div class="split">
+      <section class="card" aria-labelledby="pf-title">
+        <div class="card-head"><div><h2 id="pf-title">Prefacturas de ${esc(p.nombre.toLowerCase())}<small>${pfs.length} desde los cierres</small></h2><small class="muted">Una por cierre de cliente, con la liquidación del RH (tres esquemas: básico + kilos, solo por kilo y cobro fijo) y la revisión de sus datos fiscales.</small></div>
+          ${borr.length ? `<label class="chk" style="font-size:12.5px;display:inline-flex;gap:6px;align-items:center;white-space:nowrap"><input type="checkbox" id="rev-all" ${borr.every((x) => x.revisada) ? 'checked' : ''}> Revisar todas</label>` : ''}</div>
+        <div class="table-wrap"><table class="tbl pf">
+          <thead><tr><th class="chk" title="Revisada">✓</th><th>Cliente · RH · esquema</th><th class="num">Total</th><th>Datos fiscales</th><th>Estado</th></tr></thead>
+          <tbody>${pfs.length ? pfs.map(filaPF).join('') : `<tr><td colspan="5" class="muted" style="padding:18px">Todavía no hay cierres en ${esc(p.nombre.toLowerCase())}.</td></tr>`}</tbody>
+        </table></div>
+        ${pc.length ? `<div class="por-cerrar"><b>${pc.length} clientes por cerrar</b> (corte el ${fmtFecha(p.fin)}; cierre anticipado desde el día ${D.parametros.dia_inicio_cierre}): ${pc.map((c) => esc(c.nombre_comercial)).join(', ')}. Su prefactura aparece aquí cuando se cierren.</div>` : ''}
+        <div class="lote-bar">
+          <span class="sum">${listas.length ? `<b>${listas.length}</b> revisada${listas.length > 1 ? 's' : ''} · <b>${fmtCOP(listas.reduce((a, x) => a + x.total, 0))}</b> · números <b class="mono">RHD ${S.siguiente}${listas.length > 1 ? ' a RHD ' + (S.siguiente + listas.length - 1) : ''}</b>` : (borr.length ? 'Marque las prefacturas revisadas para armar el lote.' : 'No hay prefacturas por emitir en este periodo.')}</span>
+          <span class="spacer"></span>
+          <button type="button" class="btn primary" id="emitir" ${listas.length ? '' : 'disabled'}>Emitir lote${listas.length ? ` (${listas.length})` : ''} →</button>
+        </div>
+      </section>
+      ${sel ? previewPF(sel) : '<section class="card pad muted">Seleccione una prefactura.</section>'}
+    </div>
+    <div class="callout info" style="margin-top:14px"><b>Reglas.</b> Sin datos fiscales completos no se factura (la prefactura queda bloqueada). Un cierre facturado por el sistema no se exporta como pedido y lo de RH no se factura en Helisa (control de doble facturación). El recibo de caja solo se habilita con la factura <b>validada</b> por la DIAN (CUFE); la aceptación la da después el cliente en RADIAN (033); la tácita se cumple a los 3 días hábiles del 032 y registrarla con el 034 es opcional, por confirmar.</div>`;
+  }
+  function hojaLineas(ls, tt, notas) {
+    return `<ul class="fe-lines">${ls.map((l) => `<li><div class="d"><b>${esc(l.descripcion)}</b><small><span class="mono">${esc(l.codigo)}</span> · ${cant(l)} ${esc(l.unidad_nombre)}${l.cantidad === 1 ? '' : 's'} × ${fmtCOP(l.unitario)} · IVA ${l.iva_pct} % ${fmtCOP(l.iva)}</small></div><span class="v">${fmtCOP(l.base)}</span></li>`).join('')}</ul>
+      <dl class="tot"><dt>Subtotal</dt><dd>${fmtCOP(tt.subtotal)}</dd><dt>IVA (suma de las líneas)</dt><dd>${fmtCOP(tt.iva)}</dd><dt class="big">Total</dt><dd class="big">${fmtCOP(tt.total)}</dd></dl>
+      ${notas ? `<div class="obs">${notas.map(esc).join('<br>')}</div>` : ''}`;
+  }
+  function checkFiscal(pf) {
+    return `<ul class="fe-check">${pf.fiscal.items.map((i) => { const ok = i.ok || (pf.fiscalOk && i.k === 'entrega'); return `<li class="${ok ? '' : 'no'}"><span class="ic">${ok ? '✓' : '✗'}</span><div><b>${esc(i.etiqueta)}</b><span>${esc(ok && !i.ok ? 'Entrega impresa autorizada en esta sesión' : i.valor)}</span></div></li>`; }).join('')}</ul>`;
+  }
+  function previewPF(pf) {
+    const f = pf.factura; const c = pf.cliente;
+    const head = f
+      ? `<div><div class="eyebrow">Factura electrónica · ${esc(f.lote)}</div><div class="no">${esc(f.numero)}</div><small>Desde la ${esc(pf.numero)} · ${esc(c.nombre_comercial)}</small></div>${badgeFE(f.estado_dian)}`
+      : `<div><div class="eyebrow">Prefactura (borrador)</div><div class="no">${esc(pf.numero)}</div><small>Generada del cierre del ${fh(pf.cierre.cerrado_en)} · ${esc(c.nombre_comercial)}</small></div>${badgeFE(pf.estado === 'devuelta' ? 'borrador' : pf.estado)}`;
+    const acciones = f
+      ? `<button type="button" class="btn primary sm" data-ver="${f.id}">Ver la factura</button>${f.consecutivo <= 14 ? `<a class="btn sm" href="../documentos/factura-electronica.html#${f.id}">Representación gráfica (PDF)</a>` : ''}<a class="btn sm ghost" href="trazabilidad.html#${c.id}|${pf.periodo.id}|fe">Trazabilidad →</a>`
+      : (pf.estado === 'bloqueada'
+        ? `<button type="button" class="btn primary sm" data-fix="${c.id}">Resolver datos fiscales</button><a class="btn sm" href="clientes.html#${c.id}|fiscal">Abrir la ficha del cliente</a>`
+        : (pf.estado === 'devuelta' ? `<button type="button" class="btn sm" data-undo="${pf.id}">Deshacer la devolución</button>` : `<button type="button" class="btn ${pf.revisada ? '' : 'primary'} sm" data-rev-btn="${pf.id}">${pf.revisada ? '✓ Revisada · quitar' : 'Marcar revisada'}</button><button type="button" class="btn sm ghost" data-dev="${pf.id}">Devolver al cierre</button><a class="btn sm ghost" href="trazabilidad.html#${c.id}|${pf.periodo.id}|prefactura">Trazabilidad →</a>`));
+    return `<section class="card prev" aria-live="polite">
+      <div class="card-body">
+        <div class="fe-sheet">
+          <div class="sh-head">${head}</div>
+          ${hojaLineas(pf.lineas, pf, pf.notas_doc)}
+        </div>
+        <div>
+          <h4>Comparación con el RH</h4>
+          <div class="cmp"><div><small>Total del RH ${esc(pf.rh)}</small><b>${fmtCOP(pf.cz.factura.total)}</b></div><div><small>${f ? 'Total de la factura' : 'Total de la prefactura'}</small><b>${fmtCOP(pf.total)}</b></div><div><small>Diferencia</small><b class="${pf.diferencia === 0 ? 'good' : ''}">${pf.diferencia === 0 ? '✓ $0' : fmtCOP(pf.diferencia)}</b></div></div>
+        </div>
+        <div>
+          <h4>Datos fiscales de ${esc(c.nombre_comercial)}</h4>
+          ${pf.estado === 'bloqueada' ? `<div class="callout danger" style="margin-bottom:8px"><b>Sin datos fiscales no se factura.</b> ${esc(pf.fiscal.faltan.map((i) => i.valor).join('; '))}${c.fiscal.correo_rebote ? `. Rebote: ${esc(c.fiscal.correo_rebote)}` : ''}.</div>` : ''}
+          ${checkFiscal(pf)}
+        </div>
+        <dl class="kv2">
+          <dt>Forma de pago</dt><dd>${esc(pf.forma_pago)}${pf.forma_pago === 'Contado' ? ' · efectivo' : ` · vence el ${fmtFecha(f ? f.vence : pf.vence)}`}</dd>
+          <dt>Entrega</dt><dd>${c.fiscal.medio_entrega === 'impresa' ? 'Impresa, en la próxima visita (el cliente no informó correo)' : esc(c.fiscal.correo_fe || 'Sin correo')}</dd>
+          <dt>Esquema de tarifa</dt><dd>${esc(D.ESQUEMA_TARIFA_LABEL[pf.esquema])} · ${esc(D.tarifaResumen(pf.cz.tarifa))}</dd>
+          ${pf.cliente.dato_prueba ? '<dt>Cliente</dt><dd>Ficticio · dato de prueba</dd>' : ''}
+        </dl>
+        <div class="acts">${acciones}</div>
+      </div>
+    </section>`;
+  }
+  function bindPrefacturas() {
+    $$('#content tr[data-pf]').forEach((tr) => {
+      const go = () => { state.sel = tr.dataset.pf; render(); };
+      tr.addEventListener('click', (e) => { if (e.target.closest('input, a, button, label')) return; go(); });
+      tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === tr) go(); });
+    });
+    $$('#content [data-rev]').forEach((cb) => cb.addEventListener('change', () => { if (cb.checked) S.revisadas.add(cb.dataset.rev); else S.revisadas.delete(cb.dataset.rev); state.sel = cb.dataset.rev; render(); }));
+    $$('#content [data-rev-btn]').forEach((b) => b.addEventListener('click', () => { const id = b.dataset.revBtn; if (S.revisadas.has(id)) S.revisadas.delete(id); else S.revisadas.add(id); render(); }));
+    const all = $('#rev-all'); if (all) all.addEventListener('change', () => { prefacturas(state.periodo).filter((x) => x.estado === 'borrador').forEach((x) => { if (all.checked) S.revisadas.add(x.id); else S.revisadas.delete(x.id); }); render(); });
+    $$('#content [data-dev]').forEach((b) => b.addEventListener('click', () => { S.devueltas.add(b.dataset.dev); S.revisadas.delete(b.dataset.dev); render(); toast('Prefactura devuelta al cierre: Lucrecia revisa el RH y la vuelve a generar. No consume número.'); }));
+    $$('#content [data-undo]').forEach((b) => b.addEventListener('click', () => { S.devueltas.delete(b.dataset.undo); render(); }));
+    $$('#content [data-fix]').forEach((b) => b.addEventListener('click', () => modalFiscal(b.dataset.fix)));
+    const em = $('#emitir'); if (em) em.addEventListener('click', modalLote);
+  }
+
+  // ---------- modales ----------
+  let opener = null;
+  function openModal(html, wide) {
+    opener = document.activeElement;
+    $('#modal-root').innerHTML = `<div class="modal-backdrop" data-bd><div class="modal${wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="m-title" tabindex="-1">${html}</div></div>`;
+    $$('#modal-root [data-close]').forEach((b) => b.addEventListener('click', closeModal));
+    $('#modal-root [data-bd]').addEventListener('click', (e) => { if (e.target.hasAttribute('data-bd')) closeModal(); });
+    const first = $('#modal-root .modal-body input, #modal-root .modal-body select, #modal-root .modal-body textarea'); (first || $('#modal-root .modal')).focus();
+  }
+  function closeModal() { $('#modal-root').innerHTML = ''; if (opener && document.contains(opener)) opener.focus(); opener = null; }
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('#modal-root .modal')) closeModal(); else if ($('#overlay .drawer')) cerrarDrawer(); });
+
+  function modalFiscal(cid) {
+    const c = cliente(cid); const fis = D.fiscalEstado(c);
+    openModal(`<div class="modal-head" id="m-title">Datos fiscales de ${esc(c.nombre_comercial)}</div>
+      <div class="modal-body">
+        <p>La prefactura está bloqueada porque falta: <b>${esc(fis.texto)}</b>. ${c.fiscal.correo_rebote ? `El correo ${esc(c.fiscal.correo_fe)} rebotó (${esc(c.fiscal.correo_rebote)}).` : ''}</p>
+        <div class="field"><label for="m-correo">Correo de recepción de facturas</label><input class="input" id="m-correo" type="email" value="${esc(c.fiscal.correo_fe || '')}"><span class="help">Si el cliente es facturador electrónico, el que registró ante la DIAN.</span></div>
+        <label class="chk" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="m-confirmado"> El cliente confirmó el correo por teléfono</label>
+        <label class="chk" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="m-impresa"> Autorizar la entrega impresa mientras tanto</label>
+        <div class="err" id="m-err" aria-live="polite"></div>
+        <p class="muted-note">En el sistema real este cambio se hace en la ficha del cliente y queda en la auditoría. En esta demostración solo desbloquea la prefactura durante la sesión.</p>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="m-ok">Guardar y desbloquear</button></div>`);
+    $('#m-ok').addEventListener('click', () => {
+      if (!$('#m-confirmado').checked && !$('#m-impresa').checked) { $('#m-err').textContent = 'Confirme el correo o autorice la entrega impresa.'; return; }
+      S.fiscalOk.add(cid); closeModal(); render(); toast(`${c.nombre_comercial}: datos fiscales completos. La prefactura quedó en borrador para revisar.`);
+    });
+  }
+
+  function modalLote() {
+    const pfs = prefacturas(state.periodo).filter((x) => x.estado === 'borrador' && x.revisada);
+    if (!pfs.length) return;
+    const n0 = S.siguiente;
+    const loteId = `L-${state.periodo}-${String(S.lotes.filter((l) => l.periodo === state.periodo).length + 1).padStart(3, '0')}`;
+    const total = pfs.reduce((a, x) => a + x.total, 0);
+    openModal(`<div class="modal-head" id="m-title">Emitir el lote ${esc(loteId)}</div>
+      <div class="modal-body">
+        <p>El proveedor tecnológico (<b>simulado</b>) arma el XML, lo firma con el certificado de Comserva, lo envía a la DIAN y devuelve el CUFE, el XML validado, el PDF y el QR. Después envía cada factura al correo de recepción del cliente.</p>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Número</th><th>Cliente</th><th>RH</th><th class="num">Total</th></tr></thead><tbody>
+          ${pfs.map((x, i) => `<tr><td class="mono">RHD ${n0 + i}</td><td>${esc(x.cliente.nombre_comercial)}</td><td class="mono">${esc(x.rh)}</td><td class="num">${fmtCOP(x.total)}</td></tr>`).join('')}
+          <tr class="total"><td colspan="3">${pfs.length} factura${pfs.length > 1 ? 's' : ''}</td><td class="num">${fmtCOP(total)}</td></tr>
+        </tbody></table></div>
+        <div class="callout warn">Ambiente de <b>pruebas</b> · prefijo RHD de prueba · nada llega a la DIAN. Un número emitido no se borra: si hay un error, se corrige con nota crédito.</div>
+        <label class="chk" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="m-ack"> Revisé las prefacturas: los valores coinciden con el RH</label>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="m-ok" disabled>Emitir ${pfs.length} factura${pfs.length > 1 ? 's' : ''}</button></div>`, true);
+    $('#m-ack').addEventListener('change', (e) => { $('#m-ok').disabled = !e.target.checked; });
+    $('#m-ok').addEventListener('click', () => { closeModal(); emitir(pfs, loteId); });
+  }
+  function emitir(pfs, loteId) {
+    const t = ahora();
+    const nuevas = pfs.map((pf) => {
+      const num = S.siguiente++; const c = pf.cliente;
+      const f = { id: 'f-rhd-' + num, numero: 'RHD ' + num, prefijo: 'RHD', consecutivo: num, cliente: c.id, periodo: pf.periodo.id, fecha: D.HOY, vence: pf.vence, total: pf.total, subtotal: pf.subtotal, iva: pf.iva, lineas_fe: pf.lineas, rh: pf.rh, notas_doc: pf.notas_doc, lote: loteId, revisada_en: t, enviada_en: t, estado_dian: 'enviada', validada_en: null, forma_pago: pf.forma_pago, medio_pago: pf.medio_pago, cufe: F.cufe('RHD ' + num + '|' + c.id), cufe_prueba: true, entrega: { medio: c.fiscal.medio_entrega === 'impresa' || S.fiscalOk.has(c.id) ? 'impresa' : 'correo', destino: c.fiscal.correo_fe || '', estado: 'en_espera', en: '' }, eventos: [], asiento: null, nueva: true, hash_xml: D.hashFake('xml|' + num), hash_pdf: D.hashFake('pdf|' + num), hash_zip: D.hashFake('zip|' + num), dato_prueba: true };
+      S.facturas.push(f); S.procesando.add(f.id); S.revisadas.delete(pf.id);
+      return f;
+    });
+    S.lotes.push({ id: loteId, periodo: state.periodo, creado_en: t, por: 'Lucrecia', facturas: nuevas.map((f) => f.id), total: nuevas.reduce((a, f) => a + f.total, 0), resultado: 'En proceso' });
+    render();
+    toast(`Lote ${loteId} enviado al proveedor (simulado): ${nuevas.length} factura${nuevas.length > 1 ? 's' : ''}.`);
+    nuevas.forEach((f, i) => setTimeout(() => {
+      S.procesando.delete(f.id);
+      f.estado_dian = 'validada'; f.validada_en = ahora(); f.respuesta_dian = 'Documento validado por la DIAN (respuesta simulada)';
+      f.entrega = f.entrega.medio === 'correo' ? { ...f.entrega, estado: 'enviado', en: ahora() } : { ...f.entrega, estado: 'pendiente', nota: 'Se entrega impresa en la próxima visita' };
+      if (!S.procesando.size) {
+        const lote = S.lotes.find((l) => l.id === loteId); lote.resultado = `${nuevas.length} validada${nuevas.length > 1 ? 's' : ''}`;
+        toast(`La DIAN validó ${nuevas.length === 1 ? 'la factura' : 'las ' + nuevas.length + ' facturas'} del lote ${loteId} (simulado). Cierres facturados; ya se puede generar su asiento para Helisa y recibir pagos.`);
+      }
+      render();
+    }, 1100 + i * 800));
+  }
+
+  // ---------- 2 · FACTURAS EMITIDAS ----------
+  const ENTREGA = { enviado: ['Correo enviado', ''], rebotado: ['Correo rebotado', 'bad'], entregada: ['Entregada impresa', ''], pendiente: ['Por entregar impresa', 'wait'], en_espera: ['En espera', 'wait'] };
+  const FILTROS = [
+    ['todas', 'Todas', () => true], ['validada', 'Validadas', (f) => f.estado_dian === 'validada'], ['enviada', 'Enviadas', (f) => f.estado_dian === 'enviada'], ['rechazada', 'Rechazadas', (f) => f.estado_dian === 'rechazada'], ['contingencia', 'Contingencia', (f) => f.estado_dian === 'contingencia'],
+    ['sin_entregar', 'Sin entregar', (f) => ['pendiente', 'en_espera', 'rebotado'].includes(f.entrega.estado) && !f.entrega.reentrega_en], ['sin_asiento', 'Sin contabilizar', (f) => f.estado_dian === 'validada' && !(f.asiento && (D.archivos_plano.find((a) => a.id === f.asiento) || {}).estado === 'importado')], ['notas', 'Con notas', (f) => notasDe(f.id).length > 0],
+  ];
+  function radianMini(f) {
+    if (f.estado_dian !== 'validada') return '<span class="muted">—</span>';
+    const r = radian(f);
+    const chip = (k, ev, label) => `<span class="rad ${ev ? 'ok' : ''}" title="${esc(F.EVENTOS[k].etiqueta)}${ev ? ' · ' + fh(ev.en) : ''}">${k}${ev ? ' ✓' : ''}</span>`;
+    const ac = r.e33 ? '<span class="rad ok" title="Aceptación expresa">033 ✓</span>' : (r.e34 ? '<span class="rad ok" title="Aceptación tácita">034 ✓</span>' : (r.tacita ? `<span class="rad ${r.tacita.disponible ? 'go' : 'wait'}" title="034 · opcional, por confirmar: la tácita se cumpliría el ${fmtFechaCorta(r.tacita.desde)}${r.tacita.disponible ? '' : ' (el cliente puede aceptar o reclamar hasta el ' + fmtFechaCorta(r.tacita.plazo) + ')'}">034 ${r.tacita.disponible ? '· opcional' : '⏳'}</span>` : '<span class="rad">033/034</span>'));
+    return `<div class="rad-row">${chip('030', r.e30)}${chip('032', r.e32)}${ac}</div>`;
+  }
+  function asientoTxt(f) {
+    if (f.estado_dian !== 'validada') return '<span class="muted">Al validarse</span>';
+    const a = f.asiento ? D.archivos_plano.find((x) => x.id === f.asiento) : null;
+    if (!a) return '<span class="ent wait">Por generar</span>';
+    return a.estado === 'importado' ? '<span class="badge ok">Importado</span>' : '<span class="badge info">Descargado</span>';
+  }
+  function renderEmitidas() {
+    const todas = S.facturas.filter((f) => f.periodo === state.periodo).sort((a, b) => a.consecutivo - b.consecutivo);
+    const ff = FILTROS.find((x) => x[0] === state.filtro) || FILTROS[0];
+    const vis = todas.filter(ff[2]);
+    const tot = vis.reduce((a, f) => a + f.total, 0);
+    return `<section class="card">
+      <div class="card-head" style="flex-wrap:wrap"><div><h2>Facturas electrónicas de ${esc(D.byId(D.periodos, state.periodo).nombre.toLowerCase())}<small>${todas.length} emitidas · ${fmtCOP(todas.reduce((a, f) => a + f.total, 0))}</small></h2><small class="muted">Haga clic en una factura para ver su CUFE, sus documentos, la entrega, los eventos RADIAN, las notas y el asiento en Helisa.</small></div>
+        <div class="filters">${FILTROS.map(([k, t, fn]) => `<button type="button" class="chip${state.filtro === k ? ' on' : ''}" data-f="${k}">${t}<b>${todas.filter(fn).length}</b></button>`).join('')}</div></div>
+      <div class="table-wrap"><table class="tbl em">
+        <thead><tr><th>Factura</th><th>Cliente</th><th>Fecha</th><th class="num">Total</th><th>Estado DIAN</th><th>Entrega</th><th>RADIAN</th><th>Asiento Helisa</th><th class="num">Saldo</th></tr></thead>
+        <tbody>${vis.length ? vis.map((f) => { const c = cliente(f.cliente); const en = ENTREGA[f.entrega.estado] || ['—', '']; const proc = S.procesando.has(f.id); return `<tr class="row" data-ver="${f.id}" tabindex="0">
+          <td><span class="mono"><b>${esc(f.numero)}</b></span>${f.nueva ? ' <span class="badge info plain">nueva</span>' : ''}<span class="sub mono" title="CUFE de prueba">${esc(corto(f.cufe, 8))}</span></td>
+          <td><div class="who"><b>${esc(c.nombre_comercial)}</b><small>${esc(f.lote)}</small></div></td>
+          <td>${fmtFechaCorta(f.fecha)}<span class="sub">${f.forma_pago === 'Contado' ? 'contado' : 'vence ' + fmtFechaCorta(f.vence)}</span></td>
+          <td class="num"><b>${fmtCOP(f.total)}</b></td>
+          <td>${proc ? '<span class="badge info"><span class="spin"></span> Enviada</span>' : badgeFE(f.estado_dian)}${f.rechazo ? '<span class="sub" style="color:var(--danger)">rechazada y reenviada</span>' : ''}${notasDe(f.id).length ? `<span class="sub">${notasDe(f.id).map((n) => esc(n.numero)).join(', ')}</span>` : ''}</td>
+          <td><span class="ent ${f.entrega.reentrega_en ? '' : en[1]}">${f.entrega.reentrega_en ? 'Impresa (correo rebotó)' : en[0]}</span></td>
+          <td>${radianMini(f)}</td>
+          <td>${asientoTxt(f)}</td>
+          <td class="num">${f.estado_dian === 'validada' ? fmtCOP(saldo(f)) : '<span class="muted">—</span>'}</td>
+        </tr>`; }).join('') : `<tr><td colspan="9" class="muted" style="padding:18px">Ninguna factura con el filtro «${esc(ff[1])}».</td></tr>`}
+        ${vis.length ? `<tr class="total"><td colspan="3">${vis.length} factura${vis.length > 1 ? 's' : ''}</td><td class="num">${fmtCOP(tot)}</td><td colspan="5"></td></tr>` : ''}</tbody>
+      </table></div>
+    </section>
+    <div class="grid cols-3" style="margin-top:14px">
+      <div class="card pad"><div class="eyebrow">Lotes del periodo</div>${S.lotes.filter((l) => l.periodo === state.periodo).map((l) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px"><span style="min-width:0"><b class="mono">${esc(l.id)}</b><small class="muted" style="display:block">${fh(l.creado_en)} · ${esc(l.resultado)}</small></span><span class="num" style="white-space:nowrap;text-align:right">${fmtCOP(l.total)}<small class="muted" style="display:block">${l.facturas.length} factura${l.facturas.length === 1 ? '' : 's'}</small></span></div>`).join('') || '<p class="muted" style="font-size:12.5px;margin-top:6px">Sin lotes.</p>'}</div>
+      <div class="card pad"><div class="eyebrow">Qué devuelve el proveedor</div><ul class="rules" style="margin-top:8px"><li><b>CUFE</b> de 96 caracteres y <b>QR</b> con la consulta de la DIAN.</li><li><b>XML</b> firmado (UBL 2.1) dentro del contenedor AttachedDocument con la respuesta de la DIAN.</li><li><b>PDF</b> (representación gráfica) y el envío al correo de recepción del cliente.</li></ul></div>
+      <div class="card pad"><div class="eyebrow">Si algo falla</div><ul class="rules" style="margin-top:8px"><li><b>Rechazada:</b> se corrige el dato y se reenvía con el mismo número (una factura rechazada no consume el consecutivo).</li><li><b>Contingencia:</b> la DIAN no responde; el proveedor la expide en contingencia, reintenta y la transmite dentro de las 48 horas siguientes a que vuelva el servicio.</li><li><b>Proveedor caído:</b> la factura espera en cola; nada se pierde ni se duplica.</li></ul></div>
+    </div>`;
+  }
+  function bindEmitidas() {
+    $$('#content [data-f]').forEach((b) => b.addEventListener('click', () => { state.filtro = b.dataset.f; render(); }));
+  }
+
+  // ---------- detalle de la factura (panel lateral) ----------
+  function xmlFE(f) {
+    const c = cliente(f.cliente); const fi = c.fiscal || {};
+    const n2 = (v) => Number(v).toFixed(2);
+    const L = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<!-- EXTRACTO SIMULADO · ambiente de pruebas · sin validez fiscal -->',
+      '<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" ...>',
+      '  <cbc:UBLVersionID>UBL 2.1</cbc:UBLVersionID>',
+      '  <cbc:ProfileExecutionID>2</cbc:ProfileExecutionID> <!-- 2 = pruebas -->',
+      `  <cbc:ID>${f.numero.replace(' ', '')}</cbc:ID>`,
+      `  <cbc:UUID schemeName="CUFE-SHA384">${f.cufe}</cbc:UUID>`,
+      `  <cbc:IssueDate>${f.fecha}</cbc:IssueDate>`,
+      `  <cbc:DueDate>${f.vence}</cbc:DueDate>`,
+      '  <cbc:InvoiceTypeCode>01</cbc:InvoiceTypeCode>',
+      ...(f.notas_doc || []).map((t) => `  <cbc:Note>${t}</cbc:Note>`),
+      '  <cbc:DocumentCurrencyCode>COP</cbc:DocumentCurrencyCode>',
+      '  <cac:AccountingSupplierParty> <!-- Comserva S.A.S. -->',
+      `    <cbc:CompanyID schemeName="31" schemeID="${D.empresa.nit.slice(-1)}">${D.empresa.nit.replace(/\D/g, '').slice(0, -1)}</cbc:CompanyID>`,
+      '  </cac:AccountingSupplierParty>',
+      '  <cac:AccountingCustomerParty>',
+      `    <cbc:AdditionalAccountID>${fi.tipo_persona === 'natural' ? 2 : 1}</cbc:AdditionalAccountID>`,
+      `    <cbc:RegistrationName>${c.razon_social}</cbc:RegistrationName>`,
+      `    <cbc:CompanyID schemeName="31" schemeID="${c.dv}">${c.nit}</cbc:CompanyID>`,
+      `    <cbc:TaxLevelCode>${fi.responsabilidades || ''}</cbc:TaxLevelCode>`,
+      `    <cbc:ID>${fi.municipio_dane || ''}</cbc:ID> <!-- municipio DANE -->`,
+      '  </cac:AccountingCustomerParty>',
+      `  <cac:PaymentMeans><cbc:ID>${f.forma_pago === 'Contado' ? 1 : 2}</cbc:ID><cbc:PaymentDueDate>${f.vence}</cbc:PaymentDueDate></cac:PaymentMeans>`,
+      `  <cac:TaxTotal><cbc:TaxAmount currencyID="COP">${n2(f.iva)}</cbc:TaxAmount> <!-- IVA 19 % --></cac:TaxTotal>`,
+      `  <cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="COP">${n2(f.subtotal)}</cbc:LineExtensionAmount><cbc:PayableAmount currencyID="COP">${n2(f.total)}</cbc:PayableAmount></cac:LegalMonetaryTotal>`,
+      ...(f.lineas_fe || []).map((l) => `  <cac:InvoiceLine><cbc:ID>${l.n}</cbc:ID><cbc:InvoicedQuantity unitCode="${l.unidad}">${l.cantidad}</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="COP">${n2(l.base)}</cbc:LineExtensionAmount><cac:Item><cbc:Description>${l.descripcion}</cbc:Description></cac:Item></cac:InvoiceLine>`),
+      '  <ext:UBLExtensions> … firma XAdES del certificado de Comserva (la hace el proveedor) … </ext:UBLExtensions>',
+      '</Invoice>',
+    ];
+    return L.map((x) => esc(x).replace(/(&lt;!--.*?--&gt;)/g, '<span class="c">$1</span>').replace(/(&lt;\/?[a-zA-Z:]+)/g, '<span class="t">$1</span>')).join('\n');
+  }
+  function abrirFactura(id, opts = {}) {
+    const f = facturaS(id); if (!f) return;
+    state.drawer = id; state.xml = !!opts.xml;
+    const c = cliente(f.cliente); const r = radian(f); const notas = notasDe(f.id);
+    const a = f.asiento ? D.archivos_plano.find((x) => x.id === f.asiento) : null;
+    const rcs = D.recibos.filter((x) => (x.aplicaciones || []).some((y) => y.factura === f.id));
+    const proc = S.procesando.has(f.id);
+    const st = proc ? 'enviada' : f.estado_dian;
+    const pasos = [
+      { t: 'Prefactura', sub: fc(f.revisada_en) + ' · revisada', fe: 'validada' },
+      { t: 'Enviada', sub: fc(f.enviada_en) + ' · ' + f.lote, fe: 'validada' },
+      ...(f.rechazo ? [{ t: 'Rechazada', sub: fc(f.rechazo.en), fe: 'rechazada' }, { t: 'Reenviada', sub: fc(f.rechazo.corregido_en), fe: 'validada' }] : []),
+      st === 'contingencia' ? { t: 'Contingencia', sub: fc(f.contingencia.en), fe: 'contingencia' } : (st === 'validada' || st === 'anulada' ? { t: 'Validada DIAN', sub: fc(f.validada_en), fe: 'validada' } : { t: 'Validada DIAN', sub: 'esperando', fe: 'pend' }),
+      st === 'anulada' ? { t: 'Anulada', sub: 'con nota crédito', fe: 'anulada' }
+        : (f.entrega.reentrega_en ? { t: 'Entregada', sub: fc(f.entrega.reentrega_en) + ' · impresa', fe: 'validada' }
+          : { t: 'Entregada', sub: f.entrega.en ? fc(f.entrega.en) : (ENTREGA[f.entrega.estado] || ['—'])[0], fe: f.entrega.en && f.entrega.estado !== 'pendiente' ? (f.entrega.estado === 'rebotado' ? 'contingencia' : 'validada') : 'pend' }),
+    ];
+    const evRow = (k, ev, extra) => `<li class="${ev ? 'done' : (extra && extra.go ? 'go' : '')}"><span class="code">${k}</span><div><b>${esc(F.EVENTOS[k].etiqueta)}</b><small>${ev ? `${fh(ev.en)} · ${esc(ev.por)}` : esc((extra && extra.txt) || F.EVENTOS[k].quien)}</small></div>${extra && extra.btn ? extra.btn : (ev ? `<span class="badge ok">${k === '034' ? 'Registrado' : 'Recibido'}</span>` : '<span class="badge plain">Sin evento</span>')}</li>`;
+    const tac = r.tacita;
+    const docs = [
+      ['PDF', `Representación gráfica · ${f.numero}`, `SHA-256 ${corto(f.hash_pdf, 12)} · con QR y CUFE`, f.consecutivo <= 14 ? `<a class="btn sm" href="../documentos/factura-electronica.html#${f.id}">Abrir</a>` : '<span class="muted-note" title="La demostración no guarda: la representación gráfica se ve en las facturas RHD 1 a 14">Al recargar no existe</span>'],
+      ['XML', `XML firmado UBL 2.1 · ${f.numero.replace(' ', '')}.xml`, `SHA-256 ${corto(f.hash_xml, 12)}`, `<button type="button" class="btn sm" data-xml>${state.xml ? 'Ocultar' : 'Ver extracto'}</button>`],
+      ['ZIP', 'Contenedor AttachedDocument + PDF (lo que recibe el cliente)', `SHA-256 ${corto(f.hash_zip, 12)} · máximo 2 MB`, '<button type="button" class="btn sm ghost" data-demo="zip">Descargar</button>'],
+      ...(f.validada_en ? [['DIAN', 'Respuesta de la DIAN (ApplicationResponse)', esc(f.respuesta_dian || 'Documento validado por la DIAN (respuesta simulada)'), '']] : []),
+    ];
+    $('#overlay').innerHTML = `<div class="drawer-backdrop" data-cerrar></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="d-head">
+          <div style="min-width:0">
+            <div class="eyebrow">Factura electrónica de venta · ${esc(f.lote)} · datos de prueba</div>
+            <div class="no" id="d-title">${esc(f.numero)}</div>
+            <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">${proc ? '<span class="badge info"><span class="spin"></span> Enviada</span>' : badgeFE(st)}<span class="muted" style="font-size:13px">${esc(c.nombre_comercial)} · ${fmtCOP(f.total)} · ${esc(f.forma_pago)}</span></div>
+          </div>
+          <button type="button" class="close" data-cerrar aria-label="Cerrar">✕</button>
+        </div>
+        <div class="d-body">
+          <section><div class="steps-h" style="--n:${pasos.length}">${pasos.map((p) => `<div class="s" data-fe="${p.fe}"><i></i><b>${esc(p.t)}</b>${esc(p.sub)}</div>`).join('')}</div></section>
+          ${f.rechazo ? `<div class="callout info"><b>Rechazada el ${fh(f.rechazo.en)} (rechazo simulado).</b> ${esc(f.rechazo.motivo)} ${esc(f.rechazo.correccion)}</div>` : ''}
+          ${st === 'contingencia' ? `<div class="callout warn"><b>En contingencia desde ${fh(f.contingencia.en)}.</b> ${esc(f.contingencia.motivo)}<div style="margin-top:8px"><button type="button" class="btn sm" data-consultar="${f.id}">Consultar el estado al proveedor</button></div></div>` : ''}
+          <section>
+            <h4>CUFE y código QR <span class="badge warn plain">de prueba</span></h4>
+            <div class="cufe-row"><div class="fe-cufe"><b>CUFE (SHA-384, ficticio)</b>${esc(f.cufe)}</div>${D.qrSVG(f.cufe, 84)}</div>
+            <p class="muted-note" style="margin-top:6px">El QR lleva la consulta de la DIAN en el ambiente de habilitación: catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=&lt;CUFE&gt;. Con un CUFE ficticio la consulta no devuelve nada.</p>
+          </section>
+          <section><h4>Documentos</h4><ul class="docs">${docs.map(([ext, t, s, act]) => `<li><span class="ext">${ext}</span><div><b>${esc(t)}</b><small>${s}</small></div>${act}</li>`).join('')}</ul>
+            ${state.xml ? `<pre class="xml" style="margin-top:8px">${xmlFE(f)}</pre>` : ''}</section>
+          <section><h4>Entrega al cliente</h4>
+            <dl class="kv2"><dt>Medio</dt><dd>${f.entrega.medio === 'correo' ? `Correo de recepción · ${esc(f.entrega.destino || c.email || '—')}` : 'Impresa (el cliente no informó correo)'}</dd><dt>Estado</dt><dd>${esc((ENTREGA[f.entrega.estado] || ['—'])[0])}${f.entrega.en ? ' · ' + fh(f.entrega.en) : ''}</dd>${f.entrega.nota ? `<dt>Nota</dt><dd>${esc(f.entrega.nota)}</dd>` : ''}</dl>
+            ${f.entrega.medio === 'correo' && st === 'validada' ? '<div class="acts" style="margin-top:8px"><button type="button" class="btn sm" data-demo="reenviar">Reenviar el correo</button></div>' : ''}
+          </section>
+          <section><h4>Eventos RADIAN <span>${esc(F.TITULO_LABEL[r.titulo])}</span></h4>
+            ${st === 'validada' || st === 'anulada' ? `<ul class="ev-list">
+              ${evRow('030', r.e30)}${evRow('032', r.e32)}
+              ${r.e33 ? evRow('033', r.e33) : (r.e34 ? evRow('034', r.e34) : (tac ? evRow('034', null, { go: tac.disponible, txt: tac.disponible ? `034 · opcional, por confirmar: la tácita se cumpliría el ${fmtFechaCorta(tac.desde)} (el cliente no aceptó ni reclamó en 3 días hábiles). No se registra mientras Comserva no lo necesite.` : `El cliente puede aceptar o reclamar hasta el ${fmtFechaCorta(tac.plazo)} (${tac.faltan} día${tac.faltan === 1 ? '' : 's'} hábil${tac.faltan === 1 ? '' : 'es'}); la tácita se cumpliría el ${fmtFechaCorta(tac.desde)} (034 · opcional, por confirmar)`, btn: tac.disponible ? `<button type="button" class="btn sm ghost" data-034="${f.id}" title="Opcional, por confirmar: solo si Comserva negocia o cobra ejecutivamente sus facturas">Registrar (opcional)</button>` : '<span class="badge warn">Plazo corriendo</span>' }) : evRow('033', null, { txt: 'Aceptación expresa del cliente (033); la tácita se cumpliría a los 3 días hábiles del 032 (034 · opcional, por confirmar)' })))}
+            </ul>` : '<p class="muted-note">Los eventos llegan cuando la DIAN valida la factura.</p>'}
+          </section>
+          <section><h4>Notas crédito y débito ${r.notas_permitidas && st === 'validada' ? `<button type="button" class="btn sm" data-nueva-nota="${f.id}">Nueva nota</button>` : ''}</h4>
+            ${notas.length ? `<ul class="docs">${notas.map((n) => `<li><span class="ext">${n.tipo}</span><div><b>${esc(n.numero)} · ${fmtCOP(n.total)}</b><small>${esc(n.concepto_txt)} · ${esc(F.ESTADO[n.estado])}${n.cude ? ' · CUDE ' + esc(corto(n.cude, 10)) : ''}</small></div><a class="btn sm ghost" href="../documentos/nota-credito.html#${n.id}">PDF</a></li>`).join('')}</ul>` : `<p class="muted-note">${r.notas_permitidas ? 'Sin notas. Se pueden emitir mientras la factura no tenga aceptación (033 o 034).' : esc(r.motivo_sin_notas || 'Sin notas.')}</p>`}
+          </section>
+          <section><h4>Contabilidad en Helisa y recaudo</h4>
+            <dl class="kv2">
+              <dt>Asiento</dt><dd>${a ? `<a href="planos.html#${a.id}" class="mono">${esc(a.nombre)}</a> · ${esc(D.ESTADO_PLANO_LABEL[a.estado])}` : (st === 'validada' ? 'Por generar en Contabilidad en Helisa' : 'Se genera cuando la DIAN valide la factura')}</dd>
+              <dt>Movimiento</dt><dd>D 1305 ${fmtCOP(f.total)} · C ingreso ${fmtCOP(f.subtotal)} · C IVA ${fmtCOP(f.iva)} · libros F y N</dd>
+              <dt>Recibos</dt><dd>${rcs.length ? rcs.map((x) => `${x.consecutivo} (${esc(D.ESTADO_RECIBO_LABEL[x.estado])}${x.recibo_helisa ? ' · ' + esc(x.recibo_helisa) : ''})`).join(', ') : (f.pagada_otro_medio ? esc(f.pago_otro_medio_nota || 'Pago por otro medio') : 'Sin pagos')}</dd>
+              <dt>Saldo de referencia</dt><dd><b>${st === 'validada' ? fmtCOP(saldo(f)) : '—'}</b></dd>
+            </dl>
+          </section>
+        </div>
+        <div class="d-foot"><a class="btn" href="trazabilidad.html#${c.id}|${f.periodo}|fe">Ver trazabilidad</a>${f.consecutivo <= 14 ? `<a class="btn primary" href="../documentos/factura-electronica.html#${f.id}">Representación gráfica (PDF)</a>` : ''}</div>
+      </aside>`;
+    $('#overlay .close').focus();
+    $$('#overlay [data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDrawer));
+    const bx = $('#overlay [data-xml]'); if (bx) bx.addEventListener('click', () => abrirFactura(id, { xml: !state.xml }));
+    $$('#overlay [data-demo]').forEach((b) => b.addEventListener('click', () => toast(b.dataset.demo === 'zip' ? 'Demostración: el ZIP lleva el XML AttachedDocument y el PDF; aquí no se descarga nada.' : `Correo reenviado a ${f.entrega.destino || c.email} (simulado).`)));
+    const bc = $('#overlay [data-consultar]'); if (bc) bc.addEventListener('click', () => consultarEstado(f.id));
+    const b34 = $('#overlay [data-034]'); if (b34) b34.addEventListener('click', () => modal034(f.id));
+    const bn = $('#overlay [data-nueva-nota]'); if (bn) bn.addEventListener('click', () => modalNota(f.id));
+  }
+  function cerrarDrawer() { $('#overlay').innerHTML = ''; state.drawer = null; }
+  function consultarEstado(id) {
+    const f = facturaS(id); S.procesando.add(id); render(); abrirFactura(id);
+    setTimeout(() => {
+      S.procesando.delete(id);
+      f.estado_dian = 'validada'; f.validada_en = ahora(); f.contingencia = null; f.respuesta_dian = 'Documento validado por la DIAN después de la contingencia (respuesta simulada)';
+      f.entrega = { ...f.entrega, estado: 'enviado', en: ahora(), nota: '' };
+      render(); abrirFactura(id);
+      toast(`${f.numero}: la DIAN respondió y la validó (simulado). Correo enviado; ya se puede contabilizar y recibir pagos.`);
+    }, 1500);
+  }
+  function modal034(id) {
+    const f = facturaS(id); const c = cliente(f.cliente); const r = radian(f);
+    openModal(`<div class="modal-head" id="m-title">Registrar la aceptación tácita (034) · ${esc(f.numero)}</div>
+      <div class="modal-body">
+        <p>${esc(c.nombre_comercial)} recibió el servicio (032) el ${fh(r.e32.en)} y no aceptó ni reclamó dentro de los 3 días hábiles siguientes (hasta el ${fmtFecha(r.tacita.plazo)}): la tácita se cumpliría el ${fmtFecha(r.tacita.desde)}.</p>
+        <div class="callout warn"><b>034 · opcional, por confirmar.</b> Mientras Comserva no lo necesite, no se registra. Si se registra, Comserva deja constancia en RADIAN, bajo la gravedad de juramento, de la aceptación tácita. Solo hace falta si Comserva negocia o cobra ejecutivamente sus facturas. Después de la aceptación ya no se pueden hacer notas crédito ni débito sobre esta factura.</div>
+        <label class="chk" style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="m-ack"> Entiendo que la factura ya no admitirá notas</label>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="m-ok" disabled>Registrar 034</button></div>`);
+    $('#m-ack').addEventListener('change', (e) => { $('#m-ok').disabled = !e.target.checked; });
+    $('#m-ok').addEventListener('click', () => { f.eventos.push({ codigo: '034', en: ahora(), por: 'Comserva (registrado por el proveedor; simulado)' }); closeModal(); render(); if (state.drawer) abrirFactura(state.drawer); toast(`${f.numero}: aceptación tácita (034) registrada (simulado). Título valor completo.`); });
+  }
+
+  // ---------- 3 · EVENTOS RADIAN ----------
+  function renderRadian() {
+    const lista = S.facturas.filter((f) => f.periodo === state.periodo && f.estado_dian === 'validada').sort((a, b) => a.consecutivo - b.consecutivo);
+    const cel = (ev) => (ev ? `<span class="rad ok">${fc(ev.en)}</span>` : '<span class="muted">—</span>');
+    return `<div class="ev-cards">${['030', '031', '032', '033', '034'].map((k) => `<div class="card ev-card"><span class="code">${k}</span><b>${esc(F.EVENTOS[k].etiqueta)}</b><small>${esc(k === '034' ? 'Opcional, por confirmar: Comserva la registraría si el cliente no acepta ni reclama en 3 días hábiles después del 032. Mientras no lo necesite, no se registra; el sistema muestra la fecha en que se cumpliría la tácita.' : (k === '031' ? 'El cliente objeta la factura; se resuelve con nota crédito o débito.' : (k === '033' ? 'El cliente acepta la factura. Después ya no caben notas.' : F.EVENTOS[k].quien + ' lo genera desde su sistema; llega por el proveedor.')))}</small></div>`).join('')}</div>
+    <section class="card">
+      <div class="card-head"><div><h2>Eventos por factura<small>${lista.length} validada${lista.length === 1 ? '' : 's'}</small></h2><small class="muted">Los eventos los genera el cliente (si es facturador electrónico) y llegan por el proveedor. Para que la factura sea título valor hacen falta el acuse (030), el recibo del servicio (032) y la aceptación expresa (033) o tácita registrada (034, opcional, por confirmar). Días hábiles sin sábados, domingos ni festivos.</small></div></div>
+      <div class="table-wrap"><table class="tbl rad-t">
+        <thead><tr><th>Factura</th><th>Cliente</th><th>030 Acuse</th><th>032 Recibo del servicio</th><th>033 / 034 Aceptación</th><th>Título valor</th><th>Notas</th></tr></thead>
+        <tbody>${lista.map((f) => { const r = radian(f); const c = cliente(f.cliente);
+          const ac = r.e33 ? `<span class="rad ok">033 · ${fc(r.e33.en)}</span>` : (r.e34 ? `<span class="rad ok">034 · ${fc(r.e34.en)}</span>` : (r.tacita ? (r.tacita.disponible ? `<span class="rad go">034 · opcional, por confirmar</span><span class="sub">la tácita se cumpliría el ${fmtFechaCorta(r.tacita.desde)} · <button type="button" class="btn sm ghost" data-034="${f.id}">Registrar (opcional)</button></span>` : `<span class="rad wait">⏳ hasta ${fmtFechaCorta(r.tacita.plazo)}</span><span class="sub">${r.tacita.faltan} día${r.tacita.faltan === 1 ? '' : 's'} hábil${r.tacita.faltan === 1 ? '' : 'es'} para aceptar o reclamar; la tácita se cumpliría el ${fmtFechaCorta(r.tacita.desde)} (034 · opcional)</span>`) : '<span class="muted">—</span>'));
+          return `<tr><td><button type="button" class="btn sm ghost mono" data-ver="${f.id}">${esc(f.numero)}</button></td><td>${esc(c.nombre_comercial)}<span class="sub">${f.entrega.medio === 'impresa' || !r.e30 ? (f.entrega.medio === 'impresa' ? 'entrega impresa · sin eventos' : 'sin acuse todavía') : 'facturador electrónico'}</span></td><td>${cel(r.e30)}</td><td>${cel(r.e32)}</td><td>${ac}</td><td>${r.titulo === 'completo' ? '<span class="badge ok">Completo</span>' : (r.titulo === 'en_curso' ? '<span class="badge info">En curso</span>' : '<span class="badge plain">Sin eventos</span>')}</td><td>${r.notas_permitidas ? '<span class="fis ok">Permitidas</span>' : '<span class="fis no" title="' + esc(r.motivo_sin_notas) + '">No admite</span>'}</td></tr>`; }).join('') || '<tr><td colspan="7" class="muted" style="padding:18px">Sin facturas validadas en el periodo.</td></tr>'}</tbody>
+      </table></div>
+      <div class="card-body" style="border-top:1px solid var(--border)"><div class="callout"><b>Cómo se cuenta el plazo de la aceptación tácita.</b> Desde el día hábil siguiente al evento 032 se cuentan 3 días hábiles; si en ese plazo el cliente no acepta (033) ni reclama (031), la tácita se cumple ese día. Registrarla con el 034 es opcional, por confirmar: solo hace falta si Comserva negocia o cobra ejecutivamente sus facturas. Festivos tenidos en cuenta en la demostración: ${F.FESTIVOS.filter((d) => d >= '2026-09-01').map((d) => fmtFechaCorta(d).slice(0, 5)).join(', ')} (calendario de 2026, por confirmar).</div></div>
+    </section>`;
+  }
+
+  // ---------- 4 · NOTAS CRÉDITO Y DÉBITO ----------
+  function renderNotas() {
+    const lista = S.notas.slice().sort((a, b) => b.solicitada_en.localeCompare(a.solicitada_en));
+    return `<div style="display:grid;gap:14px">
+      <section class="card">
+        <div class="card-head"><div><h2>Notas crédito y débito<small>${lista.length} · numeración interna</small></h2><small class="muted">Toda nota referencia el prefijo, el número y el CUFE de la factura, lleva un concepto de corrección de la DIAN y la aprueba Gerencia.</small></div><button type="button" class="btn primary" data-nueva-nota="">Nueva nota</button></div>
+        <div class="table-wrap"><table class="tbl nt">
+          <thead><tr><th>Nota</th><th>Factura</th><th>Concepto y motivo</th><th class="num">Valor</th><th>Estado</th><th></th></tr></thead>
+          <tbody>${lista.map((n) => { const f = facturaS(n.factura); const c = cliente(f.cliente); return `<tr>
+            <td><b class="mono">${esc(n.numero)}</b><span class="sub">${n.tipo === 'NC' ? 'Nota crédito' : 'Nota débito'}</span></td>
+            <td><button type="button" class="btn sm ghost mono" data-ver="${f.id}">${esc(f.numero)}</button><span class="sub">${esc(c.nombre_comercial)} · CUFE ${esc(corto(f.cufe, 8))}</span></td>
+            <td style="min-width:260px;max-width:420px"><b style="font-weight:600">${esc(n.concepto)} · ${esc(n.concepto_txt)}</b><span class="sub">${esc(n.motivo)}</span></td>
+            <td class="num" style="white-space:nowrap"><b>${n.tipo === 'NC' ? '−' : '+'}${fmtCOP(n.total)}</b><span class="sub">IVA ${fmtCOP(n.iva)}</span></td>
+            <td>${S.procesando.has(n.id) ? '<span class="badge info"><span class="spin"></span> Enviada</span>' : badgeFE(n.estado)}<span class="sub">${n.estado === 'por_aprobar' ? 'solicitó ' + esc(n.solicitada_por.split(' ')[0]) + ' · ' + fc(n.solicitada_en) : (n.aprobada_por ? 'aprobó ' + esc(n.aprobada_por.split(' ')[0]) + ' · ' + fc(n.aprobada_en) : '')}</span></td>
+            <td style="white-space:nowrap">${n.estado === 'por_aprobar' ? `<button type="button" class="btn sm primary" data-aprobar="${n.id}">Aprobar (Gerencia)</button>` : `<a class="btn sm ghost" href="../documentos/nota-credito.html#${n.id}">PDF</a>`}</td>
+          </tr>`; }).join('')}</tbody>
+        </table></div>
+      </section>
+      <div class="grid cols-2">
+      <section class="card pad">
+        <div class="eyebrow">Reglas de las notas</div>
+        <ul class="rules" style="margin-top:10px">
+          <li>Una factura electrónica <b>no se anula de otra forma</b>: la anulación es una nota crédito con el concepto 2; el número anulado no se reutiliza.</li>
+          <li>La nota lleva el <b>CUFE</b> de la factura que corrige y recibe su propio <b>CUDE</b> cuando la DIAN la valida.</li>
+          <li>La solicita Facturación y la <b>aprueba Gerencia</b> (${esc(D.usuarios.find((u) => u.rol === 'gerencia').nombre)}).</li>
+          <li><b>No se admite</b> después de la aceptación expresa (033) o de la tácita registrada (034, opcional), ni por más del saldo de la factura.</li>
+          <li>En Helisa se contabiliza <b>al revés de la factura</b> (crédito a 1305) con el mismo archivo de movimiento contable.</li>
+          <li>Numeración consecutiva <b>interna</b> (NC 1, NC 2…, ND 1…): no la autoriza la DIAN.</li>
+        </ul>
+      </section>
+      <section class="card pad">
+        <div class="eyebrow">Conceptos de corrección de la DIAN</div>
+        <div class="grid cols-2" style="margin-top:10px;gap:10px">
+          <div><b style="font-size:13px">Nota crédito</b><ul class="rules" style="margin-top:6px">${Object.entries(F.CONCEPTOS_NC).map(([k, v]) => `<li><b class="mono">${k}</b> · ${esc(v)}</li>`).join('')}</ul></div>
+          <div><b style="font-size:13px">Nota débito</b><ul class="rules" style="margin-top:6px">${Object.entries(F.CONCEPTOS_ND).map(([k, v]) => `<li><b class="mono">${k}</b> · ${esc(v)}</li>`).join('')}</ul></div>
+        </div>
+        <p class="muted-note" style="margin-top:10px">Códigos de la tabla de la DIAN: confirmarlos con el proveedor elegido.</p>
+      </section>
+      </div>
+    </div>`;
+  }
+  function modalNota(fid) {
+    const elegibles = S.facturas.filter((f) => f.estado_dian === 'validada').sort((a, b) => b.consecutivo - a.consecutivo);
+    const opt = (f) => { const r = radian(f); const ok = r.notas_permitidas; return `<option value="${f.id}" ${f.id === fid ? 'selected' : ''} ${ok ? '' : 'disabled'}>${esc(f.numero)} · ${esc(cliente(f.cliente).nombre_comercial)} · ${fmtCOP(f.total)}${ok ? '' : ' · con aceptación: no admite notas'}</option>`; };
+    const primera = (elegibles.find((f) => f.id === fid && radian(f).notas_permitidas) || elegibles.find((f) => radian(f).notas_permitidas) || {}).id || '';
+    openModal(`<div class="modal-head" id="m-title">Nueva nota crédito o débito</div>
+      <div class="modal-body">
+        <div class="field"><label for="n-f" class="req">Factura que se corrige</label><select class="select" id="n-f">${elegibles.map(opt).join('')}</select><span class="help" id="n-f-help"></span></div>
+        <div class="field"><label>Tipo</label><div class="seg" id="n-tipo"><button type="button" class="on" data-t="NC">Nota crédito</button><button type="button" data-t="ND">Nota débito</button></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="n-c" class="req">Concepto de corrección (DIAN)</label><select class="select" id="n-c"></select></div>
+          <div class="field"><label for="n-v" class="req">Valor sin IVA</label><input class="input num" id="n-v" inputmode="decimal" placeholder="10.000"><span class="help" id="n-v-help">IVA 19 % sobre este valor.</span></div>
+        </div>
+        <div class="field"><label for="n-m" class="req">Motivo (queda en la nota y en la auditoría)</label><textarea class="textarea" id="n-m" rows="3" placeholder="Ejemplo: el cliente devolvió 2 kg cobrados de más en la visita del 15/09"></textarea></div>
+        <div class="callout">Queda <b>por aprobar</b>. Al aprobarla Gerencia, el proveedor la envía a la DIAN y vuelve con su CUDE; en Helisa se contabiliza al revés de la factura.</div>
+        <div class="err" id="n-err" aria-live="polite"></div>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="n-ok">Solicitar la nota</button></div>`, true);
+    if (primera) $('#n-f').value = primera;
+    let tipo = 'NC';
+    const conceptos = () => { const T = tipo === 'NC' ? F.CONCEPTOS_NC : F.CONCEPTOS_ND; $('#n-c').innerHTML = Object.entries(T).map(([k, v]) => `<option value="${k}">${k} · ${esc(v)}</option>`).join(''); ajustar(); };
+    const ajustar = () => {
+      const f = facturaS($('#n-f').value); if (!f) return;
+      $('#n-f-help').textContent = `Saldo de referencia ${fmtCOP(saldo(f))} · CUFE ${corto(f.cufe, 10)}`;
+      const anul = tipo === 'NC' && $('#n-c').value === '2';
+      $('#n-v').disabled = anul; if (anul) $('#n-v').value = fmtNum(f.subtotal);
+      $('#n-v-help').textContent = anul ? `Anulación total: ${fmtCOP(f.subtotal)} + IVA ${fmtCOP(f.iva)} = ${fmtCOP(f.total)}` : 'IVA 19 % sobre este valor.';
+    };
+    $$('#n-tipo [data-t]').forEach((b) => b.addEventListener('click', () => { tipo = b.dataset.t; $$('#n-tipo [data-t]').forEach((x) => x.classList.toggle('on', x === b)); conceptos(); }));
+    $('#n-f').addEventListener('change', ajustar); $('#n-c').addEventListener('change', ajustar);
+    conceptos();
+    $('#n-ok').addEventListener('click', () => {
+      const f = facturaS($('#n-f').value); const err = $('#n-err');
+      if (!f) { err.textContent = 'Elija una factura validada que admita notas.'; return; }
+      const anul = tipo === 'NC' && $('#n-c').value === '2';
+      const base = anul ? f.subtotal : Number(String($('#n-v').value).replace(/\./g, '').replace(',', '.')) || 0;
+      if (!base) { err.textContent = 'Escriba el valor sin IVA.'; return; }
+      const iva = D.r2(base * 0.19), total = anul ? f.total : D.r2(base + iva);
+      if (tipo === 'NC' && total > saldo(f) + 0.005 && !anul) { err.textContent = `La nota crédito (${fmtCOP(total)}) supera el saldo de la factura (${fmtCOP(saldo(f))}).`; return; }
+      if ($('#n-m').value.trim().length < 15) { err.textContent = 'Explique el motivo (mínimo 15 caracteres).'; return; }
+      const nro = S.notas.filter((x) => x.tipo === tipo).length + 1;
+      const n = { id: `${tipo.toLowerCase()}-${nro}-s`, tipo, numero: `${tipo} ${nro}`, factura: f.id, cliente: f.cliente, periodo: f.periodo, concepto: $('#n-c').value, concepto_txt: (tipo === 'NC' ? F.CONCEPTOS_NC : F.CONCEPTOS_ND)[$('#n-c').value], motivo: $('#n-m').value.trim(), lineas: [], subtotal: anul ? f.subtotal : base, iva: anul ? f.iva : iva, total, estado: 'por_aprobar', solicitada_por: 'Lucrecia', solicitada_en: ahora(), aprobada_por: '', aprobada_en: '', cude: '', nueva: true };
+      S.notas.push(n); closeModal(); cerrarDrawer(); state.tab = 'notas'; render(); toast(`${n.numero} solicitada por ${fmtCOP(total)}: espera la aprobación de Gerencia.`);
+    });
+  }
+  function aprobarNota(id) {
+    const n = S.notas.find((x) => x.id === id); const f = facturaS(n.factura);
+    const r = radian(f);
+    openModal(`<div class="modal-head" id="m-title">Aprobar la ${esc(n.numero)} · ${esc(f.numero)}</div>
+      <div class="modal-body">
+        <p><b>${esc(n.concepto)} · ${esc(n.concepto_txt)}</b> por <b>${fmtCOP(n.total)}</b> a ${esc(cliente(f.cliente).nombre_comercial)}. Motivo: ${esc(n.motivo)}</p>
+        ${r.tacita && !r.tacita.disponible && !r.e34 ? `<div class="callout warn">El plazo para la aceptación tácita de la ${esc(f.numero)} vence el ${fmtFecha(r.tacita.plazo)}: la tácita se cumpliría el ${fmtFecha(r.tacita.desde)} (034 · opcional, por confirmar). Si Comserva la registra, ya no se podrá emitir esta nota.</div>` : ''}
+        ${n.concepto === '2' && n.tipo === 'NC' ? '<div class="callout danger">Es una <b>anulación</b>: la factura queda anulada (su número no se reutiliza) y el cierre del cliente se puede reabrir para facturar de nuevo.</div>' : ''}
+        <p class="muted-note">Aprueba ${esc(D.usuarios.find((u) => u.rol === 'gerencia').nombre)} con su usuario (en la demostración, con un clic).</p>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn danger" id="m-no">Rechazar la solicitud</button><button type="button" class="btn primary" id="m-ok">Aprobar y emitir</button></div>`);
+    $('#m-no').addEventListener('click', () => { S.notas = S.notas.filter((x) => x.id !== id); closeModal(); render(); toast(`${n.numero} rechazada por Gerencia: no se emite.`); });
+    $('#m-ok').addEventListener('click', () => {
+      closeModal(); n.aprobada_por = 'Diego'; n.aprobada_en = ahora(); n.estado = 'enviada'; S.procesando.add(n.id); render();
+      setTimeout(() => {
+        S.procesando.delete(n.id); n.estado = 'validada'; n.validada_en = ahora(); n.cude = F.cufe(n.numero + '|cude-s');
+        if (n.tipo === 'NC' && n.concepto === '2') f.estado_dian = 'anulada';
+        render(); toast(`${n.numero} validada por la DIAN (simulado) con su CUDE.${f.estado_dian === 'anulada' ? ` ${f.numero} quedó anulada.` : ''} Falta contabilizarla en Helisa.`);
+      }, 1400);
+    });
+  }
+
+  // ---------- 5 · CONFIGURACIÓN ----------
+  function renderConfig() {
+    const nm = F.numeracion(F.resoluciones[0], S.facturas.length);
+    const res = F.resoluciones;
+    const E = F.emisor;
+    return `<div class="cfg">
+      <section class="card">
+        <div class="card-head"><h2>Proveedor tecnológico</h2><span class="badge warn plain">Por confirmar</span></div>
+        <div class="card-body" style="display:grid;gap:12px">
+          <div class="prov">${F.proveedores.map((p) => `<label class="${S.config.proveedor === p.id ? 'on' : ''}"><input type="radio" name="prov" value="${p.id}" ${S.config.proveedor === p.id ? 'checked' : ''}><div><b>${esc(p.nombre)}</b><small>${esc(p.tipo)} · ${esc(p.nota)}</small></div></label>`).join('')}</div>
+          <p class="muted-note">El sistema habla con el proveedor por un adaptador: cambiar de proveedor es escribir un adaptador nuevo, no rehacer la facturación. En esta demostración el proveedor está <b>simulado</b>.</p>
+          <div class="field"><label>Ambiente</label><div class="seg"><button type="button" class="on">Pruebas (habilitación)</button><button type="button" disabled title="Requiere la habilitación ante la DIAN y el set de pruebas aprobado">Producción</button></div><span class="help">Producción se activa después de habilitar el software del proveedor ante la DIAN y aprobar el set de pruebas (≈ 1 a 3 semanas, por confirmar).</span></div>
+          <dl class="kv2"><dt>Envío al cliente</dt><dd>${esc(S.config.envia_correo)}</dd><dt>Reintentos</dt><dd>Cada ${S.config.reintento_min} minutos si la DIAN no responde (contingencia tipo 04)</dd><dt>Plan del proveedor</dt><dd>≈ $205.000 a $560.000 al año según el proveedor y el volumen de documentos (Plemsi, Dataico, MATIAS API; cotizar)</dd><dt>Certificado de firma</dt><dd>Lo maneja el proveedor o lo compra Comserva (≈ $150.000 al año si no está incluido; por confirmar)</dd></dl>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Numeración</h2>${nm.alertas.length ? `<span class="badge warn">${nm.alertas.length} alerta</span>` : '<span class="badge ok">Sin alertas</span>'}</div>
+        <div class="card-body" style="display:grid;gap:12px">
+          <div class="callout warn"><b>Prefijo RHD y rango de PRUEBA.</b> ${esc(res[0].nota)}</div>
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Ambiente · documento</th><th>Prefijo</th><th>Rango</th><th>Vigencia</th><th>Uso</th></tr></thead>
+            <tbody>
+              <tr><td><b>Pruebas</b><span class="sub">${esc(res[0].documento)} · resolución ${esc(res[0].numero)}</span></td><td class="mono"><b>RHD</b></td><td class="num">${res[0].desde}–${res[0].hasta}</td><td>${fmtFechaCorta(res[0].vigente_desde)} a ${fmtFechaCorta(res[0].vigente_hasta)}<span class="sub" style="color:${nm.dias <= S.config.alerta_dias ? 'var(--warn)' : 'inherit'}">${nm.dias} días restantes</span></td><td style="min-width:120px"><span class="res-st">${nm.usados} de ${nm.total} · ${nm.pct} %</span><div class="meter"><i class="${nm.pct >= S.config.alerta_pct ? 'warn' : ''}" style="width:${Math.max(nm.pct, 1)}%"></i></div><span class="sub">siguiente: RHD ${S.siguiente}</span></td></tr>
+              ${res.slice(1).map((r) => `<tr><td><b>${r.ambiente === 'produccion' ? 'Producción' : 'Pruebas'}</b><span class="sub">${esc(r.documento)}</span></td><td class="mono">${esc(r.prefijo)}</td><td colspan="2"><span class="muted">${esc(r.nota)}</span></td><td>${r.estado === 'helisa' ? '<span class="badge info plain">Sigue en Helisa</span>' : '<span class="badge plain">Por solicitar</span>'}</td></tr>`).join('')}
+            </tbody>
+          </table></div>
+          <div class="form-grid">
+            <div class="field"><label for="al-pct">Avisar al consumir</label><div><input class="input inline-num" id="al-pct" inputmode="numeric" value="${S.config.alerta_pct}"> % del rango</div><span class="help">Por defecto, cuando queda el 10 % (parámetro).</span></div>
+            <div class="field"><label for="al-dias">Avisar antes del vencimiento</label><div><input class="input inline-num" id="al-dias" inputmode="numeric" value="${S.config.alerta_dias}"> días</div><span class="help">La autorización dura máximo 2 años.</span></div>
+          </div>
+          ${nm.alertas.length ? `<div class="callout warn">⚠ ${esc(nm.alertas.join(' · '))}. Pida la ampliación o la nueva resolución en el portal de la DIAN antes de que se agote o venza.</div>` : ''}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Datos del emisor</h2><span class="badge warn plain">Confirmar con el RUT</span></div>
+        <div class="card-body"><dl class="kv2">
+          <dt>Razón social</dt><dd>${esc(E.razon_social)}</dd><dt>NIT</dt><dd class="mono">${esc(E.nit)}</dd><dt>Actividad económica</dt><dd>${esc(E.ciiu)}</dd><dt>Tributo</dt><dd>${esc(E.tributo)}</dd><dt>Responsabilidades</dt><dd>${esc(E.responsabilidades)}</dd><dt>Dirección</dt><dd>${esc(E.direccion)} · ${esc(E.municipio)} · ${esc(E.departamento)}</dd><dt>Correo de recepción</dt><dd>${esc(E.correo_recepcion)} <span class="muted">(donde llegan los eventos de los clientes)</span></dd>
+        </dl><p class="muted-note" style="margin-top:8px">${esc(E.fuente)}</p></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Productos e IVA por concepto</h2><span class="badge warn plain">Por confirmar</span></div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Código</th><th>Descripción en la factura</th><th>Unidad</th><th>IVA</th></tr></thead>
+          <tbody>${F.conceptos.map((k) => `<tr><td class="mono" style="white-space:nowrap">${esc(k.codigo)}</td><td>${esc(k.descripcion)}<span class="sub">${esc(k.estado)}</span></td><td>${esc(k.unidad)} <span class="muted">${esc(k.unidad_nombre)}</span></td><td><select class="select" style="width:auto;padding:4px 8px;font-size:12.5px" data-iva="${k.codigo}"><option value="19" ${S.ivaConcepto[k.codigo] === '19' ? 'selected' : ''}>19 %</option><option value="0" ${S.ivaConcepto[k.codigo] === '0' ? 'selected' : ''}>Excluido</option></select></td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="card-body" style="border-top:1px solid var(--border)"><p class="muted-note">Hoy Comserva cobra IVA del 19 %. El art. 476 num. 12 del Estatuto excluye la recolección de residuos hospitalarios solo si la presta una empresa de servicio público de aseo: <b>confirmar con el contador</b>. Las retenciones van como informativas (por confirmar). Los códigos de producto son de prueba.</p></div>
+      </section>
+    </div>`;
+  }
+  function bindConfig() {
+    $$('#content input[name="prov"]').forEach((r) => r.addEventListener('change', () => { S.config.proveedor = r.value; render(); toast(r.value === 'por_elegir' ? 'Proveedor por elegir (Fase 0).' : `Proveedor de la demostración: ${F.proveedores.find((p) => p.id === r.value).nombre} (simulado; por confirmar con la cotización).`); }));
+    const ap = $('#al-pct'), ad = $('#al-dias');
+    if (ap) ap.addEventListener('change', () => { S.config.alerta_pct = Math.min(100, Math.max(1, Number(ap.value) || 90)); F.config.alerta_pct = S.config.alerta_pct; render(); });
+    if (ad) ad.addEventListener('change', () => { S.config.alerta_dias = Math.max(1, Number(ad.value) || 60); F.config.alerta_dias = S.config.alerta_dias; render(); });
+    $$('#content [data-iva]').forEach((s) => s.addEventListener('change', () => { S.ivaConcepto[s.dataset.iva] = s.value; toast(s.value === '0' ? 'Concepto marcado como excluido de IVA (solo en la demostración; confirmar con el contador).' : 'IVA del 19 % para el concepto.'); }));
+  }
+
+  // ---------- render general ----------
+  function render() {
+    renderPeriodos(); renderRibbon(); renderFlow(); renderTabs();
+    const html = { prefacturas: renderPrefacturas, emitidas: renderEmitidas, radian: renderRadian, notas: renderNotas, config: renderConfig }[state.tab]();
+    $('#content').innerHTML = html;
+    if (state.tab === 'prefacturas') bindPrefacturas();
+    if (state.tab === 'emitidas') bindEmitidas();
+    if (state.tab === 'config') bindConfig();
+    $$('#content [data-ver]').forEach((el) => {
+      const go = (e) => { if (e && e.target.closest('a')) return; abrirFactura(el.dataset.ver); };
+      el.addEventListener('click', go);
+      if (el.tagName === 'TR') el.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === el) go(); });
+    });
+    $$('#content [data-034]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); modal034(b.dataset['034']); }));
+    $$('#content [data-nueva-nota]').forEach((b) => b.addEventListener('click', () => modalNota(b.dataset.nuevaNota)));
+    $$('#content [data-aprobar]').forEach((b) => b.addEventListener('click', () => aprobarNota(b.dataset.aprobar)));
+    if (state.drawer && $('#overlay .drawer')) { const keep = state.xml; abrirFactura(state.drawer, { xml: keep }); }
+  }
+
+  // Enlaces profundos: #prefacturas|2026-10|c-sonrisas · #emitidas|f-rhd-1 · #xml|f-rhd-1 · #radian|f-rhd-12 · #notas|nc-2 · #config
+  function leerHash() {
+    const [tab, a, b] = decodeURIComponent(location.hash.slice(1)).split('|');
+    if (!tab) return;
+    const f = (id) => facturaS(id);
+    if (tab === 'prefacturas') { state.tab = 'prefacturas'; if (PERIODOS.some((p) => p.id === a)) state.periodo = a; if (b) state.sel = `pf-${b}-${state.periodo}`; }
+    else if ((tab === 'emitidas' || tab === 'xml' || tab === 'radian') && a && f(a)) { state.tab = tab === 'xml' ? 'emitidas' : tab; state.periodo = f(a).periodo; render(); abrirFactura(a, { xml: tab === 'xml' }); return; }
+    else if (['emitidas', 'radian', 'notas', 'config'].includes(tab)) { state.tab = tab; if (tab === 'notas' && a) { const n = S.notas.find((x) => x.id === a); if (n) state.periodo = n.periodo; } }
+    render();
+  }
+  window.addEventListener('hashchange', leerHash);
+  render();
+  leerHash();
+})();
+</script>
+</body>
+</html>

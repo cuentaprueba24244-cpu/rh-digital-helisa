@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Factura electrónica de venta · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  /* representación gráfica (diseño libre; contenido mínimo del art. 11 de la Res. 165 de 2023) */
+  .sheet.fe { padding: 12mm 13mm 22mm; font-size: 9.5pt; overflow: hidden; }
+  .fe .wm { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 0; }
+  .fe .wm span { font-size: 54pt; font-weight: 800; letter-spacing: .08em; color: rgba(179, 38, 30, .07); transform: rotate(-28deg); white-space: nowrap; font-family: var(--font-doc); }
+  .fe > *:not(.wm):not(.fe-foot) { position: relative; z-index: 1; }
+  .fe > .fe-foot { z-index: 1; }
+  .fe-top { display: grid; grid-template-columns: 1fr 70mm; gap: 8mm; align-items: start; }
+  .fe-emisor { display: grid; grid-template-columns: 22mm 1fr; gap: 4mm; align-items: start; }
+  .fe-logo { width: 22mm; height: 22mm; border-radius: 50%; background: #1f5e43; color: #fff; display: grid; place-items: center; font-family: var(--font-doc-display); font-weight: 700; font-size: 9pt; text-align: center; line-height: 1.05; }
+  .fe-emisor h1 { font-size: 12.5pt; margin: 0 0 1mm; }
+  .fe-emisor p { font-size: 8.5pt; color: #333; line-height: 1.35; }
+  .fe-box { border: 1.5px solid #1f5e43; border-radius: 3mm; overflow: hidden; }
+  .fe-box .t { background: #1f5e43; color: #fff; text-align: center; font-weight: 700; font-size: 9pt; letter-spacing: .06em; padding: 1.6mm 2mm; }
+  .fe-box .n { text-align: center; font-family: var(--font-mono); font-size: 19pt; color: #b3261e; padding: 1.5mm 0 1mm; font-weight: 500; }
+  .fe-box dl { display: grid; grid-template-columns: auto 1fr; gap: .6mm 3mm; margin: 0; padding: 1.5mm 3mm 2.5mm; font-size: 8pt; }
+  .fe-box dt { color: #555; }
+  .fe-box dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .fe-test { margin: 4mm 0 3mm; border: 1.5px dashed #b87d0a; background: #fbf0d2; color: #6b4a06; border-radius: 2mm; padding: 1.8mm 3mm; font-size: 8.3pt; font-weight: 600; text-align: center; }
+  .fe-parte { border: 1px solid #bbb; border-radius: 2mm; padding: 2.5mm 3.5mm; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2mm 5mm; font-size: 8.5pt; }
+  .fe-parte .hd { grid-column: 1 / -1; font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: #1f5e43; font-weight: 700; }
+  .fe-parte .big { grid-column: span 2; font-weight: 700; font-size: 10pt; }
+  .fe-parte b { display: block; font-size: 7pt; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .fe-lines { margin-top: 3.5mm; }
+  .fe-lines table th { background: #e7efe9; }
+  .fe-lines td.num { white-space: nowrap; }
+  .fe-lines td.code { font-family: var(--font-mono); font-size: 8pt; white-space: nowrap; }
+  .fe-bottom { display: grid; grid-template-columns: 1fr 66mm; gap: 6mm; margin-top: 3.5mm; align-items: start; }
+  .fe-obs { border: 1px solid #bbb; border-radius: 2mm; padding: 2.5mm 3.5mm; font-size: 8.5pt; }
+  .fe-obs .hd { font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: #1f5e43; font-weight: 700; margin-bottom: 1mm; }
+  .fe-obs .mono { font-size: 8pt; }
+  .fe-tot { border: 1.5px solid #1f5e43; border-radius: 2mm; overflow: hidden; }
+  .fe-tot dl { display: grid; grid-template-columns: 1fr auto; margin: 0; }
+  .fe-tot dt, .fe-tot dd { padding: 1.3mm 3mm; border-bottom: 1px solid #ddd; font-size: 8.8pt; margin: 0; }
+  .fe-tot dd { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .fe-tot .pay { background: #1f5e43; color: #fff; font-weight: 700; font-size: 10.5pt; border: 0; }
+  .fe-letras { font-size: 8pt; margin-top: 1.5mm; color: #333; }
+  .fe-cufe-doc { display: grid; grid-template-columns: 30mm 1fr; gap: 5mm; align-items: center; margin-top: 3mm; border-top: 1px dashed #999; padding-top: 3.5mm; }
+  .fe-cufe-doc .qrw { width: 30mm; height: 30mm; }
+  .fe-cufe-doc .qrw svg { width: 100%; height: 100%; }
+  .fe-cufe-doc .k { font-size: 7.5pt; letter-spacing: .06em; text-transform: uppercase; color: #555; font-weight: 700; }
+  .fe-cufe-doc .v { font-family: var(--font-mono); font-size: 7.6pt; word-break: break-all; line-height: 1.45; color: #111; margin-bottom: 1.6mm; }
+  .fe-cufe-doc .small { font-size: 7.5pt; color: #444; line-height: 1.4; }
+  .fe-legal { display: grid; grid-template-columns: 1fr 62mm; gap: 6mm; margin-top: 3.5mm; font-size: 7.6pt; color: #333; align-items: stretch; }
+  .fe-recibido { border: 1px solid #999; border-radius: 2mm; padding: 1.5mm 3mm 2mm; display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 4mm; font-size: 7.3pt; align-content: start; }
+  .fe-recibido div { border-bottom: 1px solid #999; padding-top: 4.5mm; color: #555; }
+  .fe-foot { position: absolute; left: 13mm; right: 13mm; bottom: 9mm; border-top: 1px solid #999; padding-top: 2mm; font-size: 7.4pt; color: #333; display: flex; justify-content: space-between; gap: 6mm; }
+  .fe-state { max-width: 210mm; width: 100%; display: grid; gap: 10px; }
+  .fe-state .card-body { display: grid; gap: 8px; font-size: 13px; }
+  .fe-state .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    .sheet.fe { zoom: 1 !important; width: 210mm !important; min-height: 0 !important; height: 295mm !important; padding: 12mm 13mm 22mm !important; page-break-after: auto; }
+    .doc-stage { display: block !important; }
+    .fe-state { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Factura</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage">
+  <div class="sheet fe" id="sheet" aria-live="polite"></div>
+  <section class="card fe-state no-print" id="estado"></section>
+</div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA, F = D.fe, E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtNum, fmtFechaCorta } = D;
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+
+  // QR SIMULADO: patrón con aspecto de QR (33 módulos, buscadores, temporización y alineación). No codifica nada.
+  function qrFE(seed) {
+    let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const rnd = () => { h = (h * 1103515245 + 12345) >>> 0; return (h >>> 16) & 1; };
+    const n = 33; let cells = '';
+    const finder = (x, y, ox, oy) => { const ex = x - ox, ey = y - oy; if (ex < 0 || ey < 0 || ex > 6 || ey > 6) return null; return ex === 0 || ex === 6 || ey === 0 || ey === 6 || (ex >= 2 && ex <= 4 && ey >= 2 && ey <= 4); };
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      let on = finder(x, y, 0, 0); if (on === null) on = finder(x, y, n - 7, 0); if (on === null) on = finder(x, y, 0, n - 7);
+      const sep = (x <= 7 && y <= 7) || (x >= n - 8 && y <= 7) || (x <= 7 && y >= n - 8);
+      if (on === null && sep) on = false;
+      if (on === null && (x === 6 || y === 6)) on = (x + y) % 2 === 0;
+      if (on === null) { const ax = x - 24, ay = y - 24; if (ax >= -2 && ax <= 2 && ay >= -2 && ay <= 2) on = Math.max(Math.abs(ax), Math.abs(ay)) !== 1; }
+      if (on === null) on = !!rnd();
+      if (on) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+    }
+    return `<svg viewBox="-2 -2 ${n + 4} ${n + 4}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Código QR simulado de la factura"><rect x="-2" y="-2" width="${n + 4}" height="${n + 4}" fill="#fff"/><g fill="#111">${cells}</g></svg>`;
+  }
+
+  const lista = F.emitidas();
+  const sel = document.getElementById('sel');
+  sel.innerHTML = lista.map((f) => `<option value="${f.id}">${esc(f.numero)} · ${esc(D.cliente(f.cliente).nombre_comercial)} · ${fmtCOP(f.total)} · ${esc(F.ESTADO[f.estado_dian])}</option>`).join('');
+  const actual = () => lista.find((f) => f.id === decodeURIComponent(location.hash.slice(1))) || lista[0];
+  const res = F.resoluciones[0];
+
+  function render() {
+    const f = actual(); sel.value = f.id;
+    const c = D.cliente(f.cliente), fi = c.fiscal || {};
+    const cont = f.estado_dian === 'contingencia';
+    const r = F.radian(f);
+    const notas = F.notasDe(f.id);
+    const ls = f.lineas_fe;
+    const centavos = Math.round((f.total - Math.floor(f.total)) * 100);
+    document.title = `Factura electrónica ${f.numero} · ${c.nombre_comercial}`;
+    document.getElementById('state').textContent = `${F.ESTADO[f.estado_dian]} · ${fmtCOP(f.total)} · CUFE ${f.cufe.slice(0, 12)}… (de prueba)`;
+    document.getElementById('sheet').innerHTML = `
+      <div class="wm"><span>${cont ? 'CONTINGENCIA · SIN VALIDAR' : 'DATOS DE PRUEBA'}</span></div>
+      <div class="fe-top">
+        <div class="fe-emisor">
+          <div class="fe-logo">Com<br>Serva</div>
+          <div>
+            <h1>${esc(E.razon_social)}</h1>
+            <p><b>NIT ${esc(E.nit)}</b> · ${esc(E.responsable_iva)} · responsabilidad ${esc(F.emisor.responsabilidades)} · actividad económica ${esc(F.emisor.ciiu)}<br>${esc(E.direccion)} · ${esc(E.ciudad)}<br>Tel. ${esc(E.telefonos)} · ${esc(E.email)}<br>${esc(E.licencia)}</p>
+          </div>
+        </div>
+        <div class="fe-box">
+          <div class="t">FACTURA ELECTRÓNICA DE VENTA</div>
+          <div class="n">${esc(f.numero)}</div>
+          <dl>
+            <dt>Generación</dt><dd>${fmtFechaCorta(f.enviada_en)} ${f.enviada_en.slice(11, 16)}</dd>
+            <dt>Expedición (validación)</dt><dd>${f.validada_en ? fmtFechaCorta(f.validada_en) + ' ' + f.validada_en.slice(11, 16) : 'Pendiente (contingencia)'}</dd>
+            <dt>Vencimiento</dt><dd>${fmtFechaCorta(f.vence)}</dd>
+            <dt>Forma de pago</dt><dd>${esc(f.forma_pago)}</dd>
+            <dt>Medio de pago</dt><dd>${esc(f.medio_pago)}</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="fe-test">DOCUMENTO DE PRUEBA · ambiente de pruebas · prefijo RHD de prueba · CUFE y QR ficticios · sin validez fiscal</div>
+      <div class="fe-parte">
+        <div class="hd">Adquirente</div>
+        <div class="big">${esc(c.razon_social)}</div>
+        <div><b>${esc(fi.tipo_documento || 'NIT')}</b>${esc(D.nitCompleto(c))}</div>
+        <div><b>Nombre comercial</b>${esc(c.nombre_comercial)}</div>
+        <div><b>Dirección</b>${esc(fi.direccion || c.direccion)}</div>
+        <div><b>Municipio</b>${esc(c.ciudad)}, ${esc(c.departamento)} · ${esc(fi.municipio_dane || '')}</div>
+        <div><b>Tipo de persona</b>${fi.tipo_persona === 'natural' ? 'Natural' : 'Jurídica'}</div>
+        <div><b>Responsabilidades</b>${esc(fi.responsabilidades || '—')} · ${esc(fi.regimen_iva || '')}</div>
+        <div><b>Correo de recepción</b>${esc(f.entrega.medio === 'correo' ? (f.entrega.destino || fi.correo_fe || '') : 'Entrega impresa')}</div>
+      </div>
+      <div class="fe-lines">
+        <table>
+          <thead><tr><th>#</th><th>Código</th><th>Descripción</th><th>Unidad</th><th class="num">Cantidad</th><th class="num">Valor unitario</th><th class="num">IVA %</th><th class="num">Valor IVA</th><th class="num">Valor</th></tr></thead>
+          <tbody>${ls.map((l) => `<tr><td>${l.n}</td><td class="code">${esc(l.codigo)}</td><td>${esc(l.descripcion)}</td><td>${esc(l.unidad)}</td><td class="num">${l.unidad === 'KGM' ? fmtKg(l.cantidad) : fmtNum(l.cantidad)}</td><td class="num">${fmtCOP(l.unitario)}</td><td class="num">${l.iva_pct}</td><td class="num">${fmtCOP(l.iva)}</td><td class="num">${fmtCOP(l.base)}</td></tr>`).join('')}
+          ${Array.from({ length: Math.max(0, 3 - ls.length) }).map(() => '<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>').join('')}</tbody>
+        </table>
+      </div>
+      <div class="fe-bottom">
+        <div class="fe-obs">
+          <div class="hd">Observaciones</div>
+          ${f.notas_doc.map((t) => `<div class="mono">${esc(t)}</div>`).join('')}
+          <div style="margin-top:1.5mm">Planilla de recolección RHPS ${esc(f.rh)} disponible en el portal y en la trazabilidad del servicio.${notas.length ? ` Notas: ${notas.map((n) => `${esc(n.numero)} (${esc(F.ESTADO[n.estado].toLowerCase())})`).join(', ')}.` : ''}</div>
+          ${c.id === 'c-cofema' && f.periodo === '2026-09' ? '<div style="margin-top:1.5mm;color:#555">Mismo contenido y total que la FVE 25756 que Comserva emitió en Helisa para Cofema en septiembre de 2026 (referencia de la liquidación).</div>' : ''}
+        </div>
+        <div>
+          <div class="fe-tot"><dl>
+            <dt>Total bruto</dt><dd>${fmtCOP(f.subtotal)}</dd>
+            <dt>Descuentos</dt><dd>$0</dd>
+            <dt>Base gravable IVA 19 %</dt><dd>${fmtCOP(f.subtotal)}</dd>
+            <dt>IVA 19 %</dt><dd>${fmtCOP(f.iva)}</dd>
+            <dt>Retenciones (informativas)</dt><dd>Por confirmar</dd>
+            <dt class="pay">Total a pagar</dt><dd class="pay">${fmtCOP(f.total)}</dd>
+          </dl></div>
+          <div class="fe-letras">Son: ${esc(D.numeroALetras(Math.floor(f.total)).replace(' pesos M/CTE', ''))} pesos${centavos ? ` con ${centavos} centavos` : ''} M/CTE.</div>
+        </div>
+      </div>
+      <div class="fe-cufe-doc">
+        <div class="qrw">${qrFE(f.cufe)}</div>
+        <div>
+          <div class="k">CUFE · código único de factura electrónica (SHA-384, DE PRUEBA)</div>
+          <div class="v">${esc(f.cufe)}</div>
+          <div class="small">Consulta (ambiente de habilitación): catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=&lt;CUFE&gt;. QR simulado: con un CUFE ficticio la consulta no devuelve resultados.<br>
+          Autorización de numeración de PRUEBA N.º ${esc(res.numero.replace(' (de prueba)', ''))} · prefijo ${esc(res.prefijo)} · rango ${res.desde} a ${res.hasta} · vigencia del ${fmtFechaCorta(res.vigente_desde)} al ${fmtFechaCorta(res.vigente_hasta)}.</div>
+        </div>
+      </div>
+      <div class="fe-legal">
+        <div>
+          <p>Factura electrónica de venta como título valor (Decreto 1154 de 2020): circula cuando tiene el acuse de recibo (030), el recibo del servicio (032) y la aceptación expresa (033) o tácita (034) registrados en RADIAN. La aceptación tácita ocurre si el adquirente no acepta ni reclama dentro de los 3 días hábiles siguientes al recibo del servicio.</p>
+          <p style="margin-top:1.5mm">Representación gráfica de la factura electrónica: el documento con valor legal es el XML validado por la DIAN que se entrega al adquirente en el contenedor electrónico.</p>
+        </div>
+        <div class="fe-recibido"><div>Fecha de recibido y sello</div><div>Nombre</div><div>NIT o cédula</div><div>Firma de recibido</div></div>
+      </div>
+      <div class="fe-foot"><span>Generado por: RH digital Comserva · proveedor tecnológico: por elegir (Plemsi o Dataico, simulado) · fabricante del software: por confirmar</span><span>Página 1 de 1</span></div>`;
+
+    const evRow = (k, ev) => `<span class="rad ${ev ? 'ok' : ''}" title="${esc(F.EVENTOS[k].etiqueta)}">${k}${ev ? ' · ' + fmtFechaCorta(ev.en).slice(0, 5) : ''}</span>`;
+    document.getElementById('estado').innerHTML = `<div class="card-head"><h3>Estado de la ${esc(f.numero)} en el sistema</h3><span class="badge ${F.CLASE[f.estado_dian]}">${esc(F.ESTADO[f.estado_dian])}</span></div>
+      <div class="card-body">
+        <div class="row"><b>Eventos RADIAN:</b> ${evRow('030', r.e30)} ${evRow('032', r.e32)} ${r.e33 ? evRow('033', r.e33) : (r.e34 ? evRow('034', r.e34) : (r.tacita ? `<span class="rad" title="034 · opcional, por confirmar">034 · opcional, por confirmar (la tácita se cumpliría el ${fmtFechaCorta(r.tacita.desde)})</span>` : evRow('034', null)))} <span class="muted">· ${esc(F.TITULO_LABEL[r.titulo])}</span></div>
+        <div class="row"><b>Entrega:</b> ${esc(({ enviado: 'correo enviado', rebotado: 'correo rebotado', entregada: 'entregada impresa', pendiente: 'pendiente de entregar impresa', en_espera: 'en espera' })[f.entrega.estado] || f.entrega.estado)} ${f.entrega.en ? '· ' + fmtFechaCorta(f.entrega.en) : ''} ${f.entrega.nota ? '<span class="muted">· ' + esc(f.entrega.nota) + '</span>' : ''}</div>
+        <div class="row"><b>Saldo de referencia:</b> ${fmtCOP(D.saldoReferencia(f.id))}${notas.length ? ` · notas: ${notas.map((n) => `<a href="nota-credito.html#${n.id}">${esc(n.numero)}</a>`).join(', ')}` : ''}</div>
+        <div class="row"><a class="btn sm" href="../panel/facturacion.html#emitidas|${f.id}">Ver en Facturación electrónica</a><a class="btn sm" href="../panel/trazabilidad.html#${c.id}|${f.periodo}|fe">Ver la trazabilidad</a><a class="btn sm ghost" href="../panel/facturacion.html#xml|${f.id}">Extracto del XML</a></div>
+      </div>`;
+    fit();
+  }
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => { const z = Math.min(1, avail / 793.7); s.style.zoom = z < 1 ? z.toFixed(3) : ''; s.style.maxWidth = z < 1 ? 'none' : ''; });
+  }
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>
