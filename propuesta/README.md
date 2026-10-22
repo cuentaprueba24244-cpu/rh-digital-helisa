@@ -31,6 +31,18 @@ Cada carpeta de propuesta trae:
 - `mockups_v6/index.html`: prototipo navegable (se abre en el navegador o se sirve con `python3 -m http.server 8765 --directory "propuesta/propuesta 1/mockups_v6"`). Trae la página nueva **Trazabilidad**: cadena documental por cliente y periodo, búsqueda por cualquier número, matriz del periodo y expediente. En la P1, «Helisa: pedidos y recibos», con la conexión 1A/1B. En la P2, «Facturación electrónica» y «Contabilidad en Helisa», con la factura y la nota crédito de prueba.
 - `Cambios para el desarrollo (v6, propuesta N).md` y `.pdf`: cómo cambian el SPEC v1.1 y el esquema SQL (reglas, épicas, tablas, contratos, pruebas de regresión y plan por semanas). El DDL es orientativo y no se ha ejecutado.
 
+## Artefactos publicados (privados; se comparten desde el menú Compartir de cada uno)
+
+| Qué | Enlace |
+| --- | --- |
+| Comparativo de propuestas (v6) | https://claude.ai/artifact/Fou9oNYa4j4KvrikLP4SqL |
+| Flujo de la propuesta 1 | https://claude.ai/artifact/6MwdNXTi3LmRwLGuXiDSGN |
+| Flujo de la propuesta 2 | https://claude.ai/artifact/TM2fGAQAZNdCYcHiWUkPwP |
+| Levantamiento v6, propuesta 1 | https://claude.ai/artifact/WtmK9hyryJH25iudVS7rSp |
+| Levantamiento v6, propuesta 2 | https://claude.ai/artifact/76zdJqjUavghE7fwaqFWjr |
+| Mockups v6, propuesta 1 | https://claude.ai/artifact/B5kgnK9u9HXf6o73NQ7HQV |
+| Mockups v6, propuesta 2 | https://claude.ai/artifact/PySNy52FiDq7zQMMGzxTyZ |
+
 ## Datos que siguen por confirmar (se cierran en la Fase 0)
 
 - Si el documento **Pedido** se puede habilitar en el Helisa de Comserva, y su costo.
