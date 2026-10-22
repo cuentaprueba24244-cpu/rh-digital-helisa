@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inicio · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .two-col { display: grid; grid-template-columns: 1.2fr .8fr; gap: 14px; margin-top: 14px; }
+  /* Por debajo de 1220 px la columna izquierda no alcanza los ~545 px que mide la tabla «Últimas visitas»: se apila en una sola columna en vez de desplazar la tabla. */
+  @media (max-width: 1220px) { .two-col { grid-template-columns: 1fr; } }
+  /* «Últimas visitas» tiene 7 columnas: padding compacto y celdas cortas (fecha dd/mm, operario «Nombre A.», estado breve) para que quepa entera desde 1200 px sin desplazamiento horizontal y el nombre del cliente no se parta en tres líneas. */
+  .tbl-ultimas th, .tbl-ultimas td { padding: 9px 8px; }
+  .tbl-ultimas td:nth-child(1), .tbl-ultimas td:nth-child(2), .tbl-ultimas td:nth-child(4), .tbl-ultimas td:nth-child(5), .tbl-ultimas td:last-child { white-space: nowrap; }
+  .stack { display: grid; gap: 14px; align-content: start; }
+  .two-col > *, .stack > *, .main > * { min-width: 0; }
+  .alerts { list-style: none; margin: 0; padding: 0; display: grid; }
+  .alerts li { display: grid; grid-template-columns: 10px 1fr auto; gap: 12px; align-items: center; padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .alerts li:last-child { border-bottom: 0; }
+  .alerts .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warn); }
+  .alerts .dot.danger { background: var(--danger); }
+  .alerts .dot.info { background: var(--info); }
+  .alerts .what b { font-weight: 600; }
+  .alerts .what .sub { display: block; font-size: 12px; color: var(--fg-3); margin-top: 1px; }
+  .alerts .btn { white-space: nowrap; }
+  .bar-row .bar > i.muted { background: var(--border-2); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .compare .big { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .compare .big small { font-size: 13px; font-weight: 500; color: var(--fg-3); margin-left: 4px; }
+  .compare .k { font-size: 12px; color: var(--fg-3); }
+  .progress { height: 10px; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; margin-top: 10px; }
+  .progress > i { display: block; height: 100%; background: var(--accent); }
+  .empty { padding: 20px; text-align: center; color: var(--fg-3); font-size: 13px; }
+  .timeline li .who { font-weight: 600; }
+  .stat .value.ok { color: var(--accent); }
+  .link-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+
+  function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Archivos planos (A)'],['facturacion.html','⚡','Facturación electrónica (B)']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+  document.getElementById('sidebar').innerHTML = sidebar('index.html');
+
+  const BADGE = { transmitida: 'ok', cerrada: 'warn', rechazada: 'danger', anulada: 'danger', en_cierre: 'info', borrador: 'plain' };
+  const badge = (e) => `<span class="badge ${BADGE[e] || 'plain'}">${esc(D.ESTADO_VISITA_LABEL[e] || e)}</span>`;
+  const diasEntre = (a, b) => Math.round((D.parseISO(b) - D.parseISO(a)) / 86400000);
+
+  // ---------- datos del periodo abierto ----------
+  const P = D.periodos.find((p) => p.estado === 'abierto');
+  const faltan = diasEntre(D.HOY, P.fin);
+  const finD = D.parseISO(P.fin);
+  const visitasPeriodo = D.visitas.filter((v) => v.periodo === P.id);
+  const recolecciones = visitasPeriodo.filter((v) => v.tipo === 'recoleccion' && (v.estado === 'transmitida' || v.estado === 'cerrada'));
+  const transmitidas = recolecciones.filter((v) => v.estado === 'transmitida').length;
+  const enCelular = recolecciones.filter((v) => v.estado === 'cerrada').length;
+  const cierre = D.cierrePeriodo(P.id);
+  const kgPeriodo = cierre.reduce((a, c) => a + c.kg, 0);
+  const recibosPeriodo = D.recibos.filter((r) => r.estado === 'emitido' && r.fecha >= P.inicio && r.fecha <= P.fin);
+  const recaudo = recibosPeriodo.reduce((a, r) => a + r.valor, 0);
+  const sinCruzar = recibosPeriodo.filter((r) => !r.conciliado).length;
+  const activos = D.clientes.filter((c) => c.estado === 'activo');
+  const pendientesValidar = D.clientes.filter((c) => c.estado === 'pendiente_validar');
+
+  // ---------- alertas ----------
+  function alertas() {
+    const out = [];
+    visitasPeriodo.filter((v) => v.estado === 'rechazada').forEach((v) => {
+      const c = D.cliente(v.cliente);
+      out.push({ nivel: 'danger', titulo: `Visita ${v.consecutivo} rechazada por el servidor`, sub: `${c.nombre_comercial} · ${c.estado === 'pendiente_validar' ? 'cliente pendiente de validar' : (v.rechazo || '')}`, href: c.estado === 'pendiente_validar' ? 'clientes.html' : `visitas.html#${v.id}`, accion: c.estado === 'pendiente_validar' ? 'Validar cliente' : 'Revisar' });
+    });
+    visitasPeriodo.filter((v) => v.estado === 'cerrada').forEach((v) => {
+      const c = D.cliente(v.cliente);
+      out.push({ nivel: 'warn', titulo: `Visita ${v.consecutivo} guardada en un celular sin enviar`, sub: `${c.nombre_comercial} · desde el ${D.fmtFechaCorta(v.pendiente_desde || v.fecha).slice(0, 5)} ${(v.pendiente_desde || '').slice(11)} · ${v.intentos || 0} intentos · ${v.ultimo_error || ''}`, href: `visitas.html#${v.id}`, accion: 'Ver visita' });
+    });
+    recolecciones.forEach((v) => {
+      Object.entries(v.kilos).forEach(([k, kg]) => {
+        const cat = D.categoria(k);
+        if (cat && !cat.dispositor) out.push({ nivel: 'warn', titulo: `Categoría sin tratamiento definido en la visita ${v.consecutivo}`, sub: `${D.cliente(v.cliente).nombre_comercial} · ${D.fmtKg(kg, 1)} kg de ${cat.nombre} · la gerencia debe definir dispositor`, href: 'catalogos.html', accion: 'Ver catálogo' });
+      });
+    });
+    const sinVisita = activos.filter((c) => D.visitasDe(c.id, P.id).length === 0);
+    sinVisita.forEach((c) => {
+      const fallida = visitasPeriodo.find((v) => v.cliente === c.id && v.tipo === 'fallida');
+      out.push({ nivel: 'info', titulo: `${c.nombre_comercial} sin visita en el periodo`, sub: `Frecuencia ${D.FRECUENCIA_LABEL[c.frecuencia].toLowerCase()}${c.dia_visita ? ' · ' + c.dia_visita.toLowerCase() : ''}${fallida ? ' · visita fallida el ' + D.fmtFecha(fallida.fecha).replace(/ de \d{4}$/, '') : ''}`, href: `visitas.html#cliente=${c.id}`, accion: 'Ver visitas' });
+    });
+    const mora = activos.filter((c) => c.cartera === 'en_mora');
+    if (mora.length) out.push({ nivel: 'danger', titulo: `${mora.length} clientes en mora`, sub: mora.map((c) => c.nombre_comercial).join(', ') + ` · fuente: ${mora[0].cartera_fuente}`, href: 'clientes.html', accion: 'Ver cartera' });
+    if (pendientesValidar.length) out.push({ nivel: 'warn', titulo: `${pendientesValidar.length} cliente pendiente de validar`, sub: pendientesValidar.map((c) => `${c.nombre_comercial} · creado por ${c.creado_por || 'el operario en campo'} el ${D.fmtFechaCorta(c.creado)}`).join('; '), href: 'clientes.html', accion: 'Validar' });
+    return out;
+  }
+
+  function barras(items, max, unidad = 'kg') {
+    return `<div class="bars">${items.map((it) => `<div class="bar-row"><span title="${esc(it.label)}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.label)}</span><div class="bar"><i class="${it.value ? '' : 'muted'}" style="width:${max ? Math.max(it.value / max * 100, it.value ? 1.5 : 0) : 0}%"></i></div><span class="val">${it.value ? D.fmtKg(it.value) : '0,00'} ${unidad}</span></div>`).join('')}</div>`;
+  }
+
+  function render() {
+    const al = alertas();
+    const porCliente = cierre.slice().sort((a, b) => b.kg - a.kg);
+    const maxCliente = porCliente[0] ? porCliente[0].kg : 0;
+    const porCat = {};
+    cierre.forEach((c) => Object.entries(c.porCat).forEach(([k, kg]) => { porCat[k] = (porCat[k] || 0) + kg; }));
+    const cats = D.categorias.map((c) => ({ label: c.nombre, value: Math.round((porCat[c.codigo] || 0) * 100) / 100, cod: c.codigo })).filter((c) => c.value > 0).sort((a, b) => b.value - a.value);
+    const maxCat = cats[0] ? cats[0].value : 0;
+    // Desempata por consecutivo para que una constancia anulada quede debajo de su reemplazo (misma fecha y hora).
+    const ultimas = D.visitas.slice().sort((a, b) => (b.fecha + ' ' + b.hora).localeCompare(a.fecha + ' ' + a.hora) || (b.consecutivo || 0) - (a.consecutivo || 0)).slice(0, 10);
+    // Periodo de comparación: el último cerrado (septiembre 2026 con los datos actuales), sin nombres escritos a mano.
+    const PREV = D.periodos.filter((p) => p.estado === 'cerrado').sort((a, b) => b.id.localeCompare(a.id))[0];
+    const mesPrev = D.MESES[D.parseISO(PREV.fin).getMonth()];
+    const mesAct = D.MESES[finD.getMonth()];
+    const sep = D.cierrePeriodo(PREV.id);
+    const kgSep = sep.reduce((a, c) => a + c.kg, 0);
+    const pct = kgSep ? Math.round(kgPeriodo / kgSep * 100) : 0;
+    const transcurrido = Math.round((diasEntre(P.inicio, D.HOY) + 1) / (diasEntre(P.inicio, P.fin) + 1) * 100);
+
+    document.getElementById('main').innerHTML = `
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">${esc(D.cap(D.fmtFecha(D.HOY, { dia: true })))}</div>
+          <h1 style="margin-top:4px">Buenos días, Lucrecia</h1>
+          <p>Periodo abierto: <b style="color:var(--fg)">${esc(P.nombre)}</b> · corte el ${finD.getDate()} de ${D.MESES[finD.getMonth()]} · faltan ${faltan} días. Lo que llega del celular se ve aquí en cuanto hay señal.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="visitas.html">Bandeja de visitas</a>
+          <a class="btn primary" href="cierre.html">Preparar el cierre de ${D.MESES[finD.getMonth()]}</a>
+        </div>
+      </div>
+
+      <div class="grid cols-4">
+        <div class="card stat"><div class="label">Visitas del periodo</div><div class="value">${recolecciones.length}</div><div class="delta">${transmitidas} transmitidas · ${enCelular} en un celular sin enviar</div></div>
+        <div class="card stat"><div class="label">Kilos del periodo</div><div class="value">${D.fmtKg(kgPeriodo)} <small style="font-size:14px;font-weight:500">kg</small></div><div class="delta">${cierre.filter((c) => c.kg > 0).length} de ${activos.length} clientes con recolección</div></div>
+        <div class="card stat"><div class="label">Recaudo en efectivo del periodo</div><div class="value">${D.fmtCOP(recaudo)}</div><div class="delta">${recibosPeriodo.length} recibos · ${sinCruzar} sin cruzar en Helisa</div></div>
+        <div class="card stat"><div class="label">Clientes activos</div><div class="value">${activos.length}</div><div class="delta">${pendientesValidar.length} pendiente de validar · ${activos.filter((c) => c.cartera === 'en_mora').length} en mora</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="stack">
+          <div class="card">
+            <div class="card-head"><h2>Requiere atención</h2><span class="badge ${al.length ? 'warn' : 'ok'}">${al.length} pendientes</span></div>
+            ${al.length ? `<ul class="alerts">${al.map((a) => `<li><span class="dot ${a.nivel}"></span><div class="what"><b>${esc(a.titulo)}</b><span class="sub">${esc(a.sub)}</span></div><a class="btn sm" href="${esc(a.href)}">${esc(a.accion)}</a></li>`).join('')}</ul>` : '<div class="empty">Nada pendiente. Todo lo del periodo está transmitido y validado.</div>'}
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h2>Últimas visitas</h2><a href="visitas.html" style="font-size:13px">Ver la bandeja completa</a></div>
+            <div class="table-wrap">
+              <table class="tbl tbl-ultimas">
+                <thead><tr><th>N.º</th><th>Fecha y hora</th><th>Cliente</th><th>Operario</th><th class="num">Kg</th><th>Estado</th><th></th></tr></thead>
+                <tbody>${ultimas.map((v) => {
+                  const c = D.cliente(v.cliente); const o = D.operario(v.operario);
+                  // Tabla compacta: fecha dd/mm (como en las alertas de arriba), operario «Nombre A.» y estado corto; el dato completo va en title.
+                  const [nom, ape] = o.nombre.split(' ');
+                  const estadoCorto = v.estado === 'cerrada' ? `<span class="badge warn" title="${esc(D.ESTADO_VISITA_LABEL.cerrada)} sin enviar">En el celular</span>` : badge(v.estado);
+                  return `<tr><td class="mono">${v.consecutivo ? v.consecutivo : '<span class="muted">—</span>'}</td><td title="${esc(D.cap(D.fmtFecha(v.fecha, { dia: true })))} · ${esc(v.hora)}">${D.fmtFechaCorta(v.fecha).slice(0, 5)} <span class="muted">${esc(v.hora)}</span></td><td>${esc(c.nombre_comercial)}${v.tipo === 'fallida' ? '<span class="sub">Visita fallida</span>' : ''}</td><td title="${esc(o.nombre)}">${esc(nom)} ${ape ? esc(ape[0]) + '.' : ''}</td><td class="num">${v.tipo === 'fallida' ? '—' : D.fmtKg(D.totalKg(v))}</td><td>${estadoCorto}</td><td><a href="visitas.html#${esc(v.id)}">Ver</a></td></tr>`;
+                }).join('')}</tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <div class="card-head"><h2>Kilos por cliente en el periodo</h2><small>${esc(P.nombre)}</small></div>
+            <div class="card-body">${barras(porCliente.map((c) => ({ label: c.cliente.nombre_comercial, value: c.kg })), maxCliente)}</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Kilos por categoría</h2><small>${cats.length} de ${D.categorias.length} categorías con kilos</small></div>
+            <div class="card-body">${barras(cats, maxCat)}
+              ${cats.some((c) => !D.categoria(c.cod).dispositor) ? `<div class="callout warn" style="margin-top:12px">Hay kilos en una categoría <b>sin tratamiento definido</b> (${cats.filter((c) => !D.categoria(c.cod).dispositor).map((c) => c.label).join(', ')}). No entran al acta hasta que la gerencia defina el dispositor.</div>` : ''}
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Actividad reciente</h2><a href="catalogos.html#usuarios" style="font-size:13px">Auditoría completa</a></div>
+            <div class="card-body">
+              <ul class="timeline">${D.auditoria.slice(0, 6).map((a) => `<li class="${a.quien === 'Servidor' ? 'muted' : ''}"><div><div><span class="who">${esc(a.quien)}</span> · ${esc(a.accion)}</div><div class="muted" style="font-size:12px">${esc(a.entidad)}${a.detalle ? ' · ' + esc(a.detalle) : ''}</div><div class="when">${D.fmtFechaCorta(a.en)} ${esc(a.en.slice(11))}</div></div></li>`).join('')}</ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Cómo va el mes frente a ${esc(mesPrev)}</h2></div>
+            <div class="card-body">
+              <div class="compare">
+                <div><div class="k">${esc(PREV.nombre)} (cerrado)</div><div class="big">${D.fmtKg(kgSep)}<small>kg</small></div><div class="k">${sep.reduce((a, c) => a + c.visitas.length, 0)} visitas · ${sep.filter((c) => c.kg > 0).length} clientes</div></div>
+                <div><div class="k">${esc(P.nombre)} hasta hoy</div><div class="big">${D.fmtKg(kgPeriodo)}<small>kg</small></div><div class="k">${recolecciones.length} visitas · ${cierre.filter((c) => c.kg > 0).length} clientes</div></div>
+              </div>
+              <div class="progress" title="${pct} % de los kilos de septiembre"><i style="width:${Math.min(pct, 100)}%"></i></div>
+              <p class="muted" style="font-size:12.5px;margin-top:8px">${esc(D.cap(mesAct))} lleva el <b>${pct} %</b> de los kilos de ${esc(mesPrev)} con el <b>${transcurrido} %</b> del periodo transcurrido.${porCliente[0] && porCliente[0].kg ? ` ${esc(porCliente[0].cliente.nombre_comercial)} pesa ${D.fmtKg(porCliente[0].kg)} kg de los ${D.fmtKg(kgPeriodo)} kg del mes.` : ''}</p>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+  render();
+})();
+</script>
+</body>
+</html>

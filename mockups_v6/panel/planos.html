@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Archivos planos para Helisa (A) · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tabs button { border: 1px solid var(--border-2); background: var(--surface); border-radius: 999px; padding: 7px 14px; font-size: 13px; cursor: pointer; }
+  .tabs button.on { background: var(--accent-soft); color: var(--accent-soft-fg); border-color: transparent; font-weight: 600; }
+  .mb { margin-bottom: 14px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .two > * { min-width: 0; }
+  @media (max-width: 1000px) { .two { grid-template-columns: 1fr; } }
+  .gen { display: grid; gap: 10px; }
+  .gen .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .gen .big { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  table.tbl td .mono, .mono { font-family: var(--font-mono); font-size: .92em; }
+  table.tbl tr.anulado td { color: var(--fg-3); }
+  .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(10, 20, 15, .35); z-index: 90; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(900px, 100%); background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 95; display: flex; flex-direction: column; }
+  .drawer .d-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+  .drawer .d-head .no { font-family: var(--font-mono); font-size: 18px; color: var(--accent); font-weight: 600; line-height: 1.2; }
+  .drawer .d-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2); background: var(--surface); cursor: pointer; font-size: 16px; }
+  .drawer .d-body { padding: 18px 20px; overflow: auto; flex: 1; display: grid; gap: 16px; align-content: start; }
+  .drawer .d-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .drawer h3, .ed h3 { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; }
+  .lineas-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: 420px; }
+  table.plano { border-collapse: collapse; font-family: var(--font-mono); font-size: 11.5px; white-space: nowrap; }
+  table.plano th, table.plano td { padding: 4px 8px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  table.plano th { background: var(--surface-2); position: sticky; top: 0; font-weight: 600; }
+  table.plano td.num { text-align: right; }
+  table.plano tr.doc-start td { border-top: 2px solid var(--border-2); }
+  .ed { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 1100px) { .ed { grid-template-columns: 1fr; } }
+  .pl-list { display: grid; gap: 8px; }
+  .pl-item { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer; display: grid; gap: 4px; background: var(--surface); }
+  .pl-item.on { border-color: var(--accent); background: var(--accent-soft); }
+  .pl-item b { font-size: 13.5px; }
+  .pl-item small { color: var(--fg-3); font-size: 12px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 12px; }
+  .field label { display: block; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 4px; font-weight: 600; }
+  .input, .select, .textarea { width: 100%; }
+  .input.sm, .select.sm { padding: 4px 6px; font-size: 12.5px; }
+  table.tbl.edit td { padding: 5px 6px; vertical-align: middle; }
+  table.tbl.edit input, table.tbl.edit select { width: 100%; min-width: 90px; }
+  table.tbl.edit td.w-s { width: 54px; }
+  .btn.xs { padding: 2px 7px; font-size: 11.5px; }
+  .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; }
+  .chk input { width: 15px; height: 15px; accent-color: var(--accent); }
+  .ok-txt { color: var(--accent); font-weight: 600; }
+  .err-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--danger); display: grid; gap: 4px; }
+  .pre-tot { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; }
+  .pre-tot b { font-variant-numeric: tabular-nums; }
+  .textarea { min-height: 90px; resize: vertical; font-family: var(--font-mono); font-size: 12.5px; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .modal .summary { display: grid; gap: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Periodo · salida hacia Helisa · propuesta A (v6)</div>
+        <h1 style="margin-top:4px">Archivos planos para Helisa (A)</h1>
+        <p>Del RH de cada cierre sale el <b>archivo de pedidos</b> que Lucrecia importa en Helisa (Gestión Ventas → importar pedidos); después hace cada factura llamando el pedido con F5 y registra aquí el número FVE. De cada recibo de caja sale el archivo de <b>movimiento contable</b> (dos libros, columna de cruce) con el que Helisa registra el recibo definitivo y cruza el pago. Las plantillas se configuran sin programar. La propuesta B está en <a href="facturacion.html">Facturación electrónica (B)</a>.</p>
+      </div>
+      <div class="tabs" id="tabs" role="tablist"><button data-tab="archivos" class="on">Archivos</button><button data-tab="plantillas">Plantillas (configurador)</button><button data-tab="campos">Campos exportables</button></div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+<div id="overlay"></div>
+<div id="modal-root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Archivos planos (A)'],['facturacion.html','⚡','Facturación electrónica (B)']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtFechaCorta } = D;
+  const USUARIO = 'Lucrecia Quintero';
+  const ahora = () => { const d = new Date(); return `${D.HOY} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  const fechaHora = (s) => s ? `${fmtFechaCorta(s)} ${s.slice(11)}` : '';
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+  document.getElementById('sidebar').innerHTML = sidebar('planos.html');
+  function toast(msg) { $$('.toast').forEach((x) => x.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3600); }
+
+  // ---------- estado en memoria (nada se guarda) ----------
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const state = {
+    tab: 'archivos',
+    periodo: '2026-09',
+    archivos: clone(D.archivos_plano),
+    plantillas: clone(D.plantillas_plano),
+    plantillaSel0: 'pl-ped-1',
+    recibos: clone(D.recibos),
+    facturas: clone(D.facturas),
+    plantillaSel: 'pl-ped-1',
+    preview: null,            // {plantillaId, gen}
+    auditoria: [],
+  };
+  const BADGE_PLANO = { generado: 'warn', descargado: 'info', importado: 'ok', rechazado: 'danger', anulado: 'plain' };
+  const BADGE_PL = { borrador: 'warn', aprobada: 'ok', retirada: 'plain' };
+  const TIPO_LABEL = { PED: 'Pedido de Helisa (desde el RH) · A', RC: 'Recibo de caja (movimiento contable) · A y B', ASI: 'Asiento de factura · B', TER: 'Terceros (fase 2)' };
+  const TIPO_LINEA = { ingreso_basico: 'Ingreso básico', ingreso_adicionales: 'Ingreso kg adicionales', ingreso_unico: 'Ingreso (una línea)', iva: 'IVA generado', cartera: 'Cartera del cliente', caja: 'Caja', banco: 'Banco', retencion: 'Retención (fase 2)', otra: 'Otra' };
+  const plantilla = (id) => state.plantillas.find((p) => p.id === id);
+  const vigente = (tipo) => state.plantillas.filter((p) => p.tipo === tipo && p.estado === 'aprobada' && p.vigente_desde <= D.HOY).sort((a, b) => b.vigente_desde.localeCompare(a.vigente_desde))[0] || null;
+  const periodo = (id) => D.byId(D.periodos, id);
+
+  // Cierres de un periodo con su número de RH (planilla): septiembre arranca en 22690-26, como en cierre.html
+  function cierresDe(periodoId) {
+    const p = periodo(periodoId); const base = { '2026-09': 22690, '2026-10': 22702 }[periodoId] || 22702;
+    return D.cierrePeriodo(periodoId).map((cz, i) => Object.assign(cz, { rh_numero: D.consecutivoPlanilla(base + i, p.fin), fecha_sugerida: p.fin }));
+  }
+  const facturaDe = (cid, pid) => state.facturas.find((f) => f.cliente === cid && f.periodo === pid) || null;
+  const recibosPorExportar = () => state.recibos.filter((r) => r.estado === 'entregado');
+  const recibosEmitidos = () => state.recibos.filter((r) => r.estado === 'emitido');
+
+  // ---------- pestaña ARCHIVOS ----------
+  function renderArchivos() {
+    const p = periodo(state.periodo); const abierto = p.estado === 'abierto';
+    const czs = abierto ? [] : cierresDe(p.id);
+    const porExportar = czs.filter((cz) => !facturaDe(cz.cliente.id, p.id) && !state.archivos.some((a) => a.tipo === 'PED' && a.periodo === p.id && ['generado', 'descargado', 'importado'].includes(a.estado)));
+    const sinFVE = czs.filter((cz) => !facturaDe(cz.cliente.id, p.id));
+    const rcs = recibosPorExportar(), rcsEm = recibosEmitidos();
+    const exportadosSinDef = state.recibos.filter((r) => r.estado === 'exportado');
+    const plFV = vigente('PED'), plRC = vigente('RC');
+    const arch = state.archivos.slice().sort((a, b) => b.generado_en.localeCompare(a.generado_en));
+    return `
+      <div class="grid cols-4 mb">
+        <div class="card stat"><div class="label">Archivos generados</div><div class="value">${state.archivos.filter((a) => a.estado !== 'anulado').length}</div><div class="delta">${state.archivos.filter((a) => a.estado === 'importado').length} importados · ${state.archivos.filter((a) => a.estado === 'rechazado').length} rechazados</div></div>
+        <div class="card stat"><div class="label">RH sin pedido (${esc(p.nombre)})</div><div class="value" style="${porExportar.length ? 'color:var(--warn)' : ''}">${abierto ? '–' : porExportar.length}</div><div class="delta">${abierto ? 'El periodo sigue abierto: primero el cierre' : (porExportar.length ? 'cierres cerrados sin archivo de pedidos' : 'todos los pedidos exportados')}</div></div>
+        <div class="card stat"><div class="label">Recibos por exportar</div><div class="value" style="${rcs.length ? 'color:var(--warn)' : ''}">${rcs.length}</div><div class="delta">entregados en oficina · ${rcsEm.length} emitidos sin entregar (no entran)</div></div>
+        <div class="card stat"><div class="label">Pendientes de registrar</div><div class="value" style="${(sinFVE.length + exportadosSinDef.length) ? 'color:var(--danger)' : ''}">${(abierto ? 0 : sinFVE.length) + exportadosSinDef.length}</div><div class="delta">${abierto ? 0 : sinFVE.length} FVE de cierre · ${exportadosSinDef.length} recibos definitivos</div></div>
+      </div>
+
+      <div class="two mb">
+        <div class="card pad gen">
+          <div class="row" style="justify-content:space-between"><h3 style="font-size:15px">Archivo de pedidos (PED) · desde el RH</h3><span class="badge ${plFV ? 'ok' : 'danger'}">${plFV ? `Plantilla PED v${plFV.version} vigente` : 'Sin plantilla aprobada'}</span></div>
+          <div class="row"><label class="field" style="flex:1"><span class="eyebrow" style="font-size:10.5px">Periodo</span><select class="select" id="g-periodo">${D.periodos.slice().reverse().map((x) => `<option value="${x.id}" ${x.id === state.periodo ? 'selected' : ''}>${esc(x.nombre)} · ${x.estado === 'abierto' ? 'abierto' : 'cerrado'}</option>`).join('')}</select></label></div>
+          ${abierto
+            ? `<div class="callout warn">${esc(p.nombre)} está abierto. El archivo de pedidos se genera después del <a href="cierre.html">cierre del periodo</a>, porque toma los valores del RH congelado de cada cliente.</div>`
+            : `<div class="row"><span class="big">${czs.length}</span><span>RH cerrados · ${fmtCOP(czs.reduce((a, cz) => a + (cz.factura ? cz.factura.total : 0), 0))} en total · ${porExportar.length ? `<b>${porExportar.length} sin exportar</b>` : `<span class="ok-txt">todos exportados</span>`} · ${sinFVE.length ? `<b style="color:var(--danger)">${sinFVE.length} sin FVE registrada</b>` : '<span class="ok-txt">todas las FVE registradas</span>'}</span></div>`}
+          <div class="row">
+            <button class="btn primary" id="g-fv" ${abierto || !plFV || !porExportar.length ? 'disabled' : ''}>Generar archivo de pedidos (${abierto ? 0 : porExportar.length} RH)</button>
+            <button class="btn" id="g-fv-prueba" ${abierto || !plFV ? 'disabled' : ''} title="Archivo marcado PRUEBA: no cambia estados">Archivo de prueba con los ${abierto ? 0 : czs.length} RH</button>
+            ${!abierto && sinFVE.length ? `<button class="btn" id="g-fve">Registrar FVE (${sinFVE.length})</button>` : ''}
+          </div>
+          <div class="muted" style="font-size:12.5px">Un pedido por RH, con una línea por concepto (básico 1 × valor; kilos adicionales × precio) y una línea de comentario; sin cuentas ni IVA (Helisa los calcula). Después de importar, Lucrecia hace cada factura llamando el pedido con F5 y registra aquí el FVE. Regenerar anula el archivo anterior si no fue importado.</div>
+        </div>
+        <div class="card pad gen">
+          <div class="row" style="justify-content:space-between"><h3 style="font-size:15px">Archivo RC · recibos de caja</h3><span class="badge ${plRC ? 'ok' : 'danger'}">${plRC ? `Plantilla RC v${plRC.version} vigente` : 'Sin plantilla aprobada'}</span></div>
+          <div class="row"><span class="big">${rcs.length}</span><span>recibos entregados en oficina sin exportar · ${fmtCOP(rcs.reduce((a, r) => a + r.valor, 0))}${rcsEm.length ? ` · <span class="muted">${rcsEm.length} emitido${rcsEm.length > 1 ? 's' : ''} sin entregar (parámetro: solo entregados)</span>` : ''}</span></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>N.º</th><th>Cliente</th><th>Tipo</th><th>Aplica a</th><th class="num">Valor</th></tr></thead><tbody>
+            ${rcs.length ? rcs.map((r) => { const c = D.cliente(r.cliente); return `<tr><td class="mono">${r.consecutivo}</td><td>${esc(c.nombre_comercial)}</td><td>${esc(D.TIPO_RECIBO_LABEL[r.tipo])}</td><td class="mono">${(r.aplicaciones || []).map((a) => esc(state.facturas.find((f) => f.id === a.factura).numero)).join(', ')}</td><td class="num">${fmtCOP(r.valor)}</td></tr>`; }).join('') : '<tr><td colspan="5" class="muted">Nada por exportar. Los recibos entran cuando la oficina confirma la entrega del efectivo (Recaudo).</td></tr>'}
+          </tbody></table></div>
+          <div class="row">
+            <button class="btn primary" id="g-rc" ${!plRC || !rcs.length ? 'disabled' : ''}>Generar archivo RC (${rcs.length})</button>
+            ${exportadosSinDef.length ? `<button class="btn" id="g-def">Registrar recibo definitivo (${exportadosSinDef.length})</button>` : ''}
+            <a class="btn ghost" href="recaudo.html">Ir a Recaudo</a>
+          </div>
+          <div class="muted" style="font-size:12.5px">Movimiento contable: caja o banco contra cartera 1305, cada línea en clase F y en clase N (dos libros) y la columna con prefijo y número de la factura a cruzar. Un recibo sin factura registrada no puede existir (la app lo bloquea). Igual en A y en B.</div>
+        </div>
+      </div>
+
+      <div class="card mb">
+        <div class="card-head"><h2>Archivos generados</h2><small>${arch.length} en total · nada se guarda al recargar</small></div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Archivo</th><th>Tipo</th><th>Periodo</th><th>Plantilla</th><th class="num">Docs</th><th class="num">Filas</th><th class="num">Valor</th><th>Estado</th><th>Generado</th><th></th></tr></thead>
+          <tbody>${arch.map((a) => { const pl = plantilla(a.plantilla); return `<tr class="${a.estado === 'anulado' ? 'anulado' : ''}" data-id="${a.id}">
+            <td><span class="mono">${esc(a.nombre)}</span>${a.es_prueba ? ' <span class="badge warn">PRUEBA</span>' : ''}<span class="sub">SHA-256 ${esc(a.sha256.slice(0, 16))}…</span></td>
+            <td>${a.tipo}</td><td>${esc(periodo(a.periodo) ? periodo(a.periodo).nombre : a.periodo)}</td><td>${pl ? `${pl.tipo} v${pl.version}` : '–'}</td>
+            <td class="num">${a.documentos}</td><td class="num">${a.filas}</td><td class="num">${a.debitos ? fmtCOP(a.debitos) : '–'}</td>
+            <td><span class="badge ${BADGE_PLANO[a.estado]}">${esc(D.ESTADO_PLANO_LABEL[a.estado])}</span>${a.estado === 'rechazado' ? `<span class="sub">${esc(a.errores.split('\n')[0])}</span>` : ''}${a.estado === 'importado' && a.nota ? `<span class="sub">${esc(a.nota)}</span>` : ''}</td>
+            <td>${esc(a.generado_por.split(' ')[0])}<span class="sub">${fechaHora(a.generado_en)}</span></td>
+            <td><div class="acts"><button class="btn sm ghost" data-ver="${a.id}">Ver líneas</button>${['generado', 'descargado'].includes(a.estado) ? `<button class="btn sm" data-descargar="${a.id}">Descargar</button><button class="btn sm" data-importado="${a.id}">Importado</button><button class="btn sm danger" data-rechazado="${a.id}">Rechazado</button>` : ''}${a.estado === 'importado' ? `<button class="btn sm ghost" data-descargar="${a.id}">Descargar de nuevo</button>` : ''}</div></td>
+          </tr>`; }).join('')}</tbody>
+        </table></div>
+      </div>
+
+      <div class="card pad">
+        <h3 style="font-size:14px">Cómo funciona</h3>
+        <ol style="margin:8px 0 0 18px;padding:0;display:grid;gap:5px;font-size:13px;color:var(--fg-2)">
+          <li><b>PED (A):</b> cierre del cliente → RH con valores → archivo de pedidos (cliente, código de servicio, cantidad, valor unitario) → Lucrecia lo importa en Helisa → entra a cada cliente, F5 trae el pedido, forma de pago, Helisa contabiliza y emite la factura con ATEB → Lucrecia registra el número FVE → el cierre queda <span class="badge ok">facturado</span> y el archivo <span class="badge ok">importado</span>.</li>
+          <li><b>RC (A y B):</b> recibo de caja (solo con factura registrada) → entrega del efectivo confirmada → archivo RC de movimiento contable (caja o banco contra 1305, filas F y N, columna de cruce con la factura) → Lucrecia lo importa → Helisa cruza el pago y emite el recibo definitivo → Lucrecia registra su número → el recibo queda <span class="badge ok">cruzado</span>.</li>
+          <li><b>Rechazo:</b> si Helisa devuelve errores, se pegan aquí, el archivo queda <span class="badge danger">rechazado</span>, los documentos vuelven a su estado anterior y se corrige la plantilla o el dato antes de regenerar.</li>
+          <li><b>ASI (B):</b> si Comserva elige la propuesta B, la factura la emite el sistema y a Helisa va el asiento de cada factura por este mismo mecanismo; ver <a href="facturacion.html">Facturación electrónica (B)</a>.</li>
+        </ol>
+      </div>`;
+  }
+
+  function generar(tipo, opts = {}) {
+    const p = periodo(state.periodo); const pl = vigente(tipo);
+    let gen, docs, periodoId = p.id;
+    if (tipo === 'PED') {
+      const czs = cierresDe(p.id).filter((cz) => opts.prueba || !facturaDe(cz.cliente.id, p.id));
+      docs = { cierres: czs }; gen = D.generarPlano(pl, docs);
+    } else {
+      const rcs = recibosPorExportar(); periodoId = D.periodos.find((x) => x.estado === 'abierto').id;
+      docs = { recibos: rcs }; gen = D.generarPlano(pl, docs);
+    }
+    if (gen.errores.length) { modalErrores(gen); return; }
+    const n = state.archivos.filter((a) => a.tipo === tipo && a.periodo === periodoId).length + 1;
+    const a = { id: `ap-${tipo.toLowerCase()}-${periodoId}-${String(n).padStart(3, '0')}`, tipo, periodo: periodoId, plantilla: pl.id, consecutivo: n, nombre: `${pl.prefijo_archivo}_${tipo}_${periodoId}_${String(n).padStart(3, '0')}${opts.prueba ? '_PRUEBA' : ''}.${pl.formato}`, estado: 'generado', generado_por: USUARIO, generado_en: ahora(), documentos: gen.documentos, filas: gen.filas.length, debitos: gen.debitos, creditos: gen.creditos, sha256: D.hashFake(tipo + periodoId + n + Date.now()), es_prueba: !!opts.prueba, gen };
+    if (!opts.prueba) {
+      // anula el archivo anterior no importado del mismo tipo y periodo
+      state.archivos.filter((x) => x.tipo === tipo && x.periodo === periodoId && ['generado', 'descargado'].includes(x.estado)).forEach((x) => { x.estado = 'anulado'; x.anulado_motivo = 'Regenerado como ' + a.nombre; });
+      if (tipo === 'RC') docs.recibos.forEach((r) => { r.estado = 'exportado'; r.archivo = a.id; });
+    }
+    state.archivos.push(a);
+    state.auditoria.unshift({ en: a.generado_en, quien: USUARIO, accion: `Generó archivo plano ${tipo}${opts.prueba ? ' de prueba' : ''}`, entidad: 'Archivo plano · ' + a.nombre, detalle: `${gen.documentos} documentos; plantilla ${pl.tipo} v${pl.version}` });
+    render(); abrirArchivo(a.id);
+    toast(`${a.nombre} generado: ${gen.documentos} documento${gen.documentos > 1 ? 's' : ''}, ${gen.filas.length} filas, débitos = créditos = ${fmtCOP(gen.debitos)}.`);
+  }
+
+  function genDe(a) {
+    if (a.gen) return a.gen;
+    const pl = plantilla(a.plantilla);
+    if (a.tipo === 'PED' || a.tipo === 'ASI') a.gen = D.generarPlano(pl, { cierres: cierresDe(a.periodo) });
+    else a.gen = D.generarPlano(pl, { recibos: state.recibos.filter((r) => r.archivo === a.id) });
+    return a.gen;
+  }
+
+  function abrirArchivo(id) {
+    const a = state.archivos.find((x) => x.id === id); if (!a) return;
+    const pl = plantilla(a.plantilla); const gen = genDe(a);
+    const cols = pl.columnas.map((c) => c.titulo);
+    let lastDoc = null;
+    $('#overlay').innerHTML = `
+      <div class="drawer-backdrop" data-cerrar></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="d-head">
+          <div>
+            <div class="eyebrow">Archivo plano ${a.tipo} · ${esc(TIPO_LABEL[a.tipo])}</div>
+            <div class="no" id="d-title">${esc(a.nombre)}</div>
+            <div class="muted" style="font-size:12.5px;margin-top:4px">Plantilla ${pl.tipo} v${pl.version} «${esc(pl.nombre)}» · ${pl.formato.toUpperCase()} · ${esc(pl.codificacion)} · generado por ${esc(a.generado_por)} el ${fechaHora(a.generado_en)} · SHA-256 <span class="mono">${esc(a.sha256)}</span></div>
+            <div style="margin-top:8px"><span class="badge ${BADGE_PLANO[a.estado]}">${esc(D.ESTADO_PLANO_LABEL[a.estado])}</span> ${a.es_prueba ? '<span class="badge warn">PRUEBA · no cambia estados</span>' : ''}</div>
+          </div>
+          <button class="close" data-cerrar aria-label="Cerrar">✕</button>
+        </div>
+        <div class="d-body">
+          ${a.estado === 'rechazado' ? `<div class="callout danger"><b>Rechazado por Helisa</b> el ${fechaHora(a.rechazado_en)}. Lista de errores pegada por Lucrecia:<pre style="margin:6px 0 0;white-space:pre-wrap;font-size:12px">${esc(a.errores)}</pre></div>` : ''}
+          ${a.estado === 'importado' ? `<div class="callout ok"><b>Importado en Helisa</b> el ${fechaHora(a.importado_en)} por ${esc(a.importado_por)}.${a.nota ? ' ' + esc(a.nota) : ''} El archivo es inmutable y se conserva 10 años.</div>` : ''}
+          <div class="pre-tot"><span>Documentos: <b>${a.documentos}</b></span><span>Filas: <b>${a.filas}</b></span>${a.tipo === 'PED' ? `<span>Total de los pedidos: <b>${fmtCOP(a.debitos)}</b></span>` : `<span>Débitos: <b>${fmtCOP(a.debitos)}</b></span><span>Créditos: <b>${fmtCOP(a.creditos)}</b></span><span class="${Math.round(a.debitos) === Math.round(a.creditos) ? 'ok-txt' : ''}">${Math.round(a.debitos) === Math.round(a.creditos) ? '✓ cuadra' : '✗ no cuadra'}</span>`}</div>
+          <section><h3>Filas tal como van en el archivo (${cols.length} columnas)</h3>
+            <div class="lineas-wrap"><table class="plano"><thead><tr><th>Doc.</th>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>
+              ${gen.filas.map((f) => { const start = f.doc !== lastDoc; lastDoc = f.doc; return `<tr class="${start ? 'doc-start' : ''}"><td style="font-family:var(--font-ui);color:var(--fg-3)">${start ? esc(f.doc) : ''}</td>${cols.map((c) => `<td class="${c === 'VALOR' || c === 'BASE' ? 'num' : ''}">${esc(f.fila[c])}</td>`).join('')}</tr>`; }).join('')}
+            </tbody></table></div>
+          </section>
+          <section><h3>Línea de tiempo</h3><ul class="timeline">
+            <li><div>Generado por ${esc(a.generado_por)} con la plantilla ${pl.tipo} v${pl.version}<div class="when">${fechaHora(a.generado_en)}</div></div></li>
+            ${a.descargado_en ? `<li><div>Descargado<div class="when">${fechaHora(a.descargado_en)}</div></div></li>` : ''}
+            ${a.rechazado_en ? `<li><div>Marcado rechazado con la lista de errores de Helisa<div class="when">${fechaHora(a.rechazado_en)}</div></div></li>` : ''}
+            ${a.importado_en ? `<li><div>Marcado importado por ${esc(a.importado_por)}<div class="when">${fechaHora(a.importado_en)}</div></div></li>` : ''}
+            ${a.anulado_motivo ? `<li><div>Anulado: ${esc(a.anulado_motivo)}</div></li>` : ''}
+          </ul></section>
+        </div>
+        <div class="d-foot">
+          <button class="btn primary" data-descargar="${a.id}">Descargar ${pl.formato.toUpperCase()}</button>
+          ${['generado', 'descargado'].includes(a.estado) && !a.es_prueba ? `<button class="btn" data-importado="${a.id}">Marcar importado</button><button class="btn danger" data-rechazado="${a.id}">Marcar rechazado</button>` : ''}
+        </div>
+      </aside>`;
+    $('.drawer .close').focus();
+    $$('#overlay [data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDrawer));
+    bindAcciones($('#overlay'));
+  }
+  function cerrarDrawer() { $('#overlay').innerHTML = ''; }
+
+  function descargar(id) {
+    const a = state.archivos.find((x) => x.id === id); const pl = plantilla(a.plantilla); const gen = genDe(a);
+    const txt = D.textoArchivo(pl, gen);
+    // El mockup entrega texto (csv/txt) aunque la plantilla diga .xls: el generador real escribe BIFF8 con SheetJS.
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = a.nombre.replace(/\.xls$/, '.csv'); document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+    if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahora(); }
+    else if (!a.descargado_en) a.descargado_en = ahora();
+    state.auditoria.unshift({ en: ahora(), quien: USUARIO, accion: 'Descargó archivo plano', entidad: 'Archivo plano · ' + a.nombre, detalle: '' });
+    render(); if ($('#overlay .drawer')) abrirArchivo(a.id);
+    toast(`${a.nombre} descargado${pl.formato === 'xls' ? ' (el mockup entrega .csv; el sistema real escribe .xls Excel 97-2003)' : ''}. Impórtelo en Helisa: Transferencia de Datos → Importar.`);
+  }
+
+  // ---------- modales ----------
+  let opener = null;
+  function openModal(html) {
+    opener = document.activeElement;
+    const root = $('#modal-root');
+    root.innerHTML = `<div class="modal-backdrop" data-close-backdrop><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">${html}</div></div>`;
+    $$('[data-close]', root).forEach((b) => b.addEventListener('click', closeModal));
+    root.firstElementChild.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close-backdrop')) closeModal(); });
+    const first = root.querySelector('input, textarea, select, button:not([data-close])'); (first || root.querySelector('.modal')).focus();
+  }
+  function closeModal() { $('#modal-root').innerHTML = ''; if (opener && document.contains(opener)) opener.focus(); opener = null; }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('#modal-root .modal')) closeModal(); else cerrarDrawer(); } });
+
+  function modalErrores(gen) {
+    openModal(`<div class="modal-head" id="modal-title">El archivo no se puede generar</div>
+      <div class="modal-body"><p>La validación previa encontró estos problemas. Nada se generó; corrija el dato o la plantilla y vuelva a intentar.</p><ul class="err-list">${gen.errores.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div>
+      <div class="modal-foot"><button class="btn primary" data-close>Entendido</button></div>`);
+  }
+  function modalImportado(id) {
+    const a = state.archivos.find((x) => x.id === id);
+    const p = periodo(a.periodo);
+    const czs = a.tipo === 'PED' ? cierresDe(a.periodo).filter((cz) => !facturaDe(cz.cliente.id, a.periodo)) : [];
+    const rcs = a.tipo === 'RC' ? state.recibos.filter((r) => r.archivo === a.id && r.estado === 'exportado') : [];
+    openModal(`<div class="modal-head" id="modal-title">Registrar lo que devolvió Helisa · ${esc(a.nombre)}</div>
+      <div class="modal-body">
+        <p>${a.tipo === 'PED' ? `Los pedidos ya están en Helisa. Por cada cliente, Lucrecia entra a la pantalla de ventas, llama el pedido con F5, elige la forma de pago y Helisa emite la factura. Escriba aquí el número FVE de cada una (y el total si difiere del RH). Con todas registradas el archivo pasa a importado y los cierres a facturado; desde ese momento la app permite emitir recibos de caja a esos clientes.` : (a.tipo === 'ASI' ? 'Los asientos de las facturas emitidas por el sistema quedaron importados en Helisa. Marque el archivo como importado.' : `Helisa registró el recibo definitivo y cruzó cada pago contra su factura. Escriba el número del recibo definitivo de cada uno; los recibos pasan a cruzado.`)}</p>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>${a.tipo === 'PED' ? 'Cliente · RH (pedido)' : 'Recibo provisional'}</th><th class="num">${a.tipo === 'PED' ? 'Total RH' : 'Valor'}</th><th>${a.tipo === 'PED' ? 'N.º FVE (Helisa)' : 'N.º recibo Helisa'}</th><th>Fecha</th></tr></thead><tbody>
+          ${a.tipo === 'PED' ? czs.map((cz, i) => `<tr><td>${esc(cz.cliente.nombre_comercial)}<span class="sub mono">${esc(cz.rh_numero)}</span></td><td class="num">${fmtCOP(cz.factura.total)}</td><td><input class="input sm" data-fve="${cz.cliente.id}" value="FVE ${25768 + i}"></td><td><input class="input sm" type="date" value="${D.HOY}" data-fecha="${cz.cliente.id}"></td></tr>`).join('')
+            : rcs.map((r, i) => `<tr><td class="mono">${r.consecutivo}<span class="sub" style="font-family:var(--font-ui)">${esc(D.cliente(r.cliente).nombre_comercial)}</span></td><td class="num">${fmtCOP(r.valor)}</td><td><input class="input sm" data-def="${r.id}" value="RC ${8820 + i}"></td><td><input class="input sm" type="date" value="${D.HOY}"></td></tr>`).join('')}
+          ${!czs.length && !rcs.length ? '<tr><td colspan="4" class="muted">Nada pendiente en este archivo.</td></tr>' : ''}
+        </tbody></table></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="m-ok">Registrar y marcar importado</button></div>`);
+    $('#m-ok').addEventListener('click', () => {
+      if (a.tipo === 'PED') czs.forEach((cz) => { const num = $(`[data-fve="${cz.cliente.id}"]`).value.trim(); if (!num) return; state.facturas.push({ id: 'f-' + num.replace(/\D/g, ''), numero: num, cliente: cz.cliente.id, periodo: a.periodo, fecha: $(`[data-fecha="${cz.cliente.id}"]`).value, vence: D.sumarDias($(`[data-fecha="${cz.cliente.id}"]`).value, 30), total: cz.factura.total, pagada_otro_medio: 0, archivo: a.id, registrada_por: USUARIO, registrada_en: ahora() }); });
+      else rcs.forEach((r) => { const num = $(`[data-def="${r.id}"]`).value.trim(); if (!num) return; r.estado = 'cruzado'; r.recibo_helisa = num; r.recibo_helisa_fecha = D.HOY; r.cruzado_en = ahora(); r.conciliado = true; });
+      a.estado = 'importado'; a.importado_en = ahora(); a.importado_por = USUARIO;
+      state.auditoria.unshift({ en: a.importado_en, quien: USUARIO, accion: a.tipo === 'PED' ? `Registró ${czs.length} FVE` : `Registró ${rcs.length} recibos definitivos`, entidad: 'Archivo plano · ' + a.nombre, detalle: 'Archivo → importado' });
+      closeModal(); render(); cerrarDrawer();
+      toast(a.tipo === 'PED' ? `${czs.length} FVE registradas: cierres de ${p.nombre} facturados; la app ya permite recibos a esos clientes.` : `${rcs.length} recibos cruzados en Helisa.`);
+    });
+  }
+  function modalRechazado(id) {
+    const a = state.archivos.find((x) => x.id === id);
+    openModal(`<div class="modal-head" id="modal-title">Marcar ${esc(a.nombre)} como rechazado</div>
+      <div class="modal-body">
+        <div class="callout warn">Pegue la «lista de errores» que mostró Helisa al importar. Los documentos del archivo vuelven a su estado anterior (cierres → cerrado; recibos → entregado) y podrá regenerar con la plantilla corregida.</div>
+        <div class="field"><label for="m-err" class="req">Lista de errores de Helisa</label><textarea class="textarea" id="m-err" placeholder="Ejemplo: Fila 5: el tercero 1117490216 no existe en la cartilla de terceros."></textarea></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Cancelar</button><button class="btn danger" id="m-ok">Marcar rechazado</button></div>`);
+    $('#m-ok').addEventListener('click', () => {
+      const t = $('#m-err').value.trim(); if (t.length < 8) { $('#m-err').style.borderColor = 'var(--danger)'; $('#m-err').focus(); return; }
+      a.estado = 'rechazado'; a.rechazado_en = ahora(); a.errores = t;
+      if (a.tipo === 'RC') state.recibos.filter((r) => r.archivo === a.id).forEach((r) => { r.estado = 'entregado'; r.archivo = null; });
+      state.auditoria.unshift({ en: a.rechazado_en, quien: USUARIO, accion: 'Marcó archivo como rechazado', entidad: 'Archivo plano · ' + a.nombre, detalle: t.split('\n')[0] });
+      closeModal(); render(); cerrarDrawer(); toast(`${a.nombre} rechazado. Corrija y regenere.`);
+    });
+  }
+  function modalDefinitivos() { const a = state.archivos.filter((x) => x.tipo === 'RC' && x.estado === 'importado').pop(); const pend = state.recibos.filter((r) => r.estado === 'exportado'); if (!pend.length) return; const arch = state.archivos.find((x) => x.id === pend[0].archivo); if (arch) { arch.estado = 'descargado'; modalImportado(arch.id); } }
+  function modalFVE() { const p = periodo(state.periodo); const arch = state.archivos.filter((x) => x.tipo === 'PED' && x.periodo === p.id && ['generado', 'descargado', 'importado'].includes(x.estado)).pop(); if (!arch) { toast('Primero genere y descargue el archivo de pedidos.'); return; } modalImportado(arch.id); }
+
+  // ---------- pestaña PLANTILLAS ----------
+  function validarPlantilla(pl) {
+    const err = [];
+    if (!pl.columnas.length) err.push('La plantilla no tiene columnas.');
+    pl.columnas.forEach((c) => { if (!c.titulo.trim()) err.push(`Columna ${c.orden}: sin título.`); if (c.origen === 'campo' && !D.CAMPOS_PLANO.some((k) => k.clave === c.campo)) err.push(`Columna ${c.orden} «${c.titulo}»: el campo «${c.campo || '(vacío)'}» no existe en el catálogo.`); });
+    if (pl.tipo === 'PED') {
+      if (!pl.lineas.length) err.push('Debe definir al menos una línea del pedido.');
+      if (!pl.columnas.some((c) => c.campo === 'servicio.codigo')) err.push('El pedido necesita la columna del código del servicio.');
+      if (!pl.columnas.some((c) => c.campo === 'linea.cantidad') || !pl.columnas.some((c) => c.campo === 'linea.valor_unitario')) err.push('El pedido necesita cantidad y valor unitario.');
+    } else if (pl.tipo !== 'TER') {
+      if (!pl.lineas.length) err.push('Debe definir al menos una línea por documento.');
+      pl.lineas.forEach((l) => { if (!l.cuenta.trim() || /EJEMPLO/i.test(l.cuenta)) err.push(`Línea ${l.orden} (${TIPO_LINEA[l.tipo]}): cuenta vacía o de ejemplo; el contador debe definirla.`); });
+      const deb = pl.lineas.filter((l) => l.clase === 'F' && l.naturaleza === 'D').length, cre = pl.lineas.filter((l) => l.clase === 'F' && l.naturaleza === 'C').length;
+      if (!deb || !cre) err.push('Las líneas de clase F deben tener al menos un débito y un crédito para que el documento cuadre.');
+      if (pl.tipo === 'ASI' && !pl.lineas.some((l) => l.tipo === 'cartera')) err.push('El asiento de factura necesita una línea de cartera (débito al cliente).');
+      if (pl.tipo === 'RC' && !pl.lineas.some((l) => l.tipo === 'cartera')) err.push('El archivo RC necesita una línea de cartera (crédito al cliente) con DOC FUENTE = FVE.');
+    }
+    if (!pl.tipo_documento && pl.tipo !== 'TER') err.push('Falta el tipo de documento (columna TIPO).');
+    return err;
+  }
+  function docsPrueba(pl) {
+    if (pl.tipo === 'PED' || pl.tipo === 'ASI') return { cierres: cierresDe('2026-09').filter((cz) => cz.cliente.id === 'c-cofema') };
+    if (pl.tipo === 'RC') return { recibos: state.recibos.filter((r) => r.id === 'r-35672' || r.id === 'r-35686') };
+    return { clientes: D.clientes.filter((c) => c.id === 'c-cofema' || c.id === 'c-nueva') };
+  }
+  function renderPlantillas() {
+    const pl = plantilla(state.plantillaSel); const errs = validarPlantilla(pl); const editable = pl.estado === 'borrador';
+    const campoOpts = (sel) => D.CAMPOS_PLANO.map((k) => `<option value="${k.clave}" ${k.clave === sel ? 'selected' : ''}>${k.clave}</option>`).join('');
+    const pre = state.preview && state.preview.plantillaId === pl.id ? state.preview.gen : null;
+    const cols = pl.columnas.map((c) => c.titulo); let lastDoc = null;
+    return `<div class="ed">
+      <div>
+        <div class="card pad mb"><h3>Plantillas</h3><div class="pl-list">${state.plantillas.map((p) => `<div class="pl-item ${p.id === pl.id ? 'on' : ''}" data-pl="${p.id}" tabindex="0"><div style="display:flex;justify-content:space-between;gap:8px"><b>${p.tipo} · v${p.version}</b><span class="badge ${BADGE_PL[p.estado]}">${esc(p.estado)}</span></div><small>${esc(p.nombre)}</small><small>${p.estado === 'aprobada' ? `vigente desde ${fmtFechaCorta(p.vigente_desde)} · ${esc(p.aprobada_por)}` : `creada por ${esc(p.creada_por)} el ${fmtFechaCorta(p.creada_en)}`}</small></div>`).join('')}</div>
+          <div class="muted" style="font-size:12px;margin-top:10px">Una plantilla aprobada no se edita: se copia como versión nueva, se prueba con Cofema y la aprueba Gerencia con fecha de vigencia. Cada archivo registra la versión que usó.</div></div>
+        <div class="card pad"><h3>Qué puede cambiar Comserva sin programar</h3><ul style="margin:6px 0 0 16px;padding:0;display:grid;gap:4px;font-size:12.5px;color:var(--fg-2)"><li>Formato (.xls, .txt, .csv), separador, codificación, fechas, decimales.</li><li>Columnas: título, orden, origen (campo, constante, vacío).</li><li>Pedido: códigos de servicio y lista de precios por línea.</li><li>Recibo y asiento: cuentas de los dos libros (F y N), naturaleza, concepto, base.</li><li>Tipo de documento, centro de costo, prefijos, validaciones.</li></ul><div class="muted" style="font-size:12px;margin-top:8px">Agregar un campo nuevo al catálogo sí es un cambio de código (pequeño).</div></div>
+      </div>
+      <div>
+        <div class="card mb">
+          <div class="card-head"><div><h2>${pl.tipo} · versión ${pl.version} <span class="badge ${BADGE_PL[pl.estado]}">${esc(pl.estado)}</span></h2><small>${esc(TIPO_LABEL[pl.tipo])} · ${esc(pl.nombre)}</small></div>
+            <div class="acts">${editable ? `<button class="btn" data-pl-act="prueba">Vista previa con Cofema</button><button class="btn" data-pl-act="archivo-prueba">Archivo de prueba</button><button class="btn primary" data-pl-act="aprobar" ${errs.length ? 'disabled title="Corrija los errores de la lista"' : ''}>Aprobar versión</button>` : `<button class="btn" data-pl-act="prueba">Vista previa con Cofema</button><button class="btn primary" data-pl-act="copiar">Copiar como versión nueva</button>`}</div></div>
+          <div class="card-body">
+            ${pl.nota_cambio ? `<div class="callout info" style="margin-bottom:12px"><b>Nota de cambio:</b> ${esc(pl.nota_cambio)}</div>` : ''}
+            ${errs.length ? `<div class="callout danger" style="margin-bottom:12px"><b>No se puede aprobar todavía:</b><ul class="err-list" style="margin-top:6px">${errs.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div>` : (editable ? '<div class="callout ok" style="margin-bottom:12px">La plantilla pasa las validaciones. Pruebe con Cofema y apruébela.</div>' : '')}
+            <h3>Formato del archivo</h3>
+            <div class="form-grid" style="margin-bottom:14px">
+              <div class="field"><label>Formato</label><select class="select sm" data-f="formato" ${editable ? '' : 'disabled'}><option value="xls" ${pl.formato === 'xls' ? 'selected' : ''}>.xls Excel 97-2003</option><option value="csv" ${pl.formato === 'csv' ? 'selected' : ''}>.csv</option><option value="txt" ${pl.formato === 'txt' ? 'selected' : ''}>.txt (tabulador)</option></select></div>
+              <div class="field"><label>Separador (csv)</label><select class="select sm" data-f="separador" ${editable ? '' : 'disabled'}><option value=";" ${pl.separador === ';' ? 'selected' : ''}>; punto y coma</option><option value="," ${pl.separador === ',' ? 'selected' : ''}>, coma</option><option value="|" ${pl.separador === '|' ? 'selected' : ''}>| barra</option></select></div>
+              <div class="field"><label>Codificación</label><select class="select sm" data-f="codificacion" ${editable ? '' : 'disabled'}><option ${pl.codificacion === 'windows-1252' ? 'selected' : ''}>windows-1252</option><option ${pl.codificacion === 'utf-8' ? 'selected' : ''}>utf-8</option><option ${pl.codificacion === 'utf-8-bom' ? 'selected' : ''}>utf-8-bom</option></select></div>
+              <div class="field"><label>Formato de fecha</label><select class="select sm" data-f="formato_fecha" ${editable ? '' : 'disabled'}><option ${pl.formato_fecha === 'dd/MM/yyyy' ? 'selected' : ''}>dd/MM/yyyy</option><option ${pl.formato_fecha === 'yyyy-MM-dd' ? 'selected' : ''}>yyyy-MM-dd</option><option ${pl.formato_fecha === 'ddMMyyyy' ? 'selected' : ''}>ddMMyyyy</option></select></div>
+              <div class="field"><label>Decimales</label><select class="select sm" data-f="decimales" ${editable ? '' : 'disabled'}><option value="0" ${pl.decimales == 0 ? 'selected' : ''}>0 (pesos enteros)</option><option value="2" ${pl.decimales == 2 ? 'selected' : ''}>2</option></select></div>
+              <div class="field"><label>Tipo de documento (TIPO)</label><input class="input sm" data-f="tipo_documento" value="${esc(pl.tipo_documento)}" ${editable ? '' : 'disabled'}></div>
+              <div class="field"><label>Centro de costo</label><input class="input sm" data-f="centro_costo" value="${esc(pl.centro_costo)}" ${editable ? '' : 'disabled'}></div>
+              <div class="field"><label>Prefijo DOC FUENTE</label><input class="input sm" data-f="prefijo_doc_fuente" value="${esc(pl.prefijo_doc_fuente)}" ${editable ? '' : 'disabled'}></div>
+              <div class="field"><label>Prefijo del archivo</label><input class="input sm" data-f="prefijo_archivo" value="${esc(pl.prefijo_archivo)}" ${editable ? '' : 'disabled'}></div>
+              <div class="field" style="display:grid;gap:6px;align-content:end"><label class="chk"><input type="checkbox" data-f="con_titulos" ${pl.con_titulos ? 'checked' : ''} ${editable ? '' : 'disabled'}> Fila de títulos</label><label class="chk"><input type="checkbox" data-f="mayusculas" ${pl.mayusculas ? 'checked' : ''} ${editable ? '' : 'disabled'}> Mayúsculas</label><label class="chk"><input type="checkbox" data-f="quitar_tildes" ${pl.quitar_tildes ? 'checked' : ''} ${editable ? '' : 'disabled'}> Quitar tildes y eñes</label><label class="chk"><input type="checkbox" data-f="nit_con_dv" ${pl.nit_con_dv ? 'checked' : ''} ${editable ? '' : 'disabled'}> NIT con DV</label></div>
+              <div class="field" style="display:grid;gap:6px;align-content:end"><label class="chk"><input type="checkbox" data-f="valida_cuadre" ${pl.valida_cuadre ? 'checked' : ''} ${editable ? '' : 'disabled'}> Validar cuadre D = C</label><label class="chk"><input type="checkbox" data-f="valida_tercero" ${pl.valida_tercero ? 'checked' : ''} ${editable ? '' : 'disabled'}> Validar DV y tercero en Helisa</label><label class="chk"><input type="checkbox" data-f="valida_fve" ${pl.valida_fve ? 'checked' : ''} ${editable ? '' : 'disabled'}> Validar FVE en cada recibo</label></div>
+            </div>
+            <h3>Columnas (${pl.columnas.length}) · el orden es el del archivo</h3>
+            <div class="table-wrap"><table class="tbl edit"><thead><tr><th class="w-s">#</th><th>Título en el archivo</th><th>Origen</th><th>Campo o constante</th><th>Ejemplo</th><th></th></tr></thead><tbody>
+              ${pl.columnas.map((c, i) => { const k = D.CAMPOS_PLANO.find((x) => x.clave === c.campo); return `<tr><td class="w-s mono">${c.orden}</td><td><input class="input sm" data-col="${i}" data-k="titulo" value="${esc(c.titulo)}" ${editable ? '' : 'disabled'}></td><td><select class="select sm" data-col="${i}" data-k="origen" ${editable ? '' : 'disabled'}><option value="campo" ${c.origen === 'campo' ? 'selected' : ''}>campo</option><option value="constante" ${c.origen === 'constante' ? 'selected' : ''}>constante</option><option value="vacio" ${c.origen === 'vacio' ? 'selected' : ''}>vacío</option></select></td><td>${c.origen === 'campo' ? `<select class="select sm mono" data-col="${i}" data-k="campo" ${editable ? '' : 'disabled'}>${campoOpts(c.campo)}</select>` : (c.origen === 'constante' ? `<input class="input sm" data-col="${i}" data-k="constante" value="${esc(c.constante)}" ${editable ? '' : 'disabled'}>` : '<span class="muted">–</span>')}</td><td class="muted" style="font-size:12px">${c.origen === 'campo' ? esc(k ? k.ejemplo : '¿?') : (c.origen === 'constante' ? esc(c.constante) : '')}</td><td style="white-space:nowrap">${editable ? `<button class="btn xs ghost" data-col-mv="${i}|-1" ${i === 0 ? 'disabled' : ''} aria-label="Subir">▲</button><button class="btn xs ghost" data-col-mv="${i}|1" ${i === pl.columnas.length - 1 ? 'disabled' : ''} aria-label="Bajar">▼</button><button class="btn xs ghost" data-col-del="${i}" aria-label="Quitar">✕</button>` : ''}</td></tr>`; }).join('')}
+            </tbody></table></div>
+            ${editable ? '<div style="margin:8px 0 14px"><button class="btn sm" data-pl-act="col-add">+ Agregar columna</button> <button class="btn sm ghost" data-pl-act="col-helisa">Restablecer las 22 columnas de Helisa</button></div>' : '<div style="margin-bottom:14px"></div>'}
+            ${pl.tipo !== 'TER' ? `<h3>${pl.tipo === 'PED' ? `Líneas del pedido (${pl.lineas.length}) · «cuenta» = código del servicio de Helisa; tipo «otra» = comentario` : `Líneas por documento (${pl.lineas.length}) · lo que genera cada ${pl.tipo === 'ASI' ? 'factura' : 'recibo'} en los dos libros (F y N)`}</h3>
+            <div class="table-wrap"><table class="tbl edit"><thead><tr><th class="w-s">#</th><th>Línea</th><th>Clase</th><th>Cuenta</th><th>D/C</th><th>Concepto (con campos entre llaves)</th><th>Base</th><th>Omitir en 0</th><th></th></tr></thead><tbody>
+              ${pl.lineas.map((l, i) => `<tr><td class="w-s mono">${l.orden}</td><td><select class="select sm" data-ln="${i}" data-k="tipo" ${editable ? '' : 'disabled'}>${Object.entries(TIPO_LINEA).map(([k, v]) => `<option value="${k}" ${l.tipo === k ? 'selected' : ''}>${v}</option>`).join('')}</select></td><td><select class="select sm" data-ln="${i}" data-k="clase" ${editable ? '' : 'disabled'}><option ${l.clase === 'F' ? 'selected' : ''}>F</option><option ${l.clase === 'N' ? 'selected' : ''}>N</option></select></td><td><input class="input sm mono" data-ln="${i}" data-k="cuenta" value="${esc(l.cuenta)}" ${editable ? '' : 'disabled'} style="${/EJEMPLO/i.test(l.cuenta) || !l.cuenta ? 'border-color:var(--danger)' : ''}"></td><td><select class="select sm" data-ln="${i}" data-k="naturaleza" ${editable ? '' : 'disabled'}><option ${l.naturaleza === 'D' ? 'selected' : ''}>D</option><option ${l.naturaleza === 'C' ? 'selected' : ''}>C</option></select></td><td><input class="input sm" data-ln="${i}" data-k="concepto" value="${esc(l.concepto)}" ${editable ? '' : 'disabled'} style="min-width:260px"></td><td><input type="checkbox" data-ln="${i}" data-k="base" ${l.base ? 'checked' : ''} ${editable ? '' : 'disabled'}></td><td><input type="checkbox" data-ln="${i}" data-k="omitir_cero" ${l.omitir_cero ? 'checked' : ''} ${editable ? '' : 'disabled'}></td><td style="white-space:nowrap">${editable ? `<button class="btn xs ghost" data-ln-mv="${i}|-1" ${i === 0 ? 'disabled' : ''}>▲</button><button class="btn xs ghost" data-ln-mv="${i}|1" ${i === pl.lineas.length - 1 ? 'disabled' : ''}>▼</button><button class="btn xs ghost" data-ln-del="${i}">✕</button>` : ''}</td></tr>`).join('')}
+            </tbody></table></div>
+            ${editable ? '<div style="margin:8px 0 0"><button class="btn sm" data-pl-act="ln-add">+ Agregar línea</button></div>' : ''}` : '<div class="callout info">La cartilla de terceros no lleva líneas contables: una fila por cliente.</div>'}
+          </div>
+        </div>
+        ${pre ? `<div class="card mb"><div class="card-head"><div><h3>Vista previa · ${pl.tipo === 'PED' || pl.tipo === 'ASI' ? 'Cofema, septiembre de 2026 (RH 22690-26)' : (pl.tipo === 'RC' ? 'recibos 35672 y 35686' : 'Cofema y Droguería Nueva Esperanza')}</h3><small>Así saldrían las filas con esta plantilla · ${pre.filas.length} filas · ${pre.documentos} documento${pre.documentos > 1 ? 's' : ''}</small></div><div class="pre-tot">${pl.tipo === 'PED' ? `<span>Total del pedido <b>${fmtCOP(pre.debitos)}</b></span><span class="muted">Helisa calcula el IVA y contabiliza al facturar</span>` : `<span>Débitos <b>${fmtCOP(pre.debitos)}</b></span><span>Créditos <b>${fmtCOP(pre.creditos)}</b></span><span class="${Math.round(pre.debitos) === Math.round(pre.creditos) ? 'ok-txt' : ''}">${Math.round(pre.debitos) === Math.round(pre.creditos) ? '✓ cuadra' : '✗ no cuadra'}</span>`}</div></div>
+          ${pre.errores.length ? `<div class="card-body"><ul class="err-list">${pre.errores.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div>` : ''}
+          <div class="lineas-wrap" style="border:0;border-top:1px solid var(--border);border-radius:0"><table class="plano"><thead><tr><th>Doc.</th>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${pre.filas.map((f) => { const start = f.doc !== lastDoc; lastDoc = f.doc; return `<tr class="${start ? 'doc-start' : ''}"><td style="font-family:var(--font-ui);color:var(--fg-3)">${start ? esc(f.doc) : ''}</td>${cols.map((c) => `<td class="${c === 'VALOR' || c === 'BASE' ? 'num' : ''}">${esc(f.fila[c])}</td>`).join('')}</tr>`; }).join('')}</tbody></table></div></div>` : ''}
+      </div>
+    </div>`;
+  }
+  function modalAprobar(pl) {
+    const ger = D.usuarios.find((u) => u.rol === 'gerencia');
+    openModal(`<div class="modal-head" id="modal-title">Aprobar la plantilla ${pl.tipo} v${pl.version}</div>
+      <div class="modal-body">
+        <p>La aprueba Gerencia (${esc(ger.nombre)}) con su usuario. Desde la fecha de vigencia los archivos ${pl.tipo} se generan con esta versión; la anterior queda retirada pero cada archivo ya generado conserva la suya.</p>
+        <div class="field"><label for="m-vig" class="req">Vigente desde</label><input class="input" type="date" id="m-vig" value="${D.HOY}"></div>
+        <div class="field"><label for="m-nota">Nota de cambio</label><input class="input" id="m-nota" value="${esc(pl.nota_cambio)}"></div>
+        <label class="chk"><input type="checkbox" id="m-ack"> Probé la plantilla con los datos de Cofema y el contador revisó las cuentas</label>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="m-ok" disabled>Aprobar como ${esc(ger.nombre.split(' ')[0])}</button></div>`);
+    $('#m-ack').addEventListener('change', (e) => { $('#m-ok').disabled = !e.target.checked; });
+    $('#m-ok').addEventListener('click', () => {
+      state.plantillas.filter((p) => p.tipo === pl.tipo && p.estado === 'aprobada').forEach((p) => { p.estado = 'retirada'; });
+      Object.assign(pl, { estado: 'aprobada', vigente_desde: $('#m-vig').value, aprobada_por: ger.nombre, aprobada_en: ahora(), nota_cambio: $('#m-nota').value });
+      state.auditoria.unshift({ en: pl.aprobada_en, quien: ger.nombre, accion: `Aprobó plantilla ${pl.tipo} v${pl.version}`, entidad: 'Plantilla de archivo plano', detalle: `Vigente desde ${pl.vigente_desde}` });
+      closeModal(); render(); toast(`Plantilla ${pl.tipo} v${pl.version} aprobada y vigente desde ${fmtFechaCorta(pl.vigente_desde)}.`);
+    });
+  }
+
+  // ---------- pestaña CAMPOS ----------
+  function renderCampos() {
+    return `<div class="card"><div class="card-head"><div><h2>Catálogo de campos exportables</h2><small>Lo que una columna puede tomar del sistema (HEL-07). Agregar un campo es un cambio de código pequeño y versionado.</small></div></div>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th>Clave</th><th>Qué es</th><th>Ejemplo (Cofema, sept. 2026)</th></tr></thead><tbody>${D.CAMPOS_PLANO.map((k) => `<tr><td class="mono">${esc(k.clave)}</td><td>${esc(k.descripcion)}</td><td class="mono">${esc(k.ejemplo)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }
+
+  // ---------- render y eventos ----------
+  function render() {
+    $$('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === state.tab));
+    $('#content').innerHTML = state.tab === 'archivos' ? renderArchivos() : (state.tab === 'plantillas' ? renderPlantillas() : renderCampos());
+    bind();
+  }
+  function bindAcciones(root) {
+    $$('[data-ver]', root).forEach((b) => b.addEventListener('click', () => abrirArchivo(b.dataset.ver)));
+    $$('[data-descargar]', root).forEach((b) => b.addEventListener('click', () => descargar(b.dataset.descargar)));
+    $$('[data-importado]', root).forEach((b) => b.addEventListener('click', () => modalImportado(b.dataset.importado)));
+    $$('[data-rechazado]', root).forEach((b) => b.addEventListener('click', () => modalRechazado(b.dataset.rechazado)));
+  }
+  function bind() {
+    const root = $('#content');
+    bindAcciones(root);
+    const gp = $('#g-periodo'); if (gp) gp.addEventListener('change', () => { state.periodo = gp.value; render(); });
+    const gfv = $('#g-fv'); if (gfv) gfv.addEventListener('click', () => generar('PED'));
+    const gfp = $('#g-fv-prueba'); if (gfp) gfp.addEventListener('click', () => generar('PED', { prueba: true }));
+    const grc = $('#g-rc'); if (grc) grc.addEventListener('click', () => generar('RC'));
+    const gdef = $('#g-def'); if (gdef) gdef.addEventListener('click', modalDefinitivos);
+    const gfve = $('#g-fve'); if (gfve) gfve.addEventListener('click', modalFVE);
+    // plantillas
+    $$('[data-pl]', root).forEach((el) => { const f = () => { state.plantillaSel = el.dataset.pl; state.preview = null; render(); }; el.addEventListener('click', f); el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } }); });
+    const pl = plantilla(state.plantillaSel);
+    $$('[data-f]', root).forEach((el) => el.addEventListener('change', () => { const k = el.dataset.f; pl[k] = el.type === 'checkbox' ? el.checked : (k === 'decimales' ? Number(el.value) : el.value); state.preview = null; render(); }));
+    $$('[data-col]', root).forEach((el) => el.addEventListener('change', () => { const c = pl.columnas[Number(el.dataset.col)]; c[el.dataset.k] = el.value; if (el.dataset.k === 'origen' && el.value === 'campo' && !c.campo) c.campo = D.CAMPOS_PLANO[0].clave; state.preview = null; render(); }));
+    $$('[data-col-mv]', root).forEach((el) => el.addEventListener('click', () => { const [i, d] = el.dataset.colMv.split('|').map(Number); const a = pl.columnas; [a[i], a[i + d]] = [a[i + d], a[i]]; a.forEach((c, n) => { c.orden = n + 1; }); state.preview = null; render(); }));
+    $$('[data-col-del]', root).forEach((el) => el.addEventListener('click', () => { pl.columnas.splice(Number(el.dataset.colDel), 1); pl.columnas.forEach((c, n) => { c.orden = n + 1; }); state.preview = null; render(); }));
+    $$('[data-ln]', root).forEach((el) => el.addEventListener('change', () => { const l = pl.lineas[Number(el.dataset.ln)]; l[el.dataset.k] = el.type === 'checkbox' ? el.checked : el.value; state.preview = null; render(); }));
+    $$('[data-ln-mv]', root).forEach((el) => el.addEventListener('click', () => { const [i, d] = el.dataset.lnMv.split('|').map(Number); const a = pl.lineas; [a[i], a[i + d]] = [a[i + d], a[i]]; a.forEach((c, n) => { c.orden = n + 1; }); state.preview = null; render(); }));
+    $$('[data-ln-del]', root).forEach((el) => el.addEventListener('click', () => { pl.lineas.splice(Number(el.dataset.lnDel), 1); pl.lineas.forEach((c, n) => { c.orden = n + 1; }); state.preview = null; render(); }));
+    $$('[data-pl-act]', root).forEach((el) => el.addEventListener('click', () => {
+      const act = el.dataset.plAct;
+      if (act === 'prueba') { state.preview = { plantillaId: pl.id, gen: D.generarPlano(pl, docsPrueba(pl)) }; render(); const pv = $$('.card.mb').pop(); if (pv) pv.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      if (act === 'archivo-prueba') { const gen = D.generarPlano(pl, docsPrueba(pl)); if (gen.errores.length) { modalErrores(gen); return; } const txt = D.textoArchivo(pl, gen); const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' }); const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = `${pl.prefijo_archivo}_${pl.tipo}_PRUEBA_v${pl.version}.csv`; document.body.appendChild(l); l.click(); l.remove(); toast('Archivo de prueba descargado (marcado PRUEBA, no cambia estados). Impórtelo en una empresa de pruebas de Helisa.'); }
+      if (act === 'aprobar') modalAprobar(pl);
+      if (act === 'copiar') { const n = Math.max(...state.plantillas.filter((p) => p.tipo === pl.tipo).map((p) => p.version)) + 1; const c = clone(pl); Object.assign(c, { id: `${pl.tipo.toLowerCase()}-v${n}-${Date.now()}`, version: n, estado: 'borrador', vigente_desde: '', aprobada_por: '', aprobada_en: '', creada_por: USUARIO, creada_en: D.HOY, nota_cambio: `Copia de la v${pl.version}. Describa aquí el cambio.` }); state.plantillas.push(c); state.plantillaSel = c.id; state.preview = null; render(); toast(`Versión ${n} creada como borrador a partir de la v${pl.version}.`); }
+      if (act === 'col-add') { pl.columnas.push({ orden: pl.columnas.length + 1, titulo: 'NUEVA COLUMNA', origen: 'vacio', campo: '', constante: '' }); render(); }
+      if (act === 'col-helisa') { pl.columnas = D.colsHelisa(); state.preview = null; render(); }
+      if (act === 'ln-add') { pl.lineas.push({ orden: pl.lineas.length + 1, tipo: 'otra', clase: 'F', cuenta: '', naturaleza: 'D', concepto: '', base: false, tercero: true, omitir_cero: true }); render(); }
+    }));
+  }
+  $('#tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (!b) return; state.tab = b.dataset.tab; render(); });
+
+  // hash: #fv|2026-09 · #rc · #plantillas · #campos · #ap-fv-2026-09-002
+  function aplicarHash() {
+    const h = location.hash.replace(/^#/, '').trim(); if (!h) return;
+    if (h === 'plantillas' || h === 'campos') { state.tab = h; render(); return; }
+    if (h.startsWith('fv|') || h.startsWith('ped|')) { state.tab = 'archivos'; state.periodo = h.split('|')[1] || state.periodo; render(); return; }
+    if (h === 'rc') { state.tab = 'archivos'; render(); const el = $('#g-rc'); if (el) el.scrollIntoView({ block: 'center' }); return; }
+    if (state.archivos.some((a) => a.id === h)) { state.tab = 'archivos'; render(); abrirArchivo(h); }
+  }
+  window.addEventListener('hashchange', aplicarHash);
+  render(); aplicarHash();
+})();
+</script>
+</body>
+</html>

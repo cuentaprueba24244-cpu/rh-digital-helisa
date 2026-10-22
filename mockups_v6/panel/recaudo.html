@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recaudo · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .toolbar .seg { display: inline-flex; border: 1px solid var(--border-2); border-radius: 8px; overflow: hidden; }
+  .toolbar .seg button { border: 0; background: var(--surface); padding: 7px 12px; font-size: 13px; cursor: pointer; border-right: 1px solid var(--border-2); }
+  .toolbar .seg button:last-child { border-right: 0; }
+  .toolbar .seg button.on { background: var(--accent-soft); color: var(--accent-soft-fg); font-weight: 600; }
+  .rango { font-size: 12.5px; color: var(--fg-3); }
+  table.tbl tbody tr.row { cursor: pointer; }
+  table.tbl tbody tr.anulado td { color: var(--fg-3); }
+  table.tbl tbody tr.anulado td .valor { text-decoration: line-through; }
+  table.tbl td .mono { font-family: var(--font-mono); font-size: .92em; }
+  .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; }
+  .chk input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  .chk input[disabled] { cursor: not-allowed; }
+  .empty { padding: 40px 16px; text-align: center; color: var(--fg-2); }
+  .empty h3 { font-size: 15px; margin-bottom: 6px; }
+  .empty p { color: var(--fg-3); font-size: 13px; max-width: 48ch; margin: 0 auto 14px; }
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(10, 20, 15, .35); z-index: 90; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(560px, 100%); background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 95; display: flex; flex-direction: column; }
+  .drawer .d-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+  .drawer .d-head .no { font-family: var(--font-mono); font-size: 24px; color: var(--danger); font-weight: 500; line-height: 1; }
+  .drawer .d-head h2 { font-size: 16px; margin-top: 6px; }
+  .drawer .d-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2); background: var(--surface); cursor: pointer; font-size: 16px; }
+  .drawer .d-body { padding: 18px 20px; overflow: auto; flex: 1; display: grid; gap: 16px; align-content: start; }
+  .drawer .d-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .drawer h3 { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; }
+  .monto { padding: 14px 16px; border-radius: var(--radius); background: var(--accent-soft); color: var(--accent-soft-fg); }
+  .monto .v { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .monto .letras { font-size: 13px; margin-top: 4px; font-style: italic; }
+  .sig-cap { font-size: 12px; color: var(--fg-3); margin-top: 4px; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .textarea { min-height: 90px; resize: vertical; }
+  .summary { display: grid; gap: 4px; font-size: 13px; }
+  .two { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; margin-top: 14px; }
+  .two > *, .main > * { min-width: 0; }
+  .drawer { max-width: 100vw; }
+  .drawer .d-body > * { min-width: 0; }
+  .drawer .d-body { overflow-x: hidden; }
+  @media (max-width: 1100px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Operación</div>
+        <h1 style="margin-top:4px">Recaudo en efectivo</h1>
+        <p>Recibos de caja provisionales que los operarios emiten desde el celular cuando el cliente paga en efectivo, siempre aplicados a una factura registrada (FVE). Lucrecia confirma la entrega del efectivo, genera el <a href="planos.html#rc">archivo plano RC</a> para Helisa y registra el número del recibo definitivo con el que Helisa cruzó el pago.</p>
+      </div>
+      <div class="actions"><a class="btn primary" href="planos.html#rc">Archivo plano RC</a><a class="btn" href="../documentos/recibo.html">Recibo de caja PDF</a></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-body" style="padding-bottom:12px">
+        <div class="toolbar">
+          <label class="field"><span class="eyebrow" style="font-size:10.5px">Fecha</span><input class="input" type="date" id="f-fecha"></label>
+          <div class="field"><span class="eyebrow" style="font-size:10.5px">Atajos</span><div class="seg" role="group" aria-label="Rango de fechas" id="seg"><button type="button" data-modo="hoy">Hoy</button><button type="button" data-modo="ayer">Ayer</button><button type="button" data-modo="semana">Esta semana</button><button type="button" data-modo="periodo">Este periodo</button></div></div>
+          <label class="field"><span class="eyebrow" style="font-size:10.5px">Operario</span><select class="select" id="f-operario"><option value="">Todos los operarios</option></select></label>
+          <div class="rango" id="rango" style="margin-left:auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid cols-4" id="stats" style="margin-bottom:14px"></div>
+
+    <div class="card">
+      <div class="card-head"><h2>Recibos</h2><small id="n-recibos"></small></div>
+      <div class="table-wrap" id="tabla-wrap">
+        <table class="tbl">
+          <thead><tr><th>N.º</th><th>Fecha y hora</th><th>Cliente</th><th>Tipo · aplica a</th><th class="num">Valor</th><th>Operario</th><th>Estado</th><th>Recibo definitivo Helisa</th><th></th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="empty" hidden role="status"></div>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <div class="card-head"><h2>Resumen por operario</h2><small id="n-resumen"></small></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Operario</th><th class="num">Recibos</th><th class="num">Recaudado</th><th class="num">Sin cruzar en Helisa</th><th class="num">Anulados</th></tr></thead><tbody id="resumen"></tbody></table></div>
+      </div>
+      <div class="card pad">
+        <div class="callout info" style="margin-bottom:12px"><b>Ciclo del recibo (v5).</b> <span class="badge ok">Emitido</span> en el celular → <span class="badge info">Entregado</span> cuando la oficina confirma el efectivo → <span class="badge warn">Exportado</span> en un archivo plano RC → <span class="badge ok">Cruzado</span> cuando Lucrecia registra el recibo definitivo que Helisa emitió al importar. El cierre de caja formal llega en la fase 3.</div>
+        <h3 style="font-size:14px">Reglas del recibo provisional</h3>
+        <ul style="margin:8px 0 0 16px;padding:0;display:grid;gap:5px;font-size:13px;color:var(--fg-2)">
+          <li><b>Solo con factura registrada:</b> la app no emite recibo a un cliente sin FVE con saldo de referencia.</li>
+          <li>Tipos: anticipo, abono, pago de factura y pago total de cartera; siempre aplicado a facturas concretas, sin superar el saldo.</li>
+          <li>Solo efectivo. Transferencias y consignaciones se contabilizan en Helisa; aquí solo se marcan para el saldo de referencia (fase 2).</li>
+          <li>El consecutivo sale del rango de recibos reservado a cada operario, con o sin señal.</li>
+          <li>Un recibo emitido no se edita: se anula con motivo y se emite otro. Un recibo ya importado en Helisa no se anula aquí.</li>
+          <li>El cruce de cuentas lo hace Helisa con el archivo plano (DOC FUENTE = FVE); el sistema termina en el archivo.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="overlay"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+
+  function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Archivos planos (A)'],['facturacion.html','⚡','Facturación electrónica (B)']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+  document.getElementById('sidebar').innerHTML = sidebar('recaudo.html');
+
+  // ---------- estado en memoria ----------
+  const R = D.recibos.map((r) => Object.assign({}, r));
+  const BADGE_RC = { emitido: 'ok', entregado: 'info', exportado: 'warn', cruzado: 'ok', anulado: 'danger' };
+  const AUD = [];
+  const byId = (id) => R.find((r) => r.id === id);
+  const P = D.periodos.find((p) => p.estado === 'abierto');
+  // Última carga de cartera desde Helisa (auditoría): sirve de referencia cuando un recibo conciliado no trae fecha de cruce.
+  const cargaCartera = D.auditoria.filter((a) => /cartera desde/i.test(a.accion)).sort((a, b) => b.en.localeCompare(a.en))[0] || null;
+  const filtro = { modo: 'hoy', fecha: D.HOY, operario: '' };
+  // El selector de fecha va del inicio del primer periodo registrado al fin del periodo abierto.
+  $('#f-fecha').min = D.periodos[0].inicio; $('#f-fecha').max = P.fin;
+  const nombreCorto = (o) => o.nombre.split(' ').slice(0, 2).join(' ');
+  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const sumar = (s, n) => { const d = D.parseISO(s); d.setDate(d.getDate() + n); return iso(d); };
+  const ahora = () => { const d = new Date(); return `${D.HOY} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  // Un solo toast a la vez: el anterior se retira antes de mostrar el nuevo para que no se encimen (p. ej. marcar «Conciliado» y luego anular).
+  function toast(msg) { document.querySelectorAll('.toast').forEach((x) => x.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+
+  // Rango de fechas según el modo
+  function rango() {
+    if (filtro.modo === 'hoy') return { desde: D.HOY, hasta: D.HOY, txt: `Hoy, ${D.fmtFecha(D.HOY, { dia: true })}` };
+    if (filtro.modo === 'ayer') { const a = sumar(D.HOY, -1); return { desde: a, hasta: a, txt: `Ayer, ${D.fmtFecha(a, { dia: true })}` }; }
+    if (filtro.modo === 'semana') { const d = D.parseISO(D.HOY); const lunes = sumar(D.HOY, -((d.getDay() + 6) % 7)); const dom = sumar(lunes, 6); return { desde: lunes, hasta: dom, txt: `Semana del ${D.fmtFechaCorta(lunes)} al ${D.fmtFechaCorta(dom)}` }; }
+    if (filtro.modo === 'periodo') return { desde: P.inicio, hasta: P.fin, txt: `${P.nombre} · del ${D.fmtFechaCorta(P.inicio)} al ${D.fmtFechaCorta(P.fin)}` };
+    return { desde: filtro.fecha, hasta: filtro.fecha, txt: D.cap(D.fmtFecha(filtro.fecha, { dia: true })) };
+  }
+  function filas() {
+    const r = rango();
+    return R.filter((x) => x.fecha >= r.desde && x.fecha <= r.hasta && (!filtro.operario || x.operario === filtro.operario)).sort((a, b) => (b.fecha + b.hora).localeCompare(a.fecha + a.hora));
+  }
+
+  function renderFiltros() {
+    $('#f-fecha').value = filtro.modo === 'fecha' ? filtro.fecha : (filtro.modo === 'ayer' ? sumar(D.HOY, -1) : D.HOY);
+    $('#f-operario').innerHTML = '<option value="">Todos los operarios</option>' + D.operarios.map((o) => `<option value="${o.id}">${esc(o.nombre)}</option>`).join('');
+    $('#f-operario').value = filtro.operario;
+    document.querySelectorAll('#seg button').forEach((b) => { b.classList.toggle('on', b.dataset.modo === filtro.modo); b.setAttribute('aria-pressed', b.dataset.modo === filtro.modo); });
+    $('#rango').textContent = rango().txt;
+  }
+
+  function renderStats(rows) {
+    const emitidos = rows.filter((r) => r.estado !== 'anulado');
+    const total = emitidos.reduce((a, r) => a + r.valor, 0);
+    const pend = emitidos.filter((r) => r.estado === 'emitido');
+    const sinDef = emitidos.filter((r) => r.estado === 'exportado');
+    const anulados = rows.filter((r) => r.estado === 'anulado');
+    $('#stats').innerHTML = `
+      <div class="card stat"><div class="label">Recibos emitidos</div><div class="value">${emitidos.length}</div><div class="delta">${new Set(emitidos.map((r) => r.cliente)).size} clientes · ${new Set(emitidos.map((r) => r.operario)).size} operarios</div></div>
+      <div class="card stat"><div class="label">Total recaudado</div><div class="value">${D.fmtCOP(total)}</div><div class="delta">solo efectivo · recibos provisionales</div></div>
+      <div class="card stat"><div class="label">Pendiente de entregar en oficina</div><div class="value" style="${pend.length ? 'color:var(--warn)' : ''}">${D.fmtCOP(pend.reduce((a, r) => a + r.valor, 0))}</div><div class="delta">${pend.length} emitidos sin entregar · ${emitidos.filter((r) => r.estado === 'entregado').length} por exportar · ${sinDef.length} exportados sin recibo definitivo</div></div>
+      <div class="card stat"><div class="label">Anulados</div><div class="value" style="${anulados.length ? 'color:var(--danger)' : ''}">${anulados.length}</div><div class="delta">${anulados.length ? D.fmtCOP(anulados.reduce((a, r) => a + r.valor, 0)) + ' no cuentan en el total' : 'ninguno en el rango'}</div></div>`;
+  }
+
+  function renderTabla() {
+    const rows = filas();
+    renderStats(rows);
+    $('#n-recibos').textContent = `${rows.length} en el rango`;
+    if (!rows.length) {
+      // Estado vacío fuera de la tabla: la tabla de 10 columnas desborda en un teléfono y el mensaje quedaría cortado.
+      $('#tabla-wrap').hidden = true; $('#tbody').innerHTML = '';
+      const efectivoHoy = D.ruta_hoy.filter((p) => p.estado !== 'hecha' && /efectivo/i.test(p.nota || '')).map((p) => D.cliente(p.cliente).nombre_comercial);
+      $('#empty').hidden = false;
+      $('#empty').innerHTML = `<h3>Sin recibos ${filtro.modo === 'hoy' ? 'hoy' : 'en este rango'}${filtro.operario ? ' para ' + esc(nombreCorto(D.operario(filtro.operario))) : ''}</h3><p>${filtro.modo === 'hoy' ? 'Los recibos aparecen aquí en cuanto el operario los emite y el celular tiene señal.' + (efectivoHoy.length ? ' En la ruta de hoy suele pagar en efectivo ' + esc(efectivoHoy.join(' y ')) + '.' : '') : 'Pruebe con otro rango o quite el filtro de operario.'}</p><button class="btn primary" id="ver-periodo">Ver este periodo</button>`;
+      $('#ver-periodo').addEventListener('click', () => { filtro.modo = 'periodo'; filtro.operario = ''; renderFiltros(); renderTabla(); });
+    } else {
+      $('#tabla-wrap').hidden = false; $('#empty').hidden = true; $('#empty').innerHTML = '';
+      $('#tbody').innerHTML = rows.map((r) => {
+        const c = D.cliente(r.cliente); const o = D.operario(r.operario);
+        return `<tr class="row${r.estado === 'anulado' ? ' anulado' : ''}" data-id="${r.id}" tabindex="0" aria-label="Ver detalle del recibo ${r.consecutivo}">
+          <td><span class="mono">${r.consecutivo}</span></td>
+          <td>${D.fmtFechaCorta(r.fecha)} <span class="mono">${esc(r.hora)}</span></td>
+          <td>${esc(c.nombre_comercial)}<span class="sub" style="white-space:nowrap">NIT ${esc(D.nitCompleto(c))}</span></td>
+          <td style="max-width:260px">${esc(D.TIPO_RECIBO_LABEL[r.tipo] || '–')}<span class="sub">${(r.aplicaciones || []).map((a) => { const f = D.factura(a.factura); return f ? `${esc(f.numero)} ${D.fmtCOP(a.valor)}` : ''; }).join(' · ') || esc(r.concepto)}</span></td>
+          <td class="num"><span class="valor">${D.fmtCOP(r.valor)}</span></td>
+          <td style="white-space:nowrap">${esc(nombreCorto(o))}</td>
+          <td><span class="badge ${BADGE_RC[r.estado] || 'plain'}">${esc(D.ESTADO_RECIBO_LABEL[r.estado] || r.estado)}</span>${r.estado === 'emitido' ? `<span class="sub"><button class="btn sm ghost" data-entregar="${r.id}" data-stop>Confirmar entrega</button></span>` : ''}</td>
+          <td data-stop>${r.estado === 'anulado' ? '<span class="muted">No aplica</span>' : (r.estado === 'cruzado' ? `<span class="mono">${esc(r.recibo_helisa)}</span><span class="sub">${r.recibo_helisa_fecha ? D.fmtFechaCorta(r.recibo_helisa_fecha) : ''}</span>` : (r.estado === 'exportado' ? `<button class="btn sm" data-definitivo="${r.id}">Registrar N.º</button><span class="sub">archivo ${esc(r.archivo || '')}</span>` : '<span class="muted">tras el archivo RC</span>'))}</td>
+          <td style="white-space:nowrap"><button class="btn sm ghost" data-ver="${r.id}">Ver</button><a class="btn sm ghost" href="../documentos/recibo.html#${r.id}" data-stop>PDF</a></td>
+        </tr>`;
+      }).join('');
+    }
+    // resumen por operario
+    const ops = D.operarios.map((o) => {
+      const rs = rows.filter((r) => r.operario === o.id); const em = rs.filter((r) => r.estado !== 'anulado');
+      return { o, n: em.length, total: em.reduce((a, r) => a + r.valor, 0), pend: em.filter((r) => r.estado !== 'cruzado').reduce((a, r) => a + r.valor, 0), anul: rs.length - em.length };
+    });
+    const tot = ops.reduce((a, x) => ({ n: a.n + x.n, total: a.total + x.total, pend: a.pend + x.pend, anul: a.anul + x.anul }), { n: 0, total: 0, pend: 0, anul: 0 });
+    $('#resumen').innerHTML = ops.map((x) => `<tr><td>${esc(x.o.nombre)}<span class="sub">${esc(x.o.cargo)} · rango de recibos ${x.o.rango_recibos.desde}–${x.o.rango_recibos.hasta}</span></td><td class="num">${x.n}</td><td class="num">${D.fmtCOP(x.total)}</td><td class="num" style="${x.pend ? 'color:var(--warn);font-weight:600' : ''}">${D.fmtCOP(x.pend)}</td><td class="num">${x.anul}</td></tr>`).join('') + `<tr class="total"><td>Total</td><td class="num">${tot.n}</td><td class="num">${D.fmtCOP(tot.total)}</td><td class="num">${D.fmtCOP(tot.pend)}</td><td class="num">${tot.anul}</td></tr>`;
+    $('#n-resumen').textContent = rango().txt;
+  }
+
+  // ---------- detalle ----------
+  function renderDetalle(id) {
+    const r = byId(id); if (!r) return;
+    const c = D.cliente(r.cliente); const o = D.operario(r.operario);
+    const v = r.visita ? D.visitas.find((x) => x.id === r.visita) : null;
+    $('#overlay').innerHTML = `
+      <div class="drawer-backdrop" data-cerrar></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="d-head">
+          <div>
+            <div class="eyebrow">Recibo de caja provisional</div>
+            <div class="no">N.º ${r.consecutivo}</div>
+            <h2 id="d-title">${esc(c.nombre_comercial)} <span class="muted" style="font-weight:400">· NIT ${esc(D.nitCompleto(c))}</span></h2>
+            <div class="muted" style="font-size:12.5px;margin-top:4px">${esc(D.cap(D.fmtFecha(r.fecha, { dia: true })))} · ${esc(r.hora)} · emitido por ${esc(nombreCorto(o))}</div>
+            <div style="margin-top:8px"><span class="badge ${BADGE_RC[r.estado] || 'plain'}">${esc(D.ESTADO_RECIBO_LABEL[r.estado] || r.estado)}</span> <span class="badge plain">${esc(D.TIPO_RECIBO_LABEL[r.tipo] || '')}</span></div>
+          </div>
+          <button class="close" data-cerrar aria-label="Cerrar">✕</button>
+        </div>
+        <div class="d-body">
+          ${r.estado === 'anulado' ? `<div class="callout danger"><b>Anulado</b> por ${esc(r.anulado_por)} el ${D.fmtFechaCorta(r.anulado_en)} a las ${esc(r.anulado_en.slice(11))}.<br>${esc(r.anulacion_motivo)}</div>` : ''}
+          <div class="monto"><div class="eyebrow" style="color:inherit;opacity:.8">La suma de</div><div class="v">${D.fmtCOP(r.valor)}</div><div class="letras">${esc(D.numeroALetras(r.valor))}</div></div>
+          <section><h3>Detalle</h3>
+            <dl class="kv">
+              <dt>Concepto</dt><dd>${esc(r.concepto)}</dd>
+              <dt>Aplicado a</dt><dd>${(r.aplicaciones || []).map((a) => { const f = D.factura(a.factura); return f ? `<span class="mono">${esc(f.numero)}</span> ${D.fmtCOP(a.valor)} <span class="muted">· saldo de referencia ${D.fmtCOP(D.saldoReferencia(f.id))}</span>` : ''; }).join('<br>') || '<span class="muted">–</span>'}</dd>
+              <dt>Archivo plano</dt><dd>${r.archivo ? `<a href="planos.html#${esc(r.archivo)}" class="mono">${esc(r.archivo)}</a>` : '<span class="muted">aún no exportado</span>'}</dd>
+              <dt>Pagador</dt><dd>${esc(r.pagador)} <span class="muted">· C.C. ${esc(r.pagador_documento)}</span></dd>
+              <dt>Forma de pago</dt><dd>Efectivo</dd>
+              <dt>Operario</dt><dd>${esc(o.nombre)} <span class="muted">· ${esc(o.cargo)}</span></dd>
+              <dt>Visita</dt><dd>${v ? `<a href="visitas.html#${esc(v.id)}">Constancia ${v.consecutivo}</a> · ${D.fmtFechaCorta(v.fecha)} · ${D.fmtKg(D.totalKg(v))} kg` : '<span class="muted">Sin visita asociada (pago en oficina o fuera de ruta)</span>'}</dd>
+              <dt>Recibo definitivo</dt><dd>${r.estado === 'anulado' ? '<span class="muted">No aplica</span>' : (r.estado === 'cruzado' ? `<span class="mono">${esc(r.recibo_helisa)}</span> · cruzado en Helisa ${r.cruzado_en ? 'el ' + D.fmtFechaCorta(r.cruzado_en) : ''}` : (r.estado === 'exportado' ? 'Exportado; pendiente de registrar el número que devolvió Helisa' : 'Pendiente: primero la entrega y el archivo RC'))}</dd>
+              <dt>Cliente</dt><dd>${esc(c.razon_social)}<br><span class="muted">${esc(c.direccion)}, ${esc(c.ciudad)} · ${esc(c.telefono)}</span></dd>
+            </dl>
+          </section>
+          <section><h3>Firma del operario</h3><div class="sig-box" style="max-width:260px">${D.firmaSVG('rec-' + r.id, '#1f5e43')}</div><div class="sig-cap">${esc(o.nombre)} · C.C. ${esc(o.documento)} · Comserva S.A.S.</div></section>
+          <section><h3>Línea de tiempo</h3>
+            <ul class="timeline">
+              <li><div>Emitido en el celular por ${esc(nombreCorto(o))} con el consecutivo ${r.consecutivo}<div class="when">${D.fmtFechaCorta(r.fecha)} ${esc(r.hora)}</div></div></li>
+              <li class="muted"><div>Transmitido al servidor y visible en el panel<div class="when">${D.fmtFechaCorta(r.fecha)} ${esc(r.hora)}</div></div></li>
+              ${r.entregado_en ? `<li><div>Entrega del efectivo confirmada en la oficina<div class="when">${D.fmtFechaCorta(r.entregado_en)} ${esc(r.entregado_en.slice(11))}</div></div></li>` : ''}
+              ${r.archivo ? `<li><div>Exportado en el archivo plano <span class="mono">${esc(r.archivo)}</span></div></li>` : ''}
+              ${r.estado === 'cruzado' ? `<li><div>Cruzado en Helisa: recibo definitivo <span class="mono">${esc(r.recibo_helisa)}</span> registrado por Lucrecia Quintero<div class="when">${r.cruzado_en ? D.fmtFechaCorta(r.cruzado_en) + ' ' + esc(r.cruzado_en.slice(11)) : ''}</div></div></li>` : ''}
+              ${r.estado === 'anulado' ? `<li><div>Anulado por ${esc(r.anulado_por)} · ${esc(r.anulacion_motivo)}<div class="when">${D.fmtFechaCorta(r.anulado_en)} ${esc(r.anulado_en.slice(11))}</div></div></li>` : ''}
+            </ul>
+          </section>
+        </div>
+        <div class="d-foot">
+          <a class="btn" href="../documentos/recibo.html#${esc(r.id)}">Ver recibo PDF</a>
+          ${r.estado !== 'anulado' ? `<button class="btn" data-toast="Recibo ${r.consecutivo} reenviado a ${esc(c.whatsapp || 'el contacto del cliente')}${c.email ? ' y a ' + esc(c.email) : ''}">Reenviar al cliente</button>` : ''}
+          ${r.estado === 'emitido' ? `<button class="btn" data-entregar="${esc(r.id)}">Confirmar entrega del efectivo</button>` : ''}
+          ${r.estado === 'exportado' ? `<button class="btn primary" data-definitivo="${esc(r.id)}">Registrar recibo definitivo</button>` : ''}
+          ${['emitido', 'entregado'].includes(r.estado) ? `<button class="btn danger" data-anular="${esc(r.id)}" style="margin-left:auto">Anular con motivo</button>` : ''}
+        </div>
+      </aside>`;
+    $('.drawer .close').focus();
+    $('#overlay').querySelectorAll('[data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDetalle));
+    $('#overlay').querySelectorAll('[data-toast]').forEach((el) => el.addEventListener('click', () => toast(el.dataset.toast)));
+    const b = $('#overlay [data-anular]'); if (b) b.addEventListener('click', () => modalAnular(r.id));
+    const be = $('#overlay [data-entregar]'); if (be) be.addEventListener('click', () => entregar(r.id));
+    const bd = $('#overlay [data-definitivo]'); if (bd) bd.addEventListener('click', () => modalDefinitivo(r.id));
+  }
+  function abrir(id) { renderDetalle(id); document.querySelectorAll('tr.row').forEach((tr) => tr.classList.toggle('selected', tr.dataset.id === id)); }
+  function cerrarDetalle() { $('#overlay').innerHTML = ''; document.querySelectorAll('tr.row.selected').forEach((tr) => tr.classList.remove('selected')); }
+
+  // ---------- anulación ----------
+  function modalAnular(id) {
+    const r = byId(id); const c = D.cliente(r.cliente);
+    const m = document.createElement('div'); m.className = 'modal-backdrop'; m.id = 'modal';
+    m.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+      <div class="modal-head" id="m-title">Anular el recibo ${r.consecutivo}</div>
+      <div class="modal-body">
+        <div class="callout warn">El recibo anulado se conserva con marca de agua y motivo. Si el cliente sí pagó, el operario debe emitir un recibo nuevo con el valor correcto.</div>
+        <div class="summary">
+          <div><span class="muted">Cliente:</span> <b>${esc(c.nombre_comercial)}</b> · NIT ${esc(D.nitCompleto(c))}</div>
+          <div><span class="muted">Valor:</span> <b>${D.fmtCOP(r.valor)}</b> · ${esc(D.numeroALetras(r.valor))}</div>
+          <div><span class="muted">Emitido:</span> ${D.fmtFechaCorta(r.fecha)} ${esc(r.hora)} por ${esc(nombreCorto(D.operario(r.operario)))}</div>
+          ${r.estado === 'exportado' || r.estado === 'cruzado' ? '<div class="callout danger" style="margin-top:6px">Este recibo ya salió en un archivo plano: no se anula aquí; la reversión se hace en Helisa y se registra.</div>' : ''}
+        </div>
+        <div class="field"><label for="m-motivo" class="req">Motivo de la anulación</label><textarea class="textarea" id="m-motivo" placeholder="Ejemplo: valor incorrecto; la factura de septiembre fue por otro monto. Se emitirá un recibo nuevo."></textarea><span class="help" id="m-err">Obligatorio. Queda en la auditoría con su usuario y la hora.</span></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-x>Cancelar</button><button class="btn danger" id="m-ok">Anular recibo ${r.consecutivo}</button></div>
+    </div>`;
+    document.body.appendChild(m);
+    const ta = m.querySelector('#m-motivo'); ta.focus();
+    const cerrar = () => m.remove();
+    m.querySelector('[data-x]').addEventListener('click', cerrar);
+    m.addEventListener('click', (e) => { if (e.target === m) cerrar(); });
+    m.querySelector('#m-ok').addEventListener('click', () => {
+      const motivo = ta.value.trim();
+      if (motivo.length < 8) { ta.style.borderColor = 'var(--danger)'; m.querySelector('#m-err').style.color = 'var(--danger)'; m.querySelector('#m-err').textContent = 'Escriba el motivo (mínimo 8 caracteres) para poder anular.'; ta.focus(); return; }
+      r.estado = 'anulado'; r.conciliado = false; r.archivo = null; r.anulado_por = 'Lucrecia Quintero'; r.anulado_en = ahora(); r.anulacion_motivo = motivo;
+      AUD.unshift({ en: r.anulado_en, quien: 'Lucrecia Quintero', accion: `Anuló recibo ${r.consecutivo}`, entidad: `Recibo de caja · ${c.nombre_comercial}`, detalle: motivo });
+      cerrar(); renderTabla(); renderDetalle(r.id);
+      toast(`Recibo ${r.consecutivo} anulado. El operario debe emitir uno nuevo si el pago se mantiene.`);
+    });
+  }
+
+  // ---------- eventos ----------
+  $('#f-fecha').addEventListener('change', (e) => { if (!e.target.value) return; filtro.fecha = e.target.value; filtro.modo = e.target.value === D.HOY ? 'hoy' : (e.target.value === sumar(D.HOY, -1) ? 'ayer' : 'fecha'); renderFiltros(); renderTabla(); });
+  $('#seg').addEventListener('click', (e) => { const b = e.target.closest('[data-modo]'); if (!b) return; filtro.modo = b.dataset.modo; renderFiltros(); renderTabla(); });
+  $('#f-operario').addEventListener('change', (e) => { filtro.operario = e.target.value; renderTabla(); });
+  function entregar(id) {
+    const r = byId(id); r.estado = 'entregado'; r.entregado_en = ahora();
+    AUD.unshift({ en: r.entregado_en, quien: 'Lucrecia Quintero', accion: `Confirmó entrega del efectivo del recibo ${r.consecutivo}`, entidad: `Recibo de caja · ${D.cliente(r.cliente).nombre_comercial}`, detalle: D.fmtCOP(r.valor) });
+    renderTabla(); if ($('#overlay .drawer')) renderDetalle(id);
+    toast(`Entrega de ${D.fmtCOP(r.valor)} confirmada. El recibo ${r.consecutivo} ya puede salir en el archivo plano RC.`);
+  }
+  function modalDefinitivo(id) {
+    const r = byId(id); const c = D.cliente(r.cliente);
+    const m = document.createElement('div'); m.className = 'modal-backdrop'; m.id = 'modal';
+    m.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+      <div class="modal-head" id="m-title">Registrar el recibo definitivo de Helisa · recibo ${r.consecutivo}</div>
+      <div class="modal-body">
+        <div class="summary"><div><span class="muted">Cliente:</span> <b>${esc(c.nombre_comercial)}</b> · ${(r.aplicaciones || []).map((a) => esc(D.factura(a.factura).numero)).join(', ')}</div><div><span class="muted">Valor:</span> <b>${D.fmtCOP(r.valor)}</b></div><div><span class="muted">Archivo:</span> <span class="mono">${esc(r.archivo || '')}</span></div></div>
+        <div class="field"><label for="m-num" class="req">Número del recibo de caja definitivo en Helisa</label><input class="input" id="m-num" placeholder="RC 8821"><span class="help">Lo muestra Helisa al importar el archivo; con él queda hecho el cruce contra la factura.</span></div>
+        <div class="field"><label for="m-fecha">Fecha</label><input class="input" type="date" id="m-fecha" value="${D.HOY}"></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-x>Cancelar</button><button class="btn primary" id="m-ok">Registrar</button></div>
+    </div>`;
+    document.body.appendChild(m); const inp = m.querySelector('#m-num'); inp.focus();
+    const cerrar = () => m.remove();
+    m.querySelector('[data-x]').addEventListener('click', cerrar); m.addEventListener('click', (e) => { if (e.target === m) cerrar(); });
+    m.querySelector('#m-ok').addEventListener('click', () => {
+      const num = inp.value.trim(); if (num.length < 3) { inp.style.borderColor = 'var(--danger)'; inp.focus(); return; }
+      r.estado = 'cruzado'; r.conciliado = true; r.recibo_helisa = num; r.recibo_helisa_fecha = m.querySelector('#m-fecha').value; r.cruzado_en = ahora();
+      AUD.unshift({ en: r.cruzado_en, quien: 'Lucrecia Quintero', accion: `Registró recibo definitivo ${num} para el recibo ${r.consecutivo}`, entidad: `Recibo de caja · ${c.nombre_comercial}`, detalle: 'Cruzado en Helisa' });
+      cerrar(); renderTabla(); if ($('#overlay .drawer')) renderDetalle(id);
+      toast(`Recibo ${r.consecutivo} cruzado en Helisa como ${num}.`);
+    });
+  }
+  $('#tbody').addEventListener('click', (e) => {
+    const be = e.target.closest('[data-entregar]'); if (be) { entregar(be.dataset.entregar); return; }
+    const bd = e.target.closest('[data-definitivo]'); if (bd) { modalDefinitivo(bd.dataset.definitivo); return; }
+  });
+  $('#tbody').addEventListener('click', (e) => {
+    if (e.target.closest('[data-stop]')) return;
+    const tr = e.target.closest('tr.row'); if (!tr) return; abrir(tr.dataset.id);
+  });
+  $('#tbody').addEventListener('keydown', (e) => { const tr = e.target.closest('tr.row'); if (tr && e.target === tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); abrir(tr.dataset.id); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = $('#modal'); if (m) m.remove(); else cerrarDetalle(); } });
+
+  // hash: #periodo · #r-35686 · #35686
+  function aplicarHash() {
+    const h = location.hash.replace(/^#/, '').trim(); if (!h) return;
+    if (['hoy', 'ayer', 'semana', 'periodo'].includes(h)) { filtro.modo = h; renderFiltros(); renderTabla(); return; }
+    const r = byId(h) || R.find((x) => String(x.consecutivo) === h);
+    if (r) { filtro.modo = 'periodo'; if (r.fecha < P.inicio) { filtro.modo = 'fecha'; filtro.fecha = r.fecha; } renderFiltros(); renderTabla(); abrir(r.id); }
+  }
+  window.addEventListener('hashchange', aplicarHash);
+
+  renderFiltros(); renderTabla(); aplicarHash();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verificar documento · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .p-top { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .p-top .in { max-width: 1040px; margin: 0 auto; padding: 10px var(--gutter); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .p-top .brand { padding: 0; }
+  .p-top .who { margin-left: auto; font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .p-wrap { max-width: 760px; margin: 0 auto; padding: 22px var(--gutter) 60px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .p-wrap > * { min-width: 0; }
+  .kv dd { overflow-wrap: anywhere; }
+  .hero h1 { font-size: 26px; margin-top: 4px; }
+  .hero p { color: var(--fg-2); margin-top: 8px; max-width: 62ch; }
+  .code-form { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin-top: 16px; }
+  .code-form .input { font-family: var(--font-mono); font-size: 18px; letter-spacing: .12em; text-transform: lowercase; padding: 11px 13px; }
+  @media (max-width: 560px) { .code-form { grid-template-columns: 1fr; } .code-form .btn { width: 100%; justify-content: center; } }
+  .examples { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 14px; font-size: 12.5px; color: var(--fg-3); }
+  .examples .chip { font-family: inherit; }
+  .result { border-width: 1px; }
+  .result .r-head { display: flex; gap: 14px; align-items: flex-start; padding: 18px 18px 14px; border-bottom: 1px solid var(--border); }
+  .result .r-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; font-weight: 800; flex: none; }
+  .result.ok .r-ico { background: var(--ok-soft); color: var(--accent-soft-fg); }
+  .result.bad .r-ico { background: var(--danger-soft); color: var(--danger); }
+  .result.warn .r-ico { background: var(--warn-soft); color: var(--warn); }
+  .result h2 { font-size: 19px; }
+  .result .r-head p { color: var(--fg-2); margin-top: 3px; }
+  .result .r-body { padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .kv.wide { grid-template-columns: 150px 1fr; }
+  @media (max-width: 560px) { .kv.wide { grid-template-columns: 1fr; gap: 2px 0; } .kv.wide dt { margin-top: 8px; } }
+  .estado-mal { color: var(--danger); font-weight: 700; }
+  .estado-ok { color: var(--accent-soft-fg); font-weight: 700; }
+  .how ol { margin: 10px 0 0; padding-left: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; counter-reset: paso; }
+  .how li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; font-size: 13.5px; color: var(--fg-2); }
+  .how li::before { counter-increment: paso; content: counter(paso); width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-soft-fg); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .how li b { color: var(--fg); }
+  .hash-demo { font-family: var(--font-mono); font-size: 12.5px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; display: grid; gap: 4px; overflow-wrap: anywhere; }
+  .hash-demo .ok { color: var(--accent); }
+  .hash-demo .mal { color: var(--danger); }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<header class="p-top"><div class="in">
+  <div class="brand"><div class="logo">CS</div><div><b>Comserva S.A.S.</b><small>Verificación de documentos · RH digital</small></div></div>
+  <div class="who"><a href="index.html">Portal del cliente</a></div>
+</div></header>
+
+<main class="p-wrap">
+  <section class="card pad hero">
+    <div class="eyebrow">comserva.com.co/verificar</div>
+    <h1>Verificar un documento</h1>
+    <p>Escriba el código de 16 caracteres que aparece junto al QR de la constancia de visita, el recibo de caja o el acta de gestión integral, o escanee el QR con la cámara del celular: lo trae directo a esta página con el código puesto.</p>
+    <form class="code-form" id="f" novalidate>
+      <div class="field">
+        <label for="codigo">Código de verificación</label>
+        <input id="codigo" class="input" maxlength="16" placeholder="16 letras y números" autocomplete="off" spellcheck="false" inputmode="text" aria-describedby="codigo-help">
+        <div class="help" id="codigo-help">Está impreso debajo del QR, después de "con el código". No distingue mayúsculas de minúsculas.</div>
+      </div>
+      <button class="btn primary lg" type="submit">Verificar</button>
+    </form>
+    <div class="examples">
+      <span>Ejemplos para la demo:</span>
+      <button type="button" class="chip" data-ej="v-cof-1017">Constancia 1186</button>
+      <button type="button" class="chip" data-ej="r-35686">Recibo 35686</button>
+      <button type="button" class="chip" data-ej="a-25729">Acta 25729</button>
+    </div>
+    <div class="examples" style="margin-top:6px">
+      <span>Y un caso con estado especial:</span>
+      <button type="button" class="chip" data-ej="v-lab-1020a">Constancia 1154 (anulada)</button>
+    </div>
+  </section>
+
+  <section id="resultado" aria-live="polite"></section>
+
+  <section class="card pad how">
+    <h3>Cómo funciona</h3>
+    <ol>
+      <li><div><b>Al emitir cada documento</b>, el servidor de Comserva guarda el PDF definitivo y calcula su resumen criptográfico (hash SHA-256): una huella de 64 caracteres que depende de cada byte del archivo. Los primeros 16 se imprimen junto al QR.</div></li>
+      <li><div><b>Al verificar</b>, el código que usted escribe se busca entre los resúmenes guardados. Si existe, le mostramos los datos del original (tipo, número, cliente, fecha) y su estado actual: vigente, anulado o retenido.</div></li>
+      <li><div><b>Si alguien altera el PDF</b> (un kilo, una fecha, un nombre, una firma), el resumen cambia por completo y el código deja de coincidir, así el documento se vea idéntico a simple vista.</div></li>
+    </ol>
+    <div class="hash-demo" style="margin-top:14px" id="hash-demo"></div>
+    <p class="muted" style="margin-top:12px;font-size:12.5px">El código no contiene datos personales ni permite reconstruir el documento. En esta demo el resumen se simula a partir del identificador del registro; en producción se calcula sobre el PDF firmado y se guarda junto con él.</p>
+  </section>
+</main>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Portal (fase 2)');
+
+  const codigoDe = (id) => D.hashFake(id).slice(0, 16);
+  const normalizar = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  // Índice de todos los documentos emitidos: constancias (visitas con consecutivo), recibos y actas
+  function indice() {
+    const docs = [];
+    D.visitas.filter((v) => v.consecutivo != null).forEach((v) => docs.push({ tipo: 'visita', id: v.id, reg: v }));
+    D.recibos.forEach((r) => docs.push({ tipo: 'recibo', id: r.id, reg: r }));
+    D.actas.forEach((a) => docs.push({ tipo: 'acta', id: a.id, reg: a }));
+    return docs;
+  }
+  const DOCS = indice();
+
+  function describir(doc) {
+    const r = doc.reg;
+    const c = D.cliente(r.cliente);
+    const out = { cliente: c ? `${c.nombre_comercial} · NIT ${D.nitCompleto(c)}` : '—', mal: null, extra: [] };
+    if (doc.tipo === 'visita') {
+      const op = D.operario(r.operario);
+      out.tipoLabel = r.tipo === 'fallida' ? 'Constancia de visita fallida' : 'Constancia de visita (recolección)';
+      out.numero = `N.º ${r.consecutivo}`;
+      out.fecha = `${D.fmtFecha(r.fecha, { dia: true })}, ${r.hora}`;
+      out.link = `../documentos/constancia.html#${r.id}`;
+      out.extra.push(['Operario', op ? op.nombre : '—']);
+      if (r.tipo !== 'fallida') out.extra.push(['Kilos registrados', `${D.fmtKg(D.totalKg(r))} kg en ${Object.keys(r.kilos).length} categoría${Object.keys(r.kilos).length === 1 ? '' : 's'}`]);
+      else out.extra.push(['Motivo', r.motivo_fallida || '—']);
+      if (r.estado === 'anulada') {
+        const rep = r.reemplazo ? D.byId(D.visitas, r.reemplazo) : null;
+        out.mal = `Anulada el ${D.fmtFecha(r.anulada_en.slice(0, 10))} por ${r.anulada_por}. ${r.anulacion_motivo || ''}`.trim();
+        out.estado = 'Anulada';
+        if (rep) out.extra.push(['Reemplazada por', `Constancia N.º ${rep.consecutivo}`, `../documentos/constancia.html#${rep.id}`]);
+      } else if (r.estado === 'rechazada') { out.estado = 'Rechazada por el servidor; en revisión por la oficina'; out.mal = r.rechazo || 'Rechazada'; }
+      else if (r.estado === 'cerrada') { out.estado = 'Emitida en el celular; pendiente de llegar al servidor'; out.warn = true; }
+      else out.estado = r.estado === 'en_cierre' ? 'Vigente · incluida en el cierre del periodo' : 'Vigente';
+      if (r.reemplaza) { const ant = D.byId(D.visitas, r.reemplaza); if (ant) out.extra.push(['Reemplaza a', `Constancia N.º ${ant.consecutivo} (anulada)`]); }
+    } else if (doc.tipo === 'recibo') {
+      const op = D.operario(r.operario);
+      out.tipoLabel = 'Recibo de caja provisional';
+      out.numero = `N.º ${r.consecutivo}`;
+      out.fecha = `${D.fmtFecha(r.fecha, { dia: true })}, ${r.hora}`;
+      out.link = `../documentos/recibo.html#${r.id}`;
+      out.extra.push(['Valor', `${D.fmtCOP(r.valor)} (${D.numeroALetras(r.valor)})`]);
+      out.extra.push(['Concepto', r.concepto]);
+      out.extra.push(['Recibido por', op ? op.nombre : '—']);
+      if (r.estado === 'anulado') { out.estado = 'Anulado'; out.mal = `Anulado el ${D.fmtFecha(r.anulado_en.slice(0, 10))} por ${r.anulado_por}. ${r.anulacion_motivo || ''}`.trim(); }
+      else out.estado = r.conciliado ? 'Vigente · conciliado en Helisa' : 'Vigente · pendiente de conciliar';
+    } else {
+      const p = D.byId(D.periodos, r.periodo);
+      const t = D.totalizar(r.cliente, r.periodo);
+      out.tipoLabel = 'Acta de gestión integral de residuos';
+      out.numero = `N.º ${r.consecutivo}`;
+      out.fecha = D.fmtFecha(r.fecha, { dia: true });
+      out.link = `../documentos/acta.html#${r.cliente}|${r.periodo}`;
+      out.extra.push(['Periodo', p ? `${p.nombre} (${D.fmtFechaCorta(p.inicio)} – ${D.fmtFechaCorta(p.fin)})` : r.periodo]);
+      out.extra.push(['Kilos certificados', `${D.fmtKg(t.kg)} kg en ${t.visitas.length} visitas`]);
+      out.extra.push(['Aprobada por', `${r.aprobada_por}, ${D.fmtFecha(r.aprobada_en.slice(0, 10))}`]);
+      if (r.estado === 'retenida') { out.estado = 'Retenida · no entregada al cliente'; out.mal = r.retenida_motivo || 'Retenida por cartera'; }
+      else out.estado = r.publicada ? 'Vigente · publicada en el portal del cliente' : 'Vigente';
+    }
+    return out;
+  }
+
+  function tarjetaOk(doc, codigo) {
+    const d = describir(doc);
+    const estadoHtml = d.mal ? `<span class="estado-mal">${esc(d.estado)}</span>` : (d.warn ? `<span style="color:var(--warn);font-weight:700">${esc(d.estado)}</span>` : `<span class="estado-ok">${esc(d.estado)}</span>`);
+    const filas = [['Tipo', d.tipoLabel], ['Número', d.numero], ['Cliente', d.cliente], ['Fecha', d.fecha], ...d.extra, ['Estado', estadoHtml, null, true], ['Código', `<span class="mono">${esc(codigo)}</span> <span class="muted">(resumen completo ${esc(D.hashFake(doc.id))})</span>`, null, true]];
+    return `<div class="card result ok">
+      <div class="r-head"><div class="r-ico" aria-hidden="true">✓</div><div><h2>Documento auténtico</h2><p>El código coincide con un documento emitido por ${esc(D.empresa.nombre_corto)} y guardado en su servidor.</p></div></div>
+      <div class="r-body">
+        ${d.mal ? `<div class="callout danger"><b>Atención:</b> ${esc(d.mal)}</div>` : ''}
+        <dl class="kv wide">${filas.map(([k, v, href, raw]) => `<dt>${esc(k)}</dt><dd>${href ? `<a href="${href}">${esc(v)}</a>` : (raw ? v : esc(v))}</dd>`).join('')}</dl>
+        <div><a class="btn primary" href="${d.link}">Ver el documento original</a></div>
+      </div>
+    </div>`;
+  }
+  function tarjetaNo(codigo) {
+    return `<div class="card result bad">
+      <div class="r-head"><div class="r-ico" aria-hidden="true">✕</div><div><h2>No encontramos un documento con ese código</h2><p>Revisamos <span class="mono">${esc(codigo)}</span> contra todas las constancias, recibos y actas emitidos.</p></div></div>
+      <div class="r-body">
+        <p>Compruebe que escribió los 16 caracteres tal como aparecen junto al QR (los ceros y las oes se confunden). Si el documento que tiene en la mano trae exactamente este código, puede haber sido alterado o no haber sido emitido por ${esc(D.empresa.nombre_corto)}: comuníquese al ${esc(D.empresa.telefonos)} o escriba a ${esc(D.empresa.email)}.</p>
+      </div>
+    </div>`;
+  }
+  function tarjetaIncompleto(n) {
+    return `<div class="card result warn">
+      <div class="r-head"><div class="r-ico" aria-hidden="true">!</div><div><h2>El código debe tener 16 caracteres</h2><p>Lleva ${n}. Escriba el código completo que aparece junto al QR.</p></div></div>
+    </div>`;
+  }
+
+  function verificar(valor, opts = {}) {
+    const codigo = normalizar(valor);
+    const box = $('#resultado');
+    if (!codigo) { box.innerHTML = ''; return; }
+    if (codigo.length < 16) { box.innerHTML = tarjetaIncompleto(codigo.length); return; }
+    const doc = DOCS.find((d) => codigoDe(d.id) === codigo);
+    box.innerHTML = doc ? tarjetaOk(doc, codigo) : tarjetaNo(codigo);
+    if (!opts.silencioso) history.replaceState(null, '', '#' + codigo);
+    if (opts.scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Ilustración: dos resúmenes que difieren por un solo cambio
+  function ilustrar() {
+    const v = D.byId(D.visitas, 'v-cof-1017');
+    const kgOk = D.fmtKg(D.totalKg(v)), kgMal = D.fmtKg(D.totalKg(v) + 10);
+    $('#hash-demo').innerHTML = `<div><span class="muted">Constancia ${v.consecutivo}, ${kgOk} kg</span> → <span class="ok">${esc(D.hashFake(v.id))}</span></div>
+      <div><span class="muted">Misma constancia con ${kgMal} kg</span> → <span class="mal">${esc(D.hashFake(v.id + '|' + kgMal))}</span></div>
+      <div class="muted">Un solo cambio en el archivo produce un resumen completamente distinto.</div>`;
+  }
+
+  // ---------- eventos ----------
+  const input = $('#codigo');
+  $('#f').addEventListener('submit', (e) => { e.preventDefault(); verificar(input.value, { scroll: true }); });
+  input.addEventListener('input', () => { if (!input.value.trim()) { $('#resultado').innerHTML = ''; history.replaceState(null, '', location.pathname); } });
+  document.querySelectorAll('[data-ej]').forEach((b) => b.addEventListener('click', () => {
+    input.value = codigoDe(b.dataset.ej);
+    input.focus();
+    verificar(input.value, { scroll: true });
+  }));
+  window.addEventListener('hashchange', () => { const h = normalizar(decodeURIComponent(location.hash.slice(1))); if (h && h !== normalizar(input.value)) { input.value = h; verificar(h, { silencioso: true }); } });
+
+  ilustrar();
+  const inicial = normalizar(decodeURIComponent(location.hash.slice(1)));
+  if (inicial) { input.value = inicial.slice(0, 16); verificar(input.value, { silencioso: true }); }
+})();
+</script>
+</body>
+</html>

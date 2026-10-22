@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mockups RH digital Comserva · v6</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px var(--gutter) 80px; display: grid; gap: 22px; }
+  .hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: 30px; font-weight: 700; letter-spacing: -.01em; }
+  .hero p { color: var(--fg-2); max-width: 62ch; margin-top: 10px; font-size: 15px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .tile { display: flex; flex-direction: column; gap: 8px; padding: 18px; text-decoration: none; color: inherit; transition: transform .12s; }
+  .tile:hover { transform: translateY(-2px); text-decoration: none; border-color: var(--accent); }
+  .tile .ico { width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-soft-fg); display: grid; place-items: center; font-size: 18px; font-weight: 700; }
+  .tile h3 { font-size: 16px; }
+  .tile p { color: var(--fg-3); font-size: 13px; }
+  .tile .links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .tile .links span { font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px; color: var(--fg-2); }
+  ol.flow { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-size: 14px; }
+  ol.flow li b { font-weight: 600; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Fase 1 · campo, oficina y salida hacia Helisa · versión 6 · dos propuestas</div>
+      <h1>Mockups de RH digital para Comserva (v6)</h1>
+      <p>Prototipo navegable con datos de prueba según el levantamiento v6: el operario registra la visita en el celular, la oficina cierra el periodo y congela el RH de cada cliente. De ahí salen dos caminos: <b>propuesta A</b>, el <b>archivo de pedidos</b> que Lucrecia importa en Helisa para hacer cada factura (uno a uno, como mostró Julio) y registrar el FVE; <b>propuesta B</b>, el sistema <b>emite la factura electrónica</b> con la API de Factus (CUFE, PDF, XML, correo) y a Helisa solo van los asientos. En las dos, el <b>recibo de caja</b> solo existe con factura registrada y sale como movimiento contable (dos libros) para que Helisa cruce el pago. Los números de Cofema de septiembre de 2026 son los reales (413,85 kg y $2.244.935).</p>
+      <p>Nada se guarda: cada recarga vuelve al estado inicial. "Hoy" es el <b>lunes 19 de octubre de 2026</b>, dentro del periodo de octubre (27 de septiembre al 26 de octubre).</p>
+    </div>
+    <div class="card pad">
+      <h3>Cómo recorrer el proceso en 10 minutos</h3>
+      <ol class="flow" style="margin-top:10px">
+        <li><b>App móvil:</b> entra como Dubeny, abre la visita de IPS Salud Vital, registra kilos, firma y cierra. Activa "Simular sin señal" y repite para ver la cola de envío.</li>
+        <li><b>App móvil:</b> desde la constancia registra un pago en efectivo: Droguería La Economía tiene factura con saldo (elige abono o pago total); cambia a Visión Sur (pagó por transferencia, sin saldo) y mira el bloqueo «no se puede emitir recibo». Luego registra una visita fallida en el Consultorio Dr. Ramírez.</li>
+        <li><b>Panel web:</b> revisa la bandeja de visitas (hay una rechazada y una anulada), valida el cliente creado en campo y anula una visita con motivo.</li>
+        <li><b>Panel web:</b> abre Clientes y mira la tarifa vigente de Cofema; en Catálogos revisa las 9 categorías con su tratamiento y dispositor.</li>
+        <li><b>Panel web:</b> en Cierre del periodo abre septiembre de 2026: Cofema suma 413,85 kg y la fórmula da $2.244.935, igual a la factura FVE 25756; la columna «Estado · FVE» muestra los cierres facturados.</li>
+        <li><b>Panel web · propuesta A:</b> en Archivos planos (A) mira el archivo de pedidos 001 rechazado y el 002 importado (12 facturas hechas una a una en Helisa), genera el archivo RC con el recibo entregado, descárgalo, márcalo importado y registra el recibo definitivo. En Plantillas mira la plantilla PED (estructura del pedido de Julio) y la del recibo con filas F y N.</li>
+        <li><b>Panel web · propuesta B:</b> en Facturación electrónica (B) mira las facturas emitidas en el sandbox de Factus (validada, con notificaciones, rechazada), emite la de Laboratorio Amazonía desde el cierre (ve el JSON que se envía y la respuesta con CUFE), haz una nota crédito y genera el archivo de asientos para Helisa. Revisa los parámetros del proveedor: rango de numeración, paquete de documentos y certificado.</li>
+        <li><b>Documentos:</b> abre la constancia, la planilla mensual, el recibo de caja y el reporte de cierre tal como saldrían en PDF.</li>
+        <li><b>Portal (fase 2):</b> entra como Cofema y descarga el acta; cambia a IPS Salud Vital para ver el acta retenida por mora.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="tiles">
+    <a class="card tile" href="app/index.html">
+      <div class="ico">📱</div>
+      <h3>App móvil del operario</h3>
+      <p>16 pantallas: inicio de sesión, ruta del día, visita en cuatro pasos, constancia, recibo de caja solo con factura registrada (tipo y aplicación a facturas), visita fallida, historial, sincronización y cliente nuevo en campo.</p>
+      <div class="links"><span>Firmas en pantalla</span><span>Sin señal</span><span>Recibo solo con FVE</span></div>
+    </a>
+    <a class="card tile" href="panel/index.html">
+      <div class="ico">🖥</div>
+      <h3>Panel web de oficina</h3>
+      <p>Inicio, bandeja de visitas, clientes y tarifas, catálogos y parámetros, cierre del periodo con RH, <b>archivos planos (A)</b> (pedidos y recibos, registro de FVE y recibos definitivos, configurador de plantillas con códigos de servicio y dos libros), <b>facturación electrónica (B)</b> (emisión con Factus, estados, notas crédito, asientos hacia Helisa, parámetros del proveedor), recaudo con el ciclo del recibo, usuarios y auditoría.</p>
+      <div class="links"><span>Lucrecia</span><span>Gerencia</span><span>A · pedidos y recibos</span><span>B · factura electrónica</span></div>
+    </a>
+    <a class="card tile" href="documentos/index.html">
+      <div class="ico">📄</div>
+      <h3>Documentos PDF</h3>
+      <p>Constancia de visita, planilla mensual RHPS (RH), recibo de caja provisional, reporte de cierre (contingencia) y, como anticipo de la fase 2, el acta de gestión integral.</p>
+      <div class="links"><span>Consecutivos</span><span>QR de verificación</span><span>Formato actual</span></div>
+    </a>
+    <a class="card tile" href="portal/index.html">
+      <div class="ico">🔐</div>
+      <h3>Portal del cliente (fase 2)</h3>
+      <p>Anticipo: el cliente entra con usuario y clave, descarga constancias, planillas y recibos, y el acta solo si está al día. Página de verificación de documentos por QR.</p>
+      <div class="links"><span>Regla de cartera</span><span>Verificación</span></div>
+    </a>
+  </section>
+
+  <section class="card pad">
+    <h3>Convenciones de estado</h3>
+    <div class="legend" style="margin-top:10px">
+      <div><span class="badge plain">Borrador</span> se puede editar; solo existe en el celular.</div>
+      <div><span class="badge warn">Guardada en el celular</span> firmada y con número; espera señal.</div>
+      <div><span class="badge ok">Transmitida</span> recibida por el servidor.</div>
+      <div><span class="badge danger">Rechazada</span> el servidor la devolvió; la oficina revisa.</div>
+      <div><span class="badge info">En el cierre</span> ya cuenta para un periodo cerrado.</div>
+      <div><span class="badge danger">Anulada</span> con motivo y usuario; se emitió otra.</div>
+    </div>
+  </section>
+
+  <section class="card pad">
+    <h3>Datos de prueba</h3>
+    <p class="muted" style="margin-top:6px">12 clientes activos y 1 pendiente de validar, 2 operarios, 2 vehículos, 9 categorías, 2 dispositores, 3 periodos (agosto y septiembre cerrados, octubre abierto), 48 visitas (incluidas 2 fallidas, 1 rechazada, 1 anulada con reemplazo, 1 en cola sin señal y 1 borrador), 16 facturas registradas (FVE), 6 recibos de caja (3 cruzados, 1 entregado, 1 emitido, 1 anulado), 5 plantillas de archivo plano (PED, ASI v1 y v2, RC, TER; 3 aprobadas), 4 archivos planos (1 rechazado, 3 importados) y, para la propuesta B, 3 facturas electrónicas de prueba (validada, con notificaciones, rechazada), 1 nota crédito y los parámetros del proveedor (rango, paquete, certificado). Están en <span class="mono">assets/data.js</span>, que también contiene la fórmula de la factura, la suma del periodo, el saldo de referencia y el generador de archivos planos.</p>
+  </section>
+</div>
+<script src="assets/data.js"></script>
+<script>
+  document.getElementById('bar').innerHTML = window.DATA.mockBar('Inicio').replace(/\.\.\//g, '');
+</script>
+</body>
+</html>

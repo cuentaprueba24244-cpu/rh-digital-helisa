@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facturación electrónica (B) · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .mb { margin-bottom: 14px; }
+  .two { display: grid; grid-template-columns: 1.3fr .7fr; gap: 14px; }
+  .two > * { min-width: 0; }
+  @media (max-width: 1100px) { .two { grid-template-columns: 1fr; } }
+  .mono { font-family: var(--font-mono); font-size: .92em; }
+  .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 13px; }
+  .kv dt { color: var(--fg-3); } .kv dd { margin: 0; word-break: break-all; }
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(10, 20, 15, .35); z-index: 90; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(760px, 100%); background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 95; display: flex; flex-direction: column; }
+  .drawer .d-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+  .drawer .d-head .no { font-family: var(--font-mono); font-size: 22px; color: var(--accent); font-weight: 600; line-height: 1.2; }
+  .drawer .d-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2); background: var(--surface); cursor: pointer; font-size: 16px; }
+  .drawer .d-body { padding: 18px 20px; overflow: auto; flex: 1; display: grid; gap: 16px; align-content: start; }
+  .drawer .d-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .drawer h3, .sec h3 { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; }
+  pre.json { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.45; overflow: auto; max-height: 360px; margin: 0; white-space: pre; }
+  .qr-box { display: flex; gap: 14px; align-items: center; }
+  .prog { height: 10px; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; margin-top: 8px; }
+  .prog > i { display: block; height: 100%; background: var(--accent); }
+  .err-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--danger); display: grid; gap: 4px; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .textarea { min-height: 80px; resize: vertical; }
+  .modal .summary { display: grid; gap: 4px; font-size: 13px; }
+  .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; }
+  .chk input { width: 15px; height: 15px; accent-color: var(--accent); }
+  .steps-b { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .steps-b > div { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12.5px; background: var(--surface); }
+  .steps-b b { display: block; font-size: 13px; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Periodo · salida hacia Helisa · propuesta B (v6)</div>
+        <h1 style="margin-top:4px">Facturación electrónica (B)</h1>
+        <p>El sistema emite la factura electrónica desde el RH de cada cierre a través del proveedor tecnológico (<b>Factus</b>): la DIAN la valida y devuelve número, CUFE, QR, PDF y XML en segundos; el cliente la recibe por correo y WhatsApp. Lucrecia no vuelve a facturar en Helisa: a Helisa va solo el <b>asiento</b> de cada factura y de cada recibo. La propuesta A está en <a href="planos.html">Archivos planos (A)</a>.</p>
+      </div>
+      <div class="chips" id="chips" role="tablist" aria-label="Periodo"></div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+<div id="overlay"></div>
+<div id="modal-root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Archivos planos (A)'],['facturacion.html','⚡','Facturación electrónica (B)']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia Quintero</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtFechaCorta, fmtFecha } = D;
+  const USUARIO = 'Lucrecia Quintero';
+  const ahora = () => { const d = new Date(); return `${D.HOY} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  const fechaHora = (s) => s ? `${fmtFechaCorta(s)} ${s.slice(11)}` : '';
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+  document.getElementById('sidebar').innerHTML = sidebar('facturacion.html');
+  function toast(msg) { $$('.toast').forEach((x) => x.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4000); }
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+
+  const state = { periodo: '2026-09', facturas: clone(D.facturas_fe), notas: clone(D.notas_credito), prov: clone(D.proveedor_fe), archivos: clone(D.archivos_plano), auditoria: [] };
+  const BADGE = { validada: 'ok', con_notificaciones: 'warn', pendiente: 'info', rechazada: 'danger', anulada: 'plain', borrador: 'plain' };
+  const LABEL = { validada: 'Validada por la DIAN', con_notificaciones: 'Validada con notificaciones', pendiente: 'Pendiente DIAN', rechazada: 'Rechazada', anulada: 'Anulada (nota crédito)', borrador: 'Sin emitir' };
+  const periodo = (id) => D.byId(D.periodos, id);
+  function cierresDe(periodoId) {
+    const p = periodo(periodoId); const base = { '2026-09': 22690, '2026-10': 22702 }[periodoId] || 22702;
+    return D.cierrePeriodo(periodoId).map((cz, i) => Object.assign(cz, { rh_numero: D.consecutivoPlanilla(base + i, p.fin), fecha_sugerida: p.fin }));
+  }
+  const feDe = (cid, pid) => state.facturas.find((x) => x.cliente === cid && x.periodo === pid && x.estado !== 'anulada') || null;
+  const feAnuladaDe = (cid, pid) => state.facturas.find((x) => x.cliente === cid && x.periodo === pid && x.estado === 'anulada') || null;
+
+  // ---------- render ----------
+  function renderChips() {
+    $('#chips').innerHTML = D.periodos.slice().reverse().map((p) => `<button class="chip ${p.id === state.periodo ? 'on' : ''}" data-p="${p.id}" role="tab" aria-selected="${p.id === state.periodo}">${esc(p.nombre)}${p.estado === 'abierto' ? ' · abierto' : ''}</button>`).join('');
+    $$('#chips [data-p]').forEach((b) => b.addEventListener('click', () => { state.periodo = b.dataset.p; render(); }));
+  }
+  function render() {
+    renderChips();
+    const p = periodo(state.periodo); const abierto = p.estado === 'abierto';
+    const czs = abierto ? [] : cierresDe(p.id);
+    const fes = state.facturas.filter((f) => f.periodo === p.id);
+    const validadas = fes.filter((f) => f.estado === 'validada' || f.estado === 'con_notificaciones');
+    const sinFactura = czs.filter((cz) => !feDe(cz.cliente.id, p.id));
+    const asiPend = validadas.filter((f) => !f.asiento);
+    const prov = state.prov; const sus = prov.suscripcion; const disp = sus.total - sus.consumidos;
+    $('#content').innerHTML = `
+      <div class="grid cols-4 mb">
+        <div class="card stat"><div class="label">Facturas emitidas (${esc(p.nombre)})</div><div class="value">${validadas.length}</div><div class="delta">${fes.filter((f) => f.estado === 'con_notificaciones').length} con notificaciones · ${fes.filter((f) => f.estado === 'rechazada').length} rechazadas · ${state.facturas.filter((f) => f.periodo === p.id && f.estado === 'anulada').length} anuladas</div></div>
+        <div class="card stat"><div class="label">Cierres sin facturar</div><div class="value" style="${sinFactura.length ? 'color:var(--warn)' : ''}">${abierto ? '–' : sinFactura.length}</div><div class="delta">${abierto ? 'El periodo sigue abierto' : (sinFactura.length ? 'listos para emitir desde el RH' : 'todos facturados')}</div></div>
+        <div class="card stat"><div class="label">Asientos sin enviar a Helisa</div><div class="value" style="${asiPend.length ? 'color:var(--warn)' : ''}">${asiPend.length}</div><div class="delta">facturas validadas sin archivo ASI</div></div>
+        <div class="card stat"><div class="label">Paquete de Factus</div><div class="value" style="${disp < 20 ? 'color:var(--danger)' : ''}">${disp}<span class="muted" style="font-size:14px;font-weight:500"> / ${sus.total}</span></div><div class="delta">documentos disponibles · vence ${fmtFechaCorta(sus.vence)}</div><div class="prog"><i style="width:${Math.round(sus.consumidos / sus.total * 100)}%"></i></div></div>
+      </div>
+
+      <div class="two mb">
+        <div class="card">
+          <div class="card-head"><div><h2>Facturas del periodo</h2><small>${abierto ? 'Se emiten después del cierre, desde el RH congelado de cada cliente' : `${czs.length} cierres · se emite una factura por RH con <span class="mono">reference_code</span> = id del cierre (reintentar nunca duplica)`}</small></div>
+            <div class="acts">${!abierto && sinFactura.length ? `<button class="btn primary" id="emitir-todas">Emitir ${sinFactura.length} pendientes</button>` : ''}${asiPend.length ? `<button class="btn" id="gen-asi">Generar asientos para Helisa (${asiPend.length})</button>` : ''}</div></div>
+          ${abierto ? `<div class="card-body"><div class="callout warn">${esc(p.nombre)} está abierto. Cierre primero el periodo en <a href="cierre.html">Cierre del periodo</a>; la factura toma los valores del RH congelado.</div></div>` : `
+          <div class="table-wrap"><table class="tbl">
+            <thead><tr><th>Cliente · RH</th><th class="num">Total RH</th><th>Factura</th><th>Estado</th><th>Asiento Helisa</th><th></th></tr></thead>
+            <tbody>${czs.map((cz) => { const fe = feDe(cz.cliente.id, p.id); const an = feAnuladaDe(cz.cliente.id, p.id); const c = cz.cliente; return `<tr>
+              <td>${esc(c.nombre_comercial)}<span class="sub">NIT ${esc(D.nitCompleto(c))} · RH <span class="mono">${esc(cz.rh_numero)}</span>${an ? ` · <span class="muted">anulada ${esc(an.numero)}</span>` : ''}</span></td>
+              <td class="num">${cz.factura ? fmtCOP(cz.factura.total) : '<span class="muted">sin tarifa</span>'}</td>
+              <td>${fe && fe.numero ? `<span class="mono">${esc(fe.numero)}</span><span class="sub">${fmtFechaCorta(fe.fecha)} · CUFE ${esc(fe.cufe.slice(0, 12))}…</span>` : '<span class="muted">–</span>'}</td>
+              <td><span class="badge ${BADGE[fe ? fe.estado : 'borrador']}">${LABEL[fe ? fe.estado : 'borrador']}</span>${fe && fe.notificaciones.length ? `<span class="sub">${esc(fe.notificaciones[0].slice(0, 70))}…</span>` : ''}</td>
+              <td>${fe && fe.asiento ? `<a class="mono" href="planos.html#${esc(fe.asiento)}">${esc(fe.asiento)}</a>` : (fe && (fe.estado === 'validada' || fe.estado === 'con_notificaciones') ? '<span class="muted">pendiente</span>' : '')}</td>
+              <td><div class="acts">${fe ? `<button class="btn sm ghost" data-ver="${fe.id}">Ver</button>` : ''}${!fe || fe.estado === 'rechazada' ? `<button class="btn sm primary" data-emitir="${c.id}" ${cz.factura ? '' : 'disabled'}>${fe ? 'Reintentar' : 'Emitir'}</button>` : ''}${fe && (fe.estado === 'validada' || fe.estado === 'con_notificaciones') ? `<button class="btn sm danger" data-nc="${fe.id}">Nota crédito</button>` : ''}</div></td>
+            </tr>`; }).join('')}</tbody>
+          </table></div>`}
+        </div>
+        <div style="display:grid;gap:14px;align-content:start">
+          <div class="card pad">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:15px">Proveedor tecnológico</h3><span class="badge ${prov.entorno === 'sandbox' ? 'warn' : 'ok'}">${prov.entorno === 'sandbox' ? 'Sandbox (pruebas)' : 'Producción'}</span></div>
+            <dl class="kv" style="margin-top:10px">
+              <dt>Proveedor</dt><dd>${esc(prov.nombre)} ${prov.dian_verificado ? '<span class="badge ok">DIAN verificado</span>' : '<span class="badge warn" title="Pendiente de verificar en el listado de proveedores tecnológicos de la DIAN">habilitación por verificar</span>'}</dd>
+              <dt>API</dt><dd class="mono">${esc(prov.url)}</dd>
+              <dt>Credenciales</dt><dd>client_id <span class="mono">${esc(prov.client_id)}</span> · usuario ${esc(prov.usuario)} · token renovado ${esc(prov.token_vence)} (vence cada hora)</dd>
+              <dt>Rango</dt><dd><span class="mono">${esc(prov.rango.prefijo)} ${prov.rango.desde}–${prov.rango.hasta}</span> · siguiente ${prov.rango.prefijo} ${prov.rango.siguiente} · resolución ${esc(prov.rango.resolucion)} · vigente hasta ${fmtFechaCorta(prov.rango.vigente_hasta)} · <span class="mono">numbering_range_id ${prov.rango.id}</span></dd>
+              <dt>Paquete</dt><dd>${sus.consumidos} de ${sus.total} documentos usados · vence ${fmtFechaCorta(sus.vence)} · pago anual anticipado</dd>
+              <dt>Certificado</dt><dd>${esc(prov.certificado.titular)} · vence ${fmtFechaCorta(prov.certificado.vence)}</dd>
+            </dl>
+            <div class="acts" style="margin-top:10px"><button class="btn sm" data-toast="Entorno cambiado a producción: exige credenciales de producción y el rango real de la DIAN">Pasar a producción</button><button class="btn sm ghost" data-toast="GET /v2/subscriptions y GET /v2/numbering-ranges consultados: paquete y rango actualizados">Actualizar desde Factus</button></div>
+          </div>
+          <div class="card pad">
+            <h3 style="font-size:14px">Cómo funciona (B)</h3>
+            <div class="steps-b" style="margin-top:8px">
+              <div><b>1. Cierre → RH</b>kilos, tarifa, IVA, total</div>
+              <div><b>2. Arma la factura</b>JSON con cliente e ítems</div>
+              <div><b>3. Factus → DIAN</b>POST /v2/bills/validate</div>
+              <div><b>4. Vuelve CUFE</b>número, QR, PDF, XML</div>
+              <div><b>5. Al cliente</b>correo + WhatsApp · habilita recibo</div>
+              <div><b>6. A Helisa</b>asiento (archivo o Conekta)</div>
+            </div>
+            <ul style="margin:10px 0 0 16px;padding:0;display:grid;gap:4px;font-size:12.5px;color:var(--fg-2)">
+              <li>Una factura emitida no se edita: se corrige con nota crédito por API.</li>
+              <li>Sin webhooks: las pendientes se consultan por API cada 10 minutos.</li>
+              <li>80 peticiones por minuto; ~12 facturas al mes.</li>
+              <li>Costos de Comserva: paquete anual y certificado; Conekta opcional.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      ${state.notas.length ? `<div class="card mb"><div class="card-head"><h2>Notas crédito</h2><small>${state.notas.length}</small></div><div class="table-wrap"><table class="tbl"><thead><tr><th>Nota</th><th>Factura</th><th>Cliente</th><th>Motivo</th><th class="num">Valor</th><th>Estado</th></tr></thead><tbody>${state.notas.map((n) => { const f = state.facturas.find((x) => x.id === n.factura); const c = f ? D.cliente(f.cliente) : null; return `<tr><td class="mono">${esc(n.numero)}<span class="sub" style="font-family:var(--font-ui)">${fmtFechaCorta(n.fecha)} · aprobó ${esc(n.aprobada_por)}</span></td><td class="mono">${f ? esc(f.numero) : ''}</td><td>${c ? esc(c.nombre_comercial) : ''}</td><td style="max-width:360px">${esc(n.motivo)}</td><td class="num">${fmtCOP(n.total)}</td><td><span class="badge ok">Validada</span><span class="sub">CUFE ${esc(n.cufe.slice(0, 12))}…</span></td></tr>`; }).join('')}</tbody></table></div></div>` : ''}
+
+      <div class="card pad"><h3 style="font-size:14px">Recibo de caja en B</h3><p class="muted" style="font-size:13px;margin-top:6px">Igual que en A: el operario solo puede emitir recibo a un cliente con factura <b>validada</b> y saldo de referencia (total validado menos recibos). El recibo lleva el número de la factura con prefijo (${esc(prov.rango.prefijo)}) y sale en el archivo RC de movimiento contable para que Helisa lo cruce. Ver <a href="recaudo.html">Recaudo</a>.</p></div>`;
+    bind();
+  }
+
+  // ---------- emisión (simulada contra el sandbox) ----------
+  function emitir(clienteId, lote = false) {
+    const p = periodo(state.periodo); const cz = cierresDe(p.id).find((x) => x.cliente.id === clienteId); if (!cz || !cz.factura) return;
+    const json = D.armarFacturaJSON(cz);
+    const prev = state.facturas.find((f) => f.cliente === clienteId && f.periodo === p.id && f.estado === 'rechazada');
+    const c = cz.cliente;
+    if (!c.ciudad || !json.customer.municipality_code) {
+      const fe = prev || { id: 'fe-' + Date.now(), cliente: clienteId, periodo: p.id, reference_code: json.reference_code, numero: '', cufe: '', total: 0, pdf: false, xml: false, enviado_correo: false, asiento: null };
+      Object.assign(fe, { estado: 'rechazada', fecha: D.HOY, notificaciones: ['422: customer.municipality_code es obligatorio: registre el municipio del cliente en Clientes y reintente'] });
+      if (!prev) state.facturas.push(fe);
+      if (!lote) { render(); abrir(fe.id); }
+      return fe;
+    }
+    const fe = prev || { id: 'fe-' + Date.now(), cliente: clienteId, periodo: p.id, reference_code: json.reference_code, asiento: null };
+    const n = state.prov.rango.siguiente++; state.prov.suscripcion.consumidos++;
+    Object.assign(fe, { numero: `${state.prov.rango.prefijo} ${n}`, cufe: D.hashFake(json.reference_code) + D.hashFake(json.reference_code + 'b'), estado: 'validada', fecha: D.HOY, validada_en: ahora(), total: cz.factura.total, notificaciones: [], pdf: true, xml: true, enviado_correo: true, json });
+    if (!prev) state.facturas.push(fe);
+    state.auditoria.unshift({ en: fe.validada_en, quien: USUARIO, accion: `Emitió factura ${fe.numero}`, entidad: 'Factura electrónica · ' + c.nombre_comercial, detalle: `CUFE ${fe.cufe.slice(0, 16)}… · ${fmtCOP(fe.total)}` });
+    if (!lote) { render(); abrir(fe.id); toast(`Factura ${fe.numero} validada por la DIAN (sandbox): ${fmtCOP(fe.total)}. PDF y XML guardados; correo enviado a ${c.email || 'la sede'}. El cliente ya puede pagar con recibo de caja.`); }
+    return fe;
+  }
+  function modalEmitir(clienteId) {
+    const p = periodo(state.periodo); const cz = cierresDe(p.id).find((x) => x.cliente.id === clienteId); const json = D.armarFacturaJSON(cz); const c = cz.cliente;
+    openModal(`<div class="modal-head" id="modal-title">Emitir la factura de ${esc(c.nombre_comercial)} · ${esc(p.nombre)}</div>
+      <div class="modal-body">
+        <p>Así queda la factura que el sistema envía a <span class="mono">POST ${esc(state.prov.url)}/v2/bills/validate</span>. La DIAN la valida y devuelve número, CUFE y QR. No se puede editar después: se corrige con nota crédito.</p>
+        <div class="summary"><div><span class="muted">RH:</span> <b>${esc(cz.rh_numero)}</b> · ${fmtKg(cz.kg)} kg · ${cz.visitas.length} visitas</div><div><span class="muted">Total:</span> <b>${fmtCOP(cz.factura.total)}</b> (subtotal ${fmtCOP(cz.factura.subtotal)} + IVA ${fmtCOP(cz.factura.iva)})</div><div><span class="muted">Rango:</span> ${esc(state.prov.rango.prefijo)} ${state.prov.rango.siguiente} · paquete: ${state.prov.suscripcion.total - state.prov.suscripcion.consumidos} documentos disponibles</div></div>
+        <pre class="json">${esc(JSON.stringify(json, null, 2))}</pre>
+        <label class="chk"><input type="checkbox" id="m-ack"> Revisé el RH y los datos del cliente</label>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="m-ok" disabled>Emitir y validar en la DIAN</button></div>`);
+    $('#m-ack').addEventListener('change', (e) => { $('#m-ok').disabled = !e.target.checked; });
+    $('#m-ok').addEventListener('click', () => { closeModal(); emitir(clienteId); });
+  }
+  function emitirTodas() {
+    const p = periodo(state.periodo); const pend = cierresDe(p.id).filter((cz) => cz.factura && !feDe(cz.cliente.id, p.id));
+    openModal(`<div class="modal-head" id="modal-title">Emitir ${pend.length} facturas de ${esc(p.nombre)}</div><div class="modal-body"><p>Se envía una factura por cada cierre sin facturar, en orden, con su <span class="mono">reference_code</span>. Las que la DIAN rechace quedan en la bandeja con el motivo para corregir y reintentar.</p><ul style="margin:0 0 0 18px;font-size:13px">${pend.map((cz) => `<li>${esc(cz.cliente.nombre_comercial)} · ${fmtCOP(cz.factura.total)}</li>`).join('')}</ul></div><div class="modal-foot"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="m-ok">Emitir ${pend.length}</button></div>`);
+    $('#m-ok').addEventListener('click', () => { closeModal(); let ok = 0, rej = 0; pend.forEach((cz) => { const fe = emitir(cz.cliente.id, true); if (fe && fe.estado === 'validada') ok++; else rej++; }); render(); toast(`${ok} facturas validadas por la DIAN${rej ? `, ${rej} rechazada${rej > 1 ? 's' : ''} (ver motivo en la bandeja)` : ''}.`); });
+  }
+  function modalNC(feId) {
+    const fe = state.facturas.find((x) => x.id === feId); const c = D.cliente(fe.cliente);
+    openModal(`<div class="modal-head" id="modal-title">Nota crédito a la factura ${esc(fe.numero)}</div>
+      <div class="modal-body">
+        <div class="callout warn">La factura validada no se edita. La nota crédito se envía a <span class="mono">POST /v2/credit-notes/validate</span> con el número de la factura; su asiento (naturaleza invertida) también va a Helisa. Requiere aprobación de Gerencia.</div>
+        <div class="summary"><div><span class="muted">Cliente:</span> <b>${esc(c.nombre_comercial)}</b></div><div><span class="muted">Factura:</span> ${esc(fe.numero)} · ${fmtCOP(fe.total)} · ${fmtFechaCorta(fe.fecha)}</div></div>
+        <div class="field"><label class="req">Concepto de corrección</label><select class="select" id="m-cc"><option value="2">2 · Anulación de factura electrónica</option><option value="1">1 · Devolución parcial</option><option value="4">4 · Ajuste de precio</option><option value="5">5 · Otros</option></select></div>
+        <div class="field"><label class="req">Motivo</label><textarea class="textarea" id="m-motivo" placeholder="Ejemplo: visita del 24 sincronizada tarde; se anula y se reemite con los kilos completos"></textarea></div>
+        <label class="chk"><input type="checkbox" id="m-ack"> Aprobada por Gerencia (${esc(D.usuarios.find((u) => u.rol === 'gerencia').nombre)})</label>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Cancelar</button><button class="btn danger" id="m-ok" disabled>Emitir nota crédito</button></div>`);
+    $('#m-ack').addEventListener('change', (e) => { $('#m-ok').disabled = !e.target.checked; });
+    $('#m-ok').addEventListener('click', () => {
+      const motivo = $('#m-motivo').value.trim(); if (motivo.length < 10) { $('#m-motivo').style.borderColor = 'var(--danger)'; $('#m-motivo').focus(); return; }
+      const cc = $('#m-cc').value; const n = { id: 'nc-' + Date.now(), factura: fe.id, numero: `NC ${state.notas.length + 1}`, fecha: D.HOY, concepto: cc, motivo, total: cc === '2' ? fe.total : Math.round(fe.total * 0.1), cufe: D.hashFake('nc' + Date.now()) + D.hashFake('w'), estado: 'validada', aprobada_por: D.usuarios.find((u) => u.rol === 'gerencia').nombre };
+      state.notas.push(n); state.prov.suscripcion.consumidos++;
+      if (cc === '2') { fe.estado = 'anulada'; fe.asiento = fe.asiento; }
+      state.auditoria.unshift({ en: ahora(), quien: USUARIO, accion: `Emitió ${n.numero} a la factura ${fe.numero}`, entidad: 'Nota crédito · ' + c.nombre_comercial, detalle: motivo });
+      closeModal(); cerrarDrawer(); render(); toast(`${n.numero} validada por la DIAN${cc === '2' ? `: la factura ${fe.numero} queda anulada y el cierre puede facturarse de nuevo` : ''}. Su asiento sale en el próximo archivo ASI.`);
+    });
+  }
+  function generarASI() {
+    const p = periodo(state.periodo); const pl = D.plantillaVigente('ASI'); if (!pl) { toast('No hay plantilla ASI aprobada.'); return; }
+    const pend = state.facturas.filter((f) => f.periodo === p.id && (f.estado === 'validada' || f.estado === 'con_notificaciones') && !f.asiento);
+    const czs = cierresDe(p.id).filter((cz) => pend.some((f) => f.cliente === cz.cliente.id));
+    const gen = D.generarPlano(pl, { cierres: czs });
+    if (gen.errores.length) { openModal(`<div class="modal-head" id="modal-title">No se puede generar el archivo</div><div class="modal-body"><ul class="err-list">${gen.errores.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div><div class="modal-foot"><button class="btn primary" data-close>Entendido</button></div>`); return; }
+    const n = state.archivos.filter((a) => a.tipo === 'ASI' && a.periodo === p.id).length + 1;
+    const a = { id: `ap-asi-${p.id}-${String(n).padStart(3, '0')}`, tipo: 'ASI', periodo: p.id, plantilla: pl.id, consecutivo: n, nombre: `COMSERVA_ASI_${p.id}_${String(n).padStart(3, '0')}.${pl.formato}`, estado: 'generado', generado_por: USUARIO, generado_en: ahora(), documentos: gen.documentos, filas: gen.filas.length, debitos: gen.debitos, creditos: gen.creditos, sha256: D.hashFake('asi' + Date.now()) };
+    state.archivos.push(a); pend.forEach((f) => { f.asiento = a.id; });
+    const txt = D.textoArchivo(pl, gen); const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' }); const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = a.nombre.replace(/\.xls$/, '.csv'); document.body.appendChild(l); l.click(); l.remove();
+    render(); toast(`${a.nombre}: ${gen.documentos} asientos, débitos = créditos = ${fmtCOP(gen.debitos)}. Impórtelo en Helisa (Transferencia de Datos → movimiento contable) y márquelo importado en Archivos planos.`);
+  }
+
+  // ---------- detalle ----------
+  function abrir(feId) {
+    const fe = state.facturas.find((x) => x.id === feId); if (!fe) return; const c = D.cliente(fe.cliente); const p = periodo(fe.periodo);
+    const cz = cierresDe(fe.periodo).find((x) => x.cliente.id === fe.cliente); const json = fe.json || (cz ? D.armarFacturaJSON(cz) : {});
+    const ncs = state.notas.filter((n) => n.factura === fe.id);
+    $('#overlay').innerHTML = `
+      <div class="drawer-backdrop" data-cerrar></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="d-head"><div>
+          <div class="eyebrow">Factura electrónica · ${esc(p.nombre)} · ${esc(state.prov.entorno)}</div>
+          <div class="no" id="d-title">${fe.numero ? esc(fe.numero) : 'Sin número'} <span class="muted" style="font-size:14px;font-weight:400">· ${esc(c.nombre_comercial)} · NIT ${esc(D.nitCompleto(c))}</span></div>
+          <div style="margin-top:8px"><span class="badge ${BADGE[fe.estado]}">${LABEL[fe.estado]}</span> ${fe.enviado_correo ? '<span class="badge info">Correo enviado</span>' : ''} ${fe.asiento ? '<span class="badge ok">Asiento en Helisa</span>' : ''}</div>
+        </div><button class="close" data-cerrar aria-label="Cerrar">✕</button></div>
+        <div class="d-body">
+          ${fe.notificaciones.length ? `<div class="callout ${fe.estado === 'rechazada' ? 'danger' : 'warn'}"><b>${fe.estado === 'rechazada' ? 'Rechazada' : 'Notificaciones de la DIAN'}</b><ul class="err-list" style="margin-top:6px;color:inherit">${fe.notificaciones.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''}
+          ${fe.cufe ? `<section><h3>Respuesta de la DIAN</h3><div class="qr-box">${D.qrSVG(fe.cufe, 84)}<dl class="kv"><dt>Número</dt><dd class="mono">${esc(fe.numero)}</dd><dt>CUFE</dt><dd class="mono">${esc(fe.cufe)}</dd><dt>Validada</dt><dd>${fechaHora(fe.validada_en)}</dd><dt>Total</dt><dd>${fmtCOP(fe.total)}</dd><dt>reference_code</dt><dd class="mono">${esc(fe.reference_code)}</dd><dt>Archivos</dt><dd>${fe.pdf ? '<a href="#" data-toast="PDF descargado de GET /v2/bills/download-pdf (representación gráfica con QR)">PDF</a> · ' : ''}${fe.xml ? '<a href="#" data-toast="XML firmado descargado de GET /v2/bills/download-xml">XML</a>' : ''}</dd></dl></div></section>` : ''}
+          <section><h3>JSON enviado a POST /v2/bills/validate</h3><pre class="json">${esc(JSON.stringify(json, null, 2))}</pre></section>
+          ${ncs.length ? `<section><h3>Notas crédito</h3><ul class="timeline">${ncs.map((n) => `<li><div>${esc(n.numero)} · concepto ${esc(n.concepto)} · ${fmtCOP(n.total)} · ${esc(n.motivo)}<div class="when">${fmtFechaCorta(n.fecha)} · aprobó ${esc(n.aprobada_por)}</div></div></li>`).join('')}</ul></section>` : ''}
+          <section><h3>Línea de tiempo</h3><ul class="timeline">
+            <li><div>Cierre del cliente aprobado; factura armada desde el RH ${cz ? esc(cz.rh_numero) : ''}<div class="when">${fmtFechaCorta(fe.fecha)}</div></div></li>
+            <li><div>Enviada a Factus (${esc(state.prov.entorno)}) con reference_code <span class="mono">${esc(fe.reference_code)}</span></div></li>
+            ${fe.cufe ? `<li><div>Validada por la DIAN: CUFE asignado; PDF y XML guardados; correo a ${esc(c.email || 'la sede')}<div class="when">${fechaHora(fe.validada_en)}</div></div></li>` : `<li><div>Rechazada: ${esc(fe.notificaciones[0] || '')}</div></li>`}
+            ${fe.asiento ? `<li><div>Asiento incluido en <a href="planos.html#${esc(fe.asiento)}" class="mono">${esc(fe.asiento)}</a></div></li>` : ''}
+          </ul></section>
+        </div>
+        <div class="d-foot">
+          ${fe.estado === 'rechazada' ? `<button class="btn primary" data-emitir="${esc(fe.cliente)}">Corregir y reintentar</button>` : ''}
+          ${fe.cufe ? `<button class="btn" data-toast="Correo reenviado a ${esc(c.email || 'la sede')} con PDF, XML y enlace público">Reenviar al cliente</button><button class="btn" data-toast="Se abre la hoja de compartir con el PDF de la factura">WhatsApp</button>` : ''}
+          ${fe.estado === 'validada' || fe.estado === 'con_notificaciones' ? `<button class="btn danger" data-nc="${esc(fe.id)}" style="margin-left:auto">Nota crédito</button>` : ''}
+        </div>
+      </aside>`;
+    $('.drawer .close').focus();
+    $$('#overlay [data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDrawer));
+    bindAcciones($('#overlay'));
+  }
+  function cerrarDrawer() { $('#overlay').innerHTML = ''; }
+
+  // ---------- modales ----------
+  let opener = null;
+  function openModal(html) { opener = document.activeElement; const root = $('#modal-root'); root.innerHTML = `<div class="modal-backdrop" data-close-backdrop><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">${html}</div></div>`; $$('[data-close]', root).forEach((b) => b.addEventListener('click', closeModal)); root.firstElementChild.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close-backdrop')) closeModal(); }); const first = root.querySelector('input, textarea, select, button:not([data-close])'); (first || root.querySelector('.modal')).focus(); }
+  function closeModal() { $('#modal-root').innerHTML = ''; if (opener && document.contains(opener)) opener.focus(); opener = null; }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if ($('#modal-root .modal')) closeModal(); else cerrarDrawer(); } });
+
+  function bindAcciones(root) {
+    $$('[data-ver]', root).forEach((b) => b.addEventListener('click', () => abrir(b.dataset.ver)));
+    $$('[data-emitir]', root).forEach((b) => b.addEventListener('click', () => { cerrarDrawer(); modalEmitir(b.dataset.emitir); }));
+    $$('[data-nc]', root).forEach((b) => b.addEventListener('click', () => modalNC(b.dataset.nc)));
+    $$('[data-toast]', root).forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); toast(el.dataset.toast); }));
+  }
+  function bind() {
+    bindAcciones($('#content'));
+    const et = $('#emitir-todas'); if (et) et.addEventListener('click', emitirTodas);
+    const ga = $('#gen-asi'); if (ga) ga.addEventListener('click', generarASI);
+  }
+  function aplicarHash() { const h = location.hash.replace(/^#/, '').trim(); if (h && D.periodos.some((p) => p.id === h)) { state.periodo = h; render(); } const fe = state.facturas.find((f) => f.id === h); if (fe) { state.periodo = fe.periodo; render(); abrir(fe.id); } }
+  window.addEventListener('hashchange', aplicarHash);
+  render(); aplicarHash();
+})();
+</script>
+</body>
+</html>
