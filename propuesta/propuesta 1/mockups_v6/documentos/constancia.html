@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Constancia de visita · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  .sheet { padding-bottom: 34mm; }
+  .brandline { display: flex; align-items: center; gap: 10px; }
+  .brandline .word { font-family: var(--font-doc-display); font-size: 17pt; font-weight: 700; color: #1f5e43; line-height: 1; }
+  .brandline small { display: block; font-size: 6.5pt; color: #333; letter-spacing: .04em; text-transform: uppercase; margin-top: 3px; max-width: 150px; }
+  .sheet .doc-title h1 { font-size: 12.5pt; }
+  .sheet .doc-title p { font-size: 8.5pt; }
+  .sheet .doc-no small { display: block; color: #333; font-size: 8.5pt; }
+  .sec { font-size: 8pt; letter-spacing: .08em; text-transform: uppercase; color: #1f5e43; font-weight: 700; margin: 12px 0 5px; border-bottom: 1px solid #1f5e43; padding-bottom: 2px; }
+  .sheet .boxes.three { grid-template-columns: repeat(3, 1fr); }
+  .sheet .box span { font-size: 10pt; }
+  .note { font-size: 8.5pt; color: #333; border: 1px solid #cfcfcf; background: #f9f9f9; padding: 6px 8px; border-radius: 3px; margin-top: 8px; }
+  .note.warn { border-color: #d9a21b; background: #fbf0d2; color: #5a3d03; }
+  .note.danger { border-color: #b3261e; background: #fbe3e1; color: #7a1a14; }
+  .photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+  .photo { aspect-ratio: 4/3; border: 1px dashed #999; background: repeating-linear-gradient(45deg, #f4f4f4 0 8px, #ececec 8px 16px); display: grid; place-items: center; font-size: 8pt; color: #666; text-align: center; padding: 6px; }
+  .sheet .firmas.one { grid-template-columns: 1fr; max-width: 55%; margin-left: auto; margin-right: auto; }
+  .sheet .firma .pad svg { height: 60px; width: auto; }
+  .sheet .firma .pad i { color: #666; font-size: 8.5pt; }
+  .sheet .firma .line b { display: block; font-size: 9.5pt; }
+  .geo { font-size: 8.5pt; color: #333; margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .geo b { color: #111; font-weight: 600; }
+  .sheet .foot { flex-direction: column; gap: 2px; }
+  .sheet .watermark span { font-size: 72pt; }
+  @media print { @page { size: A4 portrait; } .sheet { zoom: 1 !important; padding: 0 0 16mm !important; page-break-after: auto; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Visita</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage"><div class="sheet" id="sheet" aria-live="polite"></div></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  // DOC-01: en la constancia la identificación va enmascarada (solo los tres últimos dígitos)
+  const enmascarar = (d) => { const n = String(d || '').replace(/\D/g, ''); return n.length >= 4 ? '•••' + n.slice(-3) : (d || '—'); };
+  const E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+
+  const LOGO = '<svg width="54" height="54" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#1f5e43"/><circle cx="32" cy="32" r="25" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.5"/><path d="M32 12c11 7 15 18 10 31-7-2-11-7-13-14-1 9-3 14-9 17-6-13-1-26 12-34z" fill="#fff"/><path d="M27 46c3-8 6-14 11-20" stroke="#1f5e43" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>';
+  const brand = () => `<div class="brandline">${LOGO}<div><span class="word">ComServa</span><small>${esc(E.razon_social)}</small></div></div>`;
+  const coord = (n) => Number(n).toLocaleString('es-CO', { minimumFractionDigits: 5, maximumFractionDigits: 5 });
+
+  const DEFAULT = 'v-cof-1017';
+  const lista = D.visitas.filter((v) => v.consecutivo != null).slice().sort((a, b) => b.consecutivo - a.consecutivo);
+  const sel = document.getElementById('sel');
+  sel.innerHTML = lista.map((v) => {
+    const c = D.cliente(v.cliente);
+    const extra = (v.tipo === 'fallida' ? ' · sin recolección' : '') + (v.estado === 'anulada' ? ' · ANULADA' : '') + (v.estado === 'rechazada' ? ' · rechazada' : '') + (v.estado === 'cerrada' ? ' · en el celular' : '');
+    return `<option value="${v.id}">N.º ${v.consecutivo} · ${esc(c.nombre_comercial)} · ${D.fmtFechaCorta(v.fecha)}${extra}</option>`;
+  }).join('');
+
+  function actual() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    return lista.find((v) => v.id === id) || lista.find((v) => v.id === DEFAULT);
+  }
+
+  function render() {
+    const v = actual();
+    sel.value = v.id;
+    const c = D.cliente(v.cliente);
+    const op = D.operario(v.operario);
+    const aux = v.auxiliar ? D.operario(v.auxiliar) : null;
+    const fallida = v.tipo === 'fallida';
+    const anulada = v.estado === 'anulada';
+    const reemplazo = v.reemplazo ? D.visitas.find((x) => x.id === v.reemplazo) : null;
+    const reemplaza = v.reemplaza ? D.visitas.find((x) => x.id === v.reemplaza) : null;
+    const hash = D.hashFake(v.id);
+    const kilos = D.categorias.filter((cat) => (v.kilos[cat.codigo] || 0) > 0);
+    const total = D.totalKg(v);
+    const horaServ = v.hora_servidor || (v.estado === 'cerrada' ? 'pendiente de envío (sin señal)' : v.hora);
+    const titulo = fallida ? 'CONSTANCIA DE VISITA SIN RECOLECCIÓN' : 'CONSTANCIA DE RECOLECCIÓN DE RESIDUOS PELIGROSOS';
+    document.title = `Constancia N.º ${v.consecutivo} · ${c.nombre_comercial}`;
+    document.getElementById('state').textContent = `${D.ESTADO_VISITA_LABEL[v.estado]} · ${fallida ? 'visita sin recolección' : D.fmtKg(total) + ' kg'} · código ${hash.slice(0, 16)}`;
+
+    const generador = `
+      <div class="sec">Generador</div>
+      <div class="boxes">
+        <div class="box"><b>Razón social</b><span>${esc(c.razon_social)}</span></div>
+        <div class="box"><b>NIT</b><span>${D.nitCompleto(c)}</span></div>
+        <div class="box"><b>Sede</b><span>${esc(c.sede)}</span></div>
+        <div class="box"><b>Dirección</b><span>${esc(c.direccion)}</span></div>
+        <div class="box"><b>Ciudad</b><span>${esc(c.ciudad)}, ${esc(c.departamento)}</span></div>
+        <div class="box"><b>Frecuencia</b><span>${D.FRECUENCIA_LABEL[c.frecuencia]}${c.dia_visita ? ' · ' + esc(c.dia_visita) : ''}</span></div>
+      </div>`;
+
+    const cuerpoRecoleccion = `
+      <div class="sec">Residuos recolectados</div>
+      <table>
+        <thead><tr><th>Grupo</th><th>Categoría</th><th>Código</th><th class="num">Kilogramos</th></tr></thead>
+        <tbody>
+          ${kilos.map((cat) => `<tr><td>${esc(cat.grupo)}</td><td>${esc(cat.nombre)}${cat.en_acta ? '' : ' <i>(sin tratamiento definido)</i>'}</td><td class="mono">${cat.codigo}</td><td class="num">${D.fmtKg(v.kilos[cat.codigo])}</td></tr>`).join('')}
+          <tr class="total"><td colspan="3">TOTAL KILOGRAMOS</td><td class="num">${D.fmtKg(total)}</td></tr>
+        </tbody>
+      </table>
+      <div class="boxes three">
+        <div class="box"><b>N.º de bolsas</b><span>${D.fmtNum(v.bolsas)}</span></div>
+        <div class="box"><b>N.º de guardianes</b><span>${D.fmtNum(v.guardianes)}</span></div>
+        <div class="box"><b>Placa del vehículo</b><span>${esc(v.placa)}</span></div>
+        <div class="box"><b>Funcionario de Comserva</b><span>${esc(op.nombre)} · ${esc(op.cargo)}</span></div>
+        <div class="box"><b>Auxiliar</b><span>${aux ? esc(aux.nombre) : 'Sin auxiliar'}</span></div>
+        <div class="box"><b>Fotos adjuntas</b><span>${v.fotos ? D.fmtNum(v.fotos) + ' (en el expediente digital)' : 'Ninguna'}</span></div>
+      </div>
+      ${v.alerta ? `<div class="note warn"><b>Aviso:</b> ${esc(v.alerta)}</div>` : ''}
+      <p class="legal" style="margin-top:10px;font-size:7.5pt">${esc(D.parametros.aviso_datos)}</p>
+      <div class="firmas">
+        <div class="firma">
+          <div class="pad">${v.firmas ? D.firmaSVG(v.id + 'cli') : '<i>Sin firma del cliente</i>'}</div>
+          <div class="line"><b>${esc(v.entrega_nombre) || '—'}</b>C.C. ${esc(enmascarar(v.entrega_documento))}<br>Responsable de la entrega</div>
+        </div>
+        <div class="firma">
+          <div class="pad">${D.firmaSVG(v.operario, '#123d2b')}</div>
+          <div class="line"><b>${esc(op.nombre)}</b>${esc(op.cargo)} · C.C. ${esc(enmascarar(op.documento))}<br>Funcionario de Comserva</div>
+        </div>
+      </div>`;
+
+    const nFotos = Math.max(v.fotos || 0, 1);
+    const cuerpoFallida = `
+      <div class="sec">Visita sin recolección</div>
+      <div class="boxes">
+        <div class="box"><b>Motivo</b><span>${esc(v.motivo_fallida)}</span></div>
+        <div class="box"><b>Testigo</b><span>${esc(v.testigo || 'Sin testigo')}</span></div>
+        <div class="box"><b>Funcionario de Comserva</b><span>${esc(op.nombre)} · ${esc(op.cargo)}</span></div>
+        <div class="box"><b>Placa del vehículo</b><span>${esc(v.placa)}</span></div>
+      </div>
+      <div class="sec">Evidencia fotográfica · ${v.fotos ? D.fmtNum(v.fotos) + (v.fotos === 1 ? ' foto' : ' fotos') : 'sin fotos'}</div>
+      <div class="photos">${Array.from({ length: nFotos }, (_, i) => `<div class="photo">${v.fotos ? `Foto ${i + 1}<br>${esc(c.nombre_comercial)}<br>${D.fmtFechaCorta(v.fecha)} ${v.hora}` : 'Sin fotos adjuntas'}</div>`).join('')}</div>
+      <div class="note">El operario se presentó en la dirección registrada y no fue posible realizar la recolección. La visita queda programada de nuevo según la ruta y no genera kilos en la planilla del mes.</div>
+      <div class="firmas one">
+        <div class="firma">
+          <div class="pad">${D.firmaSVG(v.operario, '#123d2b')}</div>
+          <div class="line"><b>${esc(op.nombre)}</b>${esc(op.cargo)} · C.C. ${esc(enmascarar(op.documento))}<br>Funcionario de Comserva</div>
+        </div>
+      </div>`;
+
+    document.getElementById('sheet').innerHTML = `
+      ${anulada ? '<div class="watermark"><span>ANULADA</span></div>' : ''}
+      <div class="doc-head">
+        ${brand()}
+        <div class="doc-title">
+          <h1>${titulo}</h1>
+          <p>${esc(E.razon_social)} · <span style="white-space:nowrap">NIT ${E.nit}</span> · ${esc(E.responsable_iva)}</p>
+          <p>${esc(E.licencia)}</p>
+        </div>
+        <div class="doc-no">N.º <b>${v.consecutivo}</b><small>${D.cap(D.fmtFecha(v.fecha, { dia: true }))}</small><small>Hora ${v.hora}</small></div>
+      </div>
+      ${anulada ? `<div class="note danger"><b>Constancia anulada</b> el ${esc(v.anulada_en)} por ${esc(v.anulada_por)}. Motivo: ${esc(v.anulacion_motivo)}${reemplazo ? ` Documento de reemplazo: constancia N.º ${reemplazo.consecutivo}.` : ''}</div>` : ''}
+      ${reemplaza ? `<div class="note">Reemplaza la constancia N.º ${reemplaza.consecutivo}, anulada el ${esc(reemplaza.anulada_en)} por ${esc(reemplaza.anulada_por)}.</div>` : ''}
+      ${v.rechazo ? `<div class="note danger"><b>Rechazada por el servidor:</b> ${esc(v.rechazo)}</div>` : ''}
+      ${generador}
+      ${fallida ? cuerpoFallida : cuerpoRecoleccion}
+      <div class="geo">
+        <span><b>Ubicación GPS:</b> ${coord(v.gps[0])}; ${coord(v.gps[1])}</span>
+        <span><b>Hora del celular:</b> ${v.hora}</span>
+        <span><b>Hora del servidor:</b> ${esc(horaServ)}</span>
+        <span><b>Dispositivo:</b> ${esc(op.dispositivo)}</span>
+      </div>
+      <div class="verif">
+        ${D.qrSVG(v.id)}
+        <div>
+          <div>Verifique este documento en comserva.com.co/verificar con el código <span class="mono">${hash.slice(0, 16)}</span></div>
+          <div class="legal">Documento generado electrónicamente por RH digital Comserva; firmado en pantalla conforme a la Ley 527 de 1999 y el Decreto 2364 de 2012.</div>
+        </div>
+      </div>
+      <div class="foot">
+        <span>Esta constancia hace parte de la planilla mensual (formulario RHPS) del cliente.</span>
+        <span>${esc(E.nombre_corto)} · ${esc(E.direccion)}, ${esc(E.ciudad)} · <span style="white-space:nowrap">Tel. ${esc(E.telefonos)}</span> · ${esc(E.email)}</span>
+      </div>`;
+    fit();
+  }
+
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => {
+      const nominal = s.classList.contains('landscape') ? 1122.5 : 793.7;
+      const z = Math.min(1, avail / nominal);
+      s.style.zoom = z < 1 ? z.toFixed(3) : '';
+      s.style.maxWidth = z < 1 ? 'none' : '';
+    });
+  }
+
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>

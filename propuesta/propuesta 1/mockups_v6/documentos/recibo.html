@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Recibo de caja provisional · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  .sheet.half { padding: 0; min-height: 148mm; overflow: hidden; }
+  .band { height: 24mm; background: linear-gradient(95deg, #1b3a2b 0%, #2f5a45 60%, #3f6e57 100%); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 72%); display: flex; align-items: center; justify-content: flex-end; padding: 0 12mm 3mm; color: #fff; }
+  .band .word { font-family: var(--font-doc-display); font-size: 21pt; font-weight: 700; line-height: 1; }
+  .band small { display: block; font-size: 7pt; letter-spacing: .05em; text-transform: uppercase; color: #e8f1ec; font-weight: 600; margin-top: 3px; }
+  .rc { padding: 3mm 12mm 0; position: relative; }
+  .rc-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .rc-title { border: 2px solid #111; border-radius: 6px; padding: 4px 12px; font-weight: 800; font-size: 12pt; line-height: 1.1; text-align: center; letter-spacing: .02em; font-family: var(--font-doc); }
+  .rc-nit { text-align: center; font-size: 10pt; font-weight: 700; }
+  .rc-nit small { display: block; font-weight: 600; font-size: 8pt; }
+  .rc-no { border: 2px solid #b3261e; border-radius: 6px; padding: 3px 12px; color: #b3261e; font-size: 10pt; font-weight: 700; white-space: nowrap; }
+  .rc-no b { font-family: var(--font-mono); font-size: 15pt; font-weight: 500; margin-left: 8px; }
+  .rc-line { display: flex; align-items: baseline; gap: 6px; margin: 9px 0; font-size: 10.5pt; }
+  .rc-line .lbl { white-space: nowrap; font-family: var(--font-doc-display); }
+  .rc-line .val { flex: 1; border-bottom: 1px solid #111; padding: 0 6px 1px; font-weight: 600; min-width: 60px; }
+  .rc-line .val.fix { flex: 0 0 auto; }
+  .rc-line .amt { font-family: var(--font-mono); font-size: 12pt; text-align: right; min-width: 130px; }
+  .rc-line .por { font-weight: 800; font-size: 12pt; }
+  .rc-sign { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-top: 2px; font-size: 9.5pt; }
+  .rc-sign .who b { display: block; font-size: 10.5pt; }
+  .rc-sign .sigline { display: flex; align-items: flex-end; gap: 8px; }
+  .rc-sign .sigline .lbl { font-family: var(--font-doc-display); font-weight: 700; font-size: 11pt; padding-bottom: 2px; }
+  .rc-sign .sigbox { width: 200px; height: 56px; border-bottom: 1px solid #111; display: grid; place-items: end center; }
+  .rc-sign .sigbox svg { height: 52px; width: auto; }
+  .rc-foot { border-top: 2px solid #111; margin-top: 10px; padding-top: 4px; text-align: center; font-size: 8.5pt; font-weight: 600; }
+  .rc-note { margin: 4mm 12mm 5mm; padding-top: 6px; border-top: 1px dashed #999; font-size: 8pt; color: #333; }
+  .rc-note .verif { margin-top: 6px; }
+  .note { font-size: 8.5pt; border: 1px solid #cfcfcf; background: #f9f9f9; padding: 6px 8px; border-radius: 3px; margin-bottom: 6px; }
+  .note.danger { border-color: #b3261e; background: #fbe3e1; color: #7a1a14; }
+  .sheet .watermark span { font-size: 60pt; }
+  @media print { @page { size: A4 portrait; } .sheet, .sheet.half { zoom: 1 !important; min-height: 0; width: auto; padding: 0 !important; page-break-after: auto; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Recibo</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage"><div class="sheet half" id="sheet" aria-live="polite"></div></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+
+  const DEFAULT = 'r-35686';
+  const lista = D.recibos.slice().sort((a, b) => b.consecutivo - a.consecutivo);
+  const sel = document.getElementById('sel');
+  sel.innerHTML = lista.map((r) => {
+    const c = D.cliente(r.cliente);
+    return `<option value="${r.id}">N.º ${r.consecutivo} · ${esc(c.nombre_comercial)} · ${D.fmtFechaCorta(r.fecha)} · ${D.fmtCOP(r.valor)}${r.estado === 'anulado' ? ' · ANULADO' : ''}</option>`;
+  }).join('');
+
+  function actual() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    return lista.find((r) => r.id === id) || lista.find((r) => r.id === DEFAULT);
+  }
+  function reemplazoDe(r) {
+    if (r.reemplazo) return D.recibos.find((x) => x.id === r.reemplazo) || null;
+    const m = /recibo\s+(\d{4,6})/i.exec(r.anulacion_motivo || '');
+    return m ? (D.recibos.find((x) => String(x.consecutivo) === m[1]) || null) : null;
+  }
+
+  function render() {
+    const r = actual();
+    sel.value = r.id;
+    const c = D.cliente(r.cliente);
+    const op = D.operario(r.operario);
+    const v = r.visita ? D.visitas.find((x) => x.id === r.visita) : null;
+    const anulado = r.estado === 'anulado';
+    const rep = anulado ? reemplazoDe(r) : null;
+    const d = D.parseISO(r.fecha);
+    const fecha = `${d.getDate()} de ${D.MESES[d.getMonth()]} de ${d.getFullYear()}`;
+    const hash = D.hashFake(r.id);
+    document.title = `Recibo de caja N.º ${r.consecutivo} · ${c.nombre_comercial}`;
+    document.getElementById('state').textContent = `${anulado ? 'Anulado' : (D.ESTADO_RECIBO_LABEL[r.estado] || 'Emitido')} · ${D.fmtCOP(r.valor)} · ${r.conciliado ? 'cruzado en Helisa' : 'pendiente de cruce'} · código ${hash.slice(0, 16)}`;
+
+    document.getElementById('sheet').innerHTML = `
+      ${anulado ? '<div class="watermark"><span>ANULADO</span></div>' : ''}
+      <div class="band"><div><span class="word">ComServa</span><small>${esc(E.razon_social)}</small></div></div>
+      <div class="rc">
+        <div class="rc-top">
+          <div class="rc-title">RECIBO DE CAJA<br>PROVISIONAL</div>
+          <div class="rc-nit">NIT. ${E.nit}<small>${esc(E.responsable_iva.toUpperCase())}</small></div>
+          <div class="rc-no">N.º<b>${r.consecutivo}</b></div>
+        </div>
+        <div class="rc-line"><span class="lbl">Fecha,</span><span class="val">${fecha} · ${r.hora}</span><span class="lbl por">POR $</span><span class="val fix amt">${D.fmtNum(r.valor)}</span></div>
+        <div class="rc-line"><span class="lbl">Recibí de:</span><span class="val">${esc(c.razon_social)}</span><span class="lbl">NIT:</span><span class="val fix" style="min-width:130px">${D.nitCompleto(c)}</span></div>
+        <div class="rc-line"><span class="lbl">La suma de:</span><span class="val">${esc(D.numeroALetras(r.valor))}</span></div>
+        <div class="rc-line"><span class="lbl">Por concepto de:</span><span class="val">${esc(r.concepto)}</span></div>
+        <div class="rc-line"><span class="lbl">Forma de pago:</span><span class="val fix" style="min-width:90px">Efectivo</span><span class="lbl">Entregó:</span><span class="val">${esc(r.pagador)} · C.C. ${esc(r.pagador_documento)}</span></div>
+        <div class="rc-sign">
+          <div class="who">Recibido por:<b>${esc(op.nombre)}</b>${esc(op.cargo)} · C.C. ${esc(op.documento)}</div>
+          <div class="sigline"><span class="lbl">Firma,</span><span class="sigbox">${D.firmaSVG(r.operario, '#123d2b')}</span></div>
+        </div>
+        <div class="rc-foot">${esc(E.direccion)} · Cel: ${esc(E.telefonos)} · ${esc(E.ciudad)}</div>
+      </div>
+      <div class="rc-note">
+        ${anulado ? `<div class="note danger"><b>Recibo anulado</b> el ${esc(r.anulado_en)} por ${esc(r.anulado_por)}. Motivo: ${esc(r.anulacion_motivo)}${rep ? ` Recibo de reemplazo: N.º ${rep.consecutivo} del ${D.fmtFechaCorta(rep.fecha)}.` : ' Sin recibo de reemplazo registrado.'}</div>` : ''}
+        <p><b>No es factura ni documento equivalente.</b> Este recibo provisional respalda el dinero entregado al operario; Lucrecia lo cruza en Helisa contra la factura indicada en el concepto.${v ? ` Visita asociada: constancia N.º ${v.consecutivo} del ${D.fmtFechaCorta(v.fecha)}.` : ' Sin visita asociada: pago recibido fuera de la ruta.'}${anulado ? '' : (r.conciliado ? ' Ya cruzado en Helisa.' : ' Pendiente de cruce en Helisa.')} Cuentas para consignar: ${esc(E.bancos)}.</p>
+        <div class="verif">
+          ${D.qrSVG(r.id)}
+          <div>
+            <div>Verifique este documento en comserva.com.co/verificar con el código <span class="mono">${hash.slice(0, 16)}</span></div>
+            <div class="legal">Documento generado electrónicamente por RH digital Comserva; firmado en pantalla conforme a la Ley 527 de 1999 y el Decreto 2364 de 2012.</div>
+          </div>
+        </div>
+      </div>`;
+    fit();
+  }
+
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => {
+      const nominal = s.classList.contains('landscape') ? 1122.5 : 793.7;
+      const z = Math.min(1, avail / nominal);
+      s.style.zoom = z < 1 ? z.toFixed(3) : '';
+      s.style.maxWidth = z < 1 ? 'none' : '';
+    });
+  }
+
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>

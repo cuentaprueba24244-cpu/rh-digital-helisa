@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Archivo de pedidos para Helisa · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  .sheet.landscape { padding: 10mm 12mm 20mm; font-size: 9pt; }
+  .sheet .doc-head { grid-template-columns: auto 1fr auto; }
+  .sheet .doc-no b { font-size: 11pt; }
+  .sheet h2 { font-size: 10.5pt; margin: 10px 0 5px; letter-spacing: .02em; text-transform: uppercase; font-family: var(--font-doc); }
+  .sheet h2 small { font-weight: 400; text-transform: none; letter-spacing: 0; color: #555; font-size: 8.5pt; margin-left: 6px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px 14px; font-size: 8.5pt; margin: 6px 0 4px; }
+  .meta-grid div { border-bottom: 1px solid #bbb; padding: 2px 0; min-width: 0; }
+  .meta-grid b { display: block; font-size: 7pt; text-transform: uppercase; color: #555; letter-spacing: .03em; font-weight: 700; }
+  .meta-grid span { overflow-wrap: anywhere; }
+  .meta-grid .mono { font-family: var(--font-mono); font-size: 7.5pt; }
+  .estado { display: inline-block; border: 1.5px solid currentColor; border-radius: 4px; padding: 0 6px; font-weight: 700; font-size: 8pt; text-transform: uppercase; letter-spacing: .03em; }
+  .estado.ok { color: #1f5e43; } .estado.warn { color: #9a6a06; } .estado.danger { color: #b3261e; } .estado.info { color: #1f5fa8; }
+  .sheet table.res td, .sheet table.res th { font-size: 8pt; padding: 3px 5px; }
+  .txt { border: 1px solid #999; background: #f6f7f6; font-family: var(--font-mono); font-size: 6.9pt; line-height: 1.55; padding: 4px 0; overflow: hidden; }
+  .txt .l { display: flex; white-space: pre; }
+  .txt .l.first:not(:first-child) { border-top: 1px dashed #bbb; }
+  .txt .n { width: 22px; text-align: right; color: #888; padding-right: 6px; margin-right: 6px; border-right: 1px solid #ccc; flex: none; }
+  .txt .s { color: #1f5e43; font-weight: 700; }
+  .txt mark, .pgrid mark { background: #fbf0d2; color: #8a5d05; padding: 0 1px; border-radius: 2px; }
+  .txt .t, .pgrid .t { color: #1f5fa8; border-bottom: 1px dotted #1f5fa8; }
+  .sheet table.pgrid { margin-bottom: 6px; }
+  .sheet table.pgrid td, .sheet table.pgrid th { font-size: 7.6pt; padding: 2px 5px; }
+  .sheet table.pgrid th small { display: block; font-weight: 400; color: #666; font-size: 6.5pt; }
+  .sheet table.pgrid tr.cab td { background: #e8f2ec; font-weight: 600; font-size: 7.8pt; }
+  .sheet table.pgrid tr.com td { color: #444; font-style: italic; }
+  .sheet table.pgrid td.mono { font-family: var(--font-mono); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 7.5pt; color: #333; margin: 4px 0; }
+  .notas { font-size: 7.8pt; color: #333; columns: 2; column-gap: 18px; margin: 4px 0 0; padding-left: 14px; }
+  .notas li { margin-bottom: 2px; break-inside: avoid; }
+  .sello { display: flex; gap: 10px; align-items: center; font-size: 7.5pt; color: #333; margin-top: 8px; }
+  .sello .qr { width: 54px; height: 54px; }
+  .sello b { font-family: var(--font-mono); font-weight: 500; }
+  .sheet .foot { left: 12mm; right: 12mm; bottom: 7mm; justify-content: center; text-align: center; font-weight: 600; }
+  .prueba { display: inline-block; border: 1px dashed #b87d0a; color: #8a5d05; border-radius: 3px; padding: 0 5px; font-size: 7pt; font-weight: 700; letter-spacing: .03em; }
+  @media print { @page { size: A4 landscape; margin: 10mm; } .sheet, .sheet.landscape { zoom: 1 !important; min-height: 0; width: auto; padding: 0 !important; page-break-after: auto; } .sheet .foot { position: static; margin-top: 8px; } .txt .l, table tr { break-inside: avoid; } h2 { break-after: avoid; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Archivo o pedido</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <a class="btn sm" id="ir-bandeja" href="../panel/planos.html#op">Ver en Helisa: pedidos y recibos</a>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage"><div class="sheet landscape" id="sheet" aria-live="polite"></div></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA, P1 = D.p1, E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtFechaCorta } = D;
+  const fh = (s) => (s ? `${fmtFechaCorta(s)} ${String(s).slice(11, 16)}`.trim() : '—');
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+
+  // Opciones: cada archivo OP y, con la modalidad 1B, cada pedido enviado por Conekta (sin archivo)
+  const opciones = D.archivos_op.slice().sort((a, b) => a.generado_en.localeCompare(b.generado_en)).map((a) => ({ id: a.id, tipo: 'archivo', a, texto: `${a.nombre} · ${a.pedidos} pedido${a.pedidos === 1 ? '' : 's'} · ${P1.ESTADO_LABEL[a.estado]}` }))
+    .concat(D.pedidos.filter((x) => x.via === 'conekta').map((x) => ({ id: x.numero.replace(' ', '-'), tipo: 'conekta', ped: x, texto: `${x.numero} · ${D.cliente(x.cliente).nombre_comercial} · enviado por Conekta (simulado)` })));
+  const DEFAULT = 'ap-op-2026-09-001';
+  const sel = document.getElementById('sel');
+  sel.innerHTML = opciones.map((o) => `<option value="${esc(o.id)}">${esc(o.texto)}</option>`).join('');
+  function actual() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    let o = opciones.find((x) => x.id === h);
+    if (!o) { const ped = D.pedidos.find((x) => x.numero.replace(' ', '-') === h); if (ped && ped.archivo) o = opciones.find((x) => x.id === ped.archivo); }
+    return o || opciones.find((x) => x.id === DEFAULT) || opciones[0];
+  }
+  const ESTADO_CLS = { generado: 'warn', descargado: 'info', importado: 'ok', rechazado: 'danger', enviado: 'ok', facturado: 'ok', anulado: '' };
+  function celda(x) { const v = esc(x.v); if (x.m === 'falta') return `<mark>${v}</mark>`; if (x.m === 'prueba') return `<span class="t">${v}</span>`; return v; }
+
+  function render() {
+    const o = actual(); sel.value = o.id;
+    const peds = o.tipo === 'archivo' ? P1.pedidosDeArchivo(o.a) : [o.ped];
+    const fecha = o.tipo === 'archivo' ? o.a.generado_en.slice(0, 10) : o.ped.fecha;
+    const filas = P1.filasArchivoOP(o.a || { generado_en: o.ped.generado_en }, peds).map((f) => ({ ...f, campos: P1.camposLinea(f.ped, f.l, { fecha }) }));
+    const estado = o.tipo === 'archivo' ? o.a.estado : o.ped.estado;
+    const hash = o.tipo === 'archivo' ? o.a.sha256 : D.hashFake('conekta|' + o.ped.numero + '|' + ((o.ped.envio || {}).en || ''));
+    document.getElementById('state').textContent = `${P1.ESTADO_LABEL[estado] || estado} · ${peds.length} pedido${peds.length === 1 ? '' : 's'} · ${filas.length} líneas · huella ${hash.slice(0, 16)}`;
+    document.getElementById('ir-bandeja').href = o.tipo === 'archivo' ? `../panel/planos.html#${o.a.id}` : '../panel/planos.html#conekta';
+    const totales = peds.map((x) => { const v = P1.validarPedido(x); const cz = D.cierreCliente(x.cliente, x.periodo); return { x, v, cz, f: D.facturaDe(x.cliente, x.periodo) }; });
+    const sum = totales.reduce((a, t) => a + t.v.subtotal, 0), sumT = totales.reduce((a, t) => a + (t.v.total_rh || 0), 0);
+    const txt = filas.map((f, i) => `<div class="l${f.primera ? ' first' : ''}"><span class="n">${i + 1}</span><span>${f.campos.map(celda).join('<span class="s">|</span>')}</span></div>`).join('');
+    const grid = totales.map((t) => {
+      const c = D.cliente(t.x.cliente); const ls = filas.filter((f) => f.ped === t.x); const k = ls[0].campos;
+      return `<tr class="cab"><td colspan="9">${esc(t.x.numero)} · ${esc(c.nombre_comercial)} — campos 1 a 6: ${esc(k[0].v)} · ${esc(k[1].v)} · ${esc(k[2].v)} · NIT ${esc(k[3].v)} · código ${celda(k[4])} · vendedor ${esc(k[5].v)} · RH ${esc(t.x.rh || '')}</td></tr>`
+        + ls.map((f) => { const kk = f.campos; const serv = f.l.tipo_concepto === 2; return `<tr class="${serv ? '' : 'com'}"><td class="mono">${esc(kk[6].v)} · ${serv ? 'servicio' : 'comentario'}</td><td class="mono">${celda(kk[7]) || '—'}</td><td>${celda(kk[11])}</td><td class="mono">${esc(kk[13].v)}</td><td class="num mono">${esc(kk[14].v) || '—'}</td><td class="num mono">${esc(kk[15].v) || '—'}</td><td class="num">${serv ? fmtCOP(D.r2(f.l.cantidad * f.l.unitario)) : ''}</td><td class="mono">${esc(kk[21].v) || '—'}</td><td class="mono">${esc(kk[22].v) || '—'}</td></tr>`; }).join('');
+    }).join('');
+    const pend = [...new Set(totales.flatMap((t) => t.v.lineas.filter((l) => l.tipo_concepto === 2 && !l.codigo).map((l) => l.codigo_ph)))];
+    document.getElementById('sheet').innerHTML = `
+      <div class="doc-head">
+        <div class="doc-logo">COMSERVA<br>S.A.S.</div>
+        <div class="doc-title"><h1>ARCHIVO DE PEDIDOS PARA HELISA</h1><p>${esc(E.razon_social)} · NIT ${esc(E.nit)} · Propuesta 1 · plantilla «${esc(P1.plantilla_op.nombre)}» v1, borrador pendiente de la estructura oficial de Julio</p></div>
+        <div class="doc-no">${o.tipo === 'archivo' ? 'Archivo' : 'Pedido'}<b>${esc(o.tipo === 'archivo' ? o.a.nombre : o.ped.numero)}</b><span class="estado ${ESTADO_CLS[estado] || ''}">${esc(P1.ESTADO_LABEL[estado] || estado)}</span></div>
+      </div>
+      <div class="meta-grid">
+        <div><b>Vía</b><span>${o.tipo === 'archivo' ? 'Archivo plano (modalidad 1A)' : 'Helisa Conekta, set/order (modalidad 1B, simulado)'}</span></div>
+        <div><b>Generado</b><span>${esc(o.tipo === 'archivo' ? o.a.generado_por : o.ped.generado_por)} · ${fh(o.tipo === 'archivo' ? o.a.generado_en : o.ped.generado_en)}</span></div>
+        <div><b>${o.tipo === 'archivo' ? 'Importado en Helisa' : 'Respuesta de Conekta'}</b><span>${o.tipo === 'archivo' ? (o.a.importado_en ? `${esc(o.a.importado_por)} · ${fh(o.a.importado_en)}` : (o.a.estado === 'rechazado' ? `Rechazado el ${fh(o.a.rechazado_en)}` : 'Pendiente')) : esc((o.ped.envio || {}).respuesta || '—')}</span></div>
+        <div><b>Contenido</b><span>${peds.length} pedido${peds.length === 1 ? '' : 's'} · ${filas.length} líneas · subtotal ${fmtCOP(sum)}</span></div>
+        <div><b>Formato</b><span>TXT separado por «|», sin encabezado, 24 campos por línea</span></div>
+        <div><b>Codificación</b><span>Windows-1252 (ANSI) · fin de línea CRLF · sin tildes</span></div>
+        <div><b>Fecha y números</b><span>dd/mm/aaaa · decimal «.» (por confirmar) · sin separador de miles</span></div>
+        <div><b>Huella SHA-256</b><span class="mono">${esc(hash.slice(0, 32))}</span></div>
+      </div>
+      ${o.tipo === 'archivo' && o.a.estado === 'rechazado' ? `<p style="font-size:8.5pt;color:#b3261e;margin:4px 0"><b>Lista de errores de Helisa:</b> ${esc(o.a.errores)}</p>` : ''}
+
+      <h2>1. Pedidos del ${o.tipo === 'archivo' ? 'archivo' : 'envío'} <small>Helisa calcula el IVA y la contabilización por concepto al facturar; el total esperado sirve para validar la FVE (± $1)</small></h2>
+      <table class="res"><thead><tr><th>Pedido</th><th>Cliente</th><th>NIT</th><th>Código Helisa</th><th>Planilla RH</th><th class="num">Kilos</th><th class="num">Subtotal del pedido</th><th class="num">IVA (Helisa)</th><th class="num">Total esperado</th><th>FVE registrada</th></tr></thead><tbody>
+        ${totales.map((t) => { const c = D.cliente(t.x.cliente); const val = t.f ? D.validacionFVE(t.f) : null; return `<tr><td class="mono">${esc(t.x.numero)}</td><td>${esc(c.nombre_comercial)}${c.dato_prueba ? ' <span class="prueba">PRUEBA</span>' : ''}</td><td class="mono">${esc(c.nit)}</td><td class="mono">${esc(c.helisa.codigo_cliente || 'falta')}${c.helisa.codigo_estado === 'prueba' ? ' (prueba)' : ''}</td><td class="mono">${esc(t.x.rh || '')}</td><td class="num">${fmtKg(t.cz.kg)}</td><td class="num">${fmtCOP(t.v.subtotal)}</td><td class="num">${fmtCOP(t.cz.factura.iva)}</td><td class="num"><b>${fmtCOP(t.v.total_rh)}</b></td><td>${t.f ? `${esc(t.f.numero)} ${val && val.ok ? '✓' : '≠'}` : (o.tipo === 'archivo' && o.a.estado === 'rechazado' ? 'Archivo rechazado' : 'Pendiente (F3 en Helisa)')}</td></tr>`; }).join('')}
+        <tr class="total"><td colspan="6">Total del ${o.tipo === 'archivo' ? 'archivo' : 'envío'}</td><td class="num">${fmtCOP(sum)}</td><td class="num">${fmtCOP(sumT - sum)}</td><td class="num">${fmtCOP(sumT)}</td><td></td></tr>
+      </tbody></table>
+
+      <h2>2. Texto del archivo <small>tal como lo lee el asistente de «Importación de pedidos» (delimitado, «Otro símbolo» = «|», origen ANSI)${o.tipo === 'conekta' ? '; en la modalidad 1B es el archivo de contingencia' : ''}</small></h2>
+      <div class="txt">${txt}</div>
+      <div class="legend"><span><mark>&lt;COD_…&gt;</mark> código de concepto por confirmar con Julio</span><span><span class="t">1001</span> código de cliente de prueba (sale de la cartilla de clientes de Helisa)</span><span>«OP» es el tipo visto en otra empresa: en la Helisa de Comserva el documento Pedido no está habilitado</span></div>
+
+      <h2>3. Cuadrícula legible <small>solo los campos con datos; van vacíos los campos 9, 10, 11, 13, 17 a 21 y 24</small></h2>
+      <table class="pgrid"><thead><tr><th>7 · Tipo concepto</th><th>8 · Código concepto</th><th>12 · Artículo / servicio</th><th>14 · Lista</th><th class="num">15 · Cantidad</th><th class="num">16 · Valor unitario</th><th class="num">Valor de la línea<small>informativo</small></th><th>22 · C. costo</th><th>23 · Negocio</th></tr></thead><tbody>${grid}</tbody></table>
+
+      <ul class="notas">
+        <li>El pedido no lleva cuentas ni IVA: al facturar, Lucrecia abre la factura del cliente en Helisa, llama el pedido con F3, elige contado o crédito y Helisa contabiliza (1305) y envía la FVE a la DIAN.</li>
+        <li>Prueba de aceptación: el pedido de Cofema de septiembre (OP 101) debe dar una FVE con gravado $1.886.500, IVA $358.435 y total $2.244.935, igual a la FVE 25756.</li>
+        <li>Pendientes de la estructura oficial: ${pend.length ? pend.map((x) => '&lt;' + x + '&gt;').join(', ') + ', ' : ''}tipo y número del pedido, obligatoriedad del código del cliente, símbolo decimal y si el valor unitario reemplaza el de la lista de precio.</li>
+        <li>Un cliente sin código en Helisa no se exporta. Si el mismo NIT está creado varias veces (sedes), cada sede facturable lleva su código adicional.</li>
+      </ul>
+      <div class="sello">${D.qrSVG('pedido|' + hash, 54)}<div>Huella del ${o.tipo === 'archivo' ? 'archivo' : 'envío'}: <b>${esc(hash)}</b><br>Documento de trabajo generado por RH digital · datos de prueba salvo Cofema de septiembre de 2026 · ${esc(D.fmtFecha(D.HOY))}</div></div>
+      <div class="foot"><span>${esc(E.direccion)} · ${esc(E.ciudad)}</span></div>`;
+    fit();
+  }
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => { const z = Math.min(1, avail / 1122.5); s.style.zoom = z < 1 ? z.toFixed(3) : ''; s.style.maxWidth = z < 1 ? 'none' : ''; });
+  }
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>

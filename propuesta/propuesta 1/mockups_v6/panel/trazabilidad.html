@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trazabilidad · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* Ajustes propios de esta página; los componentes TRZ están en ../assets/style.css (bloque «v6 · TRAZABILIDAD») */
+  .main > * { min-width: 0; }
+  .page-head { align-items: flex-start; }
+  .page-head .lead { max-width: 64ch; }
+  .shortcuts { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--fg-3); margin: -6px 0 14px; }
+  .shortcuts a { font-weight: 600; }
+  .card-head h3 small { font-weight: 400; color: var(--fg-3); font-size: 12px; margin-left: 6px; }
+  .empty-note { padding: 18px; color: var(--fg-3); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Control · cadena documental (TRZ)</div>
+        <h1 style="margin-top:4px">Trazabilidad</h1>
+        <p class="lead" id="intro"></p>
+      </div>
+      <div class="trz-search" id="search">
+        <form role="search" id="search-form" autocomplete="off">
+          <svg class="s-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+          <input class="input" type="search" id="q" placeholder="Buscar por número: constancia, planilla, pedido, FVE o CUFE, recibo, archivo" aria-label="Buscar por cualquier número">
+          <button class="btn primary" type="submit">Buscar</button>
+        </form>
+        <div class="hint" id="hint"></div>
+        <div class="trz-results" id="results" role="listbox" aria-label="Resultados de la búsqueda" hidden></div>
+      </div>
+    </div>
+    <div class="shortcuts" id="shortcuts"></div>
+
+    <section class="card trz-chain-card" id="chain-card" aria-labelledby="chain-title"></section>
+
+    <div class="trz-grid">
+      <section class="card trz-detail" id="detail" aria-live="polite"></section>
+      <section class="card" aria-labelledby="bit-title">
+        <div class="card-head"><h3 id="bit-title">Bitácora de auditoría<small id="bit-count"></small></h3><button type="button" class="btn sm ghost" id="bit-toggle" aria-pressed="false">Solo el eslabón elegido</button></div>
+        <div class="card-body"><ul class="trz-timeline" id="timeline"></ul></div>
+      </section>
+    </div>
+
+    <section class="card trz-matrix-card" style="margin-top:14px" aria-labelledby="mx-title">
+      <div class="trz-matrix-head">
+        <div>
+          <h3 id="mx-title">Matriz del periodo</h3>
+          <div class="trz-matrix-sum" id="mx-sum"></div>
+        </div>
+        <div style="display:grid;gap:8px;justify-items:end">
+          <div class="chips" id="mx-periodos" role="tablist" aria-label="Periodo de la matriz"></div>
+          <div class="chips" id="mx-filtros" aria-label="Filtros"></div>
+        </div>
+      </div>
+      <div class="table-wrap"><table class="tbl trz-matrix" id="matrix"></table></div>
+      <div class="card-body" style="border-top:1px solid var(--border);font-size:12px;color:var(--fg-3)">Una fila por cliente. Cada ficha es un eslabón de la cadena: haga clic en la fila para abrir su cadena completa. El avance cuenta los eslabones completos o que no aplican.</div>
+    </section>
+  </main>
+</div>
+<div id="modal-root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Helisa: pedidos y recibos'],['trazabilidad.html','⛓︎','Trazabilidad']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA, T = D.traza;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Trazabilidad');
+  document.getElementById('sidebar').innerHTML = sidebar('trazabilidad.html');
+
+  // ---------- iconos (trazo, heredan el color) ----------
+  const P = {
+    visita: '<path d="M12 21s-6.5-5.6-6.5-10.4a6.5 6.5 0 1 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.3"/>',
+    cierre: '<rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8.2 10.5V8a3.8 3.8 0 0 1 7.6 0v2.5"/><path d="M12 14.2v2.3"/>',
+    planilla: '<path d="M7 3h7.2L18 6.8V21H7z"/><path d="M14 3v4h4"/><path d="M9.6 11.5h5.8M9.6 14.6h5.8M9.6 17.7h3.4"/>',
+    pedido: '<rect x="5.5" y="4.5" width="13" height="16.5" rx="2"/><path d="M9 4.5V3h6v1.5"/><path d="M8.6 10h1.2M11.4 10h4M8.6 13.4h1.2M11.4 13.4h4M8.6 16.8h1.2M11.4 16.8h4"/>',
+    factura: '<path d="M6 3h12v18l-2.4-1.6L13.2 21 12 20.2 10.8 21l-2.4-1.6L6 21z"/><path d="M9 8h6M9 11.4h6M9 14.8h3.6"/>',
+    recibo: '<rect x="2.8" y="6.5" width="18.4" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.3 9.6v4.8M17.7 9.6v4.8"/>',
+    archivo: '<path d="M7 3h7.2L18 6.8V21H7z"/><path d="M14 3v4h4"/><path d="M12.5 18v-6.2M10 14.2l2.5-2.5 2.5 2.5"/>',
+    cruce: '<path d="M9.5 14.5l5-5"/><path d="M11 6.6l1.4-1.4a4 4 0 0 1 5.7 5.7l-1.4 1.4"/><path d="M13 17.4l-1.4 1.4a4 4 0 0 1-5.7-5.7l1.4-1.4"/>',
+    prefactura: '<path d="M7 3h7.2L18 6.8V11"/><path d="M7 3v18h5"/><path d="M14 3v4h4"/><path d="M14.5 20.5l.6-2.6 4.8-4.8 2 2-4.8 4.8z"/>',
+    dian: '<path d="M12 3l7 3v5.2c0 4.4-3 8.1-7 9.8-4-1.7-7-5.4-7-9.8V6z"/><path d="M9 12.2l2.1 2.1 4-4.2"/>',
+    correo: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.6 7l8.4 6 8.4-6"/>',
+    nota: '<path d="M7 3h7.2L18 6.8V21H7z"/><path d="M14 3v4h4"/><path d="M9.6 14h5.8"/>',
+    asiento: '<path d="M4.5 5.5h6a2 2 0 0 1 1.5.7 2 2 0 0 1 1.5-.7h6V19h-6a2 2 0 0 0-1.5.7 2 2 0 0 0-1.5-.7h-6z"/><path d="M12 6.2V19.7"/>',
+    carpeta: '<path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>',
+    externo: '<path d="M14 4h6v6"/><path d="M20 4l-8.5 8.5"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  };
+  const ico = (k) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[k] || P.archivo}</svg>`;
+  const MARK = { ok: '✓', curso: '…', alerta: '!', pendiente: '', na: '–' };
+  const BADGE = { ok: 'ok', curso: 'info', pendiente: 'plain', alerta: 'danger', na: 'plain' };
+  const badge = (st) => `<span class="badge ${BADGE[st]}">${esc(T.ESTADO[st] || st)}</span>`;
+  const fCorta = (s) => (s ? `${D.fmtFechaCorta(s).slice(0, 5)}${s.length > 10 ? ' ' + s.slice(11, 16) : ''}` : '');
+  const fLarga = (s) => (s ? `${D.fmtFechaCorta(s)}${s.length > 10 ? ' · ' + s.slice(11, 16) : ''}` : '');
+  // número de documento (va en monoespaciada) frente a texto («Cierre anticipado», «4 constancias»)
+  const esNumero = (s) => /\d/.test(s || '') && !/[a-záéíóúñ]{5,}/i.test(s || '');
+  const corto = (h, n = 8) => (h ? (h.length > n + 4 ? h.slice(0, n) + '…' + h.slice(-4) : h) : '');
+  function toast(msg) {
+    $$('.toast').forEach((t) => t.remove());
+    const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3400);
+  }
+
+  // ---------- estado de la página ----------
+  const PERIODOS = D.periodos.filter((p) => D.visitas.some((v) => v.periodo === p.id));
+  const DEF = { cliente: 'c-cofema', periodo: '2026-09' };
+  const state = { cliente: DEF.cliente, periodo: DEF.periodo, tipo: null, mxPeriodo: DEF.periodo, filtro: 'todos', soloEslabon: false };
+  let ch = null;
+
+  function leerHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h.startsWith('q=')) { const q = h.slice(2); $('#q').value = q; setTimeout(() => buscar(q, true), 0); return; }
+    const [c, p, t] = h.split('|');
+    if (c && D.cliente(c)) state.cliente = c;
+    if (p && PERIODOS.some((x) => x.id === p)) { state.periodo = p; state.mxPeriodo = p; }
+    state.tipo = t || null;
+  }
+  function escribirHash() {
+    const h = `#${state.cliente}|${state.periodo}${state.tipo ? '|' + state.tipo : ''}`;
+    if (location.hash !== h) history.replaceState(null, '', h);
+  }
+
+  // ---------- cadena documental ----------
+  function grupos(eslabones) {
+    const out = [];
+    eslabones.forEach((e) => { const g = e.def.grupo || ''; const last = out[out.length - 1]; if (last && last.g === g) last.n++; else out.push({ g, n: 1 }); });
+    return out;
+  }
+  function nodo(e, i, arr) {
+    const next = arr[i + 1];
+    const outVar = next ? `--out: var(--seg-${next.estado}); --out-s: var(--seg-s-${next.estado});` : '';
+    const huella = e.cufe ? `CUFE ${corto(e.cufe)}` : (e.hash ? `# ${corto(e.hash)}` : '');
+    const meta = [fCorta(e.fecha), e.usuario].filter(Boolean).join(' · ');
+    return `<li class="trz-node" data-st="${e.estado}" data-tipo="${e.tipo}" role="button" tabindex="0" aria-pressed="${state.tipo === e.tipo}" style="${outVar}" aria-label="Paso ${e.paso}: ${esc(e.def.etiqueta)}, ${esc(T.ESTADO[e.estado])}">
+      <div class="trz-rail"><span class="trz-dot">${ico(e.def.icono)}${MARK[e.estado] ? `<span class="mark">${MARK[e.estado]}</span>` : ''}</span></div>
+      <div class="trz-step">Paso ${e.paso}</div>
+      <div class="trz-title">${esc(e.def.etiqueta)}</div>
+      <div class="trz-num${esNumero(e.numero) ? '' : ' txt'}">${esc(e.numero || '')}</div>
+      ${e.sub ? `<div class="trz-sub">${esc(e.sub)}</div>` : ''}
+      ${meta ? `<div class="trz-meta">${esc(meta)}</div>` : ''}
+      ${huella ? `<span class="trz-hash" title="${esc(e.cufe ? 'CUFE ' + e.cufe + (e.cufe_prueba ? ' (de prueba)' : '') : 'Huella SHA-256 ' + e.hash)}">${esc(huella)}</span>` : ''}
+      ${badge(e.estado)}
+      ${e.alerta && e.estado !== 'alerta' ? '<div class="trz-flag">Con rechazo o anulación</div>' : ''}
+    </li>`;
+  }
+  function renderCadena() {
+    ch = T.cadena(state.cliente, state.periodo);
+    const c = ch.cliente, p = ch.periodo, cz = ch.cierre, f = cz.factura;
+    if (!state.tipo || !ch.eslabones.some((e) => e.tipo === state.tipo)) {
+      const hechos = ch.eslabones.filter((e) => e.estado === 'ok' || e.estado === 'curso');
+      state.tipo = (hechos.length ? hechos[hechos.length - 1] : ch.eslabones[0]).tipo;
+    }
+    const n = ch.eslabones.length, pct = Math.round(ch.completos / n * 100);
+    const sig = ch.siguiente;
+    const fv = ch.factura;
+    const opciones = T.matriz(state.periodo).map((r) => r.cliente);
+    $('#chain-card').innerHTML = `
+      <div class="trz-chain-head">
+        <div class="trz-who">
+          <div class="avatar">${esc(D.iniciales(c.nombre_comercial))}</div>
+          <div style="min-width:0">
+            <h2 id="chain-title">${esc(c.nombre_comercial)} <span class="badge info plain">${esc(p.nombre)}</span>${c.dato_prueba ? '<span class="badge warn plain">Dato de prueba</span>' : ''}</h2>
+            <div class="meta">NIT ${esc(D.nitCompleto(c))} · código en Helisa ${esc(c.helisa.codigo_cliente || 'sin código')}${c.helisa.codigo_estado === 'prueba' ? ' (prueba)' : ''} · periodo del ${esc(D.fmtFechaCorta(p.inicio))} al ${esc(D.fmtFechaCorta(p.fin))} · ${esc(D.tarifaResumen(cz.tarifa))}</div>
+          </div>
+        </div>
+        <div class="trz-pickers">
+          <select class="select" id="pk-cliente" aria-label="Cliente">${opciones.map((x) => `<option value="${x.id}" ${x.id === c.id ? 'selected' : ''}>${esc(x.nombre_comercial)}</option>`).join('')}</select>
+          <select class="select" id="pk-periodo" aria-label="Periodo">${PERIODOS.slice().reverse().map((x) => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${esc(x.nombre)}${x.estado === 'abierto' ? ' (abierto)' : ''}</option>`).join('')}</select>
+          <button type="button" class="btn primary" id="btn-exp">${ico('carpeta').replace('<svg', '<svg style="width:16px;height:16px"')} Expediente</button>
+        </div>
+      </div>
+      <div class="trz-kpis">
+        <div><small>Visitas válidas</small><b>${cz.visitas.length}${cz.fallidas ? ` <span class="muted" style="font-size:12px;font-weight:500">+ ${cz.fallidas} fallida</span>` : ''}</b></div>
+        <div><small>Kilos</small><b>${D.fmtKg(cz.kg)} kg</b></div>
+        <div><small>Total del RH</small><b>${f ? D.fmtCOP(f.total) : 'Sin tarifa'}</b></div>
+        <div><small>${esc(T.tipos[T.tipo_factura[T.propuesta]].corto)}</small><b class="mono" style="font-size:15px">${fv ? esc(fv.numero) : '—'}</b></div>
+        <div><small>Avance de la cadena</small><div class="trz-progress"><span class="ring" style="--p:${pct}" data-label="${ch.completos}/${n}"></span><b style="font-size:13px;font-weight:600">${pct} %</b></div></div>
+        <div class="next" data-st="${sig ? sig.estado : 'ok'}"><small>${sig ? 'Siguiente paso · ' + esc(sig.def.etiqueta) : 'Cadena completa'}</small><b>${sig ? esc(sig.sub || sig.numero) : 'Todos los eslabones tienen su documento y su huella.'}</b></div>
+      </div>
+      <div class="trz-track">
+        <div class="trz-lanes" style="--n:${n}" aria-hidden="true">${grupos(ch.eslabones).map((g) => `<div class="trz-lane" style="grid-column: span ${g.n}">${esc(g.g)}</div>`).join('')}</div>
+        <ol class="trz-chain" style="--n:${n}" aria-label="Cadena documental">${ch.eslabones.map(nodo).join('')}</ol>
+      </div>
+      <div class="trz-chain-foot">
+        <div class="trz-legend"><span data-st="ok"><i></i>Completo</span><span data-st="curso"><i></i>En curso</span><span data-st="pendiente"><i></i>Pendiente</span><span data-st="alerta"><i></i>Alerta</span><span data-st="na"><i></i>No aplica</span></div>
+        <span>Huella del expediente <span class="trz-hash" style="margin:0" title="SHA-256 del índice de documentos">${esc(corto(ch.hash, 12))}</span> · ${esc(T.textos.modalidad)}</span>
+      </div>`;
+    $$('#chain-card .trz-node').forEach((li) => {
+      const go = () => { state.tipo = li.dataset.tipo; escribirHash(); marcarNodo(); renderDetalle(); renderBitacora(); };
+      li.addEventListener('click', go);
+      li.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { const sib = ev.key === 'ArrowRight' ? li.nextElementSibling : li.previousElementSibling; if (sib) { sib.focus(); sib.click(); } } });
+    });
+    $('#pk-cliente').addEventListener('change', (ev) => abrir(ev.target.value, state.periodo, null));
+    $('#pk-periodo').addEventListener('change', (ev) => {
+      const pid = ev.target.value; const enPeriodo = T.matriz(pid).some((r) => r.cliente.id === state.cliente);
+      abrir(enPeriodo ? state.cliente : T.matriz(pid)[0].cliente.id, pid, null);
+    });
+    $('#btn-exp').addEventListener('click', expediente);
+  }
+  function marcarNodo() { $$('#chain-card .trz-node').forEach((li) => li.setAttribute('aria-pressed', String(li.dataset.tipo === state.tipo))); }
+
+  // ---------- detalle del eslabón ----------
+  function renderDetalle() {
+    const e = ch.eslabones.find((x) => x.tipo === state.tipo);
+    const huella = e.cufe ? { k: 'CUFE', v: e.cufe } : (e.hash ? { k: 'Huella SHA-256', v: e.hash } : null);
+    const avisoCls = e.nivel_aviso === 'info' ? 'info' : (e.alerta || e.estado === 'alerta' ? 'danger' : 'warn');
+    $('#detail').innerHTML = `
+      <div class="card-head" style="align-items:flex-start">
+        <div class="trz-detail-head grow" data-st="${e.estado}">
+          <span class="trz-dot">${ico(e.def.icono)}</span>
+          <div class="grow"><div class="eyebrow">Paso ${e.paso} de ${ch.total} · ${esc(e.def.grupo)}</div><h3>${esc(e.def.etiqueta)} ${badge(e.estado)}</h3></div>
+        </div>
+        ${e.enlace ? `<a class="btn sm" href="${esc(e.enlace.href)}">${esc(e.enlace.texto)} →</a>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="trz-bignum"><b class="${esNumero(e.numero) ? '' : 'txt'}">${esc(e.numero || '—')}</b>${e.sub ? `<span>${esc(e.sub)}</span>` : ''}</div>
+        <div class="trz-who-when">${e.fecha ? `<span>Fecha y hora <b>${esc(fLarga(e.fecha))}</b></span>` : ''}${e.usuario ? `<span>Usuario <b>${esc(e.usuario)}</b></span>` : ''}${huella ? `<span>${huella.k} <span class="trz-hash" style="margin:0" title="${esc(huella.v)}">${esc(corto(huella.v, 16))}</span>${e.cufe_prueba ? ' <span class="muted">(de prueba)</span>' : ''}</span>` : ''}</div>
+        ${e.estado === 'pendiente' && !e.docs.length ? `<div class="callout">${esc(e.sub || e.def.falta)}. Este eslabón aparecerá completo cuando exista su documento; mientras tanto la cadena lo muestra punteado.</div>` : ''}
+        ${e.aviso ? `<div class="callout ${avisoCls}" style="margin-bottom:10px">${esc(e.aviso)}</div>` : ''}
+        ${e.detalle.length ? `<dl class="kv">${e.detalle.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}
+        ${e.docs.length ? `<ul class="trz-docs" aria-label="Documentos del eslabón">${e.docs.map((d) => `<li>
+            <span class="d-ico">${ico(d.externo ? 'externo' : e.def.icono)}</span>
+            <div style="min-width:0"><b>${esc(d.nombre)}</b><small>${[d.fecha ? fLarga(d.fecha) : '', d.estado && d.estado !== 'transmitida' && d.estado !== 'en_cierre' ? (D.ESTADO_VISITA_LABEL[d.estado] || D.ESTADO_RECIBO_LABEL[d.estado] || d.estado) : '', d.nota || ''].filter(Boolean).map(esc).join(' · ')}</small>${d.hash ? `<span class="trz-hash" data-copy="${esc(d.hash)}" title="Copiar: ${esc(d.hash)}">${esc(d.hash.startsWith('CUFE') ? 'CUFE ' + corto(d.hash.slice(5), 14) : '# ' + corto(d.hash, 14))}</span>` : ''}</div>
+            ${d.href ? `<a class="btn sm ghost" href="${esc(d.href)}">Abrir</a>` : `<span class="ext">${d.externo ? 'En Helisa' : ''}</span>`}
+          </li>`).join('')}</ul>` : ''}
+      </div>`;
+    $$('#detail [data-copy]').forEach((el) => el.addEventListener('click', () => { try { navigator.clipboard.writeText(el.dataset.copy); } catch (err) { /* sin portapapeles en algunos navegadores */ } toast('Huella copiada: ' + corto(el.dataset.copy, 20)); }));
+  }
+
+  // ---------- bitácora ----------
+  function renderBitacora() {
+    const evs = ch.bitacora.filter((ev) => !state.soloEslabon || ev.tipo === state.tipo);
+    $('#bit-count').textContent = `${evs.length} evento${evs.length === 1 ? '' : 's'}`;
+    $('#bit-toggle').setAttribute('aria-pressed', String(state.soloEslabon));
+    $('#bit-toggle').textContent = state.soloEslabon ? 'Ver toda la cadena' : 'Solo el eslabón elegido';
+    if (!evs.length) { $('#timeline').innerHTML = '<li class="empty-note">Sin eventos todavía para este eslabón.</li>'; return; }
+    let dia = '';
+    $('#timeline').innerHTML = evs.map((ev) => {
+      const d = ev.en.slice(0, 10);
+      const head = d !== dia ? `<li class="day">${esc(D.cap(D.fmtFecha(d, { dia: true })))}</li>` : '';
+      dia = d;
+      const st = ev.nivel === 'alerta' ? 'alerta' : (ev.nivel === 'curso' ? 'curso' : 'ok');
+      return `${head}<li class="ev${ev.tipo === state.tipo ? ' sel' : (state.soloEslabon ? '' : ' dim')}" data-st="${st}" data-tipo="${ev.tipo}" tabindex="0">
+        <span class="t">${ev.solo_fecha ? '—' : esc(ev.en.slice(11, 16))}</span>
+        <div class="what"><span class="tag" data-st="${st}">${esc(ev.etiqueta)}</span><b>${esc(ev.accion)}</b><small>${esc(ev.quien)}${ev.detalle ? ' · ' + esc(ev.detalle) : ''}</small></div>
+      </li>`;
+    }).join('');
+    $$('#timeline .ev').forEach((li) => li.addEventListener('click', () => { state.tipo = li.dataset.tipo; escribirHash(); marcarNodo(); renderDetalle(); renderBitacora(); }));
+  }
+  $('#bit-toggle').addEventListener('click', () => { state.soloEslabon = !state.soloEslabon; renderBitacora(); });
+
+  // ---------- matriz del periodo ----------
+  function renderMatriz() {
+    const p = D.byId(D.periodos, state.mxPeriodo);
+    const filas = T.matriz(p.id);
+    const cols = T.columnas[T.propuesta] || T.columnas.P1;
+    $('#mx-periodos').innerHTML = PERIODOS.slice().reverse().map((x) => `<button type="button" class="chip${x.id === p.id ? ' on' : ''}" role="tab" aria-selected="${x.id === p.id}" data-mxp="${x.id}">${esc(x.nombre)}</button>`).join('');
+    $('#mx-filtros').innerHTML = T.filtros.map((f) => `<button type="button" class="chip${f.clave === state.filtro ? ' on' : ''}" aria-pressed="${f.clave === state.filtro}" data-mxf="${f.clave}">${esc(f.etiqueta)}<b>${filas.filter(f.test).length}</b></button>`).join('');
+    const completas = filas.filter((r) => r.cadena.completos === r.cadena.total).length;
+    const conSaldo = filas.filter((r) => r.cadena.saldo > 0);
+    const saldo = conSaldo.reduce((a, r) => a + r.cadena.saldo, 0);
+    const cerrados = filas.filter((r) => r.cerrado).length;
+    $('#mx-sum').innerHTML = `<span><b>${filas.length}</b> clientes</span><span><b>${cerrados}</b> cerrados${p.estado === 'abierto' ? ` (periodo abierto; cierres por cliente desde el ${esc(D.fmtFechaCorta(p.cierre_desde || p.fin))})` : ''}</span><span><b>${completas}</b> cadenas completas</span><span><b>${conSaldo.length}</b> con saldo · ${esc(D.fmtCOP(saldo))}</span><span><b>${filas.filter((r) => r.cadena.alertas).length}</b> con rechazos o anulaciones</span>`;
+    const filtro = T.filtros.find((f) => f.clave === state.filtro) || T.filtros[0];
+    const vis = filas.filter(filtro.test);
+    const n = (T.flujos[T.propuesta] || T.flujos.P1).length;
+    $('#matrix').innerHTML = `<thead><tr><th>Cliente</th>${cols.map((c) => `<th>${esc(c.etiqueta)}</th>`).join('')}<th>Avance</th></tr></thead>
+      <tbody>${vis.length ? vis.map((r) => `<tr data-c="${r.cliente.id}" class="${r.cliente.id === state.cliente && p.id === state.periodo ? 'sel' : ''}" tabindex="0" aria-label="Abrir la cadena de ${esc(r.cliente.nombre_comercial)}">
+        <td><div class="who"><b>${esc(r.cliente.nombre_comercial)}</b><small>${esc(D.ESQUEMA_TARIFA_CORTO[(D.tarifaVigente(r.cliente, p.fin) || {}).esquema] || 'Sin tarifa')}${r.cliente.dato_prueba ? ' · prueba' : ''}${r.cadena.saldo > 0 ? ' · saldo ' + esc(D.fmtCOP(r.cadena.saldo)) : ''}</small></div></td>
+        ${r.celdas.map(({ e }) => `<td><span class="trz-chip" data-st="${e.estado}"${e.alerta ? ' data-flag' : ''} title="${esc(e.def.etiqueta + ': ' + (e.numero || '') + (e.sub ? ' · ' + e.sub : ''))}"><i></i><span>${esc(e.numero || T.ESTADO[e.estado])}</span></span></td>`).join('')}
+        <td><div class="trz-strip" style="--n:${n}">${r.cadena.eslabones.map((e) => `<i data-st="${e.estado}" title="${esc(e.def.corto)}: ${esc(T.ESTADO[e.estado])}"></i>`).join('')}</div><small>${r.cadena.completos}/${r.cadena.total}</small></td>
+      </tr>`).join('') : `<tr><td colspan="${cols.length + 2}"><div class="empty-note">Ningún cliente cumple el filtro «${esc(filtro.etiqueta)}» en ${esc(p.nombre.toLowerCase())}.</div></td></tr>`}</tbody>`;
+    $$('#mx-periodos [data-mxp]').forEach((b) => b.addEventListener('click', () => { state.mxPeriodo = b.dataset.mxp; renderMatriz(); }));
+    $$('#mx-filtros [data-mxf]').forEach((b) => b.addEventListener('click', () => { state.filtro = b.dataset.mxf; renderMatriz(); }));
+    $$('#matrix tbody tr[data-c]').forEach((tr) => {
+      const go = () => { abrir(tr.dataset.c, p.id, null); document.getElementById('chain-card').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+      tr.addEventListener('click', go);
+      tr.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') go(); });
+    });
+  }
+
+  // ---------- expediente (índice de documentos con huellas) ----------
+  let opener = null;
+  function cerrarModal() { $('#modal-root').innerHTML = ''; if (opener) opener.focus(); opener = null; }
+  function expediente() {
+    const ex = T.expediente(state.cliente, state.periodo); const c = ex.cadena.cliente, p = ex.cadena.periodo;
+    opener = document.activeElement;
+    $('#modal-root').innerHTML = `<div class="modal-backdrop" data-bd><div class="modal trz-wide" role="dialog" aria-modal="true" aria-labelledby="exp-title" tabindex="-1">
+      <div class="modal-head trz-exp-head"><span id="exp-title">Expediente · ${esc(c.nombre_comercial)} · ${esc(p.nombre)}</span><button type="button" class="modal-x" data-x aria-label="Cerrar">✕</button></div>
+      <div class="modal-body">
+        <p class="muted" style="font-size:13px">Índice de todos los documentos de la cadena, con su huella SHA-256 (o el CUFE de la factura). Si un documento se altera, su huella cambia y deja de coincidir con este índice. Los eslabones pendientes no tienen documento todavía.</p>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">#</th><th>Eslabón</th><th>Documento</th><th>Fecha</th><th>Huella</th><th></th></tr></thead>
+          <tbody>${ex.docs.map((d, i) => `<tr><td class="num">${i + 1}</td><td><span class="muted">Paso ${d.paso}</span><span class="sub">${esc(d.eslabon)}</span></td><td><b>${esc(d.nombre)}</b>${d.numero ? `<span class="sub mono">${esc(d.numero)}</span>` : ''}</td><td style="white-space:nowrap">${esc(fLarga(d.fecha))}</td><td>${d.hash ? `<span class="trz-hash" style="margin:0" title="${esc(d.hash)}">${esc(d.hash.startsWith('CUFE') ? 'CUFE ' + corto(d.hash.slice(5), 12) : corto(d.hash, 12))}</span>` : '<span class="muted">—</span>'}</td><td>${d.href ? `<a href="${esc(d.href)}">Abrir</a>` : `<span class="muted" style="font-size:12px">${d.externo ? 'En Helisa' : ''}</span>`}</td></tr>`).join('')}</tbody></table></div>
+        <div class="trz-seal">${D.qrSVG('expediente|' + ex.hash, 56)}<div><div class="muted" style="font-size:11.5px">Huella del expediente (índice de ${ex.docs.length} documentos) · generado el ${esc(D.fmtFecha(D.HOY))}</div><b>${esc(ex.hash)}</b></div></div>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-x>Cerrar</button><button type="button" class="btn" id="exp-csv">Descargar índice (CSV)</button><button type="button" class="btn primary" id="exp-zip">Descargar expediente (ZIP)</button></div>
+    </div></div>`;
+    const root = $('#modal-root');
+    root.querySelector('.modal').focus();
+    root.querySelectorAll('[data-x]').forEach((b) => b.addEventListener('click', cerrarModal));
+    root.querySelector('[data-bd]').addEventListener('click', (ev) => { if (ev.target.hasAttribute('data-bd')) cerrarModal(); });
+    $('#exp-zip').addEventListener('click', () => toast(`Demo: el ZIP llevaría los ${ex.docs.filter((d) => d.href).length} PDF y archivos del sistema más este índice firmado.`));
+    $('#exp-csv').addEventListener('click', () => {
+      const filas = [['#', 'Paso', 'Eslabón', 'Documento', 'Número', 'Fecha', 'Huella']].concat(ex.docs.map((d, i) => [i + 1, d.paso, d.eslabon, d.nombre, d.numero || '', d.fecha || '', d.hash || '']));
+      const csv = filas.map((f) => f.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(';')).join('\r\n') + `\r\n"Huella del expediente";"${ex.hash}"`;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+      a.download = `expediente_${c.nit}_${p.id}.csv`; document.body.appendChild(a); a.click(); a.remove();
+    });
+  }
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { if ($('#modal-root .modal')) cerrarModal(); else $('#results').hidden = true; } });
+
+  // ---------- búsqueda ----------
+  function buscar(q, auto) {
+    const res = T.buscar(q); const box = $('#results');
+    if (!q.trim()) { box.hidden = true; if (!auto) { const i = $('#q'); i.focus(); i.placeholder = 'Escriba un número: 25756, 22703-26, OP 114, 35680, RC 8851…'; } return; }
+    if (res.length === 1 && auto !== 'lista') { box.hidden = true; const r = res[0]; abrir(r.cliente.id, r.periodo.id, r.tipo); toast(`«${q}» está en ${r.etiqueta.toLowerCase()} de ${r.cliente.nombre_comercial} (${r.periodo.nombre.toLowerCase()}).`); return; }
+    box.hidden = false;
+    box.innerHTML = res.length ? res.slice(0, 30).map((r, i) => `<button type="button" role="option" data-i="${i}" data-st="${r.estado}"><span class="r-ico">${ico(T.tipos[r.tipo].icono)}</span><span><b>${esc(r.numero || r.coincide)}</b>${r.numero && r.numero !== r.coincide ? `<small class="mono">${esc(r.coincide)}</small>` : ''}<small>${esc(r.etiqueta)} · ${esc(r.cliente.nombre_comercial)} · ${esc(r.periodo.nombre)}</small></span>${badge(r.estado)}</button>`).join('')
+      : `<div class="empty">Ningún documento con «${esc(q)}». Pruebe con un número de constancia, planilla (22690-26), pedido (OP 101), factura (25756), recibo (35680), recibo definitivo (RC 8851), nombre de archivo o los primeros caracteres de un CUFE o una huella.</div>`;
+    $$('#results [data-i]').forEach((b) => b.addEventListener('click', () => { const r = res[Number(b.dataset.i)]; box.hidden = true; abrir(r.cliente.id, r.periodo.id, r.tipo); }));
+  }
+  $('#search-form').addEventListener('submit', (ev) => { ev.preventDefault(); buscar($('#q').value); });
+  $('#q').addEventListener('input', (ev) => { const v = ev.target.value; if (v.trim().length >= 3) buscar(v, 'lista'); else $('#results').hidden = true; });
+  document.addEventListener('click', (ev) => { if (!ev.target.closest('#search')) $('#results').hidden = true; });
+  const EJEMPLOS = ['25756', '22703-26', 'OP 114', '1118', '35672', '35680', 'RC 8851', 'COMSERVA_OP_2026-09_002'];
+  $('#hint').innerHTML = 'Pruebe: ' + EJEMPLOS.map((x) => `<button type="button" data-ej="${esc(x)}">${esc(x)}</button>`).join('');
+  $$('#hint [data-ej]').forEach((b) => b.addEventListener('click', () => { $('#q').value = b.dataset.ej; buscar(b.dataset.ej); }));
+
+  // ---------- atajos y arranque ----------
+  $('#intro').textContent = T.textos.intro;
+  $('#shortcuts').innerHTML = `<span>Ejemplos:</span><a href="#c-cofema|2026-09">Cofema · septiembre (ejemplo principal, FVE 25756)</a><a href="#c-sonrisas|2026-09">Cadena completa hasta el cruce</a><a href="#c-prueba-kg|2026-10">Cierre anticipado de octubre, solo por kilo</a><a href="#c-trebol|2026-09|pedido">Pedido rechazado y regenerado</a><a href="#c-pielviva|2026-09|rc">Recibo sin movimiento contable${D.p1.modalidad === '1B' ? ' (error de Conekta)' : ''}</a><a href="#c-sonrisas|2026-10|pedido">Cierre de hoy sin pedido</a><a href="#c-tinta|2026-09|recibos">Recibo anulado</a>`;
+  function abrir(c, p, t) { state.cliente = c; state.periodo = p; state.tipo = t; state.mxPeriodo = p; escribirHash(); renderTodo(); }
+  function renderTodo() { renderCadena(); renderDetalle(); renderBitacora(); renderMatriz(); }
+  window.addEventListener('hashchange', () => { leerHash(); renderTodo(); });
+  leerHash();
+  renderTodo();
+})();
+</script>
+</body>
+</html>
