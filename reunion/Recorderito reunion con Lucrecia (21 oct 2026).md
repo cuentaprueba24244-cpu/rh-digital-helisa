@@ -56,6 +56,8 @@ Mockups de los documentos: `mockups_v5/documentos/index.html` (constancia, plani
 
 Si Helisa no acepta el archivo de factura, el plan B ya está construido: un reporte con cada factura lista para que Lucrecia la digite.
 
+**En una hoja.** Este flujo está dibujado en `reunion/Flujo RH digital Comserva (v5).pdf`, con la cuenta de Cofema y el paso 5 marcado como por confirmar. En la misma carpeta está `Flujo factura y recibo (artefacto).pdf`, la versión simple del artefacto que circuló en el equipo: no incluye el registro de la FVE ni la regla de que el recibo solo se emite con factura registrada.
+
 ---
 
 ## 4. Reglas clave para tener en la cabeza
@@ -71,7 +73,8 @@ Si Helisa no acepta el archivo de factura, el plan B ya está construido: un rep
 | Día 22 | 40,30 | 50,20 | 0 | 90,50 |
 | **Total** | **121,35** | **225,00** | **67,50** | **413,85** |
 
-  Factura FVE 25756: básico $74.790 + 393,85 kg × $4.600 = $1.811.710 → subtotal $1.886.500 + IVA $358.435 = **$2.244.935**. Deducimos que el básico incluye 20 kg (por confirmar).
+Factura FVE 25756: básico $74.790 + 393,85 kg × $4.600 = $1.811.710 → subtotal $1.886.500 + IVA $358.435 = **$2.244.935**. Deducimos que el básico incluye 20 kg (por confirmar).
+
 - **Periodo:** del 27 de un mes al 26 del siguiente. Una visita cuenta en el periodo de su fecha, no del día en que se sincronizó.
 - **Tarifa:** cada cliente tiene la suya, con vigencia. Se aplica la vigente el día del corte.
 - **El NIT es la llave del cliente.** Cofema aparece con dos razones sociales distintas en la factura y en el acta; el NIT las une. Un cliente puede tener varias sedes.
@@ -275,6 +278,8 @@ Prioridad: **A** = imprescindible, **B** = importante, **C** = si queda tiempo. 
 ---
 
 ## 13. Qué mostrar de los mockups
+
+Antes de los mockups, mostrar la hoja `reunion/Flujo RH digital Comserva (v5).pdf` para que Lucrecia vea el recorrido completo y señale qué no coincide con lo que ella hace.
 
 Abrir `mockups_v5/index.html` (o servirlos con `python3 -m http.server 8765 --directory mockups_v5`). En este orden:
 
