@@ -36,7 +36,7 @@ Contexto completo del proyecto al **22 de octubre de 2026**. Lo vigente es la **
 ## Repositorio y forma de trabajo
 
 - **GitHub:** https://github.com/cuentaprueba24244-cpu/rh-digital-helisa (público, rama principal `main`).
-- **Colaboradores:** `cuentaprueba24244-cpu` (Adrián, administrador) y `Siuu70` (Ronaldo Ballesteros, escritura). Falta invitar a Hernando y al tercer integrante: se necesita su usuario de GitHub (la invitación no funciona solo con el correo).
+- **Colaboradores:** `cuentaprueba24244-cpu` (Adrián, administrador), `Siuu70` (Ronaldo Ballesteros, escritura) y `xXavilesXx` (escritura; invitado el 22 de octubre de 2026, pendiente de aceptar; de quién es la cuenta está por confirmar). Si falta alguien más del equipo, se necesita su usuario de GitHub (la invitación no funciona solo con el correo).
 - **Flujo acordado:** cada cambio va en una rama propia y entra a `main` por *pull request* (equivale al *merge request* de GitLab); Adrián revisa y aprueba. La v5 entró así: rama `v5` → PR #1 de Siuu70, fusionado el 20 de octubre. Todavía no hay protección de rama activa, así que técnicamente cualquiera con escritura puede empujar directo a `main`; conviene activarla (PR obligatorio, una aprobación, sin push directo).
 - **Para traer cambios:** `git pull` en `main` (o `git fetch origin` y revisar las ramas nuevas antes de fusionar).
 
