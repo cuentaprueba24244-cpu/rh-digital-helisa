@@ -402,19 +402,43 @@ window.DATA = (function () {
   const clienteTieneFactura = (clienteId) => facturas.some((f) => f.cliente === clienteId);
 
   // Cartilla de servicios de Helisa (propuesta A: van en el pedido; B: en el asiento) y código de cliente
-  const SERVICIOS_HELISA = { basico: { codigo: 'SRV-BASICO', nombre: 'Recolección, transporte y disposición final de residuos (básico mensual)', lista: '1', cuenta_f: '413550', cuenta_n: '41205500506' }, kg: { codigo: 'SRV-KG', nombre: 'Kilogramos adicionales', lista: '1', cuenta_f: '413550', cuenta_n: '41205500506' } };
-  clientes.forEach((c) => { c.codigo_helisa = c.existe_en_helisa === false ? '' : c.nit; });
+  // Cartilla de servicios y listas de precios de Helisa (hoja «Servicios» del Excel de Julio, 23 oct 2026).
+  // El código del servicio es el mismo en las 7 listas; el precio cambia por lista (0 = el precio va en el pedido).
+  const EMPRESA_HELISA = { nit: '828002730', vendedor: '828002730', centro_costo: '0101', negocio: '', bodega: '' };
+  const LISTAS_PRECIO_HELISA = [
+    { id: 1, nombre: 'BASICA 25000', basico: 25000, kg: 3850 }, { id: 2, nombre: 'BASICA 30000', basico: 30000, kg: 4000 },
+    { id: 3, nombre: 'ESPECIAL 80000', basico: 0, kg: 0 }, { id: 4, nombre: 'ESPECIAL 42000', basico: 0, kg: 0 }, { id: 5, nombre: 'ESPECIAL 110000', basico: 0, kg: 0 },
+    { id: 6, nombre: 'TARIFA ESPECIAL 2', basico: 0, kg: 0 }, { id: 7, nombre: 'TARIFA ESPECIAL 3', basico: 0, kg: 0 },
+  ];
+  const CARTILLA_HELISA = [
+    [2, 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', 19], [3, 'KILOGRAMOS ADICIONALES', 19], [4, 'ANATOMOPATOLÓGICOS (KILOGRAMOS)', 19], [5, 'BIOSANITARIOS (KILOGRAMOS)', 19],
+    [6, 'CORTOPUNZANTES (KILOGRAMOS)', 19], [7, 'QUIMICOS (GALON)', null], [8, 'TÓXICOS (KILOGRAMOS)', 19], [9, 'MEDICAMENTOS VENCIDOS (KILOGRAMOS)', 19], [10, 'INDUSTRIALES (KILOGRAMOS)', null],
+    [11, 'ANIMALES (KILOGRAMOS)', 19], [12, 'BIOLÓGICOS (KILOGRAMOS)', 19], [13, 'VIDRIO RESULTANTE DE LABORATORIO (KILOGRAMOS)', 19], [16, 'RESIDUOS APARATOS ELCTRÓNICOS Y ELECTRÓNICOS RAEES (KILOS)', 19],
+    [17, 'RESIDUOS DE PILAS Y BATERIAS (KILOGRAMOS)', 19], [20, 'LLANTAS (KILOGRAMOS)', 19], [41, 'RESPEL - CORROSIVOS (KILOGRAMOS)', 19], [54, 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS EXENTO', null],
+  ].map(([codigo, nombre, iva]) => ({ codigo: String(codigo), nombre, iva }));
+  const SERVICIOS_HELISA = {
+    basico: { codigo: '2', nombre: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', cuenta_f: '413550', cuenta_n: '41205500506' },
+    kg: { codigo: '3', nombre: 'KILOGRAMOS ADICIONALES', cuenta_f: '413550', cuenta_n: '41205500506' },
+    exento: { codigo: '54', nombre: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS EXENTO', cuenta_f: '413550', cuenta_n: '41205500506' },
+  };
+  // Lista de precios de cada cliente: 1 o 2 si su básico coincide con una lista básica; si no, lista especial (3) y el precio va en el pedido.
+  clientes.forEach((c) => {
+    c.codigo_helisa = c.existe_en_helisa === false ? '' : c.nit;
+    const t = (c.tarifas || [])[0] || {}; const l = LISTAS_PRECIO_HELISA.find((x) => x.basico === t.basico && x.kg === t.precio_kg);
+    c.lista_precio_helisa = c.lista_precio_helisa || (l ? l.id : 3);
+  });
 
   // Catálogo de campos exportables (HEL-07)
   const CAMPOS_PLANO = [
-    ['plantilla.tipo_documento', 'Tipo de documento de la plantilla', 'FE'], ['pedido.numero', 'Número del pedido (RH sin guion)', '2269026'], ['pedido.tipo_linea', 'Tipo de línea del pedido: 2 servicio, 3 comentario', '2'], ['cliente.codigo_helisa', 'Código del cliente o de la sede en Helisa', '891190218'], ['servicio.codigo', 'Código del servicio en la cartilla de Helisa', 'SRV-KG'], ['servicio.lista_precios', 'Lista de precios de Helisa', '1'], ['linea.cantidad', 'Cantidad de la línea (1 o kilos adicionales)', '393,85'], ['linea.valor_unitario', 'Valor unitario (básico o precio del kilo)', '4600'], ['linea.total', 'Cantidad × valor unitario', '1811710'], ['factura.numero', 'Número de la factura emitida (B)', 'SETP990030555'], ['factura.cufe', 'CUFE devuelto por la DIAN (B)', '3bcb0081…'], ['plantilla.centro_costo', 'Centro de costo de la plantilla', ''],
+    ['plantilla.tipo_documento', 'Tipo de documento de la plantilla', 'FE'], ['pedido.numero', 'Número del pedido: consecutivo dentro del archivo (1, 2, 3…), como en el Excel de Julio', '1'], ['pedido.tipo_linea', 'Tipo de línea del pedido: 2 servicio, 3 comentario', '2'], ['cliente.codigo_helisa', 'Código del cliente o de la sede en Helisa', '891190218'], ['pedido.tipo_concepto', 'Tipo de concepto del pedido (2 servicio, 3 comentario); igual a pedido.tipo_linea', '2'], ['servicio.codigo', 'Código del servicio en la cartilla de Helisa (2 básico, 3 kilos adicionales)', '3'], ['servicio.nombre', 'Nombre del servicio en la cartilla de Helisa', 'KILOGRAMOS ADICIONALES'], ['servicio.lista_precios', 'Lista de precios de Helisa del cliente (1 a 7)', '3'], ['empresa.nit', 'NIT de Comserva (identidad del vendedor)', '828002730'], ['empresa.centro_costo', 'Centro de costo de Comserva', '0101'], ['linea.cantidad', 'Cantidad de la línea (1 o kilos adicionales)', '393,85'], ['linea.valor_unitario', 'Valor unitario (básico o precio del kilo)', '4600'], ['linea.total', 'Cantidad × valor unitario', '1811710'], ['factura.numero', 'Número de la factura emitida (B)', 'SETP990030555'], ['factura.cufe', 'CUFE devuelto por la DIAN (B)', '3bcb0081…'], ['plantilla.centro_costo', 'Centro de costo de la plantilla', ''],
     ['documento.fecha', 'Fecha del documento (RH: fecha sugerida; recibo: fecha del recibo)', '25/09/2026'], ['documento.numero', 'Número del documento (vacío si Helisa lo asigna)', ''],
     ['documento.doc_fuente', 'Prefijo + número propio (FV) o número FVE aplicado (RC)', 'FVE25756'], ['documento.forma_pago', 'Código de forma de pago según la tarifa', '6'],
     ['cliente.nit', 'NIT del cliente sin puntos', '891190218'], ['cliente.dv', 'Dígito de verificación', '5'], ['cliente.razon_social_helisa', 'Razón social según Helisa', 'COFEMA S.A.'],
     ['periodo.nombre', 'Nombre del periodo', 'SEPTIEMBRE 2026'], ['rh.numero', 'Número de la planilla (RH)', '22690-26'], ['rh.kg_total', 'Kilos del periodo', '413,85'], ['rh.kg_adicionales', 'Kilos adicionales', '393,85'],
     ['rh.precio_kg', 'Precio del kilo adicional', '4600'], ['rh.basico', 'Valor básico', '74790'], ['rh.valor_adicionales', 'Valor de los kilos adicionales', '1811710'], ['rh.subtotal', 'Subtotal', '1886500'], ['rh.iva_pct', 'IVA %', '19'], ['rh.iva', 'IVA', '358435'], ['rh.total', 'Total', '2244935'],
     ['recibo.numero', 'Número del recibo provisional', '35672'], ['recibo.tipo', 'Tipo de recibo', 'ABONO'], ['recibo.valor', 'Valor total del recibo', '500000'], ['recibo.medio', 'Medio de pago', 'EFECTIVO'],
-    ['aplicacion.factura_numero', 'Número FVE de la factura aplicada', 'FVE25756'], ['aplicacion.valor', 'Valor aplicado a esa factura', '500000'],
+    ['aplicacion.factura_numero', 'Número de la factura aplicada con prefijo', 'FVE25756'], ['aplicacion.factura_prefijo', 'Prefijo de la factura aplicada', 'FVE'], ['aplicacion.factura_consecutivo', 'Consecutivo de la factura aplicada sin prefijo', '25756'], ['aplicacion.valor', 'Valor aplicado a esa factura', '500000'],
+    ['cruce.tipo_documento', 'TIPO DE DOCUMENTO QUE AFECTA: prefijo de la factura, solo en la línea de cartera F', 'FVE'], ['cruce.numero', 'NUMERO DE DOCUMENTO QUE AFECTA: consecutivo de la factura, solo en la línea de cartera F', '25756'], ['cruce.cuota', 'CUOTA QUE AFECTA (1)', '1'], ['linea.ind_afectar', 'IND. A AFECTAR: 1 caja o banco, 2 cartera', '2'], ['linea.cobrador', 'ID VENDEDOR / COBRADOR: NIT de Comserva en la línea de cartera F', '828002730'], ['recibo.cuenta_bancaria', 'Cuenta bancaria (vacía si es efectivo)', ''],
     ['linea.cuenta', 'Cuenta contable de la línea', '130505'], ['linea.concepto', 'Concepto de la línea', 'KILOGRAMOS ADICIONALES'], ['linea.valor', 'Valor de la línea', '2244935'], ['linea.naturaleza', 'D o C', 'D'], ['linea.base', 'Base (subtotal en la línea de IVA)', '1886500'], ['linea.clase', 'F o N', 'F'], ['linea.orden', 'Número de línea dentro del documento', '4'],
   ].map(([clave, descripcion, ejemplo]) => ({ clave, descripcion, ejemplo }));
 
@@ -429,12 +453,20 @@ window.DATA = (function () {
   const colsHelisa = () => COLUMNAS_HELISA.map((c) => ({ ...c }));
 
   const plantillas_plano = [
-    { id: 'pl-ped-1', tipo: 'PED', version: 1, nombre: 'Pedido de Helisa (estructura mostrada por Julio)', estado: 'aprobada', vigente_desde: '2026-10-15', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-10-15 10:00', creada_por: 'Hernando (equipo)', creada_en: '2026-10-21', nota_cambio: 'Columnas del pedido tal como Julio las mostró el 21 de octubre: tipo de documento, número, fecha, identificación y código del cliente, tipo de línea (2 servicio, 3 comentario), código del servicio, descripción, lista de precios, cantidad, valor unitario y total. Títulos definitivos pendientes del Excel de Julio.',
+    { id: 'pl-ped-1', tipo: 'PED', version: 1, nombre: 'Pedido de Helisa (estructura mostrada por Julio)', estado: 'retirada', vigente_desde: '2026-10-15', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-10-15 10:00', creada_por: 'Hernando (equipo)', creada_en: '2026-10-21', nota_cambio: 'Columnas del pedido tal como Julio las mostró el 21 de octubre: tipo de documento, número, fecha, identificación y código del cliente, tipo de línea (2 servicio, 3 comentario), código del servicio, descripción, lista de precios, cantidad, valor unitario y total. Títulos definitivos pendientes del Excel de Julio.',
       formato: 'txt', separador: ';', codificacion: 'windows-1252', con_titulos: false, formato_fecha: 'dd/MM/yyyy', decimales: 2, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'PED', centro_costo: '', prefijo_doc_fuente: '', nit_con_dv: false, agrupacion: 'periodo', prefijo_archivo: 'COMSERVA', valida_cuadre: false, valida_tercero: true, valida_fve: false,
       columnas: [['TIPO DOCUMENTO', 'campo', 'plantilla.tipo_documento'], ['NUMERO PEDIDO', 'campo', 'pedido.numero'], ['FECHA', 'campo', 'documento.fecha'], ['IDENTIFICACION CLIENTE', 'campo', 'cliente.nit'], ['CODIGO CLIENTE', 'campo', 'cliente.codigo_helisa'], ['TIPO LINEA', 'campo', 'pedido.tipo_linea'], ['CODIGO SERVICIO', 'campo', 'servicio.codigo'], ['DESCRIPCION', 'campo', 'linea.concepto'], ['LISTA PRECIOS', 'campo', 'servicio.lista_precios'], ['CANTIDAD', 'campo', 'linea.cantidad'], ['VALOR UNITARIO', 'campo', 'linea.valor_unitario'], ['TOTAL', 'campo', 'linea.total']].map(([titulo, origen, campo], i) => ({ orden: i + 1, titulo, origen, campo, constante: '' })),
       lineas: [
         { orden: 1, tipo: 'ingreso_basico', clase: 'F', cuenta: 'SRV-BASICO', naturaleza: 'C', concepto: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS {periodo.nombre}', base: false, tercero: true, omitir_cero: false },
         { orden: 2, tipo: 'ingreso_adicionales', clase: 'F', cuenta: 'SRV-KG', naturaleza: 'C', concepto: 'KILOGRAMOS ADICIONALES', base: false, tercero: true, omitir_cero: true },
+        { orden: 3, tipo: 'otra', clase: 'F', cuenta: '', naturaleza: 'C', concepto: 'SERVICIO ESPECIAL DE ASEO PRESTADO MES DE {periodo.nombre}', base: false, tercero: false, omitir_cero: false },
+      ] },
+    { id: 'pl-ped-2', tipo: 'PED', version: 2, nombre: 'Pedido OP de Helisa · Excel de Julio (24 columnas)', estado: 'aprobada', vigente_desde: '2026-10-19', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-10-19 08:40', creada_por: 'Hernando (equipo)', creada_en: '2026-10-23', nota_cambio: 'Estructura exacta de la hoja «Plano Pedidos» que envió Julio el 23 de octubre: tipo OP, número, fecha, identidad y código del cliente, identidad del vendedor (Comserva), tipo de concepto (2 servicio, 3 comentario), código del concepto (2 básico, 3 kilos adicionales), nombre del servicio, lista de precio del cliente, cantidad, valor unitario, centro de costo 0101. Valor total, descuentos, unidad, referencia, bodega, negocio y obsequio van vacíos. Reemplaza la v1.',
+      formato: 'xlsx', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 2, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'OP', centro_costo: '0101', prefijo_doc_fuente: '', nit_con_dv: false, agrupacion: 'periodo', prefijo_archivo: 'COMSERVA', valida_cuadre: false, valida_tercero: true, valida_fve: false,
+      columnas: [['TIPO', 'campo', 'plantilla.tipo_documento'], ['NUMERO', 'campo', 'pedido.numero'], ['FECHA', 'campo', 'documento.fecha'], ['IDENTIDAD CLIENTE', 'campo', 'cliente.nit'], ['CÓDIGO DEL CLIENTE', 'campo', 'cliente.codigo_helisa'], ['IDENTIDAD VENDEDOR', 'campo', 'empresa.nit'], ['TIPO CONCEPTO', 'campo', 'pedido.tipo_concepto'], ['CODIGO CONCEPTO', 'campo', 'servicio.codigo'], ['CODIGO UNIDAD', 'vacio', ''], ['REFERENCIA', 'vacio', ''], ['CODIGO BARRAS', 'vacio', ''], ['ARTÍCULO/SERVICIO', 'campo', 'linea.concepto'], ['CODIGO BODEGA', 'vacio', ''], ['LISTA DE PRECIO', 'campo', 'servicio.lista_precios'], ['CANTIDAD', 'campo', 'linea.cantidad'], ['VALOR UNITARIO', 'campo', 'linea.valor_unitario'], ['VALOR TOTAL', 'vacio', ''], ['TARIFA DESCUENTO', 'vacio', ''], ['VALOR DESCUENTO', 'vacio', ''], ['TARIFA DESCUENTO ADICIONAL', 'vacio', ''], ['VALOR DESCUENTO ADICIONAL', 'vacio', ''], ['Centro de costo', 'campo', 'plantilla.centro_costo'], ['CÓDIGO NEGOCIO', 'vacio', ''], ['Obsequio', 'vacio', '']].map(([titulo, origen, campo], i) => ({ orden: i + 1, titulo, origen, campo, constante: '' })),
+      lineas: [
+        { orden: 1, tipo: 'ingreso_basico', clase: 'F', cuenta: '2', naturaleza: 'C', concepto: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', base: false, tercero: true, omitir_cero: false },
+        { orden: 2, tipo: 'ingreso_adicionales', clase: 'F', cuenta: '3', naturaleza: 'C', concepto: 'KILOGRAMOS ADICIONALES', base: false, tercero: true, omitir_cero: true },
         { orden: 3, tipo: 'otra', clase: 'F', cuenta: '', naturaleza: 'C', concepto: 'SERVICIO ESPECIAL DE ASEO PRESTADO MES DE {periodo.nombre}', base: false, tercero: false, omitir_cero: false },
       ] },
     { id: 'pl-asi-1', tipo: 'ASI', version: 1, nombre: 'Asiento de factura · espejo del CSV de Helisa (22 columnas)', estado: 'aprobada', vigente_desde: '2026-09-20', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-09-20 16:30', creada_por: 'Hernando (equipo)', creada_en: '2026-09-15', nota_cambio: 'Propuesta B: asiento contable de cada factura emitida por el sistema (ingreso, IVA, cartera), construido sobre HELISA_900855539_20261002_132210_plano.csv. Cuentas de ejemplo del contador.',
@@ -459,7 +491,7 @@ window.DATA = (function () {
         { orden: 7, tipo: 'iva', clase: 'N', cuenta: '212200501', naturaleza: 'C', concepto: 'IVA {rh.iva_pct}%', base: true, tercero: true, omitir_cero: true },
         { orden: 8, tipo: 'cartera', clase: 'N', cuenta: '112050502', naturaleza: 'D', concepto: 'FACTURA {documento.doc_fuente} {cliente.razon_social_helisa}', base: false, tercero: true, omitir_cero: false },
       ] },
-    { id: 'pl-rc-1', tipo: 'RC', version: 1, nombre: 'Recibo de caja · movimiento contable, dos libros', estado: 'aprobada', vigente_desde: '2026-09-20', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-09-20 16:32', creada_por: 'Hernando (equipo)', creada_en: '2026-09-15', nota_cambio: 'DOC FUENTE lleva el número FVE para que Helisa cruce el pago contra la factura.',
+    { id: 'pl-rc-1', tipo: 'RC', version: 1, nombre: 'Recibo de caja · movimiento contable, dos libros', estado: 'retirada', vigente_desde: '2026-09-20', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-09-20 16:32', creada_por: 'Hernando (equipo)', creada_en: '2026-09-15', nota_cambio: 'DOC FUENTE lleva el número FVE para que Helisa cruce el pago contra la factura.',
       formato: 'xls', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 0, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'RC', centro_costo: '', prefijo_doc_fuente: 'FVE', nit_con_dv: false, agrupacion: 'periodo', recibos_incluidos: 'entregados', prefijo_archivo: 'COMSERVA', valida_cuadre: true, valida_tercero: true, valida_fve: true,
       columnas: colsHelisa(),
       lineas: [
@@ -467,6 +499,15 @@ window.DATA = (function () {
         { orden: 2, tipo: 'cartera', clase: 'F', cuenta: '130505', naturaleza: 'C', concepto: 'ABONO A {aplicacion.factura_numero}', base: false, tercero: true, omitir_cero: false },
         { orden: 3, tipo: 'caja', clase: 'N', cuenta: '110505001', naturaleza: 'D', concepto: 'RECIBO PROVISIONAL {recibo.numero} {recibo.tipo}', base: false, tercero: true, omitir_cero: false },
         { orden: 4, tipo: 'cartera', clase: 'N', cuenta: '130505001', naturaleza: 'C', concepto: 'ABONO A {aplicacion.factura_numero}', base: false, tercero: true, omitir_cero: false },
+      ] },
+    { id: 'pl-rc-2', tipo: 'RC', version: 2, nombre: 'Recibo RC · Excel de Julio (17 columnas, 4 filas por recibo)', estado: 'aprobada', vigente_desde: '2026-10-19', aprobada_por: 'Diego A. Cartagena', aprobada_en: '2026-10-19 08:45', creada_por: 'Hernando (equipo)', creada_en: '2026-10-23', nota_cambio: 'Estructura exacta de la hoja «Plano Recibos» que envió Julio el 23 de octubre: por cada recibo cuatro filas (caja F 11050501 y N 111050501 al débito; cartera F 13050501 y N 112050501 al crédito); IND. A AFECTAR 1 en caja y 2 en cartera; la fila de cartera F lleva el cobrador (NIT de Comserva) y el cruce: TIPO DE DOCUMENTO QUE AFECTA = prefijo de la factura, NUMERO = consecutivo, CUOTA = 1. Cuentas tomadas del ejemplo de Julio; el contador confirma. Reemplaza la v1.',
+      formato: 'xlsx', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 0, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'RC', centro_costo: '', prefijo_doc_fuente: 'FVE', nit_con_dv: false, agrupacion: 'periodo', recibos_incluidos: 'entregados', prefijo_archivo: 'COMSERVA', valida_cuadre: true, valida_tercero: true, valida_fve: true,
+      columnas: [['TIPO', 'campo', 'plantilla.tipo_documento'], ['FECHA', 'campo', 'documento.fecha'], ['NUMERO DE DOC.', 'campo', 'recibo.numero'], ['CUENTA', 'campo', 'linea.cuenta'], ['CONCEPTO', 'campo', 'linea.concepto'], ['CENTRO', 'campo', 'plantilla.centro_costo'], ['VALOR', 'campo', 'linea.valor'], ['NATURALEZA', 'campo', 'linea.naturaleza'], ['INDENTIDAD TERCERO', 'campo', 'cliente.nit'], ['CUENTA BANCARIA', 'campo', 'recibo.cuenta_bancaria'], ['ID VENDEDDOR / COBRADOR', 'campo', 'linea.cobrador'], ['FECHA CHEQUE', 'vacio', ''], ['CLASE MOV.', 'campo', 'linea.clase'], ['IND. A AFECTAR', 'campo', 'linea.ind_afectar'], ['TIPO DE DOCUMENTO QUE AFECTA', 'campo', 'cruce.tipo_documento'], ['NUMERO DE DOCUMENTO QUE AFECTA', 'campo', 'cruce.numero'], ['CUOTA QUE AFECTA', 'campo', 'cruce.cuota']].map(([titulo, origen, campo], i) => ({ orden: i + 1, titulo, origen, campo, constante: '' })),
+      lineas: [
+        { orden: 1, tipo: 'caja', clase: 'F', cuenta: '11050501', naturaleza: 'D', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '1', cruce: false, cobrador: false },
+        { orden: 2, tipo: 'caja', clase: 'N', cuenta: '111050501', naturaleza: 'D', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '1', cruce: false, cobrador: false },
+        { orden: 3, tipo: 'cartera', clase: 'F', cuenta: '13050501', naturaleza: 'C', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '2', cruce: true, cobrador: true },
+        { orden: 4, tipo: 'cartera', clase: 'N', cuenta: '112050501', naturaleza: 'C', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '2', cruce: false, cobrador: false },
       ] },
     { id: 'pl-ter-1', tipo: 'TER', version: 1, nombre: 'Cartilla de terceros (fase 2)', estado: 'borrador', vigente_desde: '', aprobada_por: '', aprobada_en: '', creada_por: 'Hernando (equipo)', creada_en: '2026-10-18', nota_cambio: 'Pendiente: títulos de la cartilla de terceros de Helisa.',
       formato: 'xls', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 0, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: '', centro_costo: '', prefijo_doc_fuente: '', nit_con_dv: true, agrupacion: 'lote', prefijo_archivo: 'COMSERVA', valida_cuadre: false, valida_tercero: false, valida_fve: false,
@@ -516,10 +557,10 @@ window.DATA = (function () {
 
   // Archivos planos generados
   const archivos_plano = [
-    { id: 'ap-ped-2026-09-001', tipo: 'PED', periodo: '2026-09', plantilla: 'pl-ped-1', consecutivo: 1, nombre: 'COMSERVA_PED_2026-09_001.txt', estado: 'rechazado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-26 17:50', descargado_en: '2026-09-26 17:51', rechazado_en: '2026-09-27 08:20', errores: 'Fila 5: el código de cliente 1117490216 no existe.\nFila 29: el código de servicio SRV-KG no existe en la cartilla de servicios.', documentos: 12, filas: 34, debitos: 0, creditos: 0, sha256: '' },
-    { id: 'ap-ped-2026-09-002', tipo: 'PED', periodo: '2026-09', plantilla: 'pl-ped-1', consecutivo: 2, nombre: 'COMSERVA_PED_2026-09_002.txt', estado: 'importado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-27 09:05', descargado_en: '2026-09-27 09:06', importado_en: '2026-09-27 09:40', importado_por: 'Lucrecia Quintero', documentos: 12, filas: 34, debitos: 0, creditos: 0, sha256: '', nota: '12 pedidos importados; Lucrecia hizo las 12 facturas llamando cada pedido con F5 (FVE 25756 a 25767).' },
+    { id: 'ap-ped-2026-09-001', tipo: 'PED', periodo: '2026-09', plantilla: 'pl-ped-2', consecutivo: 1, nombre: 'COMSERVA_OP_2026-09_001.xlsx', estado: 'rechazado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-26 17:50', descargado_en: '2026-09-26 17:51', rechazado_en: '2026-09-27 08:20', errores: 'Fila 5: el código de cliente 1117490216 no existe.\nFila 29: la lista de precio 3 no tiene precio para el concepto 3; se toma el valor unitario del pedido.', documentos: 12, filas: 34, debitos: 0, creditos: 0, sha256: '' },
+    { id: 'ap-ped-2026-09-002', tipo: 'PED', periodo: '2026-09', plantilla: 'pl-ped-2', consecutivo: 2, nombre: 'COMSERVA_OP_2026-09_002.xlsx', estado: 'importado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-27 09:05', descargado_en: '2026-09-27 09:06', importado_en: '2026-09-27 09:40', importado_por: 'Lucrecia Quintero', documentos: 12, filas: 34, debitos: 0, creditos: 0, sha256: '', nota: '12 pedidos importados; Lucrecia hizo las 12 facturas llamando cada pedido con F5 (FVE 25756 a 25767).' },
     { id: 'ap-asi-2026-09-001', tipo: 'ASI', periodo: '2026-09', plantilla: 'pl-asi-1', consecutivo: 1, nombre: 'COMSERVA_ASI_2026-09_001.xls', estado: 'importado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-28 10:05', descargado_en: '2026-09-28 10:06', importado_en: '2026-09-28 10:30', importado_por: 'Lucrecia Quintero', documentos: 12, filas: 46, debitos: 1180452, creditos: 1180452, sha256: '', nota: 'Propuesta B (simulación): asientos de las 12 facturas emitidas por el sistema; Helisa quedó con la misma contabilidad.' },
-    { id: 'ap-rc-2026-09-001', tipo: 'RC', periodo: '2026-09', plantilla: 'pl-rc-1', consecutivo: 1, nombre: 'COMSERVA_RC_2026-09_001.xls', estado: 'importado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-29 09:50', descargado_en: '2026-09-29 09:51', importado_en: '2026-09-29 10:10', importado_por: 'Lucrecia Quintero', documentos: 3, filas: 6, debitos: 151130, creditos: 151130, sha256: '', nota: 'Recibos definitivos RC 8812 a 8814; cruce automático por DOC FUENTE.' },
+    { id: 'ap-rc-2026-09-001', tipo: 'RC', periodo: '2026-09', plantilla: 'pl-rc-2', consecutivo: 1, nombre: 'COMSERVA_RC_2026-09_001.xlsx', estado: 'importado', generado_por: 'Lucrecia Quintero', generado_en: '2026-09-29 09:50', descargado_en: '2026-09-29 09:51', importado_en: '2026-09-29 10:10', importado_por: 'Lucrecia Quintero', documentos: 3, filas: 6, debitos: 151130, creditos: 151130, sha256: '', nota: 'Recibos definitivos RC 8812 a 8814; cruce automático por TIPO y NUMERO DE DOCUMENTO QUE AFECTA.' },
   ];
   archivos_plano.forEach((a) => { a.sha256 = hashFake(a.nombre + a.generado_en); });
 
@@ -543,7 +584,8 @@ window.DATA = (function () {
       'plantilla.tipo_documento': pl.tipo_documento, 'plantilla.centro_costo': pl.centro_costo,
       'documento.fecha': fmtFechaPlano(cierre.fecha_sugerida || p.fin, pl.formato_fecha), 'documento.numero': '', 'documento.doc_fuente': `${pl.prefijo_doc_fuente}${cierre.rh_numero || ''}`.replace(/-/g, ''), 'documento.forma_pago': /30/.test(tar.plazo || '') ? '6' : '1',
       'cliente.nit': pl.nit_con_dv ? c.nit + c.dv : c.nit, 'cliente.dv': c.dv, 'cliente.razon_social_helisa': c.razon_social, 'cliente.direccion': c.direccion, 'cliente.telefono': c.telefono, 'cliente.ciudad': c.ciudad, 'cliente.email': c.email,
-      'cliente.codigo_helisa': (cierre.sede_codigo || c.codigo_helisa || c.nit), 'pedido.numero': String(cierre.rh_numero || '').replace(/-/g, ''), 'pedido.tipo_linea': '2',
+      'cliente.codigo_helisa': (cierre.sede_codigo || c.codigo_helisa || c.nit), 'pedido.numero': String(cierre.rh_numero || '').replace(/-/g, ''), 'pedido.tipo_linea': '2', 'pedido.tipo_concepto': '2',
+      'empresa.nit': EMPRESA_HELISA.nit, 'empresa.centro_costo': EMPRESA_HELISA.centro_costo, 'servicio.lista_precios': String(c.lista_precio_helisa || ''),
       'periodo.nombre': p.nombre, 'rh.numero': cierre.rh_numero || '', 'rh.kg_total': fmtKg(f.kg), 'rh.kg_adicionales': fmtKg(f.adicionales), 'rh.precio_kg': String(f.precio_kg), 'rh.basico': String(f.basico), 'rh.valor_adicionales': String(f.valorAdicionales), 'rh.subtotal': String(f.subtotal), 'rh.iva_pct': String(f.iva_pct), 'rh.iva': String(f.iva), 'rh.total': String(f.total),
     };
   }
@@ -553,8 +595,9 @@ window.DATA = (function () {
       'plantilla.tipo_documento': pl.tipo_documento, 'plantilla.centro_costo': pl.centro_costo,
       'documento.fecha': fmtFechaPlano(r.fecha, pl.formato_fecha), 'documento.numero': String(r.consecutivo), 'documento.doc_fuente': fa ? fa.numero.replace(/\s/g, '') : '', 'documento.forma_pago': '1',
       'cliente.nit': pl.nit_con_dv ? c.nit + c.dv : c.nit, 'cliente.dv': c.dv, 'cliente.razon_social_helisa': c.razon_social, 'cliente.direccion': c.direccion, 'cliente.telefono': c.telefono, 'cliente.ciudad': c.ciudad, 'cliente.email': c.email,
-      'recibo.numero': String(r.consecutivo), 'recibo.tipo': TIPO_RECIBO_LABEL[r.tipo] || r.tipo || '', 'recibo.valor': String(r.valor), 'recibo.medio': 'Efectivo',
-      'aplicacion.factura_numero': fa ? fa.numero.replace(/\s/g, '') : '', 'aplicacion.valor': a ? String(a.valor) : '',
+      'recibo.numero': String(r.consecutivo), 'recibo.tipo': TIPO_RECIBO_LABEL[r.tipo] || r.tipo || '', 'recibo.valor': String(r.valor), 'recibo.medio': 'Efectivo', 'recibo.cuenta_bancaria': '',
+      'empresa.nit': EMPRESA_HELISA.nit, 'empresa.centro_costo': EMPRESA_HELISA.centro_costo,
+      'aplicacion.factura_numero': fa ? fa.numero.replace(/\s/g, '') : '', 'aplicacion.factura_prefijo': fa ? (fa.numero.match(/^[A-Za-z]+/) || [''])[0] : '', 'aplicacion.factura_consecutivo': fa ? fa.numero.replace(/^[A-Za-z]+\s*/, '') : '', 'aplicacion.valor': a ? String(a.valor) : '',
     };
   }
   const plantillaTexto = (t, ctx) => String(t || '').replace(/\{([a-z_.]+)\}/g, (m, k) => (ctx[k] ?? ''));
@@ -568,7 +611,9 @@ window.DATA = (function () {
     lineasValor.forEach(({ l, valor, ctx }) => {
       if (l.omitir_cero && !valor) return;
       orden++;
-      const lc = { ...ctx, 'linea.cuenta': l.cuenta, 'linea.concepto': plantillaTexto(l.concepto, ctx), 'linea.valor': fmtValorPlano(valor, pl), 'linea.naturaleza': l.naturaleza, 'linea.base': l.base ? fmtValorPlano(ctx['rh.subtotal'] || 0, pl) : '', 'linea.clase': l.clase, 'linea.orden': String(orden) };
+      const lc = { ...ctx, 'linea.cuenta': l.cuenta, 'linea.concepto': plantillaTexto(l.concepto, ctx), 'linea.valor': fmtValorPlano(valor, pl), 'linea.naturaleza': l.naturaleza, 'linea.base': l.base ? fmtValorPlano(ctx['rh.subtotal'] || 0, pl) : '', 'linea.clase': l.clase, 'linea.orden': String(orden),
+        'linea.ind_afectar': l.ind_afectar || '', 'linea.cobrador': l.cobrador ? EMPRESA_HELISA.nit : '',
+        'cruce.tipo_documento': l.cruce ? (ctx['aplicacion.factura_prefijo'] || '') : '', 'cruce.numero': l.cruce ? (ctx['aplicacion.factura_consecutivo'] || '') : '', 'cruce.cuota': l.cruce ? '1' : '' };
       const fila = {};
       pl.columnas.forEach((col) => { let v = ''; if (col.origen === 'campo') v = lc[col.campo] ?? ''; else if (col.origen === 'constante') v = col.constante; fila[col.titulo] = textoPlano(v, pl); });
       filas.push({ fila, linea: l, valor, naturaleza: l.naturaleza });
@@ -579,10 +624,12 @@ window.DATA = (function () {
   // generarPlano(plantilla, {cierres:[cierreCliente...]} | {recibos:[...]}) → {filas, documentos, debitos, creditos, errores}
   function generarPlano(pl, docs) {
     const out = { filas: [], documentos: 0, debitos: 0, creditos: 0, errores: [], avisos: [] };
+    let nPedido = 0;   // el número del pedido es un consecutivo dentro del archivo (1, 2, 3…), como en el Excel de Julio
     if (pl.tipo === 'PED') (docs.cierres || []).forEach((cz) => {
       if (!cz.factura) { out.errores.push(`${cz.cliente.nombre_comercial}: sin tarifa vigente, no se puede liquidar.`); return; }
+      nPedido++;
       if (pl.valida_tercero && cz.cliente.existe_en_helisa === false) out.errores.push(`${cz.cliente.nombre_comercial}: no tiene código de cliente en Helisa; importe primero la cartilla de terceros.`);
-      const ctx = contextoFV(pl, cz); const f = cz.factura; let orden = 0;
+      const ctx = contextoFV(pl, cz); ctx['pedido.numero'] = String(nPedido); const f = cz.factura; let orden = 0;
       const lineasPed = [
         { l: pl.lineas[0], cantidad: 1, vu: f.basico, srv: SERVICIOS_HELISA.basico, tipoLinea: '2' },
         { l: pl.lineas[1], cantidad: f.adicionales, vu: f.precio_kg, srv: SERVICIOS_HELISA.kg, tipoLinea: '2' },
@@ -591,7 +638,7 @@ window.DATA = (function () {
       lineasPed.forEach((x) => {
         if (x.l.omitir_cero && !x.cantidad) return;
         orden++;
-        const lc = { ...ctx, 'pedido.tipo_linea': x.tipoLinea, 'servicio.codigo': x.srv ? x.srv.codigo : '', 'servicio.lista_precios': x.srv ? x.srv.lista : '', 'linea.concepto': plantillaTexto(x.l.concepto, ctx), 'linea.cantidad': x.srv ? fmtValorPlano(x.cantidad, pl) : '', 'linea.valor_unitario': x.srv ? fmtValorPlano(x.vu, { decimales: 0 }) : '', 'linea.total': x.srv ? fmtValorPlano(Math.round(x.cantidad * x.vu), { decimales: 0 }) : '', 'linea.orden': String(orden) };
+        const lc = { ...ctx, 'pedido.tipo_linea': x.tipoLinea, 'pedido.tipo_concepto': x.tipoLinea, 'servicio.codigo': x.srv ? (x.l.cuenta || x.srv.codigo) : '', 'servicio.nombre': x.srv ? x.srv.nombre : '', 'servicio.lista_precios': x.srv ? ctx['servicio.lista_precios'] : '', 'linea.concepto': plantillaTexto(x.l.concepto, ctx), 'linea.cantidad': x.srv ? fmtValorPlano(x.cantidad, pl) : '', 'linea.valor_unitario': x.srv ? fmtValorPlano(x.vu, { decimales: 0 }) : '', 'linea.total': x.srv ? fmtValorPlano(Math.round(x.cantidad * x.vu), { decimales: 0 }) : '', 'linea.orden': String(orden) };
         const fila = {}; pl.columnas.forEach((col) => { let v = ''; if (col.origen === 'campo') v = lc[col.campo] ?? ''; else if (col.origen === 'constante') v = col.constante; fila[col.titulo] = textoPlano(v, pl); });
         out.filas.push({ fila, doc: cz.cliente.nombre_comercial, valor: x.srv ? Math.round(x.cantidad * x.vu) : 0 });
       });
@@ -630,7 +677,7 @@ window.DATA = (function () {
   }
   // Texto del archivo (csv/txt) para la descarga de prueba
   function textoArchivo(pl, gen) {
-    const sep = pl.formato === 'txt' ? '\t' : (pl.separador || ';');
+    const sep = pl.formato === 'txt' ? '\t' : (pl.separador || ';');   // xlsx: el mockup entrega el mismo contenido separado por «;»
     const cab = pl.con_titulos ? [pl.columnas.map((c) => c.titulo).join(sep)] : [];
     return cab.concat(gen.filas.map((f) => pl.columnas.map((c) => f.fila[c.titulo] ?? '').join(sep))).join('\r\n');
   }
@@ -649,7 +696,7 @@ window.DATA = (function () {
 
   return {
     HOY, empresa, parametros, dispositores, categorias, operarios, vehiculos, usuarios, clientes, periodos, visitas, ruta_hoy, recibos, actas, auditoria,
-    facturas, plantillas_plano, archivos_plano, CAMPOS_PLANO, COLUMNAS_HELISA, colsHelisa, SERVICIOS_HELISA, proveedor_fe, facturas_fe, notas_credito, armarFacturaJSON, facturaFeDe,
+    facturas, plantillas_plano, archivos_plano, CAMPOS_PLANO, COLUMNAS_HELISA, colsHelisa, SERVICIOS_HELISA, EMPRESA_HELISA, LISTAS_PRECIO_HELISA, CARTILLA_HELISA, proveedor_fe, facturas_fe, notas_credito, armarFacturaJSON, facturaFeDe,
     ROL_LABEL, FRECUENCIA_LABEL, CARTERA_LABEL, ESTADO_VISITA_LABEL, TIPO_RECIBO_LABEL, ESTADO_RECIBO_LABEL, ESTADO_PLANO_LABEL, ESTADO_CIERRE_LABEL, MESES, DIAS,
     factura, facturaDe, saldoReferencia, facturasConSaldo, clienteTieneFactura, plantillaVigente, estadoCierre, generarPlano, textoArchivo, sumarDias,
     fmtCOP, fmtKg, fmtNum, fmtFecha, fmtFechaCorta, fmtMes, cap, parseISO, byId, cliente, operario, categoria, dispositor, nitCompleto, iniciales,

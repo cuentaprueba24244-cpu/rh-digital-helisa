@@ -103,10 +103,10 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
     periodo: '2026-09',
     archivos: clone(D.archivos_plano),
     plantillas: clone(D.plantillas_plano),
-    plantillaSel0: 'pl-ped-1',
+    plantillaSel0: 'pl-ped-2',
     recibos: clone(D.recibos),
     facturas: clone(D.facturas),
-    plantillaSel: 'pl-ped-1',
+    plantillaSel: 'pl-ped-2',
     preview: null,            // {plantillaId, gen}
     auditoria: [],
   };
@@ -282,12 +282,12 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
     const txt = D.textoArchivo(pl, gen);
     // El mockup entrega texto (csv/txt) aunque la plantilla diga .xls: el generador real escribe BIFF8 con SheetJS.
     const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-    const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = a.nombre.replace(/\.xls$/, '.csv'); document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+    const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = a.nombre.replace(/\.xlsx?$/, '.csv'); document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
     if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahora(); }
     else if (!a.descargado_en) a.descargado_en = ahora();
     state.auditoria.unshift({ en: ahora(), quien: USUARIO, accion: 'Descargó archivo plano', entidad: 'Archivo plano · ' + a.nombre, detalle: '' });
     render(); if ($('#overlay .drawer')) abrirArchivo(a.id);
-    toast(`${a.nombre} descargado${pl.formato === 'xls' ? ' (el mockup entrega .csv; el sistema real escribe .xls Excel 97-2003)' : ''}. Impórtelo en Helisa: Transferencia de Datos → Importar.`);
+    toast(`${a.nombre} descargado${/^xlsx?$/.test(pl.formato) ? ' (el mockup entrega .csv; el sistema real escribe el Excel con las mismas columnas del de Julio)' : ''}. Impórtelo en Helisa: Transferencia de Datos → Importar.`);
   }
 
   // ---------- modales ----------
@@ -366,7 +366,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
       const deb = pl.lineas.filter((l) => l.clase === 'F' && l.naturaleza === 'D').length, cre = pl.lineas.filter((l) => l.clase === 'F' && l.naturaleza === 'C').length;
       if (!deb || !cre) err.push('Las líneas de clase F deben tener al menos un débito y un crédito para que el documento cuadre.');
       if (pl.tipo === 'ASI' && !pl.lineas.some((l) => l.tipo === 'cartera')) err.push('El asiento de factura necesita una línea de cartera (débito al cliente).');
-      if (pl.tipo === 'RC' && !pl.lineas.some((l) => l.tipo === 'cartera')) err.push('El archivo RC necesita una línea de cartera (crédito al cliente) con DOC FUENTE = FVE.');
+      if (pl.tipo === 'RC' && !pl.lineas.some((l) => l.tipo === 'cartera')) err.push('El archivo RC necesita una línea de cartera (crédito al cliente) con el cruce: TIPO y NUMERO DE DOCUMENTO QUE AFECTA.');
     }
     if (!pl.tipo_documento && pl.tipo !== 'TER') err.push('Falta el tipo de documento (columna TIPO).');
     return err;
@@ -396,14 +396,14 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
             ${errs.length ? `<div class="callout danger" style="margin-bottom:12px"><b>No se puede aprobar todavía:</b><ul class="err-list" style="margin-top:6px">${errs.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div>` : (editable ? '<div class="callout ok" style="margin-bottom:12px">La plantilla pasa las validaciones. Pruebe con Cofema y apruébela.</div>' : '')}
             <h3>Formato del archivo</h3>
             <div class="form-grid" style="margin-bottom:14px">
-              <div class="field"><label>Formato</label><select class="select sm" data-f="formato" ${editable ? '' : 'disabled'}><option value="xls" ${pl.formato === 'xls' ? 'selected' : ''}>.xls Excel 97-2003</option><option value="csv" ${pl.formato === 'csv' ? 'selected' : ''}>.csv</option><option value="txt" ${pl.formato === 'txt' ? 'selected' : ''}>.txt (tabulador)</option></select></div>
+              <div class="field"><label>Formato</label><select class="select sm" data-f="formato" ${editable ? '' : 'disabled'}><option value="xlsx" ${pl.formato === 'xlsx' ? 'selected' : ''}>.xlsx Excel (como el de Julio)</option><option value="xls" ${pl.formato === 'xls' ? 'selected' : ''}>.xls Excel 97-2003</option><option value="csv" ${pl.formato === 'csv' ? 'selected' : ''}>.csv</option><option value="txt" ${pl.formato === 'txt' ? 'selected' : ''}>.txt (tabulador)</option></select></div>
               <div class="field"><label>Separador (csv)</label><select class="select sm" data-f="separador" ${editable ? '' : 'disabled'}><option value=";" ${pl.separador === ';' ? 'selected' : ''}>; punto y coma</option><option value="," ${pl.separador === ',' ? 'selected' : ''}>, coma</option><option value="|" ${pl.separador === '|' ? 'selected' : ''}>| barra</option></select></div>
               <div class="field"><label>Codificación</label><select class="select sm" data-f="codificacion" ${editable ? '' : 'disabled'}><option ${pl.codificacion === 'windows-1252' ? 'selected' : ''}>windows-1252</option><option ${pl.codificacion === 'utf-8' ? 'selected' : ''}>utf-8</option><option ${pl.codificacion === 'utf-8-bom' ? 'selected' : ''}>utf-8-bom</option></select></div>
               <div class="field"><label>Formato de fecha</label><select class="select sm" data-f="formato_fecha" ${editable ? '' : 'disabled'}><option ${pl.formato_fecha === 'dd/MM/yyyy' ? 'selected' : ''}>dd/MM/yyyy</option><option ${pl.formato_fecha === 'yyyy-MM-dd' ? 'selected' : ''}>yyyy-MM-dd</option><option ${pl.formato_fecha === 'ddMMyyyy' ? 'selected' : ''}>ddMMyyyy</option></select></div>
               <div class="field"><label>Decimales</label><select class="select sm" data-f="decimales" ${editable ? '' : 'disabled'}><option value="0" ${pl.decimales == 0 ? 'selected' : ''}>0 (pesos enteros)</option><option value="2" ${pl.decimales == 2 ? 'selected' : ''}>2</option></select></div>
               <div class="field"><label>Tipo de documento (TIPO)</label><input class="input sm" data-f="tipo_documento" value="${esc(pl.tipo_documento)}" ${editable ? '' : 'disabled'}></div>
               <div class="field"><label>Centro de costo</label><input class="input sm" data-f="centro_costo" value="${esc(pl.centro_costo)}" ${editable ? '' : 'disabled'}></div>
-              <div class="field"><label>Prefijo DOC FUENTE</label><input class="input sm" data-f="prefijo_doc_fuente" value="${esc(pl.prefijo_doc_fuente)}" ${editable ? '' : 'disabled'}></div>
+              <div class="field"><label>Prefijo de la factura (cruce)</label><input class="input sm" data-f="prefijo_doc_fuente" value="${esc(pl.prefijo_doc_fuente)}" ${editable ? '' : 'disabled'}></div>
               <div class="field"><label>Prefijo del archivo</label><input class="input sm" data-f="prefijo_archivo" value="${esc(pl.prefijo_archivo)}" ${editable ? '' : 'disabled'}></div>
               <div class="field" style="display:grid;gap:6px;align-content:end"><label class="chk"><input type="checkbox" data-f="con_titulos" ${pl.con_titulos ? 'checked' : ''} ${editable ? '' : 'disabled'}> Fila de títulos</label><label class="chk"><input type="checkbox" data-f="mayusculas" ${pl.mayusculas ? 'checked' : ''} ${editable ? '' : 'disabled'}> Mayúsculas</label><label class="chk"><input type="checkbox" data-f="quitar_tildes" ${pl.quitar_tildes ? 'checked' : ''} ${editable ? '' : 'disabled'}> Quitar tildes y eñes</label><label class="chk"><input type="checkbox" data-f="nit_con_dv" ${pl.nit_con_dv ? 'checked' : ''} ${editable ? '' : 'disabled'}> NIT con DV</label></div>
               <div class="field" style="display:grid;gap:6px;align-content:end"><label class="chk"><input type="checkbox" data-f="valida_cuadre" ${pl.valida_cuadre ? 'checked' : ''} ${editable ? '' : 'disabled'}> Validar cuadre D = C</label><label class="chk"><input type="checkbox" data-f="valida_tercero" ${pl.valida_tercero ? 'checked' : ''} ${editable ? '' : 'disabled'}> Validar DV y tercero en Helisa</label><label class="chk"><input type="checkbox" data-f="valida_fve" ${pl.valida_fve ? 'checked' : ''} ${editable ? '' : 'disabled'}> Validar FVE en cada recibo</label></div>
