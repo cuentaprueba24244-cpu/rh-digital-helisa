@@ -152,8 +152,17 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
               <li>Una factura emitida no se edita: se corrige con nota crédito por API.</li>
               <li>Sin webhooks: las pendientes se consultan por API cada 10 minutos.</li>
               <li>80 peticiones por minuto; ~12 facturas al mes.</li>
-              <li>Costos de Comserva: paquete anual y certificado; Conekta opcional.</li>
+              <li>Costos de Comserva: plan anual de Factus (150 documentos $169.000 · 400 documentos $190.000) y certificado si no viene incluido; Conekta opcional.</li>
             </ul>
+          </div>
+          <div class="card pad" style="border-color:var(--ok, #2f7d59)">
+            <h3 style="font-size:14px">Probado en el sandbox · ${esc(fmtFecha(prov.prueba.fecha.slice(0, 10)))}</h3>
+            <dl class="kv" style="margin-top:8px">
+              <dt>Factura</dt><dd><span class="mono">${esc(prov.prueba.factura)}</span> · validada por la DIAN de pruebas en ${(prov.prueba.ms_factura / 1000).toFixed(1).replace('.', ',')} s · CUFE <span class="mono">${esc(prov.prueba.cufe.slice(0, 12))}…</span> · PDF descargado</dd>
+              <dt>Nota crédito</dt><dd><span class="mono">${esc(prov.prueba.nota_credito)}</span> · anulación por el total en ${(prov.prueba.ms_nc / 1000).toFixed(1).replace('.', ',')} s · enlazada a la factura</dd>
+              <dt>Controles</dt><dd>Mismo <span class="mono">reference_code</span> dos veces → misma factura (no duplica) · sin NIT del cliente → 422</dd>
+              <dt>Evidencia</dt><dd><span class="mono">pruebas/sandbox-factus/</span> (script, JSON, PDF de la factura y de la nota crédito)</dd>
+            </dl>
           </div>
         </div>
       </div>

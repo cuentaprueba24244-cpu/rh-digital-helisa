@@ -17,7 +17,7 @@
 <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><filter id="sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#16231d" flood-opacity="0.12"/></filter></defs>
 <rect width="1600" height="1131" fill="#f6f8f7"/>
 <text x="24" y="50" font-size="30" font-weight="800" fill="#16231d" text-anchor="start" letter-spacing="-0.3">Propuesta B · El sistema emite la factura; Helisa solo lleva la contabilidad</text>
-<text x="24" y="80" font-size="15.5" fill="#46534c">Ejemplo real: <tspan font-weight="700" fill="#16231d">Cofema, septiembre de 2026</tspan> · 413,85 kg · factura CSV 1 validada por la DIAN · $2.244.935 · Factus (API)</text>
+<text x="24" y="80" font-size="15.5" fill="#46534c">Ejemplo real: <tspan font-weight="700" fill="#16231d">Cofema, septiembre de 2026</tspan> · $2.244.935 · <tspan font-weight="700" fill="#a86a00">probado en el sandbox de Factus el 23 oct</tspan>: SETP990030555 y NC CRTE1194</text>
 <path d="M1040 68 h11 l5 5 v15 h-16 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.4"/><path d="M1051 68 v5 h5" fill="none" stroke="#2f7d59" stroke-width="1.4"/>
 <text x="1064" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >PDF al cliente</text>
 <path d="M1190.8 68 h11 l5 5 v15 h-16 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.4"/><path d="M1201.8 68 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.4"/>
@@ -115,15 +115,32 @@
 <circle cx="554" cy="568" r="12" fill="#a86a00"/><text x="554" y="572.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">4</text>
 <text x="572" y="573" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Factus → DIAN</text>
 <text x="548" y="595.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >POST /v2/bills/validate</text>
-<text x="548" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Firma, numera y</text>
+<text x="548" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Firma, numera (SETP) y</text>
 <text x="548" y="626.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >transmite a la DIAN</text>
+<rect x="620.2" y="534" width="71.80000000000001" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="656.1" y="548.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">PROBADO</text>
 <g filter="url(#sh)"><rect x="710" y="545" width="160" height="96" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
 <rect x="710" y="545" width="160" height="5" rx="2.5" fill="#a86a00"/>
 <circle cx="728" cy="568" r="12" fill="#a86a00"/><text x="728" y="572.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">5</text>
 <text x="746" y="573" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Vuelve el CUFE</text>
-<text x="722" y="595.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >CSV 1 · $2.244.935</text>
-<text x="722" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Número, QR, PDF, XML</text>
-<text x="722" y="626.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Validada en segundos</text>
+<text x="722" y="595.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >SETP990030555</text>
+<text x="722" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >CUFE, QR de la DIAN,</text>
+<text x="722" y="626.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >PDF y XML · en 2,3 s</text>
+<rect x="794.2" y="534" width="71.80000000000001" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="830.1" y="548.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">PROBADO</text>
+<g filter="url(#sh)"><rect x="882" y="545" width="148" height="100" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="882" y="545" width="148" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="900" cy="568" r="12" fill="#a86a00"/><text x="900" y="572.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">5′</text>
+<text x="918" y="573" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Nota crédito</text>
+<text x="894" y="595.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >POST /v2/credit-notes</text>
+<text x="894" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >/validate · concepto 2</text>
+<text x="894" y="626.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >CRTE1194 · anula la</text>
+<text x="894" y="641.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >SETP…555 · CUDE</text>
+<rect x="954.2" y="534" width="71.80000000000001" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="990.1" y="548.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">PROBADO</text>
+<path d="M850 512 V530 H956 V543" fill="none" stroke="#a86a00" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#aho)"/>
+<rect x="861" y="515" width="113.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="864" y="526" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >si hay que anular</text>
 <g filter="url(#sh)"><rect x="710" y="404" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
 <rect x="710" y="404" width="160" height="5" rx="2.5" fill="#2f7d59"/>
 <circle cx="728" cy="427" r="12" fill="#1f5e43"/><text x="728" y="431.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">6</text>
@@ -205,9 +222,9 @@
 <rect x="793" y="521" width="57.6" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
 <text x="796" y="532" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >responde</text>
 <path d="M870 458 H880" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
-<path d="M962 512 V662" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
-<rect x="965" y="589" width="125.8" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
-<text x="968" y="600" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="start" >archivo (o Conekta)</text>
+<path d="M1038 512 V662" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="907.2" y="646" width="125.8" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1030" y="657" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="end" >archivo (o Conekta)</text>
 <path d="M962 736 V762" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
 <rect x="965" y="741" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
 <text x="968" y="752" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="start" >importa</text>
@@ -233,33 +250,35 @@
 <text x="200" y="795" font-size="12.5" font-weight="700" fill="#2c5d8a" text-anchor="start" font-style="italic">Helisa recibe la contabilidad</text>
 <text x="200" y="811" font-size="12" font-weight="400" fill="#2c5d8a" text-anchor="start" font-style="italic">de facturas y recibos; nada más.</text>
 <rect x="20" y="852" width="500" height="248" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
-<text x="38" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Lo que el sistema envía a Factus (resumen)</text>
-<text x="36" y="904" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">reference_code &quot;cierre-2026-09-c-cofema&quot; · numbering_range_id 389</text>
-<text x="36" y="922" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">payment_details: forma 2 (crédito) · método 42 · vence 26/10/2026</text>
-<text x="36" y="940" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">billing_period: 27/08/2026 → 26/09/2026</text>
-<text x="36" y="958" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">customer: NIT 891190218-5 · COFEMA S.A. · dirección · municipio</text>
-<text x="36" y="976" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">items[0]: SRV-BASICO · 1,00 × 74.790,00 · IVA 19 %</text>
-<text x="36" y="994" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">items[1]: SRV-KG · 393,85 × 4.600,00 · IVA 19 %</text>
-<text x="36" y="1012" font-size="10.5" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">respuesta: number &quot;CSV 1&quot; · cufe &quot;8f2a…&quot; · qr · is_validated true</text>
-<text x="36" y="1040" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="start" >Token OAuth2 (vence cada hora) · sandbox gratuito · 80 peticiones por minuto · sin webhooks</text>
-<text x="36" y="1055" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="start" >Reintentar con el mismo reference_code nunca duplica la factura.</text>
-<rect x="32" y="1062" width="476" height="28" rx="8" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.2"/>
-<text x="44" y="1081" font-size="11.5" font-weight="700" fill="#1f5e43" text-anchor="start" >Una factura emitida no se edita: se corrige con nota crédito por API.</text>
+<text x="38" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Lo que se envió a Factus y lo que respondió (sandbox, 23 oct)</text>
+<text x="36" y="896" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">POST /oauth/token → token 1 h · GET /v2/numbering-ranges → rango 389 SETP</text>
+<text x="36" y="912" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">reference_code &quot;RH-22690-26-…&quot; · document 01 · numbering_range_id 389</text>
+<text x="36" y="928" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">payment_details: forma 2 crédito · método 42 · vence 26/10/2026 · 2.244.935</text>
+<text x="36" y="944" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">billing_period 01/09 → 30/09/2026 · customer NIT 891190218-5 · mun. 18001</text>
+<text x="36" y="960" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">items: SRV-BASICO 1 × 74.790 (94) · SRV-KG 393,85 × 4.600 (KGM) · IVA 01 19 %</text>
+<text x="36" y="976" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">→ 201: number &quot;SETP990030555&quot; · is_validated true · cufe &quot;3bcb0081…&quot; · qr</text>
+<text x="36" y="992" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">totals: bruto 1.886.500 · IVA 358.435 · total 2.244.935 · public_url</text>
+<text x="36" y="1008" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">GET /v2/bills/SETP990030555 → 200 · GET …/download-pdf → PDF base64</text>
+<text x="36" y="1024" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">POST /v2/credit-notes/validate · bill_number SETP…555 · concepto 2 → &quot;CRTE1194&quot;</text>
+<text x="36" y="1046" font-size="10.4" font-weight="400" fill="#6e7b74" text-anchor="start" >Mismo reference_code dos veces → misma factura (no duplica) · sin NIT del cliente → 422.</text>
+<text x="36" y="1060" font-size="10.4" font-weight="400" fill="#6e7b74" text-anchor="start" >Sandbox compartido (emisor «FACTUS V2»); la DIAN de pruebas solo deja notificaciones.</text>
+<rect x="32" y="1066" width="476" height="28" rx="8" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.2"/>
+<text x="44" y="1085" font-size="11.2" font-weight="700" fill="#1f5e43" text-anchor="start" >Evidencia: pruebas/sandbox-factus/ (script, JSON, PDF de la factura y de la nota crédito).</text>
 <rect x="536" y="852" width="520" height="248" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
 <text x="554" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Qué necesita Comserva para B</text>
 <circle cx="554" cy="907" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 907 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="572" y="912" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Contratar un paquete anual de documentos con Factus.</text>
-<text x="572" y="930" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Por cotizar; ≈ 150–200 documentos al año (ref. $200.000–400.000).</text>
+<text x="572" y="912" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Plan anual API de Factus (precios recibidos el 23 oct).</text>
+<text x="572" y="930" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >150 documentos $169.000 · 400 documentos $190.000 al año; rangos ilimitados.</text>
 <circle cx="554" cy="956" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 956 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="572" y="961" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Certificado digital de firma a nombre de Comserva.</text>
-<text x="572" y="979" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >≈ $130.000 al año si no viene en el paquete.</text>
+<text x="572" y="961" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Activar: RUT, cámara de comercio, cédula del representante, pago.</text>
+<text x="572" y="979" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Certificado de firma: por confirmar si va dentro del paquete (≈ $130.000/año).</text>
 <circle cx="554" cy="1005" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 1005 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="572" y="1010" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Rango de numeración nuevo en la DIAN, asociado a Factus.</text>
-<text x="572" y="1028" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Prefijo propio (CSV); Helisa/ATEB sigue para lo que no pase por el sistema.</text>
+<text x="572" y="1028" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Prefijo propio; Helisa/ATEB sigue para lo que no pase por el sistema.</text>
 <rect x="548" y="1030" width="494" height="56" rx="8" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.3"/>
 <text x="560" y="1050" font-size="11" font-weight="800" fill="#a86a00" text-anchor="start" letter-spacing="0.4">POR CONFIRMAR</text>
-<text x="560" y="1066" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >Factus en el listado de proveedores tecnológicos de la DIAN (micrositio en mantenimiento)</text>
-<text x="560" y="1080" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >y dos facturadores para un NIT con prefijos distintos. Si no: otro proveedor con API, o A.</text>
+<text x="560" y="1066" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >Constancia de Factus como proveedor tecnológico ante la DIAN (micrositio en mantenimiento)</text>
+<text x="560" y="1080" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >y dos facturadores para un NIT con prefijos distintos. La API ya quedó probada de punta a punta.</text>
 <rect x="1072" y="852" width="508" height="248" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
 <text x="1090" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Estados y lo que cambia para Lucrecia</text>
 <text x="1090" y="921" font-size="12.5" font-weight="700" fill="#46534c" text-anchor="start" >Cierre</text>
@@ -299,8 +318,8 @@
 <text x="1118" y="1037" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Lucrecia aprueba el cierre e importa dos archivos al mes.</text>
 <text x="1118" y="1055" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Asientos de facturas y de recibos; ninguna factura a mano.</text>
 <circle cx="1100" cy="1078" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M1095.5 1078 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="1118" y="1083" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >El cliente recibe la factura en segundos.</text>
+<text x="1118" y="1083" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >El cliente recibe la factura en segundos (2,3 s en la prueba).</text>
 <text x="1118" y="1101" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Desarrollo adicional: módulo FEL ≈ 80–120 h más que A.</text>
-<text x="24" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="start" >RH digital Comserva · propuesta B según el levantamiento v6 · 22 de octubre de 2026 · uso interno</text>
-<text x="1576" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="end" >Recomendación del equipo: B · Comserva decide el 24 de octubre</text>
+<text x="24" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="start" >RH digital Comserva · propuesta B según el levantamiento v6 · actualizada el 23 de octubre de 2026 con la prueba del sandbox · uso interno</text>
+<text x="1576" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="end" >Recomendación del equipo: B · Comserva decide el viernes 23 de octubre</text>
 </svg></div></main></body></html>

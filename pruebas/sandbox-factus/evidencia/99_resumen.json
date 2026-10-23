@@ -1,0 +1,65 @@
+{
+  "inicio": "2026-10-23T13:11:51",
+  "base": "https://api-sandbox.factus.com.co",
+  "pasos": [
+    {
+      "paso": 0,
+      "descripcion": "POST /oauth/token",
+      "http": 200,
+      "ms": 858,
+      "expires_in": 3600
+    },
+    {
+      "paso": 1,
+      "descripcion": "GET /v2/numbering-ranges",
+      "http": 200,
+      "ms": 415
+    },
+    {
+      "paso": 2,
+      "descripcion": "POST /v2/bills/validate · factura de Cofema",
+      "http": 201,
+      "ms": 2336
+    },
+    {
+      "paso": 3,
+      "descripcion": "GET /v2/bills/SETP990030555",
+      "http": 200,
+      "ms": 671
+    },
+    {
+      "paso": 4,
+      "descripcion": "GET /v2/bills/download-pdf/SETP990030555",
+      "http": 200,
+      "ms": 762
+    },
+    {
+      "paso": 5,
+      "descripcion": "POST /v2/bills/validate · mismo reference_code (idempotencia)",
+      "http": 201,
+      "ms": 604,
+      "numero_devuelto": "SETP990030555",
+      "misma_factura": true
+    },
+    {
+      "paso": 6,
+      "descripcion": "POST /v2/credit-notes/validate · anulación por el total",
+      "http": 201,
+      "ms": 2238,
+      "numero_nc": "CRTE1194"
+    },
+    {
+      "paso": 7,
+      "descripcion": "POST /v2/bills/validate · sin identificación del cliente (error esperado 422)",
+      "http": 422,
+      "ms": 481
+    }
+  ],
+  "reference_code": "RH-22690-26-20261023131153",
+  "numero": "SETP990030555",
+  "cufe": "3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144",
+  "qr": "https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144",
+  "public_url": "https://app-sandbox.factus.com.co/documents/bills/c48c540ab105beaeee6cbc8096658295d55dd99b86011a57fe67c10c72c4acf5",
+  "totales_factus": {},
+  "fin": "2026-10-23T13:12:01"
+}

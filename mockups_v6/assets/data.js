@@ -407,7 +407,7 @@ window.DATA = (function () {
 
   // Catálogo de campos exportables (HEL-07)
   const CAMPOS_PLANO = [
-    ['plantilla.tipo_documento', 'Tipo de documento de la plantilla', 'FE'], ['pedido.numero', 'Número del pedido (RH sin guion)', '2269026'], ['pedido.tipo_linea', 'Tipo de línea del pedido: 2 servicio, 3 comentario', '2'], ['cliente.codigo_helisa', 'Código del cliente o de la sede en Helisa', '891190218'], ['servicio.codigo', 'Código del servicio en la cartilla de Helisa', 'SRV-KG'], ['servicio.lista_precios', 'Lista de precios de Helisa', '1'], ['linea.cantidad', 'Cantidad de la línea (1 o kilos adicionales)', '393,85'], ['linea.valor_unitario', 'Valor unitario (básico o precio del kilo)', '4600'], ['linea.total', 'Cantidad × valor unitario', '1811710'], ['factura.numero', 'Número de la factura emitida (B)', 'CSV 1'], ['factura.cufe', 'CUFE devuelto por la DIAN (B)', '8f2a…'], ['plantilla.centro_costo', 'Centro de costo de la plantilla', ''],
+    ['plantilla.tipo_documento', 'Tipo de documento de la plantilla', 'FE'], ['pedido.numero', 'Número del pedido (RH sin guion)', '2269026'], ['pedido.tipo_linea', 'Tipo de línea del pedido: 2 servicio, 3 comentario', '2'], ['cliente.codigo_helisa', 'Código del cliente o de la sede en Helisa', '891190218'], ['servicio.codigo', 'Código del servicio en la cartilla de Helisa', 'SRV-KG'], ['servicio.lista_precios', 'Lista de precios de Helisa', '1'], ['linea.cantidad', 'Cantidad de la línea (1 o kilos adicionales)', '393,85'], ['linea.valor_unitario', 'Valor unitario (básico o precio del kilo)', '4600'], ['linea.total', 'Cantidad × valor unitario', '1811710'], ['factura.numero', 'Número de la factura emitida (B)', 'SETP990030555'], ['factura.cufe', 'CUFE devuelto por la DIAN (B)', '3bcb0081…'], ['plantilla.centro_costo', 'Centro de costo de la plantilla', ''],
     ['documento.fecha', 'Fecha del documento (RH: fecha sugerida; recibo: fecha del recibo)', '25/09/2026'], ['documento.numero', 'Número del documento (vacío si Helisa lo asigna)', ''],
     ['documento.doc_fuente', 'Prefijo + número propio (FV) o número FVE aplicado (RC)', 'FVE25756'], ['documento.forma_pago', 'Código de forma de pago según la tarifa', '6'],
     ['cliente.nit', 'NIT del cliente sin puntos', '891190218'], ['cliente.dv', 'Dígito de verificación', '5'], ['cliente.razon_social_helisa', 'Razón social según Helisa', 'COFEMA S.A.'],
@@ -477,19 +477,24 @@ window.DATA = (function () {
 
   // Propuesta B · facturación electrónica en el sistema (Factus, sandbox) ------------------------
   const proveedor_fe = {
-    nombre: 'Factus (FACTUS S.A.S.)', entorno: 'sandbox', url: 'https://api-sandbox.factus.com.co', client_id: 'cs-••••••••', usuario: 'facturacion@comserva.com.co', token_vence: '2026-10-19 09:40',
-    rango: { id: 389, prefijo: 'CSV', desde: 1, hasta: 2000, siguiente: 15, resolucion: '18764000001234', vigente_desde: '2026-10-01', vigente_hasta: '2028-09-30', ambiente: 'pruebas' },
-    suscripcion: { grupo: 'Facturación electrónica', total: 200, consumidos: 14, vence: '2027-10-15', activa: true },
-    certificado: { titular: 'Comserva S.A.S.', vence: '2027-10-15' },
+    nombre: 'Factus (FACTUS S.A.S.)', entorno: 'sandbox', url: 'https://api-sandbox.factus.com.co', client_id: 'a30d5ba5-••••', usuario: 'sandboxv2@factus.com.co', token_vence: '2026-10-23 14:11',
+    // Rango real del sandbox V2 (compartido): lo devolvió GET /v2/numbering-ranges el 23 de octubre de 2026.
+    rango: { id: 389, prefijo: 'SETP', desde: 990000000, hasta: 995000000, siguiente: 990030556, resolucion: '18760000001', vigente_desde: '2019-01-19', vigente_hasta: '2030-01-19', ambiente: 'pruebas' },
+    rango_nc: { id: 1776, prefijo: 'CRTE', siguiente: 1195 },
+    suscripcion: { grupo: 'Plan anual API · 150 documentos', total: 150, consumidos: 14, vence: '2027-10-23', activa: true },
+    planes: [[150, 169000], [400, 190000], [1600, 220000], [2500, 260000], [5000, 290000]],
+    certificado: { titular: 'Comserva S.A.S.', vence: '2027-10-23', incluido: null },
     dian_verificado: false,
+    // Prueba real del 23 de octubre de 2026 (pruebas/sandbox-factus/evidencia)
+    prueba: { fecha: '2026-10-23 13:11', factura: 'SETP990030555', cufe: '3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144', ms_factura: 2336, nota_credito: 'CRTE1194', ms_nc: 2238, pdf: true, idempotente: true, error_422: true },
   };
   const facturas_fe = [
-    { id: 'fe-cof-09', cliente: 'c-cofema', periodo: '2026-09', numero: 'CSV 1', reference_code: 'cierre-2026-09-c-cofema', cufe: hashFake('cufe-cofema-09') + hashFake('x'), estado: 'validada', fecha: '2026-09-26', validada_en: '2026-09-26 17:42', total: 2244935, notificaciones: [], pdf: true, xml: true, enviado_correo: true, asiento: 'ap-asi-2026-09-001' },
-    { id: 'fe-sv-09', cliente: 'c-saludvital', periodo: '2026-09', numero: 'CSV 2', reference_code: 'cierre-2026-09-c-saludvital', cufe: hashFake('cufe-sv-09') + hashFake('y'), estado: 'con_notificaciones', fecha: '2026-09-26', validada_en: '2026-09-26 17:42', total: 0, notificaciones: ['FAJ44b: Dirección del adquiriente sin número de vía; la DIAN la aceptó con advertencia'], pdf: true, xml: true, enviado_correo: true, asiento: 'ap-asi-2026-09-001' },
+    { id: 'fe-cof-09', cliente: 'c-cofema', periodo: '2026-09', numero: 'SETP990030555', reference_code: 'RH-22690-26-20261023131153', cufe: '3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144', estado: 'validada', fecha: '2026-10-23', validada_en: '2026-10-23 13:11', total: 2244935, notificaciones: [], pdf: true, xml: true, enviado_correo: true, asiento: 'ap-asi-2026-09-001' },
+    { id: 'fe-sv-09', cliente: 'c-saludvital', periodo: '2026-09', numero: 'SETP990030556', reference_code: 'cierre-2026-09-c-saludvital', cufe: hashFake('cufe-sv-09') + hashFake('y'), estado: 'con_notificaciones', fecha: '2026-09-26', validada_en: '2026-09-26 17:42', total: 0, notificaciones: ['FAJ44b: Dirección del adquiriente sin número de vía; la DIAN la aceptó con advertencia'], pdf: true, xml: true, enviado_correo: true, asiento: 'ap-asi-2026-09-001' },
     { id: 'fe-pe-09', cliente: 'c-punto', periodo: '2026-09', numero: '', reference_code: 'cierre-2026-09-c-punto', cufe: '', estado: 'rechazada', fecha: '2026-09-26', validada_en: '', total: 0, notificaciones: ['422: customer.municipality_code es obligatorio (Albania, Caquetá no estaba en el catálogo del cliente)'], pdf: false, xml: false, enviado_correo: false, asiento: null },
   ];
   const notas_credito = [
-    { id: 'nc-1', factura: 'fe-sv-09', numero: 'NC 1', fecha: '2026-10-02', concepto: '2', motivo: 'Visita del 24 de septiembre sincronizada el 28: se anula y se reemite con los kilos completos', total: 0, cufe: hashFake('nc-1') + hashFake('z'), estado: 'validada', aprobada_por: 'Diego A. Cartagena' },
+    { id: 'nc-1', factura: 'fe-sv-09', numero: 'CRTE1195', fecha: '2026-10-02', concepto: '2', motivo: 'Visita del 24 de septiembre sincronizada el 28: se anula y se reemite con los kilos completos', total: 0, cufe: hashFake('nc-1') + hashFake('z'), estado: 'validada', aprobada_por: 'Diego A. Cartagena' },
   ];
   // JSON que el sistema arma para POST /v2/bills/validate
   function armarFacturaJSON(cierre) {
