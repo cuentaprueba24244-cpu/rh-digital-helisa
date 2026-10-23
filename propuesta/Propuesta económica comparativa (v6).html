@@ -1,0 +1,201 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Propuesta económica comparativa (v6)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap">
+<style>
+@page{size:A4;margin:12mm 11mm}
+:root{--g:#1f5e43;--g2:#2f7d59;--ink:#16231d;--mut:#6e7b74;--line:#d5ddd8;--bg:#f3f8f5;--p:#5f479c;--pbg:#f1ebf9;--o:#c2551f}
+*{box-sizing:border-box}html,body{margin:0;background:#f6f8f7}
+body{font-family:Figtree,"Segoe UI",sans-serif;color:#46534c;font-size:11px;line-height:1.4;padding:16px 22px;max-width:900px;margin:0 auto}
+.k{color:var(--g2);font-weight:800;letter-spacing:1.2px;font-size:10.5px}
+h1{margin:3px 0 4px;font-size:25px;color:var(--ink);line-height:1.15}
+h2{font-size:15px;color:#fff;background:var(--g);margin:18px 0 8px;padding:6px 10px;border-radius:6px;letter-spacing:.3px;page-break-after:avoid}
+h3{font-size:12.5px;color:var(--ink);margin:12px 0 4px;page-break-after:avoid}
+p{margin:4px 0 6px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);margin:4px 0 8px;page-break-inside:auto}
+tr{page-break-inside:avoid}
+th{background:#e7f2ec;color:var(--g);text-align:left;padding:5px 7px;font-size:10px;letter-spacing:.3px;border-bottom:1px solid var(--line);vertical-align:bottom}
+td{padding:4.5px 7px;border-top:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+tr.tot td{background:#e7f2ec;font-weight:800;color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.card{background:#fff;border:1.5px solid var(--g2);border-radius:10px;padding:9px 10px;page-break-inside:avoid}
+.card.p2{border-color:var(--p)}
+.card .t{font-weight:800;color:var(--ink);font-size:11.5px}.card .s{color:var(--mut);font-size:10px;margin-bottom:6px}
+.card .big{font-size:19px;font-weight:800;color:var(--g)}.card.p2 .big{color:var(--p)}
+.card .l{font-size:10px;color:var(--mut)}
+.card .row{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:3px;margin-top:4px;font-size:10.5px}
+.rec{display:inline-block;background:var(--o);color:#fff;font-size:9px;font-weight:800;border-radius:9px;padding:1px 7px;letter-spacing:.4px;margin-left:4px}
+.tag{display:inline-block;font-size:9px;font-weight:800;border-radius:8px;padding:0 6px;letter-spacing:.3px}
+.v{background:#e7f2ec;color:var(--g)}.e{background:#fdf1d6;color:#a86a00}.c{background:#fbecea;color:#93362b}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 11px}
+.box ul{margin:3px 0 2px;padding-left:16px}.box li{margin:2px 0}
+.note{font-size:10px;color:var(--mut)}
+.n{color:var(--mut)}
+a{color:var(--g2)}
+.pb{page-break-before:always}
+@media(max-width:700px){.cards{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style></head><body>
+
+<div class="k">RH DIGITAL COMSERVA · PROPUESTA ECONÓMICA v6</div>
+<h1>Cuánto cuesta desarrollar, poner en marcha y mantener cada propuesta</h1>
+<p>Para <b>Comserva</b> · 22 de octubre de 2026 · vigencia de la oferta: 30 días. Valores en pesos colombianos, <b>sin IVA</b>. Separamos lo que paga Comserva al equipo por desarrollar de lo que Comserva paga directamente a terceros (servidor, proveedor de facturación, Helisa) para que el sistema funcione.</p>
+
+<div class="cards">
+<div class="card"><div class="t">A · Propuesta 1</div><div class="s">Hasta Helisa, archivos planos (1A)</div><div class="l">Desarrollo, una vez</div><div class="big">$37,8 M</div><div class="row"><span>Terceros al mes</span><b>≈ $57.000</b></div><div class="row"><span>Primer año</span><b>≈ $38,5 M</b></div><div class="row"><span>Tiempo</span><b>≈ 18 sem.</b></div></div>
+<div class="card"><div class="t">B · Propuesta 1</div><div class="s">Hasta Helisa, con API Conekta (1B)</div><div class="l">Desarrollo, una vez</div><div class="big">$42,0 M</div><div class="row"><span>Terceros al mes</span><b>≈ $269.000</b></div><div class="row"><span>Primer año</span><b>≈ $45,2 M</b></div><div class="row"><span>Tiempo</span><b>≈ 18 sem.</b></div></div>
+<div class="card p2"><div class="t">C · Propuesta 2 <span class="rec">POR FASES</span></div><div class="s">Con facturación electrónica</div><div class="l">Desarrollo, una vez</div><div class="big">$52,2 M</div><div class="row"><span>Terceros al mes</span><b>≈ $101.000–134.000</b></div><div class="row"><span>Primer año</span><b>≈ $53,4–53,8 M</b></div><div class="row"><span>Tiempo</span><b>≈ 28 sem.</b></div></div>
+<div class="card p2"><div class="t">D · Propuesta 2 + Conekta</div><div class="s">Asientos contables por API</div><div class="l">Desarrollo, una vez</div><div class="big">$56,4 M</div><div class="row"><span>Terceros al mes</span><b>≈ $313.000–346.000</b></div><div class="row"><span>Primer año</span><b>≈ $60,2–60,6 M</b></div><div class="row"><span>Tiempo</span><b>≈ 28 sem.</b></div></div>
+</div>
+<p class="note">Primer año = desarrollo + 12 meses de costos de terceros, sin IVA y sin soporte opcional. La opción C se contrata por fases: se paga primero la Fase 1 ($37,8 M) y la Fase 2 ($14,4 M) solo si, después del piloto, Comserva decide seguir. Contratada completa desde el inicio toma ≈ 24 semanas al mismo precio.</p>
+
+<h2>1 · Inversión en desarrollo (una sola vez)</h2>
+<table>
+<tr><th>Bloque</th><th>Qué incluye</th><th class="r">Valor</th></tr>
+<tr><td><b>Fase 0 + Fase 1</b><br><span class="n">Propuesta 1, modalidad 1A</span></td><td>Definición con formatos reales de Helisa; app del operario (funciona sin señal), panel, cierre del mes y planilla RH, archivo de pedidos y archivo de recibos para Helisa, registro de la factura, trazabilidad por cliente y periodo, pruebas, carga de datos, capacitación, piloto de un ciclo y acta de series.</td><td class="r"><b>$37.800.000</b></td></tr>
+<tr><td><b>Conector Helisa Conekta</b><br><span class="n">Opcional · modalidad 1B</span></td><td>El sistema crea clientes, inserta pedidos y recibos, y lee facturas y cartera por API en lugar de subir archivos.</td><td class="r"><b>$4.200.000</b></td></tr>
+<tr><td><b>Fase 2 · Facturación electrónica</b><br><span class="n">Propuesta 2</span></td><td>Prefactura, aprobación por lote, integración con el proveedor tecnológico, validación DIAN (CUFE y eventos RADIAN), notas crédito, asientos contables hacia Helisa, acompañamiento de la habilitación ante la DIAN, pruebas y piloto.</td><td class="r"><b>$14.400.000</b></td></tr>
+<tr><td><b>C1 · Acta y portal</b><br><span class="n">Complemento opcional</span></td><td>Acta de entrega y portal del cliente.</td><td class="r">$11.400.000</td></tr>
+<tr><td><b>C2 · Caja formal y mensajería</b><br><span class="n">Complemento opcional</span></td><td>Cierre de caja formal, WhatsApp Business con plantillas, reportes operativos.</td><td class="r">$6.600.000</td></tr>
+</table>
+<p>Garantía de <b>90 días por fase</b>, incluida en el precio. Los cambios fuera del alcance se cotizan por escrito antes de ejecutarse.</p>
+
+<h3>Forma de pago por hitos</h3>
+<table>
+<tr><th>Bloque</th><th>Hito</th><th class="r">%</th><th class="r">Valor</th></tr>
+<tr><td rowspan="4"><b>Fase 0 + Fase 1</b><br>$37,8 M</td><td>Firma del contrato (cubre la Fase 0)</td><td class="r">30 %</td><td class="r">$11.340.000</td></tr>
+<tr><td>App y panel con catálogos cargados y primera importación de pedidos y recibo en Helisa sin errores</td><td class="r">30 %</td><td class="r">$11.340.000</td></tr>
+<tr><td>Acta de aceptación tras el piloto de un ciclo</td><td class="r">30 %</td><td class="r">$11.340.000</td></tr>
+<tr><td>Cierre de la garantía (90 días)</td><td class="r">10 %</td><td class="r">$3.780.000</td></tr>
+<tr><td rowspan="2"><b>Conekta</b><br>$4,2 M</td><td>Al iniciar el conector, con la conexión de pruebas de Helisa entregada</td><td class="r">50 %</td><td class="r">$2.100.000</td></tr>
+<tr><td>Primer ciclo con pedidos y recibos por API y facturas leídas sin errores</td><td class="r">50 %</td><td class="r">$2.100.000</td></tr>
+<tr><td rowspan="4"><b>Fase 2</b><br>$14,4 M</td><td>Firma (tras la compuerta, o al inicio si se contrata completa)</td><td class="r">30 %</td><td class="r">$4.320.000</td></tr>
+<tr><td>Habilitación aprobada por la DIAN (set de pruebas superado y prefijo asociado)</td><td class="r">30 %</td><td class="r">$4.320.000</td></tr>
+<tr><td>Acta tras el piloto de un ciclo de facturación electrónica</td><td class="r">30 %</td><td class="r">$4.320.000</td></tr>
+<tr><td>Cierre de la garantía</td><td class="r">10 %</td><td class="r">$1.440.000</td></tr>
+</table>
+
+<h2 class="pb">2 · Lo que Comserva paga a terceros (a su nombre)</h2>
+<p>Estos servicios los contrata y paga Comserva directamente; el equipo los configura. Las fuentes se consultaron el 22 de octubre de 2026.
+<span class="tag v">VERIFICADO</span> precio tomado de la página oficial del proveedor ·
+<span class="tag e">REFERENCIA</span> promedio de mercado, hay que cotizar ·
+<span class="tag c">POR CONFIRMAR</span> depende de un dato de Comserva.</p>
+
+<h3>2.1 Puesta en marcha (una sola vez)</h3>
+<table>
+<tr><th>Concepto</th><th>Aplica</th><th class="r">Valor</th><th>Nota</th></tr>
+<tr><td>Google Play Console (cuenta de organización)</td><td>Todas</td><td class="r">US$25 ≈ $79.400</td><td>Pago único. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Apple Developer Program</td><td>Solo si hay iPhone</td><td class="r">US$99 al año ≈ $314.300</td><td>Se renueva cada año. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Soporte de Helisa para la plantilla y la primera importación</td><td>Todas</td><td class="r">$99.960 la hora · taller $40.000</td><td>Por consumo. <span class="tag e">REFERENCIA</span></td></tr>
+<tr><td>Habilitar el documento Pedido en Helisa</td><td>P1 (A y B)</td><td class="r">—</td><td><span class="tag c">POR CONFIRMAR</span> con Helisa: licencia o parametrización.</td></tr>
+<tr><td>Habilitación ante la DIAN y certificado de firma digital</td><td>P2 (C y D)</td><td class="r">≈ $120.000–180.000 al año</td><td>Solo si el plan del proveedor no incluye el certificado (Dataico y MATIAS lo incluyen). Cotizar con Certicámara, GSE o Andes SCD. <span class="tag e">REFERENCIA</span></td></tr>
+</table>
+
+<h3>2.2 Funcionamiento mensual</h3>
+<table>
+<tr><th>Concepto</th><th>Aplica</th><th class="r">Valor</th><th>Nota</th></tr>
+<tr><td><b>Servidor VPS</b> (Hostinger KVM 2: 2 vCPU, 8 GB, 100 GB NVMe)</td><td>Todas</td><td class="r">US$14,99 ≈ $47.600 al mes<br><span class="n">primer plazo US$8,79 ≈ $27.900</span></td><td>Precio de renovación (el de promoción solo aplica al primer plazo); se paga por adelantado. Incluye respaldos semanales; además se hace una copia diaria de la base de datos al almacenamiento. Alternativas: OVH VPS-2 desde US$8,50; DigitalOcean 4 GB con respaldo diario US$31,20 ≈ $99.000, sin compromiso largo. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Almacenamiento de PDF, firmas y fotos (Cloudflare R2)</td><td>Todas</td><td class="r">US$0–2 ≈ $0–6.000 al mes</td><td>US$0,015 por GB al mes, primeros 10 GB gratis, descarga gratis. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Dominio .com.co y certificado TLS</td><td>Todas</td><td class="r">US$18–27 al año ≈ $57.000–86.000</td><td><span class="tag e">REFERENCIA</span></td></tr>
+<tr><td>Correo transaccional (Resend o Brevo)</td><td>Todas</td><td class="r">US$0</td><td>Gratis hasta 3.000 correos al mes (Resend, 100 por día) o 300 por día (Brevo). Planes pagos desde US$9–20 al mes si crece. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Monitoreo de errores (Sentry)</td><td>Todas</td><td class="r">US$0</td><td>Plan gratuito de 5.000 errores al mes; Team US$26 al mes si crece. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td><b>Helisa Conekta</b> (API)</td><td>B y D</td><td class="r">$211.680 al mes<br>$2.540.160 al año</td><td>Contrato de un año; con pago anual anticipado se recibe un mes adicional. Hasta 100.000 registros al mes y 5.000 al día, disponibilidad del 97,5 %, sin soporte remoto. La página no indica si incluye IVA (con IVA ≈ $251.900 al mes). <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Servicio Helisa Hosting</td><td>B y D, solo si Helisa no está ya en la nube</td><td class="r">$60.000 por usuario al mes<br>(3 usuarios: $2.160.000 al año)</td><td>Exige licencia de Helisa vigente. Comserva hoy usa un servidor TSplus administrado por Julio. <span class="tag v">VERIFICADO</span> <span class="tag c">POR CONFIRMAR</span> si se necesita.</td></tr>
+<tr><td><b>Proveedor tecnológico de facturación electrónica</b></td><td>C y D</td><td class="r">$529.200–777.600 al año<br>≈ $44.100–64.800 al mes</td><td>Ver comparación en 2.3. Con unas 240 facturas al mes son ≈ 2.900 documentos al año más notas crédito. <span class="tag v">VERIFICADO</span> <span class="tag c">POR CONFIRMAR</span> si cada evento RADIAN cuenta como documento.</td></tr>
+<tr><td>WhatsApp Business (Meta), solo complemento C2</td><td>Si se contrata C2</td><td class="r">Menos de US$5 al mes</td><td>Plantilla de utilidad en Colombia ≈ US$0,0008 por mensaje, según agregadores; la tarifa oficial de Meta cambia cada trimestre. <span class="tag e">REFERENCIA</span></td></tr>
+</table>
+
+<h3>2.3 Comparación de proveedores de facturación electrónica (Propuesta 2)</h3>
+<table>
+<tr><th>Proveedor</th><th>Plan que cubre ≈ 2.900 documentos al año</th><th class="r">Valor al año</th><th>Incluye</th></tr>
+<tr><td><b>Plemsi</b> <span class="n">proveedor tecnológico autorizado por la DIAN</span></td><td>Paquete de 6.000 documentos (el de 2.400 no alcanza)<br><span class="n">Si cada evento RADIAN cuenta: 12.000 documentos</span></td><td class="r">$529.200<br><span class="n">$777.600</span></td><td>Facturas, notas crédito y débito, documento soporte, POS y eventos RADIAN; actualizaciones de la DIAN gratis. El certificado no se indica. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td><b>Dataico</b></td><td>Plan Empresarial (límite de documentos no publicado)</td><td class="r">$777.600</td><td>Usuarios ilimitados y certificado digital gratis. La API no tiene precio público: hay que cotizarla. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td><b>MATIAS API</b> <span class="n">opera como software propio</span></td><td>Emprendedor, 3.000 documentos (justo)<br>PYME Pro, 8.000 documentos</td><td class="r">$365.000<br>$560.000</td><td>Certificado digital, habilitación DIAN, nómina electrónica y POS incluidos. Soporte de 1 a 8 horas hábiles. <span class="tag v">VERIFICADO</span></td></tr>
+</table>
+<p class="note">Con software propio ante la DIAN el desarrollo costaría $24–36 M más y Comserva respondería por la plataforma; por eso se recomienda un proveedor tecnológico. El proveedor final se elige en la Fase 0 con una cotización formal.</p>
+
+<h3>2.4 Por qué un servidor propio y no Vercel ni hosting compartido</h3>
+<table>
+<tr><th>Opción</th><th class="r">Al mes</th><th>Lectura</th></tr>
+<tr><td><b>VPS Hostinger KVM 2</b> (recomendada)</td><td class="r">≈ $47.600</td><td>Corre el sistema tal como está diseñado (API, base de datos PostgreSQL, generador de PDF y tareas programadas). Exige parches y una prueba de restauración cada trimestre; esa administración la incluye el soporte. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Vercel Pro + base de datos Neon + almacenamiento</td><td class="r">≈ $86.000–127.000</td><td>Cuesta más y obliga a rediseñar la API, las tareas programadas y el generador de PDF. Vercel cobra por desarrollador (US$20 al mes) y corre en EE. UU. El plan gratuito (Hobby) no permite uso comercial. <span class="tag v">VERIFICADO</span> el precio de Vercel; el de Neon es una estimación.</td></tr>
+<tr><td>Hosting compartido de Hostinger (Web Apps / Cloud)</td><td class="r">≈ $11.000–25.000</td><td>Trae Node.js pero base de datos MySQL, no PostgreSQL, y no admite el generador de PDF. No sirve para este sistema. <span class="tag v">VERIFICADO</span></td></tr>
+<tr><td>Planes gratuitos (Supabase, Neon)</td><td class="r">$0</td><td>Descartados para producción: Supabase se pausa tras una semana sin uso y no hace respaldos; Neon bloquea las escrituras al llegar a 1 GB. <span class="tag v">VERIFICADO</span></td></tr>
+</table>
+<p class="note">Los respaldos semanales del proveedor no bastan solos: la base de datos se copia a diario al almacenamiento (incluido en el costo de almacenamiento). Si Comserva prefiere no pagar por adelantado ni administrar el servidor, DigitalOcean con respaldo diario cuesta ≈ $99.000 al mes, sin compromiso largo.</p>
+
+<h2 class="pb">3 · Resumen de costo por opción</h2>
+<table>
+<tr><th></th><th class="r">A · P1 · 1A</th><th class="r">B · P1 · 1B</th><th class="r">C · P2</th><th class="r">D · P2 + Conekta</th></tr>
+<tr><td>Desarrollo (una vez)</td><td class="r">$37.800.000</td><td class="r">$42.000.000</td><td class="r">$52.200.000</td><td class="r">$56.400.000</td></tr>
+<tr><td>Servidor, almacenamiento y dominio (al mes)</td><td class="r">≈ $57.000</td><td class="r">≈ $57.000</td><td class="r">≈ $57.000</td><td class="r">≈ $57.000</td></tr>
+<tr><td>Helisa Conekta (al mes)</td><td class="r">—</td><td class="r">$211.680</td><td class="r">—</td><td class="r">$211.680</td></tr>
+<tr><td>Proveedor de facturación y certificado (al mes)</td><td class="r">—</td><td class="r">—</td><td class="r">≈ $44.100–77.300</td><td class="r">≈ $44.100–77.300</td></tr>
+<tr class="tot"><td>Terceros al mes</td><td class="r">≈ $57.000</td><td class="r">≈ $269.000</td><td class="r">≈ $101.000–134.000</td><td class="r">≈ $313.000–346.000</td></tr>
+<tr class="tot"><td>Terceros al año</td><td class="r">≈ $0,7 M</td><td class="r">≈ $3,2 M</td><td class="r">≈ $1,2–1,6 M</td><td class="r">≈ $3,8–4,2 M</td></tr>
+<tr class="tot"><td>Primer año (desarrollo + terceros)</td><td class="r">≈ $38,5 M</td><td class="r">≈ $45,2 M</td><td class="r">≈ $53,4–53,8 M</td><td class="r">≈ $60,2–60,6 M</td></tr>
+<tr class="tot"><td>Cada año siguiente</td><td class="r">≈ $0,7 M</td><td class="r">≈ $3,2 M</td><td class="r">≈ $1,2–1,6 M</td><td class="r">≈ $3,8–4,2 M</td></tr>
+</table>
+<p class="note">Los valores no incluyen IVA. Se suman, si aplican: el IVA de Conekta, el Servicio Helisa Hosting ($2,16 M al año con 3 usuarios), Apple Developer, el soporte opcional y las variaciones de la TRM (referencia $3.174,67 por dólar). El servidor y el almacenamiento están en dólares.</p>
+
+<h2>4 · Soporte y mantenimiento posterior</h2>
+<table>
+<tr><th>Servicio</th><th class="r">Valor</th><th>Qué cubre</th></tr>
+<tr><td><b>Garantía</b></td><td class="r">Incluida</td><td>90 días por fase desde el acta de aceptación: corrección de errores del alcance contratado.</td></tr>
+<tr><td><b>Bolsa de soporte</b></td><td class="r">$480.000 al mes</td><td>8 horas al mes con respuesta en 1 día hábil: ajustes menores, consultas, cambios de catálogos y apoyo en el cierre. Las horas no usadas no se acumulan.</td></tr>
+<tr><td><b>Mantenimiento anual</b></td><td class="r">15–20 % del desarrollo<br>al año</td><td>Alternativa a la bolsa: actualizaciones, parches de seguridad, ajustes por cambios de la DIAN y de Helisa, y respaldo verificado. Sobre $37,8 M: $5,7–7,6 M al año.</td></tr>
+<tr><td><b>Cambios fuera del alcance</b></td><td class="r">Se cotiza</td><td>Por escrito y aprobado antes de ejecutarse.</td></tr>
+</table>
+
+<h2>5 · Qué asume cada parte</h2>
+<div class="two">
+<div class="box"><b>Lo asume Comserva</b>
+<ul>
+<li>Pagar los costos de terceros de la sección 2, a su nombre.</li>
+<li>Licencias y servicios de Helisa: habilitar Pedido, Conekta y hosting si se necesitan.</li>
+<li>Entregar los formatos oficiales de pedido y recibo (Julio), las cuentas de los dos libros, la lista de precios y los códigos de cliente.</li>
+<li>Un responsable que decida y apruebe en cada hito, y una persona para el piloto.</li>
+<li>Celulares Android y datos móviles de los operarios.</li>
+<li>En la P2: contratar al proveedor tecnológico, el certificado digital, el prefijo y la numeración, y los trámites del representante legal ante la DIAN.</li>
+<li>Los datos fiscales y la responsabilidad tributaria; ante la DIAN responde Comserva.</li>
+<li>El IVA de los servicios, si aplica.</li>
+</ul></div>
+<div class="box"><b>Lo asume el equipo</b>
+<ul>
+<li>Desarrollo, pruebas y despliegue según el alcance de cada fase.</li>
+<li>Configurar el servidor, los respaldos, el dominio y el monitoreo.</li>
+<li>Importaciones reales de prueba en Helisa y carga de datos con el volumen real.</li>
+<li>Capacitación, manuales y acta de series.</li>
+<li>Acompañar la habilitación en la DIAN (P2).</li>
+<li>Garantía de 90 días por fase.</li>
+<li>Herramientas de desarrollo y pruebas del propio equipo.</li>
+</ul></div>
+</div>
+
+<h2>6 · Lo que Comserva recibe a cambio</h2>
+<p>Con los supuestos de hoy (240 facturas y 150 recibos al mes, 10 minutos por factura, $20.000 por hora de quien factura), el trabajo mensual baja de unas <b>47,5 horas</b> a <b>14,5 horas</b> con la Propuesta 1 y a <b>4 horas</b> con la Propuesta 2. Son unos <b>$660.000</b> y <b>$870.000</b> al mes de tiempo liberado. Es un estimado: <b>se mide en el piloto</b> y depende de cuántas facturas son del servicio de residuos.</p>
+<p>Además, el tiempo liberado cae en el pico de fin de mes, la factura sale antes, no se pierden kilos por sumas a mano, el recibo solo se hace con factura y cada visita queda con evidencia para la autoridad ambiental. Por eso no se plantea un retorno basado solo en horas: la decisión de la Fase 2 se toma después del piloto, con el tiempo y los errores medidos.</p>
+
+<h2>7 · Condiciones y supuestos</h2>
+<ul>
+<li>Vigencia de la oferta: 30 días desde el 22 de octubre de 2026. Valores sin IVA, en pesos colombianos.</li>
+<li>Los plazos son estimados para un equipo de 3 personas a tiempo parcial y dependen de que Comserva y Helisa entreguen a tiempo los insumos.</li>
+<li>Los precios de terceros son los publicados por cada proveedor en la fecha de consulta y pueden cambiar; los marcados como referencia deben cotizarse antes de contratar.</li>
+<li>Volumen supuesto: 240 facturas y 150 recibos al mes. Si es distinto, cambian el plan del proveedor y el ahorro estimado.</li>
+<li>La propiedad del código y de los datos se pacta en el contrato.</li>
+<li>Pendientes por confirmar: habilitación del documento Pedido, formatos de Helisa, IVA y hosting de Conekta, volumen real, proveedor tecnológico y prefijo (P2).</li>
+</ul>
+
+<h3>Fuentes consultadas el 22 de octubre de 2026</h3>
+<p class="note">
+<a href="https://plemsi.com/precios-facturacion-electronica/">Plemsi · paquetes</a> ·
+<a href="https://www.dataico.com/planes-y-precios">Dataico · planes</a> ·
+<a href="https://matias-api.com/">MATIAS API</a> ·
+<a href="https://helisa.com/producto/helisa-conekta/">Helisa Conekta</a> ·
+<a href="https://helisa.com/producto/servicio-helisa-hosting/">Servicio Helisa Hosting</a> ·
+<a href="https://helisa.com/producto/cloud-basico/">Helisa Cloud</a> ·
+<a href="https://www.digitalocean.com/pricing/droplets">DigitalOcean Droplets</a> ·
+<a href="https://www.hetzner.com/cloud/regular-performance/">Hetzner Cloud</a> ·
+<a href="https://developers.cloudflare.com/r2/pricing/">Cloudflare R2</a> ·
+Resend, Brevo y Sentry (planes gratuitos, según sus páginas de precios) · Google Play y Apple Developer (tarifas de registro) · Certicámara, GSE y Andes SCD (certificado digital, por cotizar).
+</p>
+</body></html>
