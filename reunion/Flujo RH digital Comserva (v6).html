@@ -1,0 +1,312 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Flujo RH digital Comserva (v6)</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap">
+<style>
+  :root { color-scheme: light; --bg:#f6f8f7; --fg:#16231d; }
+  html, body { margin:0; background: var(--bg); color: var(--fg); }
+  body { font-family: 'Figtree', 'Source Sans 3', -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .page { max-width: 1600px; margin: 0 auto; padding-block: 16px; padding-inline: 16px; }
+  .wrap { overflow-x: auto; }
+  svg { display:block; width:100%; min-width: 900px; height:auto; font-family: inherit; }
+  @media print {
+    @page { size: 297mm 210mm; margin: 0; }
+    html, body { width: 297mm; height: 210mm; background: #f6f8f7; }
+    .page { max-width:none; padding:0; width:297mm; height:210mm; }
+    .wrap { overflow: visible; }
+    svg { width: 297mm; height: 210mm; min-width: 0; }
+  }
+</style></head><body><main class="page"><div class="wrap"><svg viewBox="0 0 1600 1131" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flujo general de RH digital Comserva según la v6: la visita, el cierre y el RH son comunes; de ahí salen dos caminos hacia Helisa: A, archivo de pedidos y factura uno a uno en Helisa; B, factura electrónica emitida por el sistema con un proveedor tecnológico y asiento hacia Helisa; el recibo de caja y su archivo son comunes.">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><filter id="sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#16231d" flood-opacity="0.12"/></filter></defs>
+<rect width="1600" height="1131" fill="#f6f8f7"/>
+<text x="24" y="50" font-size="30" font-weight="800" fill="#16231d" text-anchor="start" letter-spacing="-0.3">Cómo quedaría todo: un solo sistema y dos caminos hacia Helisa</text>
+<text x="24" y="80" font-size="15.5" fill="#46534c">Ejemplo real: <tspan font-weight="700" fill="#16231d">Cofema, septiembre de 2026</tspan> · 413,85 kg · $2.244.935 · levantamiento v6 (act. 23 oct 2026)</text>
+<path d="M880 68 h11 l5 5 v15 h-16 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.4"/><path d="M891 68 v5 h5" fill="none" stroke="#2f7d59" stroke-width="1.4"/>
+<text x="904" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >PDF al cliente</text>
+<path d="M1030.8 68 h11 l5 5 v15 h-16 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.4"/><path d="M1041.8 68 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.4"/>
+<text x="1054.8" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Archivo para Helisa</text>
+<rect x="1217.6" y="69" width="18" height="18" rx="4" fill="#fff2e6" stroke="#a86a00" stroke-width="1.4"/>
+<text x="1241.6" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Llamada a la API (B)</text>
+<circle cx="1419.6" cy="78" r="10" fill="#1f5e43"/><text x="1419.6" y="82.5" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">1</text>
+<text x="1435.6" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Paso</text>
+<rect x="1490.3999999999999" y="69" width="18" height="18" rx="4" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.4"/>
+<text x="1514.3999999999999" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Por confirmar</text>
+<rect x="192" y="118" width="390" height="34" rx="8" fill="#1f5e43"/>
+<text x="206" y="140.5" font-size="14.5" font-weight="800" fill="#fff" text-anchor="start" letter-spacing="0.6">COMÚN</text>
+<text x="271.0" y="140.5" font-size="14.5" font-weight="600" fill="#fff" text-anchor="start" >Visita, cierre y RH</text>
+<text x="568" y="140.5" font-size="12.5" font-weight="400" fill="#cfe6da" text-anchor="end" >igual en A y en B</text>
+<rect x="598" y="118" width="460" height="34" rx="8" fill="#1f5e43"/>
+<text x="612" y="140.5" font-size="14.5" font-weight="800" fill="#fff" text-anchor="start" letter-spacing="0.6">A o B</text>
+<text x="677.0" y="140.5" font-size="14.5" font-weight="600" fill="#fff" text-anchor="start" >La factura: Helisa (A) o el sistema (B)</text>
+<text x="1044" y="140.5" font-size="12.5" font-weight="400" fill="#cfe6da" text-anchor="end" >decide el 23 oct</text>
+<rect x="1074" y="118" width="506" height="34" rx="8" fill="#1f5e43"/>
+<text x="1088" y="140.5" font-size="14.5" font-weight="800" fill="#fff" text-anchor="start" letter-spacing="0.6">COMÚN</text>
+<text x="1153.0" y="140.5" font-size="14.5" font-weight="600" fill="#fff" text-anchor="start" >Recibo de caja y cruce en Helisa</text>
+<text x="1566" y="140.5" font-size="12.5" font-weight="400" fill="#cfe6da" text-anchor="end" >igual en A y en B</text>
+<rect x="20" y="162" width="1560" height="110" rx="10" fill="#f3f8f5" stroke="#d5ddd8"/>
+<rect x="20" y="162" width="6" height="110" rx="3" fill="#2f7d59"/>
+<text x="40" y="219.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Cliente</text>
+<text x="40" y="238.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >lo que recibe</text>
+<rect x="20" y="282" width="1560" height="130" rx="10" fill="#ffffff" stroke="#d5ddd8"/>
+<rect x="20" y="282" width="6" height="130" rx="3" fill="#1f5e43"/>
+<text x="40" y="349.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Operario</text>
+<text x="40" y="368.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >app en el celular</text>
+<rect x="20" y="422" width="1560" height="130" rx="10" fill="#ffffff" stroke="#d5ddd8"/>
+<rect x="20" y="422" width="6" height="130" rx="3" fill="#1f5e43"/>
+<text x="40" y="489.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Sistema</text>
+<text x="40" y="508.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >RH digital · panel</text>
+<rect x="20" y="562" width="1560" height="130" rx="10" fill="#ffffff" stroke="#d5ddd8"/>
+<rect x="20" y="562" width="6" height="130" rx="3" fill="#1f5e43"/>
+<text x="40" y="629.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Lucrecia</text>
+<text x="40" y="648.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >facturación</text>
+<rect x="20" y="702" width="1560" height="120" rx="10" fill="#eef2f6" stroke="#d5ddd8" stroke-dasharray="6 4"/>
+<rect x="20" y="702" width="6" height="120" rx="3" fill="#2c5d8a"/>
+<text x="40" y="764.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Helisa</text>
+<text x="40" y="783.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >programa contable</text>
+<text x="40" y="798.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >externo</text>
+<line x1="590" y1="158" x2="590" y2="826" stroke="#1f5e43" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.6"/><line x1="1066" y1="158" x2="1066" y2="826" stroke="#1f5e43" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.6"/>
+<g filter="url(#sh)"><rect x="189" y="176" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M201 190 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M218 190 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="213" y="214" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="235" y="203" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Constancia</text>
+<text x="235" y="221" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >De cada visita,</text>
+<text x="235" y="236" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >por WhatsApp</text>
+<g filter="url(#sh)"><rect x="361" y="176" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M373 190 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M390 190 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="385" y="214" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="407" y="203" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Planilla del mes</text>
+<text x="407" y="221" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >El RH en PDF,</text>
+<text x="407" y="236" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >al cerrar el mes</text>
+<g filter="url(#sh)"><rect x="770" y="176" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M782 190 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M799 190 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="794" y="214" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="816" y="203" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Factura electrónica</text>
+<text x="816" y="221" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >A: la envía Helisa</text>
+<text x="816" y="236" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >B: la envía el sistema</text>
+<g filter="url(#sh)"><rect x="1082" y="176" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M1094 190 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M1111 190 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="1106" y="214" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="1128" y="203" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Recibo de caja</text>
+<text x="1128" y="221" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >PDF por WhatsApp,</text>
+<text x="1128" y="236" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >al pagar</text>
+<g filter="url(#sh)"><rect x="192" y="293" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="192" y="293" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="210" cy="316" r="12" fill="#1f5e43"/><text x="210" y="320.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">1</text>
+<text x="228" y="321" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Visita y pesaje</text>
+<text x="204" y="343.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Días 5, 12, 19 y 22</text>
+<text x="204" y="358.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Kilos por categoría,</text>
+<text x="204" y="374.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >firmas, foto y GPS</text>
+<text x="204" y="389.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Funciona sin señal</text>
+<g filter="url(#sh)"><rect x="400" y="433" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="400" y="433" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="418" cy="456" r="12" fill="#1f5e43"/><text x="418" y="460.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">2</text>
+<text x="436" y="461" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Cierre → RH</text>
+<text x="412" y="483.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Suma las 4 visitas:</text>
+<text x="412" y="498.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >413,85 kg</text>
+<text x="412" y="514.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Aplica la tarifa y</text>
+<text x="412" y="529.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >congela el RH</text>
+<path d="M352 347 H480 V431" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="357" y="330" width="107.2" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="360" y="341" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >cada visita sube</text>
+<path d="M272 293 V261" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<path d="M480 433 V261" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<rect x="602" y="420" width="226" height="406" rx="8" fill="#f3f8f5" stroke="#2f7d59" stroke-width="1" stroke-dasharray="4 3" opacity="0.9"/>
+<text x="614" y="440" font-size="11.5" font-weight="800" fill="#1f5e43" text-anchor="start" letter-spacing="0.5">PROPUESTA A · pedidos</text>
+<g filter="url(#sh)"><rect x="612" y="452" width="206" height="86" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="612" y="452" width="206" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="630" cy="475" r="12" fill="#1f5e43"/><text x="630" y="479.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">3A</text>
+<text x="648" y="480" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Archivo de pedidos</text>
+<text x="624" y="502.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >OP, Excel de Julio: cliente,</text>
+<text x="624" y="517.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >concepto, lista, cantidad</text>
+<text x="624" y="533.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >y valor; sin cuentas ni IVA</text>
+<path d="M794 462 h13 l5 5 v17 h-18 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/><path d="M807 462 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.3"/><text x="803" y="479" font-size="6.5" font-weight="800" fill="#2c5d8a" text-anchor="middle">XLSX</text>
+<g filter="url(#sh)"><rect x="612" y="573" width="206" height="96" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="612" y="573" width="206" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="630" cy="596" r="12" fill="#1f5e43"/><text x="630" y="600.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">4A</text>
+<text x="648" y="601" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Importa y factura</text>
+<text x="624" y="623.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Importa los pedidos;</text>
+<text x="624" y="638.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >F5 trae cada pedido:</text>
+<text x="624" y="654.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >factura uno a uno</text>
+<g filter="url(#sh)"><rect x="612" y="712" width="206" height="86" rx="10" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.6"/></g>
+<rect x="612" y="712" width="206" height="5" rx="2.5" fill="#2c5d8a"/>
+<circle cx="630" cy="735" r="12" fill="#2c5d8a"/><text x="630" y="739.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">5A</text>
+<text x="648" y="740" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Helisa emite</text>
+<text x="624" y="762.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Contabiliza y emite</text>
+<text x="624" y="777.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >con ATEB: FVE 25756</text>
+<text x="624" y="793.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Devuelve el número</text>
+<path d="M560 487 H610" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="573" y="470" width="14.2" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="576" y="481" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >A</text>
+<path d="M715 538 V571" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="717" y="549" width="57.6" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="720" y="560" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >descarga</text>
+<path d="M715 669 V710" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="717" y="684" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="720" y="695" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="start" >importa</text>
+<rect x="842" y="420" width="214" height="406" rx="8" fill="#fff8f0" stroke="#a86a00" stroke-width="1" stroke-dasharray="4 3" opacity="0.9"/>
+<text x="854" y="440" font-size="11.5" font-weight="800" fill="#a86a00" text-anchor="start" letter-spacing="0.5">PROPUESTA B · factura en el sistema</text>
+<g filter="url(#sh)"><rect x="852" y="452" width="194" height="96" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="852" y="452" width="194" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="870" cy="475" r="12" fill="#a86a00"/><text x="870" y="479.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">3B</text>
+<text x="888" y="480" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Emite la factura</text>
+<text x="864" y="502.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Arma la factura desde</text>
+<text x="864" y="517.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >el RH y la envía a la</text>
+<text x="864" y="533.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >API del proveedor</text>
+<g filter="url(#sh)"><rect x="852" y="573" width="194" height="96" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="852" y="573" width="194" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="870" cy="596" r="12" fill="#a86a00"/><text x="870" y="600.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">4B</text>
+<text x="888" y="601" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >CUFE en segundos</text>
+<text x="864" y="623.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Número, QR, PDF y XML</text>
+<text x="864" y="638.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Correo al cliente</text>
+<text x="864" y="654.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Cierre: facturado</text>
+<g filter="url(#sh)"><rect x="852" y="712" width="194" height="86" rx="10" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.6"/></g>
+<rect x="852" y="712" width="194" height="5" rx="2.5" fill="#2c5d8a"/>
+<circle cx="870" cy="735" r="12" fill="#2c5d8a"/><text x="870" y="739.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">5B</text>
+<text x="888" y="740" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Recibe el asiento</text>
+<text x="864" y="762.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Ingreso, IVA, cartera</text>
+<text x="864" y="777.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >por archivo plano</text>
+<text x="864" y="793.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >(o por Conekta)</text>
+<path d="M560 520 H592 V554 H949 V550" fill="none" stroke="#a86a00" stroke-width="1.6" marker-end="url(#aho)"/>
+<rect x="595" y="537" width="14.2" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="598" y="548" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >B</text>
+<path d="M949 548 V571" fill="none" stroke="#a86a00" stroke-width="1.6" marker-end="url(#aho)"/>
+<rect x="951" y="554" width="45.2" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="954" y="565" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >valida</text>
+<path d="M949 669 V710" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="951" y="684" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="954" y="695" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="start" >asiento</text>
+<path d="M853 452 V261" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<rect x="1066" y="457" width="150" height="56" rx="28" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.4"/>
+<text x="1141" y="480" font-size="13" font-weight="800" fill="#1f5e43" text-anchor="middle" >Factura registrada</text>
+<text x="1141" y="498" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="middle" >A: FVE · B: CUFE</text>
+<path d="M818 627 H836 V564 H1120 V516" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1125" y="521" width="119.60000000000001" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1128" y="532" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >A: registra el FVE</text>
+<path d="M1046 620 H1141 V516" fill="none" stroke="#a86a00" stroke-width="1.6" marker-end="url(#aho)"/>
+<rect x="1049" y="629" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1052" y="640" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >B: CUFE</text>
+<g filter="url(#sh)"><rect x="1236" y="293" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1236" y="293" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1254" cy="316" r="12" fill="#1f5e43"/><text x="1254" y="320.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">6</text>
+<text x="1272" y="321" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Cobro al cliente</text>
+<text x="1248" y="343.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Solo si hay factura</text>
+<text x="1248" y="358.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >registrada</text>
+<text x="1248" y="374.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Anticipo, abono o</text>
+<text x="1248" y="389.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >pago total; firma</text>
+<path d="M1141 457 V347 H1234" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1145" y="409" width="113.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1148" y="420" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >habilita el cobro</text>
+<path d="M1316 293 V261" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<g filter="url(#sh)"><rect x="1236" y="573" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1236" y="573" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1254" cy="596" r="12" fill="#1f5e43"/><text x="1254" y="600.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">7</text>
+<text x="1272" y="601" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Recibe el dinero</text>
+<text x="1248" y="623.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >El operario declara</text>
+<text x="1248" y="638.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >lo que cobró; la</text>
+<text x="1248" y="654.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >oficina confirma</text>
+<path d="M1316 401 V571" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1319" y="489" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1322" y="500" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >entrega</text>
+<g filter="url(#sh)"><rect x="1410" y="433" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1410" y="433" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1428" cy="456" r="12" fill="#1f5e43"/><text x="1428" y="460.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">8</text>
+<text x="1446" y="461" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Archivo RC</text>
+<text x="1422" y="483.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >4 filas por recibo:</text>
+<text x="1422" y="498.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >caja y cartera, F y N,</text>
+<text x="1422" y="514.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >cruce con prefijo y</text>
+<text x="1422" y="529.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >número de la factura</text>
+<path d="M1552 445 h13 l5 5 v17 h-18 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/><path d="M1565 445 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.3"/><text x="1561" y="462" font-size="6.5" font-weight="800" fill="#2c5d8a" text-anchor="middle">XLSX</text>
+<path d="M1396 627 H1490 V543" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1427" y="551" width="70.0" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1430" y="562" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >confirmado</text>
+<g filter="url(#sh)"><rect x="1410" y="573" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1410" y="573" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1428" cy="596" r="12" fill="#1f5e43"/><text x="1428" y="600.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">9</text>
+<text x="1446" y="601" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Importa y registra</text>
+<text x="1422" y="623.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Importa el archivo RC</text>
+<text x="1422" y="638.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >y anota el número</text>
+<text x="1422" y="654.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >del recibo definitivo</text>
+<text x="1422" y="669.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Recibo: cruzado</text>
+<path d="M1570 487 H1584 V627 H1572" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1543.4" y="555" width="57.6" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1598" y="566" font-size="11" font-weight="600" fill="#46534c" text-anchor="end" >descarga</text>
+<g filter="url(#sh)"><rect x="1410" y="712" width="160" height="98" rx="10" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.6"/></g>
+<rect x="1410" y="712" width="160" height="5" rx="2.5" fill="#2c5d8a"/>
+<circle cx="1428" cy="735" r="12" fill="#2c5d8a"/><text x="1428" y="739.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">10</text>
+<text x="1446" y="740" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Cruza el pago</text>
+<text x="1422" y="762.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Factura menos pago</text>
+<text x="1422" y="777.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Saldo: $0</text>
+<text x="1422" y="793.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Recibo definitivo</text>
+<path d="M1466 681 V710" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="1467" y="689" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1470" y="700" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="start" >importa</text>
+<text x="200" y="758" font-size="12.5" font-weight="700" fill="#2c5d8a" text-anchor="start" font-style="italic">Aquí termina el sistema.</text>
+<text x="200" y="776" font-size="12" font-weight="400" fill="#2c5d8a" text-anchor="start" font-style="italic">A: Helisa factura y lleva la contabilidad.</text>
+<text x="200" y="792" font-size="12" font-weight="400" fill="#2c5d8a" text-anchor="start" font-style="italic">B: Helisa solo lleva la contabilidad.</text>
+<rect x="20" y="842" width="500" height="258" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
+<text x="38" y="872" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >La cuenta de Cofema, septiembre de 2026</text>
+<rect x="32" y="886" width="476" height="23" rx="5" fill="#f3f8f5"/>
+<text x="42" y="902" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Kilos del mes (4 visitas)</text>
+<text x="498" y="902" font-size="13" font-weight="700" fill="#16231d" text-anchor="end" style="font-variant-numeric:tabular-nums">413,85 kg</text>
+<text x="42" y="927" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >− Kilos incluidos en el básico</text>
+<text x="498" y="927" font-size="13" font-weight="700" fill="#16231d" text-anchor="end" style="font-variant-numeric:tabular-nums">20,00 kg</text>
+<rect x="32" y="936" width="476" height="23" rx="5" fill="#f3f8f5"/>
+<text x="42" y="952" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >= Kilos adicionales</text>
+<text x="330.0" y="952" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="end" >393,85 kg × $4.600</text>
+<text x="498" y="952" font-size="13" font-weight="700" fill="#16231d" text-anchor="end" style="font-variant-numeric:tabular-nums">$1.811.710</text>
+<text x="42" y="977" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >+ Valor básico mensual</text>
+<text x="498" y="977" font-size="13" font-weight="700" fill="#16231d" text-anchor="end" style="font-variant-numeric:tabular-nums">$74.790</text>
+<rect x="32" y="986" width="476" height="23" rx="5" fill="#f3f8f5"/>
+<text x="42" y="1002" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >= Subtotal</text>
+<text x="498" y="1002" font-size="13" font-weight="700" fill="#16231d" text-anchor="end" style="font-variant-numeric:tabular-nums">$1.886.500</text>
+<text x="42" y="1027" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >+ IVA 19 %</text>
+<text x="498" y="1027" font-size="13" font-weight="700" fill="#16231d" text-anchor="end" style="font-variant-numeric:tabular-nums">$358.435</text>
+<rect x="32" y="1038" width="476" height="34" rx="8" fill="#1f5e43"/>
+<text x="44" y="1060" font-size="14.5" font-weight="800" fill="#fff" text-anchor="start" >= Total · igual a la factura FVE 25756</text>
+<text x="496" y="1060" font-size="17" font-weight="800" fill="#fff" text-anchor="end" >$2.244.935</text>
+<rect x="536" y="842" width="520" height="258" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
+<text x="554" y="872" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Lo que mostró Julio el 21 y envió el 23 de octubre</text>
+<circle cx="554" cy="901" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 901 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="906" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Helisa no importa facturas: importa pedidos (OP).</text>
+<text x="572" y="924" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Excel de 24 columnas: cliente, concepto 2 y 3, lista de precio, cantidad y valor.</text>
+<circle cx="554" cy="950" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 950 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="955" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >La factura se hace una a una.</text>
+<text x="572" y="973" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Lucrecia entra a cada cliente y llama el pedido con F5.</text>
+<circle cx="554" cy="999" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 999 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="1004" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >El recibo entra por movimiento contable (17 columnas).</text>
+<text x="572" y="1022" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >4 filas: caja y cartera en F y N; cruce con prefijo y número de la factura.</text>
+<circle cx="554" cy="1048" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 1048 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="1053" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Comserva pidió evaluar facturar desde el sistema.</text>
+<text x="572" y="1071" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Nace la propuesta B; la contabilidad sigue en Helisa.</text>
+<rect x="1072" y="842" width="508" height="258" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
+<text x="1090" y="872" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >A o B: lo que cambia</text>
+<text x="1090" y="876" font-size="12" font-weight="800" fill="#1f5e43" text-anchor="start" ></text>
+<text x="1300" y="876" font-size="12" font-weight="800" fill="#1f5e43" text-anchor="start" >A · Pedidos</text>
+<text x="1450" y="876" font-size="12" font-weight="800" fill="#1f5e43" text-anchor="start" >B · Sistema</text>
+<rect x="1084" y="887" width="484" height="23" rx="5" fill="#fff"/>
+<text x="1090" y="902" font-size="12.5" font-weight="600" fill="#16231d" text-anchor="start" >Lucrecia factura en Helisa</text>
+<text x="1300" y="902" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Sí, uno a uno</text>
+<text x="1450" y="902" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >No</text>
+<rect x="1084" y="912" width="484" height="23" rx="5" fill="#f3f8f5"/>
+<text x="1090" y="927" font-size="12.5" font-weight="600" fill="#16231d" text-anchor="start" >Factura al cliente</text>
+<text x="1300" y="927" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Cuando Lucrecia la hace</text>
+<text x="1450" y="927" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >En segundos, con CUFE</text>
+<rect x="1084" y="937" width="484" height="23" rx="5" fill="#fff"/>
+<text x="1090" y="952" font-size="12.5" font-weight="600" fill="#16231d" text-anchor="start" >Costos nuevos al año</text>
+<text x="1300" y="952" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Ninguno</text>
+<text x="1450" y="952" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Factus desde $169.000</text>
+<rect x="1084" y="962" width="484" height="23" rx="5" fill="#f3f8f5"/>
+<text x="1090" y="977" font-size="12.5" font-weight="600" fill="#16231d" text-anchor="start" >Desarrollo extra</text>
+<text x="1300" y="977" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >≈ 60 h</text>
+<text x="1450" y="977" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >≈ 140–180 h</text>
+<rect x="1084" y="987" width="484" height="23" rx="5" fill="#fff"/>
+<text x="1090" y="1002" font-size="12.5" font-weight="600" fill="#16231d" text-anchor="start" >Riesgo</text>
+<text x="1300" y="1002" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Lista de precio por cliente</text>
+<text x="1450" y="1002" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Constancia DIAN</text>
+<rect x="1084" y="1012" width="484" height="23" rx="5" fill="#f3f8f5"/>
+<text x="1090" y="1027" font-size="12.5" font-weight="600" fill="#16231d" text-anchor="start" >Recomendación</text>
+<text x="1300" y="1027" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" ></text>
+<text x="1450" y="1027" font-size="12.5" font-weight="700" fill="#1f5e43" text-anchor="start" >Elegir B</text>
+<rect x="1084" y="1052" width="484" height="36" rx="8" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.3"/>
+<text x="1096" y="1067" font-size="11" font-weight="800" fill="#a86a00" text-anchor="start" letter-spacing="0.4">POR CONFIRMAR</text>
+<text x="1096" y="1081" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >Prefijo FEV o FVE y lista de precio por cliente (Julio) · constancia DIAN de Factus</text>
+<text x="24" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="start" >RH digital Comserva · flujo general según el levantamiento v6 · actualizado el 23 de octubre de 2026 · uso interno</text>
+<text x="1576" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="end" >El acta mensual y el portal del cliente llegan en la fase 2</text>
+</svg></div></main></body></html>

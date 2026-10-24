@@ -1,0 +1,143 @@
+{
+  "status": "OK",
+  "message": "Solicitud exitosa",
+  "data": {
+    "data": [
+      {
+        "id": 1776,
+        "document": "Nota Crédito",
+        "prefix": "CRTE",
+        "from": null,
+        "to": null,
+        "current": 1194,
+        "resolution_number": null,
+        "start_date": null,
+        "end_date": null,
+        "technical_key": null,
+        "is_expired": false,
+        "is_active": true,
+        "is_external": false,
+        "deleted_at": null,
+        "created_at": "2026-04-13T11:27:27Z",
+        "updated_at": "2026-10-23T12:52:46Z"
+      },
+      {
+        "id": 390,
+        "document": "Nota Crédito",
+        "prefix": "NC",
+        "from": null,
+        "to": null,
+        "current": 1691,
+        "resolution_number": "",
+        "start_date": null,
+        "end_date": null,
+        "technical_key": null,
+        "is_expired": false,
+        "is_active": true,
+        "is_external": false,
+        "deleted_at": null,
+        "created_at": "2025-06-05T16:20:59Z",
+        "updated_at": "2026-10-23T12:51:46Z"
+      },
+      {
+        "id": 391,
+        "document": "Nota Débito",
+        "prefix": "ND",
+        "from": null,
+        "to": null,
+        "current": 376,
+        "resolution_number": "",
+        "start_date": null,
+        "end_date": null,
+        "technical_key": null,
+        "is_expired": false,
+        "is_active": true,
+        "is_external": false,
+        "deleted_at": null,
+        "created_at": "2025-06-05T16:20:59Z",
+        "updated_at": "2026-10-22T19:30:12Z"
+      },
+      {
+        "id": 392,
+        "document": "Nota de Ajuste Documento Soporte",
+        "prefix": "NA",
+        "from": null,
+        "to": null,
+        "current": 206,
+        "resolution_number": "",
+        "start_date": null,
+        "end_date": null,
+        "technical_key": null,
+        "is_expired": false,
+        "is_active": true,
+        "is_external": false,
+        "deleted_at": null,
+        "created_at": "2025-06-05T16:20:59Z",
+        "updated_at": "2026-10-20T10:34:09Z"
+      },
+      {
+        "id": 389,
+        "document": "Factura de Venta",
+        "prefix": "SETP",
+        "from": 990000000,
+        "to": 995000000,
+        "current": 990030555,
+        "resolution_number": "18760000001",
+        "start_date": "2019-01-19",
+        "end_date": "2030-01-19",
+        "technical_key": "fc8eac422eba16e22ffd8c6f94b3f40a6e38162c",
+        "is_expired": false,
+        "is_active": true,
+        "is_external": false,
+        "deleted_at": null,
+        "created_at": "2025-06-05T16:20:59Z",
+        "updated_at": "2026-10-23T13:09:22Z"
+      },
+      {
+        "id": 2058,
+        "document": "Documento Soporte",
+        "prefix": "SEDS",
+        "from": 984000000,
+        "to": 985000000,
+        "current": 984001147,
+        "resolution_number": "18760000001",
+        "start_date": "2019-01-19",
+        "end_date": "2030-01-19",
+        "technical_key": null,
+        "is_expired": false,
+        "is_active": true,
+        "is_external": false,
+        "deleted_at": null,
+        "created_at": "2026-05-05T09:39:58Z",
+        "updated_at": "2026-10-23T10:49:28Z"
+      }
+    ],
+    "pagination": {
+      "total": 6,
+      "per_page": 10,
+      "current_page": 1,
+      "last_page": 1,
+      "from": 1,
+      "to": 6,
+      "links": [
+        {
+          "url": null,
+          "label": "&laquo; Anterior",
+          "active": false
+        },
+        {
+          "url": "https://api-sandbox.factus.com.co/v2/numbering-ranges?filter%5Bis_active%5D=1&page=1",
+          "label": 1,
+          "active": true,
+          "page": 1
+        },
+        {
+          "url": null,
+          "label": "Siguiente &raquo;",
+          "active": false,
+          "page": 2
+        }
+      ]
+    }
+  }
+}

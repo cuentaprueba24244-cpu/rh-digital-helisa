@@ -1,0 +1,70 @@
+{
+  "reference_code": "RH-22690-26-20261023131153",
+  "document": "01",
+  "numbering_range_id": 389,
+  "operation_type": "10",
+  "send_email": false,
+  "observation": "Servicio especial de aseo prestado mes de septiembre de 2026. RH 22690-26. Prueba RH digital Comserva (sandbox).",
+  "payment_details": [
+    {
+      "payment_form": "2",
+      "payment_method_code": "42",
+      "reference_code": "RH-22690-26",
+      "amount": "2244935.00",
+      "due_date": "2026-10-26"
+    }
+  ],
+  "billing_period": {
+    "start_date": "2026-09-01",
+    "end_date": "2026-09-30"
+  },
+  "customer": {
+    "identification_document_code": "31",
+    "identification": "891190218",
+    "dv": "5",
+    "company": "COMPAÑIA DE FOMENTO EMPRESARIAL Y MERCADOS AGROINDUSTRIALES S.A.",
+    "trade_name": "COFEMA S.A.",
+    "address": "KM 5 VIA MORELIA, BARRIO COFEMA, FLORENCIA",
+    "email": "liquidacion@cofemacaqueta.com.co",
+    "phone": "3183724275",
+    "legal_organization_code": "1",
+    "tribute_code": "ZZ",
+    "country_code": "CO",
+    "responsibilities": [
+      "R-99-PN"
+    ],
+    "municipality_code": "18001"
+  },
+  "items": [
+    {
+      "code_reference": "SRV-BASICO",
+      "name": "RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS SEPTIEMBRE 2026",
+      "quantity": "1.00",
+      "discount_rate": "0.00",
+      "price": "74790.00",
+      "unit_measure_code": "94",
+      "standard_code": "999",
+      "taxes": [
+        {
+          "code": "01",
+          "rate": "19.00"
+        }
+      ]
+    },
+    {
+      "code_reference": "SRV-KG",
+      "name": "KILOGRAMOS ADICIONALES (413,85 kg - 20 kg incluidos)",
+      "quantity": "393.85",
+      "discount_rate": "0.00",
+      "price": "4600.00",
+      "unit_measure_code": "KGM",
+      "standard_code": "999",
+      "taxes": [
+        {
+          "code": "01",
+          "rate": "19.00"
+        }
+      ]
+    }
+  ]
+}

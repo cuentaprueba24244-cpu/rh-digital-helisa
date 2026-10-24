@@ -1,0 +1,325 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Propuesta B · factura electrónica en el sistema (v6)</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap">
+<style>
+  :root { color-scheme: light; --bg:#f6f8f7; --fg:#16231d; }
+  html, body { margin:0; background: var(--bg); color: var(--fg); }
+  body { font-family: 'Figtree', 'Source Sans 3', -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .page { max-width: 1600px; margin: 0 auto; padding-block: 16px; padding-inline: 16px; }
+  .wrap { overflow-x: auto; }
+  svg { display:block; width:100%; min-width: 900px; height:auto; font-family: inherit; }
+  @media print {
+    @page { size: 297mm 210mm; margin: 0; }
+    html, body { width: 297mm; height: 210mm; background: #f6f8f7; }
+    .page { max-width:none; padding:0; width:297mm; height:210mm; }
+    .wrap { overflow: visible; }
+    svg { width: 297mm; height: 210mm; min-width: 0; }
+  }
+</style></head><body><main class="page"><div class="wrap"><svg viewBox="0 0 1600 1131" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Propuesta B paso a paso: el sistema arma la factura desde el RH y la envía a la API del proveedor tecnológico (Factus), la DIAN la valida y devuelve CUFE, PDF y XML; el cliente la recibe al instante; a Helisa va el asiento; el recibo de caja y su cruce son como en A.">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><filter id="sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#16231d" flood-opacity="0.12"/></filter></defs>
+<rect width="1600" height="1131" fill="#f6f8f7"/>
+<text x="24" y="50" font-size="30" font-weight="800" fill="#16231d" text-anchor="start" letter-spacing="-0.3">Propuesta B · El sistema emite la factura; Helisa solo lleva la contabilidad</text>
+<text x="24" y="80" font-size="15.5" fill="#46534c">Ejemplo real: <tspan font-weight="700" fill="#16231d">Cofema, septiembre de 2026</tspan> · $2.244.935 · <tspan font-weight="700" fill="#a86a00">probado en el sandbox de Factus el 23 oct</tspan>: SETP990030555 y NC CRTE1194</text>
+<path d="M1040 68 h11 l5 5 v15 h-16 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.4"/><path d="M1051 68 v5 h5" fill="none" stroke="#2f7d59" stroke-width="1.4"/>
+<text x="1064" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >PDF al cliente</text>
+<path d="M1190.8 68 h11 l5 5 v15 h-16 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.4"/><path d="M1201.8 68 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.4"/>
+<text x="1214.8" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Archivo para Helisa</text>
+<rect x="1377.6" y="69" width="18" height="18" rx="4" fill="#fff2e6" stroke="#a86a00" stroke-width="1.4"/>
+<text x="1401.6" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Llamada a la API</text>
+<circle cx="1550.8" cy="78" r="10" fill="#1f5e43"/><text x="1550.8" y="82.5" font-size="11.5" font-weight="800" fill="#fff" text-anchor="middle">1</text>
+<text x="1566.8" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Paso</text>
+<rect x="1621.6" y="69" width="18" height="18" rx="4" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.4"/>
+<text x="1645.6" y="83" font-size="13" font-weight="400" fill="#46534c" text-anchor="start" >Por confirmar</text>
+<rect x="192" y="118" width="852" height="34" rx="8" fill="#1f5e43"/>
+<text x="206" y="140.5" font-size="14.5" font-weight="800" fill="#fff" text-anchor="start" letter-spacing="0.6">ETAPA 1</text>
+<text x="292.2" y="140.5" font-size="14.5" font-weight="600" fill="#fff" text-anchor="start" >Del RH a la factura validada por la DIAN</text>
+<text x="1030" y="140.5" font-size="12.5" font-weight="400" fill="#cfe6da" text-anchor="end" >pasos 1 a 6 · minutos después del cierre</text>
+<rect x="1060" y="118" width="520" height="34" rx="8" fill="#1f5e43"/>
+<text x="1074" y="140.5" font-size="14.5" font-weight="800" fill="#fff" text-anchor="start" letter-spacing="0.6">ETAPA 2</text>
+<text x="1160.2" y="140.5" font-size="14.5" font-weight="600" fill="#fff" text-anchor="start" >Del pago al cruce en Helisa</text>
+<text x="1566" y="140.5" font-size="12.5" font-weight="400" fill="#cfe6da" text-anchor="end" >pasos 7 a 11 · cuando el cliente paga</text>
+<rect x="20" y="162" width="1560" height="96" rx="10" fill="#f3f8f5" stroke="#d5ddd8"/>
+<rect x="20" y="162" width="6" height="96" rx="3" fill="#2f7d59"/>
+<text x="40" y="212.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Cliente</text>
+<text x="40" y="231.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >lo que recibe</text>
+<rect x="20" y="268" width="1560" height="116" rx="10" fill="#ffffff" stroke="#d5ddd8"/>
+<rect x="20" y="268" width="6" height="116" rx="3" fill="#1f5e43"/>
+<text x="40" y="328.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Operario</text>
+<text x="40" y="347.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >app en el celular</text>
+<rect x="20" y="394" width="1560" height="130" rx="10" fill="#ffffff" stroke="#d5ddd8"/>
+<rect x="20" y="394" width="6" height="130" rx="3" fill="#1f5e43"/>
+<text x="40" y="461.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Sistema</text>
+<text x="40" y="480.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >RH digital · panel</text>
+<rect x="20" y="534" width="1560" height="112" rx="10" fill="#fff8f0" stroke="#d5ddd8" stroke-dasharray="6 4"/>
+<rect x="20" y="534" width="6" height="112" rx="3" fill="#a86a00"/>
+<text x="40" y="592.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Factus · DIAN</text>
+<text x="40" y="611.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >proveedor tecnológico</text>
+<text x="40" y="626.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >API</text>
+<rect x="20" y="656" width="1560" height="90" rx="10" fill="#ffffff" stroke="#d5ddd8"/>
+<rect x="20" y="656" width="6" height="90" rx="3" fill="#1f5e43"/>
+<text x="40" y="703.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Lucrecia</text>
+<text x="40" y="722.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >facturación</text>
+<rect x="20" y="756" width="1560" height="76" rx="10" fill="#eef2f6" stroke="#d5ddd8" stroke-dasharray="6 4"/>
+<rect x="20" y="756" width="6" height="76" rx="3" fill="#2c5d8a"/>
+<text x="40" y="796.0" font-size="17" font-weight="800" fill="#16231d" text-anchor="start" >Helisa</text>
+<text x="40" y="815.0" font-size="12" font-weight="400" fill="#6e7b74" text-anchor="start" >contabilidad</text>
+<line x1="1052" y1="158" x2="1052" y2="836" stroke="#1f5e43" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.6"/>
+<g filter="url(#sh)"><rect x="189" y="170" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M201 184 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M218 184 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="213" y="208" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="235" y="197" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Constancia</text>
+<text x="235" y="215" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >De cada visita,</text>
+<text x="235" y="230" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >por WhatsApp</text>
+<g filter="url(#sh)"><rect x="361" y="170" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M373 184 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M390 184 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="385" y="208" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="407" y="197" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Planilla del mes</text>
+<text x="407" y="215" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >El RH en PDF,</text>
+<text x="407" y="230" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >al cerrar el mes</text>
+<g filter="url(#sh)"><rect x="707" y="170" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M719 184 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M736 184 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="731" y="208" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="753" y="197" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Factura electrónica</text>
+<text x="753" y="215" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >Con CUFE y QR; la envía</text>
+<text x="753" y="230" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >el sistema en segundos</text>
+<g filter="url(#sh)"><rect x="1067" y="170" width="166" height="82" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.4"/></g>
+<path d="M1079 184 h17 l7 7 v22 h-24 z" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.5"/><path d="M1096 184 v7 h7" fill="none" stroke="#2f7d59" stroke-width="1.5"/>
+<text x="1091" y="208" font-size="7.5" font-weight="800" fill="#1f5e43" text-anchor="middle" >PDF</text>
+<text x="1113" y="197" font-size="13" font-weight="800" fill="#16231d" text-anchor="start" >Recibo de caja</text>
+<text x="1113" y="215" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >PDF por WhatsApp,</text>
+<text x="1113" y="230" font-size="11.5" font-weight="400" fill="#46534c" text-anchor="start" >al pagar</text>
+<g filter="url(#sh)"><rect x="192" y="276" width="160" height="100" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="192" y="276" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="210" cy="299" r="12" fill="#1f5e43"/><text x="210" y="303.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">1</text>
+<text x="228" y="304" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Visita y pesaje</text>
+<text x="204" y="326.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Días 5, 12, 19 y 22</text>
+<text x="204" y="341.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Kilos por categoría,</text>
+<text x="204" y="357.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >firmas, foto y GPS</text>
+<text x="204" y="372.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Funciona sin señal</text>
+<g filter="url(#sh)"><rect x="364" y="404" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="364" y="404" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="382" cy="427" r="12" fill="#1f5e43"/><text x="382" y="431.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">2</text>
+<text x="400" y="432" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Cierre → RH</text>
+<text x="376" y="454.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Suma las 4 visitas:</text>
+<text x="376" y="469.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >413,85 kg</text>
+<text x="376" y="485.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Aplica la tarifa</text>
+<text x="376" y="500.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >y congela el RH</text>
+<g filter="url(#sh)"><rect x="536" y="404" width="160" height="108" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="536" y="404" width="160" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="554" cy="427" r="12" fill="#a86a00"/><text x="554" y="431.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">3</text>
+<text x="572" y="432" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Arma la factura</text>
+<text x="548" y="454.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Cliente, 2 ítems (básico</text>
+<text x="548" y="469.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >y kilos adicionales),</text>
+<text x="548" y="485.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >IVA 19 %, plazo</text>
+<text x="548" y="500.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >reference_code = cierre</text>
+<g filter="url(#sh)"><rect x="536" y="545" width="160" height="96" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="536" y="545" width="160" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="554" cy="568" r="12" fill="#a86a00"/><text x="554" y="572.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">4</text>
+<text x="572" y="573" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Factus → DIAN</text>
+<text x="548" y="595.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >POST /v2/bills/validate</text>
+<text x="548" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Firma, numera (SETP) y</text>
+<text x="548" y="626.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >transmite a la DIAN</text>
+<rect x="620.2" y="534" width="71.80000000000001" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="656.1" y="548.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">PROBADO</text>
+<g filter="url(#sh)"><rect x="710" y="545" width="160" height="96" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="710" y="545" width="160" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="728" cy="568" r="12" fill="#a86a00"/><text x="728" y="572.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">5</text>
+<text x="746" y="573" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Vuelve el CUFE</text>
+<text x="722" y="595.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >SETP990030555</text>
+<text x="722" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >CUFE, QR de la DIAN,</text>
+<text x="722" y="626.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >PDF y XML · en 2,3 s</text>
+<rect x="794.2" y="534" width="71.80000000000001" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="830.1" y="548.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">PROBADO</text>
+<g filter="url(#sh)"><rect x="882" y="545" width="148" height="100" rx="10" fill="#ffffff" stroke="#a86a00" stroke-width="1.6"/></g>
+<rect x="882" y="545" width="148" height="5" rx="2.5" fill="#a86a00"/>
+<circle cx="900" cy="568" r="12" fill="#a86a00"/><text x="900" y="572.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">5′</text>
+<text x="918" y="573" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Nota crédito</text>
+<text x="894" y="595.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >POST /v2/credit-notes</text>
+<text x="894" y="610.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >/validate · concepto 2</text>
+<text x="894" y="626.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >CRTE1194 · anula la</text>
+<text x="894" y="641.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >SETP…555 · CUDE</text>
+<rect x="954.2" y="534" width="71.80000000000001" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="990.1" y="548.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">PROBADO</text>
+<path d="M850 512 V530 H956 V543" fill="none" stroke="#a86a00" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#aho)"/>
+<rect x="861" y="515" width="113.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="864" y="526" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >si hay que anular</text>
+<g filter="url(#sh)"><rect x="710" y="404" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="710" y="404" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="728" cy="427" r="12" fill="#1f5e43"/><text x="728" y="431.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">6</text>
+<text x="746" y="432" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Factura registrada</text>
+<text x="722" y="454.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Cierre: facturado</text>
+<text x="722" y="469.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >PDF y XML guardados</text>
+<text x="722" y="485.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Correo + WhatsApp</text>
+<text x="722" y="500.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >al cliente</text>
+<rect x="764.6" y="393" width="101.4" height="21" rx="10.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/>
+<text x="815.3" y="407.5" font-size="10.5" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.4">SIN DIGITAR</text>
+<g filter="url(#sh)"><rect x="882" y="404" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="882" y="404" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="900" cy="427" r="12" fill="#1f5e43"/><text x="900" y="431.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">6′</text>
+<text x="918" y="432" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Asiento (ASI)</text>
+<text x="894" y="454.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Ingreso $1.886.500</text>
+<text x="894" y="469.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >IVA $358.435</text>
+<text x="894" y="485.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Cartera $2.244.935</text>
+<text x="894" y="500.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Filas F y N</text>
+<path d="M1012 416 h13 l5 5 v17 h-18 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/><path d="M1025 416 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.3"/><text x="1021" y="433" font-size="6.5" font-weight="800" fill="#2c5d8a" text-anchor="middle">XLS</text>
+<g filter="url(#sh)"><rect x="882" y="664" width="160" height="72" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="882" y="664" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="900" cy="687" r="12" fill="#1f5e43"/><text x="900" y="691.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">6″</text>
+<text x="918" y="692" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Importa el asiento</text>
+<text x="894" y="714.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Movimiento contable</text>
+<text x="894" y="729.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Sin facturar en Helisa</text>
+<g filter="url(#sh)"><rect x="882" y="764" width="160" height="60" rx="10" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.6"/></g>
+<rect x="882" y="764" width="160" height="5" rx="2.5" fill="#2c5d8a"/>
+<circle cx="900" cy="787" r="12" fill="#2c5d8a"/><text x="900" y="791.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">6‴</text>
+<text x="918" y="792" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Contabiliza</text>
+<text x="894" y="814.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Como si hubiera facturado</text>
+<g filter="url(#sh)"><rect x="1070" y="282" width="160" height="100" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1070" y="282" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1088" cy="305" r="12" fill="#1f5e43"/><text x="1088" y="309.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">7</text>
+<text x="1106" y="310" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Cobro al cliente</text>
+<text x="1082" y="332.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Solo si hay factura</text>
+<text x="1082" y="347.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >validada</text>
+<text x="1082" y="363.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Anticipo, abono o total</text>
+<g filter="url(#sh)"><rect x="1240" y="664" width="160" height="72" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1240" y="664" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1258" cy="687" r="12" fill="#1f5e43"/><text x="1258" y="691.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">8</text>
+<text x="1276" y="692" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Recibe el dinero</text>
+<text x="1252" y="714.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >El operario declara;</text>
+<text x="1252" y="729.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >la oficina confirma</text>
+<g filter="url(#sh)"><rect x="1240" y="404" width="160" height="108" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1240" y="404" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1258" cy="427" r="12" fill="#1f5e43"/><text x="1258" y="431.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">9</text>
+<text x="1276" y="432" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Archivo RC</text>
+<text x="1252" y="454.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Mov. contable: caja</text>
+<text x="1252" y="469.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >contra cartera 1305,</text>
+<text x="1252" y="485.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >dos libros (F y N)</text>
+<text x="1252" y="500.5" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >y la factura a cruzar</text>
+<path d="M1370 416 h13 l5 5 v17 h-18 z" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/><path d="M1383 416 v5 h5" fill="none" stroke="#2c5d8a" stroke-width="1.3"/><text x="1379" y="433" font-size="6.5" font-weight="800" fill="#2c5d8a" text-anchor="middle">XLS</text>
+<g filter="url(#sh)"><rect x="1410" y="664" width="160" height="72" rx="10" fill="#ffffff" stroke="#2f7d59" stroke-width="1.6"/></g>
+<rect x="1410" y="664" width="160" height="5" rx="2.5" fill="#2f7d59"/>
+<circle cx="1428" cy="687" r="12" fill="#1f5e43"/><text x="1428" y="691.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">10</text>
+<text x="1446" y="692" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Importa y registra</text>
+<text x="1422" y="714.0" font-size="12" font-weight="400" fill="#46534c" text-anchor="start" >Importa el archivo RC;</text>
+<text x="1422" y="729.5" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >recibo cruzado</text>
+<g filter="url(#sh)"><rect x="1410" y="764" width="160" height="60" rx="10" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.6"/></g>
+<rect x="1410" y="764" width="160" height="5" rx="2.5" fill="#2c5d8a"/>
+<circle cx="1428" cy="787" r="12" fill="#2c5d8a"/><text x="1428" y="791.5" font-size="12.5" font-weight="800" fill="#fff" text-anchor="middle">11</text>
+<text x="1446" y="792" font-size="14" font-weight="800" fill="#16231d" text-anchor="start" >Cruza el pago</text>
+<text x="1422" y="814.0" font-size="12" font-weight="700" fill="#16231d" text-anchor="start" >Saldo: $0 · pagada</text>
+<path d="M272 276 V252" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<path d="M444 404 V252" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<path d="M790 404 V252" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<rect x="793" y="319" width="39.0" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="796" y="330" font-size="11" font-weight="600" fill="#2f7d59" text-anchor="start" >envía</text>
+<path d="M1150 282 V252" fill="none" stroke="#2f7d59" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahg)"/>
+<path d="M352 330 H444 V402" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="357" y="313" width="107.2" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="360" y="324" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >cada visita sube</text>
+<path d="M524 458 H534" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<path d="M616 512 V543" fill="none" stroke="#a86a00" stroke-width="1.6" marker-end="url(#aho)"/>
+<rect x="619" y="521" width="39.0" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="622" y="532" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >envía</text>
+<path d="M696 593 H708" fill="none" stroke="#a86a00" stroke-width="1.6" marker-end="url(#aho)"/>
+<path d="M790 545 V512" fill="none" stroke="#a86a00" stroke-width="1.6" marker-end="url(#aho)"/>
+<rect x="793" y="521" width="57.6" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="796" y="532" font-size="11" font-weight="600" fill="#a86a00" text-anchor="start" >responde</text>
+<path d="M870 458 H880" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<path d="M1038 512 V662" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="907.2" y="646" width="125.8" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1030" y="657" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="end" >archivo (o Conekta)</text>
+<path d="M962 736 V762" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="965" y="741" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="968" y="752" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="start" >importa</text>
+<path d="M1042 458 H1052 V332 H1068" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1055" y="389" width="57.6" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1058" y="400" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >habilita</text>
+<text x="1058" y="414" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >el cobro</text>
+<path d="M1150 382 V701 H1238" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1153" y="684" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1156" y="695" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >entrega</text>
+<path d="M1320 664 V514" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1323" y="589" width="70.0" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1326" y="600" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >confirmado</text>
+<path d="M1400 458 H1490 V662" fill="none" stroke="#46534c" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1403" y="441" width="57.6" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1406" y="452" font-size="11" font-weight="600" fill="#46534c" text-anchor="start" >descarga</text>
+<path d="M1466 736 V762" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#ahb)"/>
+<rect x="1411.6" y="741" width="51.4" height="15" rx="4" fill="#f6f8f7" opacity="0.92"/>
+<text x="1460" y="752" font-size="11" font-weight="600" fill="#2c5d8a" text-anchor="end" >importa</text>
+<text x="200" y="700" font-size="12.5" font-weight="700" fill="#2c5d8a" text-anchor="start" font-style="italic">Aquí termina el sistema:</text>
+<text x="200" y="716" font-size="12" font-weight="400" fill="#2c5d8a" text-anchor="start" font-style="italic">Lucrecia importa (o recibe) asientos.</text>
+<text x="200" y="732" font-size="12" font-weight="400" fill="#2c5d8a" text-anchor="start" font-style="italic">No vuelve a facturar en Helisa.</text>
+<text x="200" y="795" font-size="12.5" font-weight="700" fill="#2c5d8a" text-anchor="start" font-style="italic">Helisa recibe la contabilidad</text>
+<text x="200" y="811" font-size="12" font-weight="400" fill="#2c5d8a" text-anchor="start" font-style="italic">de facturas y recibos; nada más.</text>
+<rect x="20" y="852" width="500" height="248" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
+<text x="38" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Lo que se envió a Factus y lo que respondió (sandbox, 23 oct)</text>
+<text x="36" y="896" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">POST /oauth/token → token 1 h · GET /v2/numbering-ranges → rango 389 SETP</text>
+<text x="36" y="912" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">reference_code &quot;RH-22690-26-…&quot; · document 01 · numbering_range_id 389</text>
+<text x="36" y="928" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">payment_details: forma 2 crédito · método 42 · vence 26/10/2026 · 2.244.935</text>
+<text x="36" y="944" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">billing_period 01/09 → 30/09/2026 · customer NIT 891190218-5 · mun. 18001</text>
+<text x="36" y="960" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">items: SRV-BASICO 1 × 74.790 (94) · SRV-KG 393,85 × 4.600 (KGM) · IVA 01 19 %</text>
+<text x="36" y="976" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">→ 201: number &quot;SETP990030555&quot; · is_validated true · cufe &quot;3bcb0081…&quot; · qr</text>
+<text x="36" y="992" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">totals: bruto 1.886.500 · IVA 358.435 · total 2.244.935 · public_url</text>
+<text x="36" y="1008" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">GET /v2/bills/SETP990030555 → 200 · GET …/download-pdf → PDF base64</text>
+<text x="36" y="1024" font-size="9.6" font-weight="400" fill="#16231d" text-anchor="start" font-family="JetBrains Mono, Menlo, monospace">POST /v2/credit-notes/validate · bill_number SETP…555 · concepto 2 → &quot;CRTE1194&quot;</text>
+<text x="36" y="1046" font-size="10.4" font-weight="400" fill="#6e7b74" text-anchor="start" >Mismo reference_code dos veces → misma factura (no duplica) · sin NIT del cliente → 422.</text>
+<text x="36" y="1060" font-size="10.4" font-weight="400" fill="#6e7b74" text-anchor="start" >Sandbox compartido (emisor «FACTUS V2»); la DIAN de pruebas solo deja notificaciones.</text>
+<rect x="32" y="1066" width="476" height="28" rx="8" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.2"/>
+<text x="44" y="1085" font-size="11.2" font-weight="700" fill="#1f5e43" text-anchor="start" >Evidencia: pruebas/sandbox-factus/ (script, JSON, PDF de la factura y de la nota crédito).</text>
+<rect x="536" y="852" width="520" height="248" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
+<text x="554" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Qué necesita Comserva para B</text>
+<circle cx="554" cy="907" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 907 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="912" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Plan anual API de Factus (precios recibidos el 23 oct).</text>
+<text x="572" y="930" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >150 documentos $169.000 · 400 documentos $190.000 al año; rangos ilimitados.</text>
+<circle cx="554" cy="956" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 956 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="961" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Activar: RUT, cámara de comercio, cédula del representante, pago.</text>
+<text x="572" y="979" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Certificado de firma: por confirmar si va dentro del paquete (≈ $130.000/año).</text>
+<circle cx="554" cy="1005" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M549.5 1005 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="572" y="1010" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Rango de numeración nuevo en la DIAN, asociado a Factus.</text>
+<text x="572" y="1028" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Prefijo propio; Helisa/ATEB sigue para lo que no pase por el sistema.</text>
+<rect x="548" y="1030" width="494" height="56" rx="8" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.3"/>
+<text x="560" y="1050" font-size="11" font-weight="800" fill="#a86a00" text-anchor="start" letter-spacing="0.4">POR CONFIRMAR</text>
+<text x="560" y="1066" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >Constancia de Factus como proveedor tecnológico ante la DIAN (micrositio en mantenimiento)</text>
+<text x="560" y="1080" font-size="11.5" font-weight="400" fill="#16231d" text-anchor="start" >y dos facturadores para un NIT con prefijos distintos. La API ya quedó probada de punta a punta.</text>
+<rect x="1072" y="852" width="508" height="248" rx="12" fill="#ffffff" stroke="#d5ddd8"/>
+<text x="1090" y="882" font-size="16" font-weight="800" fill="#16231d" text-anchor="start" >Estados y lo que cambia para Lucrecia</text>
+<text x="1090" y="921" font-size="12.5" font-weight="700" fill="#46534c" text-anchor="start" >Cierre</text>
+<rect x="1156" y="905" width="71.1" height="23" rx="11.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/>
+<text x="1191.55" y="920.5" font-size="12" font-weight="700" fill="#1f5e43" text-anchor="middle" >Abierto</text>
+<path d="M1231.1 916 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1249.1" y="905" width="71.1" height="23" rx="11.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/>
+<text x="1284.6499999999999" y="920.5" font-size="12" font-weight="700" fill="#1f5e43" text-anchor="middle" >Cerrado</text>
+<path d="M1324.1999999999998 916 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1342.1999999999998" y="905" width="85.7" height="23" rx="11.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/>
+<text x="1385.0499999999997" y="920.5" font-size="12" font-weight="700" fill="#1f5e43" text-anchor="middle" >Facturado</text>
+<path d="M1431.8999999999999 916 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1449.8999999999999" y="905" width="114.89999999999999" height="23" rx="11.5" fill="#1f5e43" stroke="#2f7d59" stroke-width="1"/>
+<text x="1507.35" y="920.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" >Contabilizado</text>
+<text x="1090" y="957" font-size="12.5" font-weight="700" fill="#46534c" text-anchor="start" >Factura</text>
+<rect x="1156" y="941" width="71.1" height="23" rx="11.5" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1"/>
+<text x="1191.55" y="956.5" font-size="12" font-weight="700" fill="#2c5d8a" text-anchor="middle" >Enviada</text>
+<path d="M1231.1 952 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1249.1" y="941" width="78.4" height="23" rx="11.5" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1"/>
+<text x="1288.3" y="956.5" font-size="12" font-weight="700" fill="#2c5d8a" text-anchor="middle" >Validada</text>
+<path d="M1331.5 952 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1349.5" y="941" width="107.6" height="23" rx="11.5" fill="#2c5d8a" stroke="#2c5d8a" stroke-width="1"/>
+<text x="1403.3" y="956.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" >Anulada (NC)</text>
+<text x="1090" y="993" font-size="12.5" font-weight="700" fill="#46534c" text-anchor="start" >Recibo</text>
+<rect x="1156" y="977" width="71.1" height="23" rx="11.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/>
+<text x="1191.55" y="992.5" font-size="12" font-weight="700" fill="#1f5e43" text-anchor="middle" >Emitido</text>
+<path d="M1231.1 988 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1249.1" y="977" width="85.7" height="23" rx="11.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/>
+<text x="1291.9499999999998" y="992.5" font-size="12" font-weight="700" fill="#1f5e43" text-anchor="middle" >Entregado</text>
+<path d="M1338.8 988 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1356.8" y="977" width="85.7" height="23" rx="11.5" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/>
+<text x="1399.6499999999999" y="992.5" font-size="12" font-weight="700" fill="#1f5e43" text-anchor="middle" >Exportado</text>
+<path d="M1446.5 988 h12" stroke="#6e7b74" stroke-width="1.4" marker-end="url(#ah)"/>
+<rect x="1464.5" y="977" width="71.1" height="23" rx="11.5" fill="#1f5e43" stroke="#2f7d59" stroke-width="1"/>
+<text x="1500.05" y="992.5" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" >Cruzado</text>
+<circle cx="1100" cy="1032" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M1095.5 1032 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1118" y="1037" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >Lucrecia aprueba el cierre e importa dos archivos al mes.</text>
+<text x="1118" y="1055" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Asientos de facturas y de recibos; ninguna factura a mano.</text>
+<circle cx="1100" cy="1078" r="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/><path d="M1095.5 1078 l3 3 l5.5 -6" fill="none" stroke="#1f5e43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1118" y="1083" font-size="13.5" font-weight="700" fill="#16231d" text-anchor="start" >El cliente recibe la factura en segundos (2,3 s en la prueba).</text>
+<text x="1118" y="1101" font-size="12.5" font-weight="400" fill="#46534c" text-anchor="start" >Desarrollo adicional: módulo FEL ≈ 80–120 h más que A.</text>
+<text x="24" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="start" >RH digital Comserva · propuesta B según el levantamiento v6 · actualizada el 23 de octubre de 2026 con la prueba del sandbox · uso interno</text>
+<text x="1576" y="1121" font-size="11" font-weight="400" fill="#6e7b74" text-anchor="end" >Recomendación del equipo: B · Comserva decide el viernes 23 de octubre</text>
+</svg></div></main></body></html>

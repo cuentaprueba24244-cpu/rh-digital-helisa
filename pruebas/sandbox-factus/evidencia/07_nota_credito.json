@@ -1,0 +1,219 @@
+{
+  "status": "Created",
+  "message": "Documento con el código de referencia NC-RH-22690-26-20261023131153 registrado y validado con éxito",
+  "data": {
+    "reference_code": "NC-RH-22690-26-20261023131153",
+    "number": "CRTE1194",
+    "correction_concept": {
+      "code": "2",
+      "name": "Anulación de factura electrónica"
+    },
+    "customization_id": {
+      "code": "20",
+      "name": "Nota Crédito que referencia una factura electrónica."
+    },
+    "payment_details": [
+      {
+        "payment_form": {
+          "code": "1",
+          "name": "Pago de contado"
+        },
+        "payment_method": {
+          "code": "10",
+          "name": "Efectivo"
+        },
+        "reference_code": null,
+        "amount": "2244935.00",
+        "due_date": null
+      }
+    ],
+    "billing_period": null,
+    "send_email": false,
+    "is_validated": true,
+    "validated_at": "23-10-2026 01:11:59 PM",
+    "errors": [
+      "Regla: CBF02, Notificación: No se informo el numero de la factura referenciada",
+      "Regla: RUT01, Notificación: La validación del estado del RUT próximamente estará disponible."
+    ],
+    "observation": "Anulación de prueba: visita tardía, se reemite.",
+    "created_at": "23-10-2026 01:11:58 PM",
+    "health": null,
+    "company": {
+      "url_logo": "https://api-sandbox.factus.com.co/logos/companies/1000789002/logos/logo-PabrWVczL536uMeLeWFBBIq0pmitvv4V.png",
+      "nit": "1000789002",
+      "dv": "2",
+      "economic_activity": "1084",
+      "establishment": {
+        "name": "FACTUS V2",
+        "address": "calle 11 8 84",
+        "phone_number": "3161331234",
+        "email": "factus@tudominio.com",
+        "municipality": {
+          "code": "68679",
+          "name": "San Gil",
+          "department": {
+            "code": "68",
+            "name": "Santander"
+          }
+        }
+      }
+    },
+    "customer": {
+      "identification_document": {
+        "code": "31",
+        "name": "NIT"
+      },
+      "identification": "891190218",
+      "dv": "5",
+      "graphic_representation_name": "COFEMA S.A.",
+      "trade_name": "COFEMA S.A.",
+      "company": "COMPAÑIA DE FOMENTO EMPRESARIAL Y MERCADOS AGROINDUSTRIALES S.A.",
+      "names": null,
+      "address": "KM 5 VIA MORELIA, BARRIO COFEMA, FLORENCIA",
+      "email": "liquidacion@cofemacaqueta.com.co",
+      "phone": "3183724275",
+      "legal_organization": {
+        "code": "1",
+        "name": "Persona Jurídica"
+      },
+      "tribute": {
+        "code": "ZZ",
+        "name": "No aplica"
+      },
+      "responsibilities": [
+        {
+          "code": "R-99-PN",
+          "name": "No responsable"
+        }
+      ],
+      "country": {
+        "code": "CO",
+        "name": "Colombia"
+      },
+      "municipality": {
+        "code": "18001",
+        "name": "Florencia",
+        "department": {
+          "code": "18",
+          "name": "Caqueta"
+        }
+      }
+    },
+    "items": [
+      {
+        "note": "",
+        "mandate": null,
+        "additional_properties": [],
+        "code_reference": "SRV-BASICO",
+        "name": "RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS SEPTIEMBRE 2026",
+        "quantity": "1.00",
+        "unit_measure": {
+          "code": "94",
+          "name": "unidad"
+        },
+        "standard_code": {
+          "code": "999",
+          "name": "Estándar de adopción del contribuyente"
+        },
+        "discount_rate": "0.00",
+        "discount": "0.00",
+        "gross_value": "74790.00",
+        "taxes": [
+          {
+            "tribute": {
+              "code": "01",
+              "name": "IVA"
+            },
+            "is_excluded": false,
+            "rates": [
+              {
+                "taxable_amount": "74790.00",
+                "tax_amount": "14210.10",
+                "rate": "19.00"
+              }
+            ]
+          }
+        ],
+        "withholding_taxes": [],
+        "price": "74790.00",
+        "commercial_sample": null,
+        "total": "89000.10"
+      },
+      {
+        "note": "",
+        "mandate": null,
+        "additional_properties": [],
+        "code_reference": "SRV-KG",
+        "name": "KILOGRAMOS ADICIONALES (413,85 kg - 20 kg incluidos)",
+        "quantity": "393.85",
+        "unit_measure": {
+          "code": "KGM",
+          "name": "kilogramo"
+        },
+        "standard_code": {
+          "code": "999",
+          "name": "Estándar de adopción del contribuyente"
+        },
+        "discount_rate": "0.00",
+        "discount": "0.00",
+        "gross_value": "4600.00",
+        "taxes": [
+          {
+            "tribute": {
+              "code": "01",
+              "name": "IVA"
+            },
+            "is_excluded": false,
+            "rates": [
+              {
+                "taxable_amount": "1811710.00",
+                "tax_amount": "344224.90",
+                "rate": "19.00"
+              }
+            ]
+          }
+        ],
+        "withholding_taxes": [],
+        "price": "4600.00",
+        "commercial_sample": null,
+        "total": "2155934.90"
+      }
+    ],
+    "allowance_charges": [],
+    "taxes": [
+      {
+        "tribute": {
+          "code": "01",
+          "name": "IVA"
+        },
+        "is_excluded": false,
+        "rates": [
+          {
+            "taxable_amount": "1886500.00",
+            "tax_amount": "358435.00",
+            "rate": "19.00"
+          }
+        ]
+      }
+    ],
+    "withholding_taxes": [],
+    "totals": {
+      "gross_amount": "1886500.00",
+      "taxable_amount": "1886500.00",
+      "tax_amount": "358435.00",
+      "surcharge_amount": "0.00",
+      "total": "2244935.00"
+    },
+    "currency": null,
+    "cude": "96eee131bb37ad343d35ecd7b94dbb1f41b07da6e127517acc20764c0e96239c573c684d57f7d15402beda1b0e32831d",
+    "bill": {
+      "reference_code": "RH-22690-26-20261023131153",
+      "number": "SETP990030555",
+      "cufe": "3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144"
+    },
+    "links": {
+      "qr": "https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=96eee131bb37ad343d35ecd7b94dbb1f41b07da6e127517acc20764c0e96239c573c684d57f7d15402beda1b0e32831d",
+      "public_url": "https://app-sandbox.factus.com.co/documents/credit-notes/e0e7c2aca0c95d2e78cb13cb6bc7dc9b04f93417b3ecd081d8787833e1c76f16"
+    }
+  }
+}

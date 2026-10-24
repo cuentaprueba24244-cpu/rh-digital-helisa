@@ -1,0 +1,244 @@
+{
+  "status": "Created",
+  "message": "Documento con el código de referencia RH-22690-26-20261023131153 registrado y validado con éxito",
+  "data": {
+    "reference_code": "RH-22690-26-20261023131153",
+    "number": "SETP990030555",
+    "document_type": {
+      "code": "01",
+      "name": "Factura electrónica de Venta"
+    },
+    "operation_type": {
+      "code": "10",
+      "name": "Estándar"
+    },
+    "order_reference": null,
+    "billing_period": {
+      "start_date": "01-09-2026",
+      "start_time": null,
+      "end_date": "30-09-2026",
+      "end_time": null
+    },
+    "payment_details": [
+      {
+        "payment_form": {
+          "code": "2",
+          "name": "Pago a crédito"
+        },
+        "payment_method": {
+          "code": "42",
+          "name": "Consignación"
+        },
+        "reference_code": "RH-22690-26",
+        "amount": "2244935.00",
+        "due_date": "26-10-2026"
+      }
+    ],
+    "send_email": false,
+    "has_claim": false,
+    "is_negotiable_instrument": false,
+    "is_validated": true,
+    "validated_at": "23-10-2026 01:11:54 PM",
+    "errors": {
+      "FAJ44b": "Regla: FAJ44b, Notificación: Nit o Documento de Identificación informado No corresponde al registrado en el RUT con respecto a la razón social o nombre comercial suministrado.",
+      "FAJ43b": "Regla: FAJ43b, Notificación: Nombre informado No corresponde al registrado en el RUT con respecto al Nit suministrado.",
+      "RUT01": "Regla: RUT01, Notificación: La validación del estado del RUT próximamente estará disponible"
+    },
+    "observation": "Servicio especial de aseo prestado mes de septiembre de 2026. RH 22690-26. Prueba RH digital Comserva (sandbox).",
+    "created_at": "23-10-2026 01:11:53 PM",
+    "numbering_range": {
+      "prefix": "SETP",
+      "from": 990000000,
+      "to": 995000000,
+      "resolution_number": "18760000001",
+      "start_date": "19-01-2019",
+      "end_date": "19-01-2030",
+      "months": 132
+    },
+    "health": null,
+    "beneficiary": null,
+    "company": {
+      "url_logo": "https://api-sandbox.factus.com.co/logos/companies/1000789002/logos/logo-PabrWVczL536uMeLeWFBBIq0pmitvv4V.png",
+      "nit": "1000789002",
+      "dv": "2",
+      "economic_activity": "1084",
+      "establishment": {
+        "name": "FACTUS V2",
+        "address": "calle 11 8 84",
+        "phone_number": "3161331234",
+        "email": "factus@tudominio.com",
+        "municipality": {
+          "code": "68679",
+          "name": "San Gil",
+          "department": {
+            "code": "68",
+            "name": "Santander"
+          }
+        }
+      }
+    },
+    "customer": {
+      "identification_document": {
+        "code": "31",
+        "name": "NIT"
+      },
+      "identification": "891190218",
+      "dv": "5",
+      "graphic_representation_name": "COFEMA S.A.",
+      "trade_name": "COFEMA S.A.",
+      "company": "COMPAÑIA DE FOMENTO EMPRESARIAL Y MERCADOS AGROINDUSTRIALES S.A.",
+      "names": null,
+      "address": "KM 5 VIA MORELIA, BARRIO COFEMA, FLORENCIA",
+      "email": "liquidacion@cofemacaqueta.com.co",
+      "phone": "3183724275",
+      "legal_organization": {
+        "code": "1",
+        "name": "Persona Jurídica"
+      },
+      "tribute": {
+        "code": "ZZ",
+        "name": "No aplica"
+      },
+      "responsibilities": [
+        {
+          "code": "R-99-PN",
+          "name": "No responsable"
+        }
+      ],
+      "country": {
+        "code": "CO",
+        "name": "Colombia"
+      },
+      "municipality": {
+        "code": "18001",
+        "name": "Florencia",
+        "department": {
+          "code": "18",
+          "name": "Caqueta"
+        }
+      }
+    },
+    "items": [
+      {
+        "scheme_id": null,
+        "collection_concept": null,
+        "note": "",
+        "mandate": null,
+        "additional_properties": [],
+        "code_reference": "SRV-BASICO",
+        "name": "RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS SEPTIEMBRE 2026",
+        "quantity": "1.00",
+        "unit_measure": {
+          "code": "94",
+          "name": "unidad"
+        },
+        "standard_code": {
+          "code": "999",
+          "name": "Estándar de adopción del contribuyente"
+        },
+        "discount_rate": "0.00",
+        "discount": "0.00",
+        "gross_value": "74790.00",
+        "taxes": [
+          {
+            "tribute": {
+              "code": "01",
+              "name": "IVA"
+            },
+            "is_excluded": false,
+            "rates": [
+              {
+                "taxable_amount": "74790.00",
+                "tax_amount": "14210.10",
+                "rate": "19.00"
+              }
+            ]
+          }
+        ],
+        "withholding_taxes": [],
+        "price": "74790.00",
+        "commercial_sample": null,
+        "total": "89000.10"
+      },
+      {
+        "scheme_id": null,
+        "collection_concept": null,
+        "note": "",
+        "mandate": null,
+        "additional_properties": [],
+        "code_reference": "SRV-KG",
+        "name": "KILOGRAMOS ADICIONALES (413,85 kg - 20 kg incluidos)",
+        "quantity": "393.85",
+        "unit_measure": {
+          "code": "KGM",
+          "name": "kilogramo"
+        },
+        "standard_code": {
+          "code": "999",
+          "name": "Estándar de adopción del contribuyente"
+        },
+        "discount_rate": "0.00",
+        "discount": "0.00",
+        "gross_value": "4600.00",
+        "taxes": [
+          {
+            "tribute": {
+              "code": "01",
+              "name": "IVA"
+            },
+            "is_excluded": false,
+            "rates": [
+              {
+                "taxable_amount": "1811710.00",
+                "tax_amount": "344224.90",
+                "rate": "19.00"
+              }
+            ]
+          }
+        ],
+        "withholding_taxes": [],
+        "price": "4600.00",
+        "commercial_sample": null,
+        "total": "2155934.90"
+      }
+    ],
+    "prepayment_details": [],
+    "allowance_charges": [],
+    "taxes": [
+      {
+        "tribute": {
+          "code": "01",
+          "name": "IVA"
+        },
+        "is_excluded": false,
+        "rates": [
+          {
+            "taxable_amount": "1886500.00",
+            "tax_amount": "358435.00",
+            "rate": "19.00"
+          }
+        ]
+      }
+    ],
+    "withholding_taxes": [],
+    "totals": {
+      "prepayment_amount": "0.00",
+      "gross_amount": "1886500.00",
+      "taxable_amount": "1886500.00",
+      "tax_amount": "358435.00",
+      "surcharge_amount": "0.00",
+      "total": "2244935.00"
+    },
+    "currency": null,
+    "related_documents": [],
+    "related_notes": {
+      "credit_notes": [],
+      "debit_notes": []
+    },
+    "cufe": "3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144",
+    "links": {
+      "qr": "https://catalogo-vpfe-hab.dian.gov.co/document/searchqr?documentkey=3bcb00817b692b007326459ccd1b467ab510246f307f48e45f50ee44ecbb2abf20817a5ad5a4811406f35d491344b144",
+      "public_url": "https://app-sandbox.factus.com.co/documents/bills/c48c540ab105beaeee6cbc8096658295d55dd99b86011a57fe67c10c72c4acf5"
+    }
+  }
+}

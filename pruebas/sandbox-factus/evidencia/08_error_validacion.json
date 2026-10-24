@@ -1,0 +1,12 @@
+{
+  "status": "Validation error",
+  "message": "Error de validación",
+  "data": {
+    "message": "Error de validación",
+    "errors": {
+      "customer.identification": [
+        "El campo número documento de identidad es obligatorio."
+      ]
+    }
+  }
+}
