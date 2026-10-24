@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comparativo de propuestas (v6)</title>
+<meta name="description" content="RH digital + Helisa · Dos caminos para Comserva. Propuesta 1 (hasta Helisa, modalidades 1A y 1B) y Propuesta 2 (con facturación electrónica por proveedor tecnológico), camino por fases, costos de terceros, trazabilidad y lo que necesitamos. Versión 6, 22 de octubre de 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  /* Documento para el cliente: A4 vertical, una sección por hoja. Lenguaje visual de la v5 (Figtree, verde y azul sobrios). */
+  :root {
+    color-scheme: light;
+    --canvas: #e6ebe8; --paper: #ffffff;
+    --fg: #16231d; --fg2: #46534c; --fg3: #6e7b74;
+    --line: #d5ddd8; --line2: #c2ccc6; --soft: #f4f7f5;
+    --g: #1f5e43; --g2: #2f7d59; --gs: #e7f2ec; --gs2: #f3f8f5;
+    --b: #2c5d8a; --bs: #e6eef6; --bs2: #f2f6fa;
+    --p: #5b4b8a; --ps: #eeebf6;
+    --a: #a86a00; --as: #fdf1d6; --ast: #e3b341;
+    --r: #a9271f; --rs: #fbe3e1;
+    --n: #5b6670; --ns: #eef1f3;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--canvas); color: var(--fg); }
+  body { font-family: 'Figtree', 'Source Sans 3', -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 12.3px; line-height: 1.42; counter-reset: pg; -webkit-print-color-adjust: exact; print-color-adjust: exact; -webkit-font-smoothing: antialiased; }
+  main { padding: 24px 0 8px; }
+  .sheet { counter-increment: pg; position: relative; width: 210mm; min-height: 297mm; margin: 0 auto 24px; background: var(--paper); padding: 12mm 14mm 17mm; box-shadow: 0 1px 2px rgba(22,35,29,.06), 0 10px 30px rgba(22,35,29,.10); }
+  .foot { position: absolute; left: 14mm; right: 14mm; bottom: 8mm; display: flex; justify-content: space-between; gap: 16px; font-size: 9px; color: var(--fg3); border-top: 1px solid var(--line); padding-top: 5px; }
+  .foot .pg::before { content: "Página " counter(pg) " de 12"; font-weight: 700; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 9.2px; color: var(--fg3); letter-spacing: .08em; text-transform: uppercase; font-weight: 700; padding-bottom: 6px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .top .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--g); margin-right: 7px; }
+  .sec { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 11px; }
+  .sec .n { flex: none; font-size: 15px; font-weight: 800; color: #fff; background: var(--g); border-radius: 9px; width: 34px; height: 34px; display: grid; place-items: center; }
+  .sec.blue .n { background: var(--b); }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  h2 { font-size: 22.5px; line-height: 1.15; font-weight: 800; letter-spacing: -.25px; }
+  .kick { margin: 4px 0 0; color: var(--fg2); font-size: 12.4px; }
+  h3 { font-size: 13px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
+  p { margin: 5px 0; }
+  b, strong { font-weight: 700; }
+  .eyebrow { font-size: 9.8px; letter-spacing: .1em; text-transform: uppercase; color: var(--fg3); font-weight: 800; margin: 0 0 5px; }
+  .muted { color: var(--fg3); }
+  .small { font-size: 11px; }
+  .card { border: 1px solid var(--line); border-radius: 11px; padding: 9px 12px; background: #fff; margin: 0 0 9px; }
+  .card.g { background: var(--gs2); border-color: #cfe3d7; }
+  .card.b { background: var(--bs2); border-color: #d3e0ec; }
+  .card.a { background: #fffaf0; border-color: #f0dca6; }
+  .card.p { background: #f8f6fc; border-color: #ddd7ee; }
+  .card.r { background: #fdf6f5; border-color: #f0cfcb; }
+  .card > :first-child { margin-top: 0; } .card > :last-child { margin-bottom: 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 9px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 9px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 9px; }
+  .grid2 > .card, .grid3 > .card, .grid4 > .card { margin: 0; }
+  .grid2 > *, .grid3 > *, .grid4 > *, .elim > *, .mods > * { min-width: 0; }
+  ul, ol { margin: 3px 0; padding-left: 16px; }
+  li { margin: 2px 0; }
+  ul.cols2 { columns: 2; column-gap: 22px; } ul.cols2 li { break-inside: avoid; }
+  ul.checks { list-style: none; padding-left: 0; }
+  ul.checks li { position: relative; padding-left: 20px; }
+  ul.checks li::before { content: ""; position: absolute; left: 0; top: 2px; width: 12px; height: 12px; border: 1.6px solid var(--g2); border-radius: 3px; background: #fff; }
+  ul.minus li::marker { color: var(--r); }
+  ul.plus li::marker { color: var(--g2); }
+  ol.steps { list-style: none; padding-left: 0; counter-reset: st; }
+  ol.steps li { counter-increment: st; position: relative; padding-left: 24px; margin: 4px 0; }
+  ol.steps li::before { content: counter(st); position: absolute; left: 0; top: 1px; width: 16px; height: 16px; border-radius: 50%; background: var(--g); color: #fff; font-size: 9.5px; font-weight: 800; display: grid; place-items: center; }
+  .pc { display: inline-block; font-size: 9.4px; font-weight: 800; letter-spacing: .02em; color: var(--a); background: var(--as); border: 1px solid var(--ast); border-radius: 999px; padding: 0 6px; line-height: 1.45; white-space: nowrap; vertical-align: 1px; }
+  .chip { display: inline-block; font-size: 9.4px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+  .chip.g { background: var(--g); color: #fff; } .chip.b { background: var(--b); color: #fff; }
+  .chip.gs { background: var(--gs); color: var(--g); } .chip.bs { background: var(--bs); color: var(--b); }
+  .chip.n { background: var(--ns); color: var(--n); } .chip.a { background: var(--as); color: var(--a); }
+  .fig { margin: 2px 0 10px; }
+  .fig svg { display: block; width: 100%; height: auto; font-family: inherit; }
+  .figcap { font-size: 10.2px; color: var(--fg3); margin: 4px 0 0; }
+  .figtitle { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg3); margin: 0 0 6px; }
+  .src { font-size: 9.8px; color: var(--fg3); margin: 6px 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; line-height: 1.36; }
+  th, td { padding: 5px 7px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  thead th { font-size: 9.6px; text-transform: uppercase; letter-spacing: .06em; color: var(--fg2); background: var(--soft); font-weight: 800; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.grp td { background: var(--soft); font-weight: 800; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg2); padding-top: 4px; padding-bottom: 4px; }
+  tr.tot td { font-weight: 800; border-top: 2px solid var(--line2); }
+  .tw { overflow-x: auto; }
+
+  /* Portada */
+  .cover { display: flex; flex-direction: column; }
+  .cover-band { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20mm; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 13px; color: var(--g); letter-spacing: .02em; }
+  .brand .mark { width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(135deg, var(--g) 0 50%, var(--b) 50% 100%); }
+  .cover-ver { font-size: 10.5px; font-weight: 700; color: var(--fg3); letter-spacing: .06em; text-transform: uppercase; }
+  .cover h1 { font-size: 46px; line-height: 1.02; font-weight: 800; letter-spacing: -1px; color: var(--fg); }
+  .cover h1 span { display: block; color: var(--g); font-size: 34px; letter-spacing: -.6px; margin-top: 8px; }
+  .cover .lead { font-size: 14.2px; color: var(--fg2); max-width: 64ch; margin: 14px 0 16px; line-height: 1.45; }
+  .meta4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 16px; margin: 6px 0 16px; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .meta4 dt { font-size: 9.4px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg3); }
+  .meta4 dd { margin: 2px 0 0; font-size: 11.6px; font-weight: 600; }
+  .toc { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 26px; }
+  .toc li { display: flex; gap: 8px; align-items: baseline; break-inside: avoid; margin: 0 0 5px; font-size: 11.8px; }
+  .toc .i { flex: none; width: 20px; font-weight: 800; color: var(--g); }
+  .toc .t { flex: 1; border-bottom: 1px dotted var(--line2); padding-bottom: 2px; }
+  .toc .p { flex: none; font-weight: 700; color: var(--fg3); font-variant-numeric: tabular-nums; }
+  .cover-note { margin-top: auto; font-size: 11px; color: var(--fg2); background: var(--soft); border-radius: 10px; padding: 9px 12px; }
+
+  /* Propuestas */
+  .prop { border-radius: 12px; padding: 10px 13px; border: 1px solid; }
+  .prop.p1 { background: var(--gs2); border-color: #bfdccb; }
+  .prop.p2 { background: var(--bs2); border-color: #c6d7e8; }
+  .prop h3 { font-size: 14px; margin: 6px 0 3px; }
+  .prop .mini { font-size: 11px; color: var(--fg2); border-top: 1px dashed var(--line2); padding-top: 5px; margin-top: 6px; }
+  .who h3 { display: flex; align-items: center; gap: 7px; }
+  .who h3 i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .elim { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 9px; }
+  .elim .card h3 { display: flex; align-items: center; gap: 7px; }
+  .ico { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; font-weight: 800; font-size: 13px; line-height: 1; color: #fff; flex: none; }
+  .ico.ok { background: var(--g2); } .ico.no { background: var(--a); }
+  .mods { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 9px; }
+  .mod { border-radius: 11px; padding: 9px 12px; border: 1px solid var(--line); background: #fff; }
+  .mod .k { display: inline-block; font-weight: 800; font-size: 11px; color: #fff; background: var(--g2); border-radius: 6px; padding: 1px 7px; margin-right: 6px; }
+  .mod.api .k { background: var(--b); }
+  .mod h3 { display: inline; font-size: 13px; }
+  .warnline { margin-top: 6px; font-weight: 700; color: var(--a); }
+  .newv6 { font-size: 11px; color: var(--fg2); border-left: 3px solid var(--g2); padding: 4px 0 4px 10px; margin: 2px 0 0; }
+
+  /* Hallazgos */
+  .find { position: relative; padding-top: 10px; }
+  .find .k { position: absolute; top: 9px; right: 11px; font-size: 18px; font-weight: 800; color: var(--line2); }
+  .find h3 { padding-right: 22px; }
+  .find p { margin: 0; font-size: 11.4px; }
+  .find.warn { background: #fffaf0; border-color: #f0dca6; }
+  .cobro { width: 100%; font-size: 10.6px; margin-top: 3px; }
+  .cobro td { padding: 3px 0; border-bottom: 1px dashed var(--line); }
+  .cobro tr:last-child td { border-bottom: 0; }
+
+  /* Comparativo */
+  .cmp th:first-child, .cmp td:first-child { width: 17%; font-weight: 800; color: var(--fg); }
+  .cmp thead th.h1a { background: var(--gs); color: var(--g); }
+  .cmp thead th.h1b { background: #dcebe3; color: var(--g); }
+  .cmp thead th.h2 { background: var(--bs); color: var(--b); }
+  .cmp td { font-size: 10.8px; }
+  .cmp td.c2 { background: #f7fafd; }
+  .dots { display: inline-flex; gap: 3px; vertical-align: -1px; margin-right: 5px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); display: inline-block; }
+  .dots i.on { background: var(--g2); } .dots.bl i.on { background: var(--b); }
+
+  /* Respuesta */
+  .answer { border-radius: 12px; background: var(--g); color: #fff; padding: 12px 16px; margin-bottom: 10px; }
+  .answer p { margin: 0; font-size: 14.2px; line-height: 1.4; }
+  .answer p + p { margin-top: 6px; font-size: 12px; color: #d6ebe0; }
+  .adds { counter-reset: ad; }
+  .adds .card { position: relative; padding-left: 38px; }
+  .adds .card::before { counter-increment: ad; content: counter(ad); position: absolute; left: 11px; top: 10px; width: 19px; height: 19px; border-radius: 50%; background: var(--b); color: #fff; font-weight: 800; font-size: 10.5px; display: grid; place-items: center; }
+  .adds .card p { margin: 0; font-size: 11.2px; }
+  .vs td:first-child { font-weight: 700; width: 24%; }
+  .vs td.ok { background: #f4f9f6; }
+  .vs td.ko { background: #fdf7f6; }
+  .vs thead th.ok { background: var(--gs); color: var(--g); }
+  .vs thead th.ko { background: var(--rs); color: var(--r); }
+
+  /* Fases */
+  .crit li { margin: 3px 0; }
+  .eq { display: flex; gap: 10px; align-items: center; font-size: 11.2px; }
+  .eq .from { text-decoration: line-through; color: var(--fg3); }
+
+  /* Trazabilidad */
+  .matrix { font-size: 10.6px; }
+  .matrix td, .matrix th { text-align: center; padding: 4px 5px; }
+  .matrix td:first-child, .matrix th:first-child { text-align: left; white-space: nowrap; }
+  .matrix thead th { font-size: 8.4px; letter-spacing: 0; padding: 4px 2px; }
+  .matrix td, .matrix th { padding-left: 3px; padding-right: 3px; }
+  .st { display: inline-block; border-radius: 999px; font-size: 9px; font-weight: 800; padding: 1px 7px; white-space: nowrap; }
+  .st.ok { background: var(--gs); color: var(--g); }
+  .st.pe { background: var(--as); color: var(--a); }
+  .st.no { background: var(--rs); color: var(--r); }
+  .st.na { background: var(--ns); color: var(--n); }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 6px; }
+  .filters span { font-size: 9.6px; font-weight: 700; border: 1px solid var(--line2); border-radius: 999px; padding: 1px 8px; color: var(--fg2); background: #fff; }
+  .filters span.on { background: var(--g); color: #fff; border-color: var(--g); }
+  .gain li { margin: 3px 0; }
+  .grid2.trz { grid-template-columns: 1.55fr 1fr; }
+
+  .linkinfo { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin: 0 0 4px; }
+  .linkinfo .lbl { font-size: 9.6px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fg3); margin-right: 3px; }
+  .linkinfo span:not(.lbl) { font-size: 10.2px; font-weight: 700; border-radius: 6px; padding: 2px 8px; background: var(--gs); color: var(--g); }
+  .linkinfo span.pend { background: var(--as); color: var(--a); }
+  .sbox { display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--g2); border-radius: 9px; padding: 6px 10px; background: #fff; margin: 4px 0 6px; }
+  .sbox .q { font-weight: 800; font-size: 12px; }
+  .sbox .q::before { content: ""; display: inline-block; width: 9px; height: 9px; border: 2px solid var(--g2); border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
+  .sbox .hint { font-size: 10px; color: var(--fg3); margin-left: auto; }
+  .chain-mini { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 10.2px; }
+  .chain-mini span { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; font-weight: 600; }
+  .chain-mini i { color: var(--g2); font-style: normal; font-weight: 800; }
+  .when ul { margin-top: 4px; }
+
+  /* Preguntas */
+  .qa td:first-child { width: 22px; font-weight: 800; color: var(--g); text-align: center; }
+  .qa td:last-child { width: 27%; color: var(--fg2); }
+  .qa td { font-size: 10.6px; padding: 4px 6px; }
+
+  @page { size: A4; margin: 0; }
+  @media print {
+    html, body { background: #fff; }
+    main { padding: 0; }
+    .sheet { margin: 0; box-shadow: none; width: 210mm; height: 297mm; min-height: 0; overflow: hidden; break-after: page; page-break-after: always; }
+    .sheet:last-of-type { break-after: auto; page-break-after: auto; }
+  }
+  @media screen and (max-width: 860px) {
+    main { padding: 0; }
+    .sheet { width: auto; min-height: 0; margin: 0 0 10px; padding: 20px 16px 58px; }
+    .foot { left: 16px; right: 16px; bottom: 14px; }
+    .grid2, .grid2.trz, .grid3, .grid4, .elim, .mods, .meta4 { grid-template-columns: 1fr; }
+    ul.cols2, .toc { columns: 1; }
+    .cover-band { margin-bottom: 28px; }
+    .cover h1 { font-size: 36px; } .cover h1 span { font-size: 26px; }
+    .tw table { min-width: 600px; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<!-- ============================ 1 · PORTADA ============================ -->
+<section class="sheet cover" id="portada">
+  <div class="cover-band">
+    <div class="brand"><span class="mark"></span>RH digital + Helisa</div>
+    <div class="cover-ver">Versión 6 · 22 de octubre de 2026</div>
+  </div>
+  <p class="eyebrow">Comserva S.A.S. · Comparativo de propuestas</p>
+  <h1>RH digital + Helisa<span>Dos caminos para Comserva</span></h1>
+  <p class="lead">Qué aprendimos en la reunión del 21 de octubre, cómo funcionaría cada propuesta, qué trabajo quita y cuál deja, cuánto tardaría, qué costos de terceros tendría y qué necesitamos de Comserva para empezar.</p>
+  <figure class="fig"><svg viewBox="0 0 720 262" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dos caminos: el trabajo común (visitas, cierre y planilla RH) se bifurca en la Propuesta 1, que llega hasta Helisa con pedidos y recibos, y la Propuesta 2, en la que el sistema emite la factura electrónica; en ambas Helisa lleva la contabilidad."><defs><marker id="f1-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f1-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f1-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f1-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f1-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f1-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f1-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f1-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f1-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f1-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f1-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><g filter="url(#f1-sh)"><rect x="0" y="92" width="150" height="86" rx="9" fill="#1f5e43" stroke="#1f5e43" stroke-width="1.3"/></g><text x="11" y="114" font-size="11.5" font-weight="800" fill="#ffffff">Común a las dos</text><text x="11" y="130" font-size="10.3" fill="#d6ebe0">Visitas, constancias,</text><text x="11" y="143.2" font-size="10.3" fill="#d6ebe0">cierre del mes y</text><text x="11" y="156.39999999999998" font-size="10.3" fill="#d6ebe0">planilla RH</text><g filter="url(#f1-sh)"><rect x="208" y="12" width="292" height="96" rx="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/></g><text x="219" y="45" font-size="11.5" font-weight="800" fill="#16231d">RH digital hasta Helisa</text><text x="219" y="61" font-size="10.3" fill="#46534c">Pedidos y recibos listos para importar;</text><text x="219" y="74.2" font-size="10.3" fill="#46534c">la factura se elabora en Helisa, una a una.</text><text x="219" y="87.4" font-size="10.3" fill="#46534c">Modalidades: <tspan font-weight="700" fill="#16231d">1A</tspan> archivos · <tspan font-weight="700" fill="#16231d">1B</tspan> API Conekta</text><rect x="219.0" y="3.9" width="82.1" height="16.2" rx="8.1" fill="#1f5e43" stroke="#1f5e43" stroke-width="1"/><text x="260.0" y="15.3" font-size="9.2" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.2">PROPUESTA 1</text><g filter="url(#f1-sh)"><rect x="208" y="162" width="292" height="96" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><text x="219" y="195" font-size="11.5" font-weight="800" fill="#16231d">RH digital con facturación electrónica</text><text x="219" y="211" font-size="10.3" fill="#46534c">El sistema emite la factura electrónica con</text><text x="219" y="224.2" font-size="10.3" fill="#46534c">un proveedor tecnológico autorizado por la</text><text x="219" y="237.39999999999998" font-size="10.3" fill="#46534c">DIAN; Helisa lleva la contabilidad.</text><rect x="219.0" y="153.9" width="82.1" height="16.2" rx="8.1" fill="#2c5d8a" stroke="#2c5d8a" stroke-width="1"/><text x="260.0" y="165.3" font-size="9.2" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.2">PROPUESTA 2</text><g filter="url(#f1-sh)"><rect x="570" y="92" width="150" height="86" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="580" y="90.8" width="130" height="4" rx="2" fill="#2c5d8a"/><text x="581" y="114" font-size="11.5" font-weight="800" fill="#16231d">Helisa</text><text x="581" y="130" font-size="10.3" fill="#46534c">Contabilidad, cartera</text><text x="581" y="143.2" font-size="10.3" fill="#46534c">y cruce de recibos,</text><text x="581" y="156.39999999999998" font-size="10.3" fill="#46534c">en las dos propuestas</text><path d="M150 135 C182 135 176 60 205 60" fill="none" stroke="#2f7d59" stroke-width="1.6" marker-end="url(#f1-ah-g)"/><path d="M150 135 C182 135 176 210 205 210" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#f1-ah-b)"/><path d="M500 60 C538 60 532 124 567 124" fill="none" stroke="#2f7d59" stroke-width="1.6" marker-end="url(#f1-ah-g)"/><path d="M500 210 C538 210 532 146 567 146" fill="none" stroke="#2c5d8a" stroke-width="1.6" marker-end="url(#f1-ah-b)"/><path d="M354 110 L354 158" fill="none" stroke="#a86a00" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#f1-ah-a)" stroke-linejoin="round"/><text x="364" y="131" font-size="10.2" font-weight="800" fill="#a86a00">Fase 2, si el piloto</text><text x="364" y="144" font-size="10.2" font-weight="800" fill="#a86a00">lo justifica</text></svg></figure>
+  <dl class="meta4">
+    <div><dt>Para</dt><dd>Gerencia, Logística, Facturación y contabilidad de Comserva</dd></div>
+    <div><dt>Reunión</dt><dd>Viernes 23 de octubre de 2026, 1:00 p. m.</dd></div>
+    <div><dt>Versión</dt><dd>6 · reemplaza el planteamiento de la v5</dd></div>
+    <div><dt>Preparado por</dt><dd>Equipo RH digital</dd></div>
+  </dl>
+  <p class="eyebrow">Contenido</p>
+  <ol class="toc">
+    <li><span class="i">1</span><span class="t">Resumen para decidir</span><span class="p">2</span></li>
+    <li><span class="i">2</span><span class="t">Lo que vimos en la reunión</span><span class="p">3</span></li>
+    <li><span class="i">3</span><span class="t">Propuesta 1 · RH digital hasta Helisa</span><span class="p">4</span></li>
+    <li><span class="i">4</span><span class="t">Propuesta 2 · con facturación electrónica</span><span class="p">5</span></li>
+    <li><span class="i">5</span><span class="t">Las propuestas lado a lado</span><span class="p">6</span></li>
+    <li><span class="i">6</span><span class="t">¿La facturación electrónica lo complica mucho?</span><span class="p">7</span></li>
+    <li><span class="i">7</span><span class="t">Camino por fases</span><span class="p">8</span></li>
+    <li><span class="i">8</span><span class="t">Cronograma en semanas</span><span class="p">9</span></li>
+    <li><span class="i">9</span><span class="t">Costos de terceros para Comserva</span><span class="p">10</span></li>
+    <li><span class="i">10</span><span class="t">Trazabilidad: qué se gana en control</span><span class="p">11</span></li>
+    <li><span class="i">11</span><span class="t">Lo que necesitamos</span><span class="p">12</span></li>
+  </ol>
+  <p class="cover-note"><b>Cómo leer este documento.</b> No incluye precios del equipo: la propuesta económica se entrega después de la reunión del viernes. Los tiempos van en semanas y los costos son solo de terceros. Lo marcado <span class="pc">por confirmar</span> todavía no es un dato confirmado por Comserva.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6) · 22 de octubre de 2026</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 2 · RESUMEN ============================ -->
+<section class="sheet" id="resumen">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Resumen</span></div>
+  <header class="sec"><span class="n">1</span><div><h2>Resumen para decidir</h2><p class="kick">Lo esencial en una página: qué cambió, las dos propuestas, lo que recomendamos y lo que necesitamos.</p></div></header>
+
+  <div class="card">
+    <h3>Lo que aprendimos el 21 de octubre</h3>
+    <ul class="cols2">
+      <li>Helisa <b>no importa facturas: importa pedidos</b>. La factura electrónica se sigue haciendo <b>una a una</b> en Helisa, llamando el pedido (F3).</li>
+      <li>El <b>recibo sí se importa</b> como movimiento contable: 1305 contra caja o bancos, con la factura que cruza y los dos libros.</li>
+      <li>En el Helisa de Comserva <b>el documento Pedido no está habilitado</b>: es un requisito previo.</li>
+      <li>Se emiten <b>≈ 240 facturas en 4 semanas</b> <span class="pc">por confirmar</span>, no ≈ 12 al mes como suponía la v5.</li>
+      <li>Hay <b>tres formas de cobro</b>: básico con kilos adicionales, solo por kilo y cobro fijo mensual.</li>
+      <li>Helisa vende una <b>API (Conekta)</b> que evita subir archivos, pero <b>no emite facturas</b>.</li>
+    </ul>
+  </div>
+
+  <div class="grid2">
+    <div class="prop p1">
+      <span class="chip g">Propuesta 1</span>
+      <h3>RH digital hasta Helisa</h3>
+      <p>El sistema hace todo el trabajo de campo y oficina y <b>llega hasta Helisa</b> con los pedidos y los recibos listos para importar. Lucrecia sigue elaborando cada factura en Helisa, pero sin sumar ni digitar.</p>
+      <p class="mini"><b>1A</b> archivos planos (base) · <b>1B</b> API Helisa Conekta (opcional; la paga Comserva).<br>≈ 14 semanas de desarrollo + 4 de piloto (≈ 18 en total), a tiempo parcial.</p>
+    </div>
+    <div class="prop p2">
+      <span class="chip b">Propuesta 2</span>
+      <h3>RH digital con facturación electrónica</h3>
+      <p>Todo lo de la Propuesta 1 y además <b>el sistema emite la factura electrónica</b> por medio de un proveedor tecnológico autorizado por la DIAN. Helisa queda para la contabilidad y la cartera.</p>
+      <p class="mini">≈ 6 semanas más, el trámite ante la DIAN y un ciclo de piloto: ≈ 28 semanas en total por fases, o ≈ 24 si se contrata completa desde el inicio.<br>Más compleja que la Propuesta 1, pero manejable con proveedor.</p>
+    </div>
+  </div>
+
+  <div class="card g">
+    <h3>Nuestra recomendación: avanzar por fases</h3>
+    <figure class="fig" style="margin:6px 0 8px"><svg viewBox="0 0 720 54" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Camino por fases: Fase 0 de definición, Fase 1 igual a la Propuesta 1, piloto de un ciclo, compuerta de decisión y Fase 2 de facturación electrónica."><defs><marker id="f2-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f2-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f2-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f2-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f2-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f2-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f2-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f2-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f2-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f2-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f2-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><polygon points="0.0,0.0 119.0,0.0 132.0,27.0 119.0,54.0 0.0,54.0" fill="#5b6670"/><text x="59.5" y="23" font-size="10.6" font-weight="800" fill="#fff" text-anchor="middle">Fase 0 · Definición</text><text x="59.5" y="38" font-size="9.6" font-weight="500" fill="#e3e8ec" text-anchor="middle">≈ 2 sem., en paralelo</text><polygon points="124.0,0.0 307.0,0.0 320.0,27.0 307.0,54.0 124.0,54.0 137.0,27.0" fill="#1f5e43"/><text x="222.0" y="23" font-size="10.6" font-weight="800" fill="#fff" text-anchor="middle">Fase 1 = Propuesta 1</text><text x="222.0" y="38" font-size="9.6" font-weight="500" fill="#d6ebe0" text-anchor="middle">≈ 14 sem. a tiempo parcial</text><polygon points="312.0,0.0 421.0,0.0 434.0,27.0 421.0,54.0 312.0,54.0 325.0,27.0" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.2"/><text x="373.0" y="23" font-size="10.6" font-weight="800" fill="#1f5e43" text-anchor="middle">Piloto</text><text x="373.0" y="38" font-size="9.6" font-weight="500" fill="#2f7d59" text-anchor="middle">un ciclo · 4 semanas</text><polygon points="426.0,0.0 517.0,0.0 530.0,27.0 517.0,54.0 426.0,54.0 439.0,27.0" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.2"/><text x="478.0" y="23" font-size="10.6" font-weight="800" fill="#a86a00" text-anchor="middle">Compuerta</text><text x="478.0" y="38" font-size="9.6" font-weight="500" fill="#a86a00" text-anchor="middle">¿se sigue?</text><polygon points="522.0,0.0 724.0,0.0 724.0,54.0 522.0,54.0 535.0,27.0" fill="#2c5d8a"/><text x="629.5" y="23" font-size="10.6" font-weight="800" fill="#fff" text-anchor="middle">Fase 2 · Facturación electrónica</text><text x="629.5" y="38" font-size="9.6" font-weight="500" fill="#dce8f3" text-anchor="middle">≈ 6 sem. + trámite DIAN + piloto</text></svg></figure>
+    <p>Empezar con la <b>Fase 1 (= Propuesta 1)</b> y un piloto de un ciclo; medir el tiempo real de la facturación una a una y, con esos datos, decidir si se contrata la <b>Fase 2 (facturación electrónica)</b>. La Fase 1 se construye para que la Fase 2 se conecte donde hoy sale el archivo de pedidos, sin rehacer el resto. Si Comserva lo prefiere, la Propuesta 2 completa se puede contratar desde el inicio.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Lo que necesitamos de Comserva</h3>
+      <ul class="checks">
+        <li>Habilitar el documento <b>Pedido</b> en Helisa y saber si tiene costo.</li>
+        <li>Los <b>formatos oficiales</b> del pedido y del recibo (Julio, en Excel).</li>
+        <li>Conceptos, listas de precio y <b>cartilla de clientes</b> con su código en Helisa.</li>
+        <li>Decidir <b>1A o 1B</b> y confirmar por escrito quién paga Conekta.</li>
+        <li>El <b>volumen real</b> de facturas y las fechas en que se factura.</li>
+        <li>Aceptar el <b>camino por fases</b> y el criterio de la compuerta.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Próximos pasos</h3>
+      <ol class="steps">
+        <li><b>Viernes 23 de octubre, 1:00 p. m.</b> Reunión para aterrizar los dos caminos.</li>
+        <li><b>Después del viernes.</b> El equipo entrega la propuesta económica de las dos propuestas.</li>
+        <li><b>Socialización</b> con quien decide en Comserva, con apoyo de Julio para mostrar el ahorro.</li>
+        <li><b>Firma y Fase 0:</b> formatos, habilitación de Pedido y prueba de importación con Cofema.</li>
+      </ol>
+    </div>
+  </div>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 3 · REUNIÓN ============================ -->
+<section class="sheet" id="reunion">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>La reunión del 21 de octubre</span></div>
+  <header class="sec"><span class="n">2</span><div><h2>Lo que vimos en la reunión del 21 de octubre</h2><p class="kick">Por Google Meet, con Gerencia, Logística y la persona que lleva la contabilidad y Helisa de Comserva. Se vio en pantalla el Helisa de Comserva y una importación de pedidos de ejemplo en otra empresa (aquí solo se describe su estructura).</p></div></header>
+
+  <p class="figtitle">Así entra hoy la información a Helisa</p>
+  <figure class="fig"><svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cómo entra hoy la información a Helisa: la factura nace de un pedido importado que se llama una a una con F3 y se envía a la DIAN; el recibo entra como movimiento contable al módulo de cartera."><defs><marker id="f3-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f3-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f3-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f3-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f3-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f3-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f3-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f3-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f3-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f3-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f3-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><rect x="0.5" y="0" width="719" height="96" rx="10" fill="#f7f9fb" stroke="#d5ddd8"/><rect x="0.5" y="0" width="24" height="96" rx="10" fill="#2c5d8a"/><rect x="14" y="0" width="11" height="96" fill="#2c5d8a"/><text transform="translate(16.5 48.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">FACTURA</text><rect x="0.5" y="104" width="719" height="96" rx="10" fill="#f7faf8" stroke="#d5ddd8"/><rect x="0.5" y="104" width="24" height="96" rx="10" fill="#2f7d59"/><rect x="14" y="104" width="11" height="96" fill="#2f7d59"/><text transform="translate(16.5 152.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">RECIBO</text><g filter="url(#f3-sh)"><rect x="36" y="12" width="156" height="74" rx="9" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.3"/></g><text x="47" y="34" font-size="11.5" font-weight="800" fill="#16231d">Archivo de pedidos</text><text x="47" y="50" font-size="10.3" fill="#46534c">Sin cuentas ni IVA:</text><text x="47" y="63.2" font-size="10.3" fill="#46534c">cantidad × valor unitario</text><text x="47" y="76.4" font-size="10.3" fill="#46534c">TXT o Excel, en ANSI</text><g filter="url(#f3-sh)"><rect x="210" y="12" width="156" height="74" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="220" y="10.8" width="136" height="4" rx="2" fill="#2c5d8a"/><text x="221" y="34" font-size="11" font-weight="800" fill="#16231d">Importación de pedidos</text><text x="221" y="50" font-size="10.3" fill="#46534c">Menú Exportar/Importar</text><rect x="221.0" y="58.9" width="116.6" height="16.2" rx="8.1" fill="#fdf1d6" stroke="#e3b341" stroke-width="1"/><text x="279.3" y="70.3" font-size="9.2" font-weight="800" fill="#a86a00" text-anchor="middle" letter-spacing="0.2">Pedido sin habilitar</text><g filter="url(#f3-sh)"><rect x="384" y="12" width="156" height="74" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="394" y="10.8" width="136" height="4" rx="2" fill="#2c5d8a"/><text x="395" y="34" font-size="11" font-weight="800" fill="#16231d">Factura FVE una a una</text><text x="395" y="50" font-size="10.3" fill="#46534c">Se abre la FVE del cliente</text><text x="395" y="63.2" font-size="10.3" fill="#46534c">y se llama el pedido (F3);</text><text x="395" y="76.4" font-size="10.3" fill="#46534c">Helisa pone IVA y cuentas</text><g filter="url(#f3-sh)"><rect x="558" y="12" width="156" height="74" rx="9" fill="#eef1f3" stroke="#5b6670" stroke-width="1.3" stroke-dasharray="5 3"/></g><text x="569" y="34" font-size="11.5" font-weight="800" fill="#16231d">DIAN</text><text x="569" y="50" font-size="10.3" fill="#46534c">En línea o por lotes,</text><text x="569" y="63.2" font-size="10.3" fill="#46534c">con el proveedor actual</text><text x="569" y="76.4" font-size="10.3" fill="#46534c">de Helisa</text><g filter="url(#f3-sh)"><rect x="36" y="116" width="156" height="74" rx="9" fill="#ffffff" stroke="#2c5d8a" stroke-width="1.3"/></g><text x="47" y="138" font-size="11.5" font-weight="800" fill="#16231d">Movimiento contable</text><text x="47" y="154" font-size="10.3" fill="#46534c">1305 contra caja o bancos,</text><text x="47" y="167.2" font-size="10.3" fill="#46534c">dos libros (F y N) y la</text><text x="47" y="180.39999999999998" font-size="10.3" fill="#46534c">factura que se cruza</text><g filter="url(#f3-sh)"><rect x="210" y="116" width="156" height="74" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="220" y="114.8" width="136" height="4" rx="2" fill="#2c5d8a"/><text x="221" y="138" font-size="11" font-weight="800" fill="#16231d">Importación contable</text><text x="221" y="154" font-size="10.3" fill="#46534c">Movimiento contable,</text><text x="221" y="167.2" font-size="10.3" fill="#46534c">al módulo de cartera</text><g filter="url(#f3-sh)"><rect x="384" y="116" width="156" height="74" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="394" y="114.8" width="136" height="4" rx="2" fill="#2c5d8a"/><text x="395" y="138" font-size="11.5" font-weight="800" fill="#16231d">Cartera</text><text x="395" y="154" font-size="10.3" fill="#46534c">El recibo cruza la FVE.</text><text x="395" y="167.2" font-size="10.3" fill="#46534c">Tipo RC1 o RC2:</text><rect x="476.0" y="158.3" width="74.1" height="15.4" rx="7.7" fill="#fdf1d6" stroke="#e3b341" stroke-width="1"/><text x="513.0" y="169.0" font-size="8.4" font-weight="800" fill="#a86a00" text-anchor="middle" letter-spacing="0.2">por confirmar</text><path d="M193 49.0 L208 49.0" fill="none" stroke="#46534c" stroke-width="1.5" marker-end="url(#f3-ah-n)" stroke-linejoin="round"/><path d="M367 49.0 L382 49.0" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f3-ah-b)" stroke-linejoin="round"/><path d="M541 49.0 L556 49.0" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f3-ah-b)" stroke-linejoin="round"/><path d="M193 153.0 L208 153.0" fill="none" stroke="#46534c" stroke-width="1.5" marker-end="url(#f3-ah-n)" stroke-linejoin="round"/><path d="M367 153.0 L382 153.0" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f3-ah-b)" stroke-linejoin="round"/><text x="566" y="142" font-size="9.8" font-weight="400" fill="#6e7b74" font-style="italic">La v5 suponía que la factura</text><text x="566" y="155" font-size="9.8" font-weight="400" fill="#6e7b74" font-style="italic">también entraba por archivo:</text><text x="566" y="168" font-size="9.8" font-weight="400" fill="#6e7b74" font-style="italic"><tspan font-weight="700">no es así.</tspan></text></svg></figure>
+
+  <div class="grid3">
+    <article class="card find"><span class="k">1</span><h3>Helisa importa pedidos, no facturas</h3><p>El pedido lleva cliente, concepto, cantidad y valor unitario; <b>no lleva cuentas ni IVA</b>: Helisa los pone al facturar, según el concepto. Estructura vista: 24 campos, TXT separado por «|», sin títulos, fecha dd/mm/aaaa, en ANSI (Windows-1252).</p></article>
+    <article class="card find"><span class="k">2</span><h3>La factura se elabora una a una</h3><p>En Gestión de ventas se abre la FVE de cada cliente y se llama el pedido con «Documento previo Pedidos» (<b>F3</b>). Helisa calcula el IVA, contabiliza (crédito → 1305 cartera) y envía a la DIAN, en línea o por lotes.</p></article>
+    <article class="card find"><span class="k">3</span><h3>El recibo sí se importa</h3><p>Por «Importación de movimiento contable», con cuentas: <b>1305 cartera contra caja o bancos</b>, número del recibo, NIT y prefijo y número de la factura que se cruza. Helisa lleva <b>dos libros</b> (contable y tributario). RC1 o RC2: <span class="pc">por confirmar</span></p></article>
+    <article class="card find warn"><span class="k">4</span><h3>Pedido no está habilitado</h3><p>En el Helisa de Comserva el documento Pedido no aparece entre los tipos de documento. Habilitarlo es <b>requisito de la Propuesta 1</b>. Costo o licencia: <span class="pc">por confirmar</span></p></article>
+    <article class="card find warn"><span class="k">5</span><h3>Más facturas de las que suponíamos</h3><p>El consecutivo pasó de FVE 25756 (23 de septiembre) a FVE 25997 (21 de octubre): <b>≈ 240 facturas en 4 semanas</b>. Incluye todo lo que factura Comserva, también productos. La v5 suponía ≈ 12 al mes. <span class="pc">por confirmar</span></p></article>
+    <article class="card find"><span class="k">6</span><h3>Tres formas de cobro</h3>
+      <table class="cobro"><tbody>
+        <tr><td><b>Básico + kilos adicionales</b><br><span class="muted">Cofema, FVE 25756: $2.244.935</span></td></tr>
+        <tr><td><b>Solo por kilo</b><br><span class="muted">FVE 25997: 108,50 kg × $3.991,60 + IVA = $515.375,43</span></td></tr>
+        <tr><td><b>Cobro fijo mensual</b><br><span class="muted">FVE de $29.750 o $35.700 (≈ $25.000 o $30.000 + IVA; inferencia)</span></td></tr>
+      </tbody></table>
+    </article>
+  </div>
+
+  <div class="card b">
+    <h3>Lo que se dijo y lo que quedó acordado</h3>
+    <ul class="cols2">
+      <li>Comserva pidió <b>las dos propuestas</b>. Logística ve la opción de archivos para Helisa «más viable en alcance y costos»; contabilidad preferiría que el sistema haga la factura electrónica para quitar la facturación una a una.</li>
+      <li>Helisa ofrece una API de pago, <b>Helisa Conekta</b>: crea clientes, inserta pedidos y recibos, y lee facturas y cartera; <b>no emite facturas</b>. Se dijo que Comserva asumiría su costo <span class="pc">por confirmar</span></li>
+      <li>Julio ofreció enviar en Excel la <b>estructura del pedido y del recibo</b> y la plantilla <b>«servicio → cuenta»</b>.</li>
+      <li>Datos vistos en Helisa: versión 4.12.2.0 por TSplus; centro de costo 0101 Florencia; negocio 1 Comserva; lista de precios 2 «BASICA 30000»; conceptos por categoría en kilos; además de FVE existe el tipo FV (no electrónica).</li>
+    </ul>
+  </div>
+  <p class="src">Fuente: grabación y pantallas de la reunión del 21 de octubre de 2026. «Inferencia» = conclusión nuestra a partir de lo visto; «por confirmar» = falta que Comserva lo confirme por escrito.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 4 · PROPUESTA 1 ============================ -->
+<section class="sheet" id="propuesta-1">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Propuesta 1</span></div>
+  <header class="sec"><span class="n">3</span><div><h2>Propuesta 1 · RH digital hasta Helisa</h2><p class="kick">El sistema hace todo el trabajo de campo y oficina y entrega a Helisa los <b>pedidos</b> y los <b>recibos</b> listos para importar. La factura electrónica la sigue elaborando Lucrecia en Helisa, como hoy, pero sin sumar ni digitar.</p></div></header>
+
+  <figure class="fig"><svg viewBox="0 0 720 292" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flujo de la Propuesta 1 en tres carriles: el sistema hace el cierre, el archivo de pedidos, el registro de la FVE y el recibo; Lucrecia importa y elabora cada factura en Helisa; Helisa envía la factura a la DIAN y cruza el recibo en cartera."><defs><marker id="f4-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f4-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f4-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f4-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f4-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f4-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f4-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f4-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f4-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f4-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f4-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><rect x="0.5" y="0" width="719" height="96" rx="10" fill="#f3f8f5" stroke="#d5ddd8"/><rect x="0.5" y="0" width="24" height="96" rx="10" fill="#1f5e43"/><rect x="14" y="0" width="11" height="96" fill="#1f5e43"/><text transform="translate(16.5 48.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">SISTEMA</text><rect x="0.5" y="104" width="719" height="96" rx="10" fill="#ffffff" stroke="#d5ddd8"/><rect x="0.5" y="104" width="24" height="96" rx="10" fill="#2f7d59"/><rect x="14" y="104" width="11" height="96" fill="#2f7d59"/><text transform="translate(16.5 152.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">LUCRECIA</text><rect x="0.5" y="208" width="719" height="82" rx="10" fill="#eef3f8" stroke="#d5ddd8" stroke-dasharray="6 4"/><rect x="0.5" y="208" width="24" height="82" rx="10" fill="#2c5d8a"/><rect x="14" y="208" width="11" height="82" fill="#2c5d8a"/><text transform="translate(16.5 249.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">HELISA</text><g filter="url(#f4-sh)"><rect x="34" y="14" width="156" height="74" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="44" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="49" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="49" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">1</text><text x="45" y="36" font-size="11.5" font-weight="800" fill="#16231d">Visitas y cierre</text><text x="45" y="52" font-size="10.3" fill="#46534c">Kilos por categoría y</text><text x="45" y="65.2" font-size="10.3" fill="#46534c">tarifa del cliente;</text><text x="45" y="78.4" font-size="10.3" fill="#46534c">planilla RH del mes</text><g filter="url(#f4-sh)"><rect x="204" y="14" width="156" height="74" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="214" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="219" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="219" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">2</text><text x="215" y="36" font-size="11.5" font-weight="800" fill="#16231d">Archivo de pedidos</text><text x="215" y="52" font-size="10.3" fill="#46534c">Uno por cliente o sede</text><text x="215" y="65.2" font-size="10.3" fill="#46534c">y periodo; sin cuentas</text><text x="215" y="78.4" font-size="10.3" fill="#46534c">ni IVA (formato Helisa)</text><g filter="url(#f4-sh)"><rect x="204" y="118" width="156" height="74" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="214" y="116.8" width="136" height="4" rx="2" fill="#1f5e43"/><circle cx="219" cy="118" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="219" y="121.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">3</text><text x="215" y="140" font-size="11.5" font-weight="800" fill="#16231d">Importa y factura</text><text x="215" y="156" font-size="10.3" fill="#46534c">Importa los pedidos y</text><text x="215" y="169.2" font-size="10.3" fill="#46534c">hace <tspan font-weight="700" fill="#16231d">cada factura</tspan></text><text x="215" y="182.39999999999998" font-size="10.3" fill="#46534c">llamando el pedido (F3)</text><rect x="241.4" y="108.9" width="110.6" height="16.2" rx="8.1" fill="#2c5d8a" stroke="#2c5d8a" stroke-width="1"/><text x="296.7" y="120.3" font-size="9.2" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.2">1B: pedido por API</text><g filter="url(#f4-sh)"><rect x="204" y="222" width="156" height="60" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="214" y="220.8" width="136" height="4" rx="2" fill="#2c5d8a"/><circle cx="219" cy="222" r="9.5" fill="#2c5d8a" stroke="#fff" stroke-width="1.6"/><text x="219" y="225.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">4</text><text x="215" y="244" font-size="11.5" font-weight="800" fill="#16231d">FVE a la DIAN</text><text x="215" y="260" font-size="10.3" fill="#46534c">Helisa pone IVA y cuentas</text><text x="215" y="273.2" font-size="10.3" fill="#46534c">y la envía (línea o lote)</text><g filter="url(#f4-sh)"><rect x="374" y="14" width="156" height="74" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="384" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="389" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="389" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">5</text><text x="385" y="36" font-size="11.5" font-weight="800" fill="#16231d">Registra la FVE</text><text x="385" y="52" font-size="10.3" fill="#46534c">Conekta, listado de</text><text x="385" y="65.2" font-size="10.3" fill="#46534c">Helisa o digitación;</text><text x="385" y="78.4" font-size="10.3" fill="#46534c">valida con el RH (± $1)</text><rect x="435.8" y="4.9" width="86.2" height="16.2" rx="8.1" fill="#2c5d8a" stroke="#2c5d8a" stroke-width="1"/><text x="478.9" y="16.3" font-size="9.2" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.2">1B: automático</text><g filter="url(#f4-sh)"><rect x="544" y="14" width="156" height="74" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="554" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="559" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="559" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">6</text><text x="555" y="36" font-size="11.5" font-weight="800" fill="#16231d">Recibo de caja</text><text x="555" y="52" font-size="10.3" fill="#46534c">Solo con FVE registrada;</text><text x="555" y="65.2" font-size="10.3" fill="#46534c">archivo RC: 1305 contra</text><text x="555" y="78.4" font-size="10.3" fill="#46534c">caja o bancos (F y N)</text><g filter="url(#f4-sh)"><rect x="544" y="118" width="156" height="74" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="554" y="116.8" width="136" height="4" rx="2" fill="#1f5e43"/><circle cx="559" cy="118" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="559" y="121.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">7</text><text x="555" y="140" font-size="11.5" font-weight="800" fill="#16231d">Importa el recibo</text><text x="555" y="156" font-size="10.3" fill="#46534c">Movimiento contable,</text><text x="555" y="169.2" font-size="10.3" fill="#46534c">al módulo de cartera</text><rect x="616.8" y="108.9" width="75.2" height="16.2" rx="8.1" fill="#2c5d8a" stroke="#2c5d8a" stroke-width="1"/><text x="654.4" y="120.3" font-size="9.2" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.2">1B: por API</text><g filter="url(#f4-sh)"><rect x="544" y="222" width="156" height="60" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="554" y="220.8" width="136" height="4" rx="2" fill="#2c5d8a"/><circle cx="559" cy="222" r="9.5" fill="#2c5d8a" stroke="#fff" stroke-width="1.6"/><text x="559" y="225.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">8</text><text x="555" y="244" font-size="11.5" font-weight="800" fill="#16231d">Cruce en cartera</text><text x="555" y="260" font-size="10.3" fill="#46534c">El recibo cruza la FVE</text><text x="555" y="273.2" font-size="10.3" fill="#46534c">y baja el saldo</text><path d="M191 51.0 L202 51.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f4-ah-g)" stroke-linejoin="round"/><path d="M282.0 89 L282.0 107" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f4-ah-g)" stroke-linejoin="round"/><path d="M282.0 193 L282.0 211" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f4-ah-b)" stroke-linejoin="round"/><path d="M361 252.0 L365 252.0 L365 51.0 L372 51.0" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f4-ah-b)" stroke-linejoin="round"/><path d="M531 51.0 L542 51.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f4-ah-g)" stroke-linejoin="round"/><path d="M622.0 89 L622.0 107" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f4-ah-g)" stroke-linejoin="round"/><path d="M622.0 193 L622.0 211" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f4-ah-b)" stroke-linejoin="round"/><rect x="374" y="120" width="142" height="70" rx="9" fill="#fdf1d6" stroke="#e3b341"/><text x="384" y="138" font-size="10.4" font-weight="800" fill="#a86a00">Trabajo manual que queda</text><text x="384" y="154" font-size="9.8" font-weight="400" fill="#46534c">≈ 240 facturas en 4 semanas,</text><text x="384" y="167" font-size="9.8" font-weight="400" fill="#46534c">una a una, en Helisa</text><text x="384" y="180" font-size="9.8" font-weight="400" fill="#6e7b74">(volumen por confirmar)</text><text x="38" y="140" font-size="9.8" font-weight="400" fill="#46534c"><tspan font-weight="700" fill="#16231d">1A</tspan> · Lucrecia importa los</text><text x="38" y="153" font-size="9.8" font-weight="400" fill="#46534c">archivos que genera el sistema.</text><text x="38" y="172" font-size="9.8" font-weight="400" fill="#46534c"><tspan font-weight="700" fill="#16231d">1B</tspan> · Con Conekta, el sistema</text><text x="38" y="185" font-size="9.8" font-weight="400" fill="#46534c">los envía solo (pasos en azul).</text><text x="38" y="248" font-size="9.8" font-weight="400" fill="#2c5d8a" font-style="italic">Helisa sigue con la contabilidad,</text><text x="38" y="261" font-size="9.8" font-weight="400" fill="#2c5d8a" font-style="italic">la cartera y las notas crédito.</text></svg></figure>
+
+  <div class="grid3 who">
+    <div class="card g"><h3><i style="background:var(--g)"></i>Qué hace el sistema</h3>
+      <ul class="small">
+        <li>Visitas, kilos y constancias, sin señal.</li>
+        <li>Cierre con los <b>tres esquemas de tarifa</b> y planilla RH.</li>
+        <li><b>Archivo de pedidos</b> por cliente o sede facturable y periodo.</li>
+        <li>Registro de la FVE, validada contra el RH (± $1).</li>
+        <li>Recibo solo con FVE y su archivo (RC).</li>
+      </ul></div>
+    <div class="card"><h3><i style="background:var(--g2)"></i>Qué hace Lucrecia</h3>
+      <ul class="small">
+        <li>Revisa el cierre e importa los pedidos (en 1B los envía el sistema).</li>
+        <li><b>Elabora cada factura</b> llamando el pedido (F3) y la envía a la DIAN, como hoy.</li>
+        <li>Registra la FVE: con Conekta es automático; si no, con el listado de Helisa <span class="pc">por confirmar</span> o digitándola.</li>
+        <li>Importa el archivo de recibos.</li>
+      </ul></div>
+    <div class="card b"><h3><i style="background:var(--b)"></i>Qué hace Helisa</h3>
+      <ul class="small">
+        <li>Recibe los pedidos.</li>
+        <li>Calcula el IVA y contabiliza por concepto.</li>
+        <li>Emite la FVE con su proveedor actual.</li>
+        <li>Recibe el recibo y cruza la cartera.</li>
+        <li>Sigue con la contabilidad y las notas crédito.</li>
+      </ul></div>
+  </div>
+
+  <div class="mods">
+    <div class="mod"><span class="k">1A</span><h3>Archivos planos (base)</h3>
+      <p class="small">Lucrecia descarga los archivos del sistema y los importa en Helisa. <b>Sin costo recurrente adicional.</b> Es la opción base.</p></div>
+    <div class="mod api"><span class="k">1B</span><h3>Con API Helisa Conekta (opcional)</h3>
+      <p class="small">El sistema crea clientes, inserta pedidos y recibos y lee FVE y cartera, sin subir archivos (los archivos quedan de contingencia). Comserva paga la suscripción: $211.680 al mes según helisa.com a 22 oct 2026; IVA y hosting <span class="pc">por confirmar</span></p>
+      <p class="warnline small">Aun con API, la factura en Helisa sigue siendo una a una.</p></div>
+  </div>
+
+  <div class="elim">
+    <div class="card g"><h3><span class="ico ok">+</span>Qué elimina</h3>
+      <ul class="plus small">
+        <li>Sumar los kilos de las visitas y calcular cada cobro.</li>
+        <li>Digitar las líneas de cada factura y armar el archivo para Helisa.</li>
+        <li>Digitar los recibos y buscar a qué factura cruzarlos.</li>
+        <li>Con 1B, además: subir archivos y digitar la FVE.</li>
+      </ul></div>
+    <div class="card a"><h3><span class="ico no">–</span>Qué deja manual</h3>
+      <ul class="minus small">
+        <li><b>Elaborar cada factura en Helisa</b> (≈ 240 en 4 semanas <span class="pc">por confirmar</span>).</li>
+        <li>Importar los archivos (en 1A).</li>
+        <li>Registrar la FVE si Helisa no permite exportar el listado (en 1A).</li>
+        <li>Las notas crédito, en Helisa como hoy.</li>
+      </ul></div>
+  </div>
+  <p class="newv6"><b>Nuevo en la v6 para las dos propuestas:</b> tabla de equivalencias con Helisa (componente de tarifa o categoría → concepto y lista de precio; cliente o sede → código del cliente), tres esquemas de tarifa desde el inicio, configurador de plantillas (pedido sin cuentas y recibo con cuentas) y módulo de trazabilidad.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 5 · PROPUESTA 2 ============================ -->
+<section class="sheet" id="propuesta-2">
+  <div class="top"><span><span class="dot" style="background:var(--b)"></span>RH digital + Helisa · Comparativo v6</span><span>Propuesta 2</span></div>
+  <header class="sec blue"><span class="n">4</span><div><h2>Propuesta 2 · RH digital con facturación electrónica</h2><p class="kick">Todo lo de la Propuesta 1 en campo y oficina, pero <b>la factura electrónica la emite el sistema</b> por medio de un proveedor tecnológico autorizado por la DIAN, conectado por API (no software propio). Helisa queda para la contabilidad.</p></div></header>
+
+  <figure class="fig"><svg viewBox="0 0 720 366" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flujo de la Propuesta 2 en cuatro carriles: el sistema arma la prefactura, Lucrecia la aprueba, el sistema emite por lote, el proveedor tecnológico firma y valida con la DIAN, el sistema entrega y hace seguimiento, y Helisa recibe la contabilidad de facturas y recibos."><defs><marker id="f5-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f5-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f5-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f5-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f5-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f5-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f5-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f5-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f5-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f5-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f5-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><rect x="0.5" y="0" width="719" height="94" rx="10" fill="#f3f8f5" stroke="#d5ddd8"/><rect x="0.5" y="0" width="24" height="94" rx="10" fill="#1f5e43"/><rect x="14" y="0" width="11" height="94" fill="#1f5e43"/><text transform="translate(16.5 47.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">SISTEMA</text><rect x="0.5" y="102" width="719" height="66" rx="10" fill="#ffffff" stroke="#d5ddd8"/><rect x="0.5" y="102" width="24" height="66" rx="10" fill="#2f7d59"/><rect x="14" y="102" width="11" height="66" fill="#2f7d59"/><text transform="translate(16.5 135.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">LUCRECIA</text><rect x="0.5" y="176" width="719" height="92" rx="10" fill="#f7f5fb" stroke="#d5ddd8"/><rect x="0.5" y="176" width="24" height="92" rx="10" fill="#5b4b8a"/><rect x="14" y="176" width="11" height="92" fill="#5b4b8a"/><text transform="translate(10.5 222.0) rotate(-90)" font-size="9.6" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.6">PROVEEDOR</text><text transform="translate(21 222.0) rotate(-90)" font-size="9.6" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.6">Y DIAN</text><rect x="0.5" y="276" width="719" height="88" rx="10" fill="#eef3f8" stroke="#d5ddd8" stroke-dasharray="6 4"/><rect x="0.5" y="276" width="24" height="88" rx="10" fill="#2c5d8a"/><rect x="14" y="276" width="11" height="88" fill="#2c5d8a"/><text transform="translate(16.5 320.0) rotate(-90)" font-size="10" font-weight="800" fill="#fff" text-anchor="middle" letter-spacing="0.8">HELISA</text><g filter="url(#f5-sh)"><rect x="34" y="14" width="156" height="72" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="44" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="49" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="49" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">1</text><text x="45" y="36" font-size="11.5" font-weight="800" fill="#16231d">Visitas y cierre</text><text x="45" y="52" font-size="10.3" fill="#46534c">Kilos por categoría y</text><text x="45" y="65.2" font-size="10.3" fill="#46534c">tarifa del cliente;</text><text x="45" y="78.4" font-size="10.3" fill="#46534c">planilla RH del mes</text><g filter="url(#f5-sh)"><rect x="204" y="14" width="156" height="72" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="214" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="219" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="219" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">2</text><text x="215" y="36" font-size="11.5" font-weight="800" fill="#16231d">Prefactura</text><text x="215" y="52" font-size="10.3" fill="#46534c">Borrador de la factura</text><text x="215" y="65.2" font-size="10.3" fill="#46534c">desde el cierre, con</text><text x="215" y="78.4" font-size="10.3" fill="#46534c">IVA por concepto</text><g filter="url(#f5-sh)"><rect x="204" y="114" width="156" height="46" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="214" y="112.8" width="136" height="4" rx="2" fill="#1f5e43"/><circle cx="219" cy="114" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="219" y="117.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">3</text><text x="215" y="134" font-size="11.5" font-weight="800" fill="#16231d">Revisa y aprueba</text><text x="215" y="150" font-size="10.3" fill="#46534c">El lote, antes de emitir</text><g filter="url(#f5-sh)"><rect x="374" y="14" width="156" height="72" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="384" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="389" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="389" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">4</text><text x="385" y="36" font-size="11.5" font-weight="800" fill="#16231d">Emite por lote</text><text x="385" y="52" font-size="10.3" fill="#46534c">Envía las facturas</text><text x="385" y="65.2" font-size="10.3" fill="#46534c">aprobadas al proveedor</text><text x="385" y="78.4" font-size="10.3" fill="#46534c">por API</text><g filter="url(#f5-sh)"><rect x="374" y="190" width="156" height="70" rx="9" fill="#eeebf6" stroke="#5b4b8a" stroke-width="1.3"/></g><rect x="384" y="188.8" width="136" height="4" rx="2" fill="#5b4b8a"/><circle cx="389" cy="190" r="9.5" fill="#5b4b8a" stroke="#fff" stroke-width="1.6"/><text x="389" y="193.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">5</text><text x="385" y="212" font-size="11.5" font-weight="800" fill="#16231d">Firma y valida</text><text x="385" y="228" font-size="10.3" fill="#46534c">El proveedor envía a la</text><text x="385" y="241.2" font-size="10.3" fill="#46534c">DIAN y devuelve CUFE,</text><text x="385" y="254.39999999999998" font-size="10.3" fill="#46534c">XML, PDF y QR</text><g filter="url(#f5-sh)"><rect x="544" y="14" width="156" height="72" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="554" y="12.8" width="136" height="4" rx="2" fill="#2f7d59"/><circle cx="559" cy="14" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="559" y="17.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">6</text><text x="555" y="36" font-size="11.5" font-weight="800" fill="#16231d">Entrega y estado</text><text x="555" y="52" font-size="10.3" fill="#46534c">Correo al cliente; estado</text><text x="555" y="65.2" font-size="10.3" fill="#46534c">DIAN y RADIAN; recibo</text><text x="555" y="78.4" font-size="10.3" fill="#46534c">solo con factura</text><g filter="url(#f5-sh)"><rect x="544" y="290" width="156" height="70" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="554" y="288.8" width="136" height="4" rx="2" fill="#2c5d8a"/><circle cx="559" cy="290" r="9.5" fill="#2c5d8a" stroke="#fff" stroke-width="1.6"/><text x="559" y="293.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">7</text><text x="555" y="312" font-size="11.5" font-weight="800" fill="#16231d">Contabilidad</text><text x="555" y="328" font-size="10.3" fill="#46534c">Asientos de facturas</text><text x="555" y="341.2" font-size="10.3" fill="#46534c">(1305, ingreso, IVA) y de</text><text x="555" y="354.4" font-size="10.3" fill="#46534c">recibos; libros F y N</text><rect x="590.6" y="280.9" width="101.4" height="16.2" rx="8.1" fill="#2c5d8a" stroke="#2c5d8a" stroke-width="1"/><text x="641.3" y="292.3" font-size="9.2" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="0.2">archivo o Conekta</text><path d="M191 50.0 L202 50.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f5-ah-g)" stroke-linejoin="round"/><path d="M282.0 87 L282.0 103" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f5-ah-g)" stroke-linejoin="round"/><path d="M361 137.0 L365 137.0 L365 50.0 L372 50.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f5-ah-g)" stroke-linejoin="round"/><path d="M452.0 87 L452.0 179" fill="none" stroke="#5b4b8a" stroke-width="1.5" marker-end="url(#f5-ah-p)" stroke-linejoin="round"/><path d="M531 225.0 L535 225.0 L535 50.0 L542 50.0" fill="none" stroke="#5b4b8a" stroke-width="1.5" marker-end="url(#f5-ah-p)" stroke-linejoin="round"/><path d="M622.0 87 L622.0 279" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f5-ah-b)" stroke-linejoin="round"/><text x="38" y="216" font-size="9.8" font-weight="700" fill="#5b4b8a">Proveedor tecnológico autorizado</text><text x="38" y="229" font-size="9.8" font-weight="400" fill="#46534c">por la DIAN, conectado por API</text><text x="38" y="242" font-size="9.8" font-weight="400" fill="#46534c">(a cotizar: Plemsi, Dataico u otro).</text><text x="38" y="316" font-size="9.8" font-weight="400" fill="#2c5d8a" font-style="italic">Helisa ya no hace las facturas de RH: conserva su</text><text x="38" y="329" font-size="9.8" font-weight="400" fill="#2c5d8a" font-style="italic">numeración FVE para productos y arrendamiento,</text><text x="38" y="342" font-size="9.8" font-weight="400" fill="#2c5d8a" font-style="italic">y lleva la contabilidad y la cartera.</text><text x="38" y="134" font-size="9.8" font-weight="400" fill="#46534c">También aprueba las notas</text><text x="38" y="147" font-size="9.8" font-weight="400" fill="#46534c">crédito y débito, con Gerencia.</text></svg></figure>
+
+  <div class="grid4">
+    <div class="card b"><h3>Numeración</h3><p class="small">Prefijo y rango nuevos de la DIAN, asociados al software del proveedor (de prueba «RHD»; el real <span class="pc">por confirmar</span>). Helisa conserva FVE para productos y arrendamiento.</p></div>
+    <div class="card b"><h3>Notas crédito y débito</h3><p class="small">En el sistema, con referencia al CUFE de la factura y aprobación de Gerencia. Una factura electrónica no se anula de otra forma.</p></div>
+    <div class="card b"><h3>Datos fiscales</h3><p class="small">Obligatorios: tipo de persona y de documento, DV, responsabilidades del RUT (ej. R-99-PN), régimen de IVA, municipio (DANE) y correo de recepción.</p></div>
+    <div class="card b"><h3>Contabilidad en Helisa</h3><p class="small">Asiento de cada factura (débito 1305; crédito ingreso por concepto e IVA; libros F y N) con la plantilla «servicio → cuenta», y el de los recibos; por archivo o Conekta.</p></div>
+  </div>
+
+  <div class="card">
+    <ul class="cols2 small">
+      <li><b>IVA configurable por concepto</b> (hoy 19 %). La exclusión del art. 476 num. 12 del Estatuto Tributario aplica, según la DIAN, cuando el servicio lo presta una empresa autorizada de servicio público de aseo: confirmar con el contador. Retenciones: informativas, <span class="pc">por confirmar</span></li>
+      <li><b>Sin doble facturación:</b> un cierre facturado por el sistema no puede exportarse como pedido, y lo de RH no se factura en Helisa.</li>
+      <li><b>Responsabilidad:</b> ante la DIAN la responsable sigue siendo Comserva, aunque use proveedor.</li>
+      <li><b>Por confirmar con Julio:</b> que la cartera de Helisa acepte facturas con otro prefijo y que el recibo las cruce.</li>
+      <li><b>«Factura en sitio»</b> (por visita, de contado): opción <span class="pc">por confirmar</span>; no incluida en el alcance base.</li>
+    </ul>
+  </div>
+
+  <div class="elim">
+    <div class="card g"><h3><span class="ico ok">+</span>Qué elimina</h3>
+      <ul class="plus small">
+        <li>Todo lo que elimina la Propuesta 1.</li>
+        <li><b>La factura una a una en Helisa</b>, importar pedidos y registrar la FVE.</li>
+        <li>Enviar la factura al cliente: la entrega el sistema con el proveedor.</li>
+      </ul></div>
+    <div class="card a"><h3><span class="ico no">–</span>Qué deja manual</h3>
+      <ul class="minus small">
+        <li>Revisar y aprobar la prefactura antes de emitir; aprobar las notas.</li>
+        <li>Importar la contabilización en Helisa (o enviarla por Conekta).</li>
+        <li>Mantener los datos fiscales y el trámite inicial ante la DIAN.</li>
+      </ul></div>
+  </div>
+  <p class="newv6" style="border-color:var(--b)"><b>Proveedores a cotizar:</b> Plemsi y Dataico (proveedores tecnológicos con API), MATIAS API como alternativa (opera como «software propio»: Comserva quedaría como titular directa ante la DIAN) y The Factory HKA como control. Precios en la sección 9.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 6 · COMPARATIVO ============================ -->
+<section class="sheet" id="comparativo">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Lado a lado</span></div>
+  <header class="sec"><span class="n">5</span><div><h2>Las propuestas lado a lado</h2><p class="kick">La 1B es la 1A con la API de Helisa. La Propuesta 2 incluye todo lo de la Propuesta 1 y también puede usar Conekta para la contabilidad.</p></div></header>
+
+  <div class="tw">
+  <table class="cmp">
+    <thead><tr><th>Criterio</th><th class="h1a">P1 · 1A archivos planos</th><th class="h1b">P1 · 1B con API Conekta</th><th class="h2">Propuesta 2 · facturación electrónica</th></tr></thead>
+    <tbody>
+      <tr><td>Cómo llega a Helisa</td><td>Archivo de pedidos y archivo de recibos que Lucrecia importa.</td><td>El sistema envía pedidos y recibos por la API; los archivos quedan de respaldo.</td><td class="c2">La factura sale del sistema; a Helisa llega la contabilidad de facturas y recibos (archivo o API).</td></tr>
+      <tr><td>Trabajo que elimina</td><td>Sumar kilos, calcular, digitar líneas, armar archivos y digitar recibos.</td><td>Lo de 1A, más subir archivos y digitar la FVE.</td><td class="c2">Lo de la P1, más la <b>factura una a una</b>, importar pedidos y enviar facturas al cliente.</td></tr>
+      <tr><td>Trabajo manual que queda</td><td><b>Elaborar cada factura en Helisa</b> (≈ 240 en 4 semanas <span class="pc">por confirmar</span>); importar archivos; registrar la FVE.</td><td><b>Elaborar cada factura en Helisa.</b></td><td class="c2">Revisar la prefactura; importar la contabilidad (o API); aprobar notas; mantener datos fiscales.</td></tr>
+      <tr><td>Dependencias</td><td>Pedido habilitado en Helisa; formatos oficiales de Julio; códigos de cliente y de concepto.</td><td>Lo de 1A, más el contrato de Conekta a nombre de Comserva y Helisa en el hosting de Helisa <span class="pc">por confirmar</span></td><td class="c2">Proveedor tecnológico, numeración DIAN, certificado de firma, datos fiscales y cuentas por concepto (Julio). Pedido habilitado solo si se pasa antes por la Fase 1.</td></tr>
+      <tr><td>Riesgos principales</td><td>No poder habilitar Pedido; que la factura una a una siga pesando; conceptos mal mapeados.</td><td>Lo de 1A, más un costo fijo anual; la API no emite facturas y pide textos sin tildes ni caracteres especiales.</td><td class="c2">Doble facturación o factura sin contabilizar; rechazos por datos fiscales; demoras en la habilitación; dos emisores a la vez.</td></tr>
+      <tr><td>Costos recurrentes de terceros</td><td>Solo los de la v5 (servidor, dominio, correo).</td><td>v5 + Conekta $211.680 al mes (IVA y hosting <span class="pc">por confirmar</span>).</td><td class="c2">v5 + proveedor ≈ $205.000 a $560.000 al año + certificado ≈ $150.000 al año si no está incluido; Conekta opcional.</td></tr>
+      <tr><td>Tiempo (semanas)</td><td><b>≈ 14 + 4</b> de piloto = <b>≈ 18</b> a tiempo parcial · ≈ 6 + 4 = ≈ 10 a tiempo completo.</td><td><b>+ ≈ 1,5</b> a tiempo parcial · + ≈ 0,7 a tiempo completo.</td><td class="c2">Por fases: P1 + <b>≈ 6 + 1 ciclo</b> de piloto = <b>≈ 28</b> a tiempo parcial (≈ 16,5 a tiempo completo). Contratada completa desde el inicio: <b>≈ 24</b> (≈ 14). Trámite DIAN de 1 a 3, en paralelo.</td></tr>
+      <tr><td>Complejidad</td><td><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>Baja a media</td><td><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>Media</td><td class="c2"><span class="dots bl"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>Alta, manejable con proveedor</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 style="margin:12px 0 6px">¿Cuándo conviene cada una?</h3>
+  <div class="grid3 when">
+    <div class="card g"><span class="chip gs">P1 · 1A</span>
+      <ul class="small">
+        <li>El volumen real de facturas se puede manejar una a una.</li>
+        <li>Se busca el menor costo recurrente.</li>
+        <li>Se quiere empezar ya, con menos dependencias.</li>
+      </ul></div>
+    <div class="card g"><span class="chip g">P1 · 1B</span>
+      <ul class="small">
+        <li>Lo de 1A, y además se quiere evitar subir archivos y digitar la FVE.</li>
+        <li>Comserva acepta ≈ $2,5 millones al año de Conekta (IVA y hosting <span class="pc">por confirmar</span>).</li>
+      </ul></div>
+    <div class="card b"><span class="chip b">Propuesta 2</span>
+      <ul class="small">
+        <li>Elaborar ≈ 240 facturas al mes una a una pesa mucho.</li>
+        <li>Comserva acepta el trámite ante la DIAN y mantener los datos fiscales de sus clientes.</li>
+        <li>Quiere que las facturas salgan y lleguen al cliente desde el sistema.</li>
+      </ul></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card g"><h3>Igual en las tres</h3><p class="small">App de campo sin señal (kilos, firmas, fotos y GPS), constancias, cierre y planilla RH, tres esquemas de tarifa, recibos de caja con la regla «solo con factura», tabla de equivalencias con Helisa, configurador de plantillas y trazabilidad.</p></div>
+    <div class="card a"><h3>La pregunta de fondo</h3><p class="small">¿Cuánto le pesa a Comserva elaborar ≈ 240 facturas al mes, una a una, en Helisa? Si pesa mucho, la Propuesta 2 tiene sentido; si no, la Propuesta 1 basta. Por eso proponemos <b>medirlo en el piloto</b> antes de decidir.</p></div>
+  </div>
+  <p class="src">Semanas para el equipo de tres personas: «tiempo parcial» con dedicación parcial y «tiempo completo» con dedicación completa. La Fase 0 (≈ 2 semanas) corre en paralelo. Costos de terceros: detalle y fuentes en la sección 9.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 7 · COMPLEJIDAD ============================ -->
+<section class="sheet" id="complejidad">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Facturación electrónica</span></div>
+  <header class="sec blue"><span class="n">6</span><div><h2>¿La facturación electrónica lo hace mucho más complejo?</h2><p class="kick">La pregunta que quedó abierta el 21 de octubre, respondida para Gerencia.</p></div></header>
+
+  <div class="answer">
+    <p><b>Sí, la Propuesta 2 es bastante más compleja que la Propuesta 1, pero no «muchísimo» si se hace con un proveedor tecnológico.</b> Con software propio sí lo sería, y no lo recomendamos.</p>
+    <p>Con proveedor, la parte difícil (firmar, transmitir a la DIAN, validar y entregar) la hace una empresa autorizada por la DIAN; nosotros conectamos el sistema y cuidamos los datos. Con software propio, todo eso lo construiríamos y mantendríamos nosotros.</p>
+  </div>
+
+  <p class="figtitle">Semanas de desarrollo a tiempo parcial (sin Fase 0 ni pilotos)</p>
+  <figure class="fig"><svg viewBox="0 0 720 164" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Semanas de desarrollo a tiempo parcial: Propuesta 1 unas 14; Propuesta 2 con proveedor tecnológico unas 20; Propuesta 2 con software propio entre 23 y 27."><defs><marker id="f6-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f6-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f6-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f6-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f6-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f6-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f6-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f6-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f6-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f6-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f6-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><line x1="262.0" y1="18" x2="262.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="262.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">0</text><line x1="314.0" y1="18" x2="314.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="314.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">4</text><line x1="366.0" y1="18" x2="366.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="366.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">8</text><line x1="418.0" y1="18" x2="418.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="418.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">12</text><line x1="470.0" y1="18" x2="470.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="470.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">16</text><line x1="522.0" y1="18" x2="522.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="522.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">20</text><line x1="574.0" y1="18" x2="574.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="574.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">24</text><line x1="626.0" y1="18" x2="626.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="626.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">28</text><line x1="678.0" y1="18" x2="678.0" y2="160" stroke="#d5ddd8" stroke-width="1"/><text x="678.0" y="12" font-size="9.4" font-weight="600" fill="#6e7b74" text-anchor="middle">32</text><text x="0" y="46" font-size="11.2" font-weight="800" fill="#16231d">Propuesta 1 (1A)</text><text x="0" y="60" font-size="9.8" font-weight="400" fill="#6e7b74">Fase 1 · núcleo hasta Helisa</text><rect x="262.0" y="34" width="182.0" height="24" fill="#2f7d59"/><text x="451.0" y="50" font-size="10.4" font-weight="800" fill="#16231d">≈ 14 semanas</text><text x="0" y="92" font-size="11.2" font-weight="800" fill="#16231d">Propuesta 2 con proveedor</text><text x="0" y="106" font-size="9.8" font-weight="400" fill="#6e7b74">recomendada si se hace la factura</text><rect x="262.0" y="80" width="182.0" height="24" fill="#2f7d59"/><rect x="444.0" y="80" width="78.0" height="24" fill="#2c5d8a"/><text x="529.0" y="96" font-size="10.4" font-weight="800" fill="#16231d">≈ 20 · +38 % de trabajo</text><text x="0" y="138" font-size="11.2" font-weight="800" fill="#16231d">Propuesta 2 con software propio</text><text x="0" y="152" font-size="9.8" font-weight="400" fill="#6e7b74">no recomendada</text><rect x="262.0" y="126" width="182.0" height="24" fill="#2f7d59"/><rect x="444.0" y="126" width="117.0" height="24" fill="#a9271f"/><rect x="561.0" y="126" width="52.0" height="24" fill="url(#f6-hatch-r)" stroke="#a9271f" stroke-width="1"/><text x="620.0" y="142" font-size="10.4" font-weight="800" fill="#16231d">≈ 23 a 27</text><text x="353.0" y="50" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">Fase 1</text><text x="483.0" y="96" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">Fase 2</text><text x="502.5" y="142" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">Software propio</text></svg></figure>
+  <p class="figcap" style="margin-top:-6px">A tiempo completo: ≈ 6 (Propuesta 1), ≈ 8,5 (Propuesta 2 con proveedor) y ≈ 10 a 12 (con software propio). «+38 %» es el trabajo adicional de la Fase 2 sobre la Propuesta 1.</p>
+
+  <h3 style="margin:10px 0 6px">Qué suma la Propuesta 2, aun con proveedor</h3>
+  <div class="grid3 adds">
+    <div class="card"><p><b>Un tercero más:</b> el proveedor tecnológico, con un plan anual por número de documentos.</p></div>
+    <div class="card"><p><b>Un trámite ante la DIAN:</b> habilitar el nuevo software y pedir la numeración (≈ 1 a 3 semanas, en paralelo <span class="pc">por confirmar</span>).</p></div>
+    <div class="card"><p><b>Notas crédito y débito</b> electrónicas en el sistema, con aprobación.</p></div>
+    <div class="card"><p><b>Datos fiscales completos</b> de todos los clientes antes de facturar.</p></div>
+    <div class="card"><p><b>Contabilizar en Helisa</b> las facturas que ya no nacen allí, en los dos libros.</p></div>
+    <div class="card"><p><b>Responsabilidad tributaria directa:</b> la factura sale del sistema y hay que evitar la doble facturación.</p></div>
+  </div>
+
+  <h3 style="margin:4px 0 6px">Proveedor tecnológico frente a software propio</h3>
+  <div class="tw">
+  <table class="vs">
+    <thead><tr><th></th><th class="ok">Proveedor tecnológico · recomendado</th><th class="ko">Software propio · no recomendado</th></tr></thead>
+    <tbody>
+      <tr><td>Quién arma, firma y envía la factura a la DIAN</td><td class="ok">El proveedor; el sistema le pasa los datos por API.</td><td class="ko">El sistema: XML UBL 2.1, firma XAdES, conexión SOAP con la DIAN y CUFE.</td></tr>
+      <tr><td>Contingencia, correo al cliente y conservación</td><td class="ok">Los resuelve el proveedor.</td><td class="ko">Hay que construirlos y operarlos.</td></tr>
+      <tr><td>Pruebas de habilitación</td><td class="ok">Cortas; el proveedor suele acompañarlas.</td><td class="ko">Semanas de ajustes contra las reglas de validación de la DIAN.</td></tr>
+      <tr><td>Cambios de la norma</td><td class="ok">Los absorbe el proveedor.</td><td class="ko">Mantenimiento permanente.</td></tr>
+      <tr><td>Responsable ante la DIAN</td><td class="ok">Comserva (el proveedor responde por lo suyo).</td><td class="ko">Comserva, con el equipo como fabricante del software.</td></tr>
+      <tr><td>Desarrollo adicional</td><td class="ok">≈ 6 semanas a tiempo parcial.</td><td class="ko">≈ 9 a 13 semanas a tiempo parcial.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="src">La DIAN permite que un mismo facturador use varios softwares a la vez: Helisa puede seguir facturando productos y arrendamiento con su prefijo FVE mientras el sistema factura el servicio con un prefijo nuevo.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 8 · FASES ============================ -->
+<section class="sheet" id="fases">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Camino por fases</span></div>
+  <header class="sec"><span class="n">7</span><div><h2>Camino por fases</h2><p class="kick">Empezar por lo que da resultado con menos riesgo y decidir la facturación electrónica con datos reales del piloto.</p></div></header>
+
+  <figure class="fig"><svg viewBox="0 0 720 266" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Camino por fases: Fase 0, Fase 1 igual a la Propuesta 1, piloto, compuerta y Fase 2 de facturación electrónica; los complementos C1 y C2 se pueden contratar después."><defs><marker id="f7-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f7-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f7-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f7-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f7-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f7-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f7-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f7-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f7-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f7-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f7-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><path d="M1 26 v-7 h718 v7" fill="none" stroke="#2c5d8a" stroke-width="1.6"/><rect x="78" y="6" width="564" height="16" fill="#fff"/><text x="360" y="18" font-size="10.2" font-weight="800" fill="#2c5d8a" text-anchor="middle">Propuesta 2 por fases ≈ 28 semanas a tiempo parcial · contratada completa desde el inicio ≈ 24</text><path d="M1 54 v-7 h437 v7" fill="none" stroke="#2f7d59" stroke-width="1.6"/><rect x="64" y="34" width="312" height="16" fill="#fff"/><text x="220" y="46" font-size="10.2" font-weight="800" fill="#1f5e43" text-anchor="middle">Propuesta 1 = Fase 0 + Fase 1 + piloto · ≈ 18 semanas</text><g filter="url(#f7-sh)"><rect x="0" y="70" width="118" height="96" rx="9" fill="#eef1f3" stroke="#5b6670" stroke-width="1.3"/></g><text x="11" y="92" font-size="11.5" font-weight="800" fill="#16231d">Fase 0</text><text x="11" y="108" font-size="10.3" fill="#46534c">Definición</text><text x="11" y="121.2" font-size="10.3" fill="#46534c">≈ 2 semanas,</text><text x="11" y="134.4" font-size="10.3" fill="#46534c">en paralelo</text><g filter="url(#f7-sh)"><rect x="134" y="70" width="170" height="96" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="144" y="68.8" width="150" height="4" rx="2" fill="#2f7d59"/><text x="145" y="92" font-size="11.5" font-weight="800" fill="#16231d">Fase 1</text><text x="145" y="108" font-size="10.3" fill="#46534c">= Propuesta 1: núcleo</text><text x="145" y="121.2" font-size="10.3" fill="#46534c">hasta Helisa</text><text x="145" y="134.4" font-size="10.3" fill="#46534c">≈ 14 sem. parcial</text><text x="145" y="147.6" font-size="10.3" fill="#46534c">≈ 6 sem. completo</text><g filter="url(#f7-sh)"><rect x="320" y="70" width="118" height="96" rx="9" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.3"/></g><text x="331" y="92" font-size="11.5" font-weight="800" fill="#16231d">Piloto</text><text x="331" y="108" font-size="10.3" fill="#46534c">Un ciclo de corte</text><text x="331" y="121.2" font-size="10.3" fill="#46534c">≈ 4 semanas;</text><text x="331" y="134.4" font-size="10.3" fill="#46534c">se mide la factura</text><text x="331" y="147.6" font-size="10.3" fill="#46534c">una a una</text><polygon points="484,84.0 518,118.0 484,152.0 450,118.0" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.6"/><text x="484" y="121.5" font-size="9.8" font-weight="800" fill="#a86a00" text-anchor="middle">Compuerta</text><g filter="url(#f7-sh)"><rect x="536" y="70" width="184" height="96" rx="9" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.3"/></g><rect x="546" y="68.8" width="164" height="4" rx="2" fill="#2c5d8a"/><text x="547" y="92" font-size="11.5" font-weight="800" fill="#16231d">Fase 2</text><text x="547" y="108" font-size="10.3" fill="#46534c">Facturación electrónica</text><text x="547" y="121.2" font-size="10.3" fill="#46534c">(solo Propuesta 2)</text><text x="547" y="134.4" font-size="10.3" fill="#46534c">≈ 6 sem. parcial</text><text x="547" y="147.6" font-size="10.3" fill="#46534c">≈ 2,5 sem. completo</text><path d="M119 118.0 L132 118.0" fill="none" stroke="#46534c" stroke-width="1.5" marker-end="url(#f7-ah-n)" stroke-linejoin="round"/><path d="M305 118.0 L318 118.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f7-ah-g)" stroke-linejoin="round"/><path d="M439 118.0 L448 118.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f7-ah-g)" stroke-linejoin="round"/><path d="M519 118.0 L534 118.0" fill="none" stroke="#2c5d8a" stroke-width="1.5" marker-end="url(#f7-ah-b)" stroke-linejoin="round"/><text x="526" y="111.0" font-size="9.6" font-weight="800" fill="#2c5d8a" text-anchor="middle">sí</text><path d="M484 153.0 L484 208" fill="none" stroke="#a86a00" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#f7-ah-a)" stroke-linejoin="round"/><text x="491" y="180.0" font-size="9.6" font-weight="800" fill="#a86a00">no, por ahora</text><g><rect x="414" y="210" width="140" height="52" rx="9" fill="#eef1f3" stroke="#5b6670" stroke-width="1.3"/></g><text x="425" y="232" font-size="10.8" font-weight="800" fill="#16231d">Se sigue con la P1</text><text x="425" y="248" font-size="10.3" fill="#46534c">la Fase 2 queda abierta</text><text x="0" y="196" font-size="9.4" font-weight="800" fill="#a86a00" letter-spacing="0.5">COMPLEMENTOS · SE CONTRATAN DESPUÉS, EN CUALQUIERA DE LAS DOS</text><g><rect x="0" y="206" width="196" height="56" rx="9" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.3" stroke-dasharray="5 3"/></g><text x="11" y="228" font-size="10.8" font-weight="800" fill="#16231d">C1 · Acta y portal</text><text x="11" y="244" font-size="10.3" fill="#46534c">antes «fase 2» de la v5</text><g><rect x="206" y="206" width="200" height="56" rx="9" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.3" stroke-dasharray="5 3"/></g><text x="217" y="228" font-size="10.8" font-weight="800" fill="#16231d">C2 · Caja formal y mensajería</text><text x="217" y="244" font-size="10.3" fill="#46534c">antes «fase 3» de la v5</text></svg></figure>
+
+  <div class="grid3">
+    <div class="card"><h3><span class="chip n">Fase 0</span> Definición</h3>
+      <p class="small muted">≈ 2 semanas, en paralelo con el arranque</p>
+      <ul class="small">
+        <li>Habilitar Pedido en el Helisa de Comserva.</li>
+        <li>Formatos oficiales de Julio (pedido y recibo).</li>
+        <li>Tabla de equivalencias y de cuentas.</li>
+        <li>Cartilla de clientes con sus códigos.</li>
+        <li>Importación de prueba con Cofema de septiembre.</li>
+        <li>Decisión sobre Conekta (1A o 1B).</li>
+      </ul></div>
+    <div class="card a"><h3><span class="chip a">Compuerta</span> Criterios</h3>
+      <p class="small muted">Al terminar el piloto de la Fase 1</p>
+      <ol class="small crit">
+        <li>Un ciclo completo con pedidos y recibos importados sin errores.</li>
+        <li>Tiempo real de la facturación una a una y errores, medidos.</li>
+        <li>Julio confirma que la cartera acepta facturas con otro prefijo y que el recibo las cruza.</li>
+        <li>El contador confirma IVA y retenciones.</li>
+        <li>Comserva elige proveedor y certificado, lo ve viable y contrata la Fase 2.</li>
+      </ol></div>
+    <div class="card g"><h3><span class="chip g">Fase 1</span> Deja lista la Fase 2</h3>
+      <p class="small muted">Para que la Fase 2 sea una extensión</p>
+      <ul class="small">
+        <li>Catálogo de conceptos (será el de productos de la factura electrónica).</li>
+        <li>Datos fiscales del cliente, opcionales en la Fase 1.</li>
+        <li>Motor de movimiento contable (recibos; luego, facturas).</li>
+        <li>Estados del cierre listos para «facturado por el sistema».</li>
+        <li>Liquidación con el redondeo de Helisa, probada con FVE 25756 y FVE 25997.</li>
+      </ul></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h3>Complementos C1 y C2</h3>
+      <p class="small"><b>C1 · Acta y portal:</b> acta de gestión con firma y portal del cliente. <b>C2 · Caja formal y mensajería:</b> cierre de caja formal y mensajes automáticos (WhatsApp). Se pueden contratar después, en cualquiera de las dos propuestas.</p></div>
+    <div class="card b"><h3>Cambio de nombres frente a la v5</h3>
+      <p class="small">En la v5, «fase 2» era acta y portal y «fase 3» era caja formal y mensajería. En la v6 pasan a ser los complementos <b>C1</b> y <b>C2</b>, y <b>«Fase 2» significa facturación electrónica</b> (solo Propuesta 2).</p></div>
+  </div>
+  <h3 style="margin:12px 0 6px">Lo que recibe Comserva al cerrar cada fase</h3>
+  <div class="grid3">
+    <div class="card"><p class="small"><span class="chip n">Fase 0</span> Acta de definición: formatos oficiales, tabla de equivalencias y de cuentas, decisión entre 1A y 1B y prueba de importación con Cofema.</p></div>
+    <div class="card g"><p class="small"><span class="chip g">Fase 1</span> App del operario, panel de oficina, cierre y planilla RH, pedidos y recibos hacia Helisa (archivo o API), trazabilidad, manuales y acta del piloto aprobado.</p></div>
+    <div class="card b"><p class="small"><span class="chip b">Fase 2</span> Facturación electrónica con el proveedor elegido, notas crédito y débito, contabilización hacia Helisa y acta del piloto de facturación.</p></div>
+  </div>
+  <div class="card g"><p class="small"><b>¿Y si Comserva quiere la factura electrónica desde ya?</b> Se puede contratar la Propuesta 2 completa desde el inicio: Fase 0, Fase 1 y Fase 2 seguidas, sin compuerta. Toma <b>≈ 24 semanas a tiempo parcial</b> (≈ 14 a tiempo completo), porque la Fase 2 se construye mientras corre el piloto de la Fase 1; por fases son ≈ 28. El piloto de la Fase 1 se mantiene, porque valida campo, cierre y recibos antes de emitir facturas reales.</p></div>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 9 · CRONOGRAMA ============================ -->
+<section class="sheet" id="cronograma">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Cronograma</span></div>
+  <header class="sec"><span class="n">8</span><div><h2>Cronograma en semanas</h2><p class="kick">Equipo de tres personas. «Tiempo parcial»: dedicación parcial, como trabajamos hoy; «tiempo completo»: los tres con dedicación completa.</p></div></header>
+
+  <figure class="fig"><svg viewBox="0 0 720 258" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cronograma a tiempo parcial: Fase 0 en las dos primeras semanas en paralelo; Fase 1 de la semana 0 a la 14; piloto de la 14 a la 18; compuerta en la 18; Fase 2 de la 18 a la 24 con trámite DIAN en paralelo; piloto de la Fase 2 de la 24 a la 28."><defs><marker id="f8-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f8-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f8-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f8-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f8-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f8-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f8-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f8-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f8-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f8-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f8-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><line x1="214.0" y1="20" x2="214.0" y2="224" stroke="#d5ddd8" stroke-width="1.2"/><text x="214.0" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">0</text><line x1="246.9" y1="20" x2="246.9" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="246.93333333333334" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">2</text><line x1="279.9" y1="20" x2="279.9" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="279.8666666666667" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">4</text><line x1="312.8" y1="20" x2="312.8" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="312.79999999999995" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">6</text><line x1="345.7" y1="20" x2="345.7" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="345.73333333333335" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">8</text><line x1="378.7" y1="20" x2="378.7" y2="224" stroke="#d5ddd8" stroke-width="1.2"/><text x="378.66666666666663" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">10</text><line x1="411.6" y1="20" x2="411.6" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="411.59999999999997" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">12</text><line x1="444.5" y1="20" x2="444.5" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="444.5333333333333" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">14</text><line x1="477.5" y1="20" x2="477.5" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="477.46666666666664" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">16</text><line x1="510.4" y1="20" x2="510.4" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="510.4" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">18</text><line x1="543.3" y1="20" x2="543.3" y2="224" stroke="#d5ddd8" stroke-width="1.2"/><text x="543.3333333333333" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">20</text><line x1="576.3" y1="20" x2="576.3" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="576.2666666666667" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">22</text><line x1="609.2" y1="20" x2="609.2" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="609.1999999999999" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">24</text><line x1="642.1" y1="20" x2="642.1" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="642.1333333333332" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">26</text><line x1="675.1" y1="20" x2="675.1" y2="224" stroke="#d5ddd8" stroke-width="0.8"/><text x="675.0666666666666" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">28</text><line x1="708.0" y1="20" x2="708.0" y2="224" stroke="#d5ddd8" stroke-width="1.2"/><text x="708.0" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">30</text><line x1="510.4" y1="20" x2="510.4" y2="230" stroke="#1f5e43" stroke-width="1.4" stroke-dasharray="4 3"/><line x1="675.1" y1="20" x2="675.1" y2="230" stroke="#2c5d8a" stroke-width="1.4" stroke-dasharray="4 3"/><rect x="0" y="24" width="206" height="25" fill="#f4f7f5" rx="4"/><text x="6" y="40.5" font-size="10.4" font-weight="800" fill="#16231d">Fase 0 · Definición</text><rect x="214.0" y="29" width="32.9" height="15" rx="3" fill="#5b6670"/><text x="230.46666666666667" y="40" font-size="9.4" font-weight="800" fill="#ffffff" text-anchor="middle">≈ 2</text><text x="6" y="65.5" font-size="10.4" font-weight="800" fill="#16231d">Fase 1 · Núcleo hasta Helisa</text><rect x="214.0" y="54" width="230.5" height="15" rx="3" fill="#2f7d59"/><text x="329.26666666666665" y="65" font-size="9.4" font-weight="800" fill="#ffffff" text-anchor="middle">≈ 14 semanas</text><rect x="0" y="74" width="206" height="25" fill="#f4f7f5" rx="4"/><text x="6" y="90.5" font-size="10.4" font-weight="600" fill="#46534c">Conector Conekta (1B, opcional)</text><rect x="444.5" y="79" width="24.7" height="15" rx="3" fill="url(#f8-hatch-g)" stroke="#2f7d59" stroke-width="1.1"/><text x="6" y="115.5" font-size="10.4" font-weight="600" fill="#46534c">Piloto de la Fase 1 (un ciclo)</text><rect x="444.5" y="104" width="65.9" height="15" rx="3" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1.1"/><text x="477.46666666666664" y="115" font-size="9.4" font-weight="800" fill="#1f5e43" text-anchor="middle">4</text><rect x="0" y="124" width="206" height="25" fill="#f4f7f5" rx="4"/><text x="6" y="140.5" font-size="10.4" font-weight="600" fill="#46534c">Compuerta</text><text x="6" y="165.5" font-size="10.4" font-weight="800" fill="#16231d">Fase 2 · Facturación electrónica</text><rect x="510.4" y="154" width="98.8" height="15" rx="3" fill="#2c5d8a"/><text x="559.8" y="165" font-size="9.4" font-weight="800" fill="#ffffff" text-anchor="middle">≈ 6</text><rect x="0" y="174" width="206" height="25" fill="#f4f7f5" rx="4"/><text x="6" y="190.5" font-size="10.4" font-weight="600" fill="#46534c">Trámite DIAN y set de pruebas</text><rect x="526.9" y="179" width="49.4" height="15" rx="3" fill="url(#f8-hatch-b)" stroke="#2c5d8a" stroke-width="1.1"/><text x="6" y="215.5" font-size="10.4" font-weight="600" fill="#46534c">Piloto de la Fase 2 (un ciclo)</text><rect x="609.2" y="204" width="65.9" height="15" rx="3" fill="#e6eef6" stroke="#2c5d8a" stroke-width="1.1"/><text x="642.1333333333332" y="215" font-size="9.4" font-weight="800" fill="#2c5d8a" text-anchor="middle">≈ 4</text><text x="439.5333333333333" y="90.5" font-size="9.4" font-weight="700" fill="#1f5e43" text-anchor="end">+1,5 sem.</text><text x="581.2666666666667" y="190.5" font-size="9.4" font-weight="700" fill="#2c5d8a">1 a 3 sem.</text><polygon points="510.4,128.5 518.4,136.5 510.4,144.5 502.4,136.5" fill="#fdf1d6" stroke="#a86a00" stroke-width="1.2"/><text x="523.4" y="140.0" font-size="9.4" font-weight="700" fill="#a86a00">se mide y se decide</text><text x="514.4" y="244" font-size="9.8" font-weight="800" fill="#1f5e43" text-anchor="end">Propuesta 1 lista · semana ≈ 18</text><text x="708" y="244" font-size="9.8" font-weight="800" fill="#2c5d8a" text-anchor="end">Propuesta 2 (por fases) · ≈ 28</text><text x="6" y="12" font-size="9.4" font-weight="800" fill="#6e7b74">Semanas desde el inicio (tiempo parcial)</text></svg></figure>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Bloque</th><th class="num">Tiempo parcial</th><th class="num">Tiempo completo</th><th>Nota</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">Propuesta 1</td></tr>
+      <tr><td>Fase 0 · Definición</td><td class="num">≈ 2</td><td class="num">≈ 2</td><td>En paralelo con el arranque; depende de Comserva y de Julio.</td></tr>
+      <tr><td>Fase 1 · Núcleo hasta Helisa (1A)</td><td class="num">≈ 14</td><td class="num">≈ 6</td><td>Campo, oficina, cierre, RH, pedidos, recibos y trazabilidad.</td></tr>
+      <tr><td>Conector Helisa Conekta (1B, opcional)</td><td class="num">+ ≈ 1,5</td><td class="num">+ ≈ 0,7</td><td>Requiere el contrato y las credenciales de Helisa.</td></tr>
+      <tr><td>Piloto de la Fase 1</td><td class="num">4</td><td class="num">4</td><td>Un ciclo de corte; no se acorta con más dedicación.</td></tr>
+      <tr class="tot"><td>Total Propuesta 1 (1A)</td><td class="num">≈ 18</td><td class="num">≈ 10</td><td>Con 1B: ≈ 19,5 y ≈ 11.</td></tr>
+      <tr class="grp"><td colspan="4">Propuesta 2 (se suma a lo anterior)</td></tr>
+      <tr><td>Fase 2 · Facturación electrónica</td><td class="num">≈ 6</td><td class="num">≈ 2,5</td><td>Con proveedor tecnológico.</td></tr>
+      <tr><td>Trámite DIAN y set de pruebas</td><td class="num">1 a 3</td><td class="num">1 a 3</td><td>En paralelo con el desarrollo <span class="pc">por confirmar</span></td></tr>
+      <tr><td>Piloto de la Fase 2</td><td class="num">≈ 4</td><td class="num">≈ 4</td><td>Un ciclo de facturación real.</td></tr>
+      <tr class="tot"><td>Total Propuesta 2 por fases</td><td class="num">≈ 28</td><td class="num">≈ 16,5</td><td>Incluye los dos pilotos y la compuerta.</td></tr>
+      <tr class="tot"><td>Propuesta 2 contratada completa desde el inicio</td><td class="num">≈ 24</td><td class="num">≈ 14</td><td>La Fase 2 se construye durante el piloto de la Fase 1; sin compuerta.</td></tr>
+      <tr class="grp"><td colspan="4">Complementos (cuando se contraten)</td></tr>
+      <tr><td>C1 · Acta y portal</td><td class="num">≈ 4</td><td class="num">≈ 2</td><td>En cualquiera de las dos propuestas.</td></tr>
+      <tr><td>C2 · Caja formal y mensajería</td><td class="num">≈ 2,5</td><td class="num">≈ 1</td><td>En cualquiera de las dos propuestas.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="src">Las semanas cuentan desde que Comserva entrega los insumos de la Fase 0. Si el formato oficial o la habilitación del Pedido se demoran, el calendario se corre lo mismo. Los pilotos duran un ciclo de corte real y por eso no cambian con la dedicación.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 10 · COSTOS ============================ -->
+<section class="sheet" id="costos">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Costos de terceros</span></div>
+  <header class="sec"><span class="n">9</span><div><h2>Costos de terceros para Comserva</h2><p class="kick">Lo que Comserva pagaría directamente a otros proveedores, a su nombre. <b>No son precios del equipo</b>: la propuesta económica del equipo se entrega después del viernes 23 de octubre.</p></div></header>
+
+  <p class="figtitle">Costo anual adicional de terceros, sobre la base de la v5</p>
+  <figure class="fig"><svg viewBox="0 0 720 124" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Costo anual adicional de terceros sobre la base de la v5: 1A sin costo adicional; 1B unos 2,5 millones al año por Conekta; Propuesta 2 entre 205 mil y 560 mil al año más el certificado si no está incluido."><defs><marker id="f9-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f9-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f9-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f9-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f9-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f9-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f9-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f9-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f9-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f9-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f9-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><line x1="236.0" y1="18" x2="236.0" y2="122" stroke="#d5ddd8"/><text x="236.0" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">$0</text><line x1="319.6" y1="18" x2="319.6" y2="122" stroke="#d5ddd8"/><text x="319.57142857142856" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">$0,5 M</text><line x1="403.1" y1="18" x2="403.1" y2="122" stroke="#d5ddd8"/><text x="403.1428571428571" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">$1 M</text><line x1="486.7" y1="18" x2="486.7" y2="122" stroke="#d5ddd8"/><text x="486.71428571428567" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">$1,5 M</text><line x1="570.3" y1="18" x2="570.3" y2="122" stroke="#d5ddd8"/><text x="570.2857142857142" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">$2 M</text><line x1="653.9" y1="18" x2="653.9" y2="122" stroke="#d5ddd8"/><text x="653.8571428571429" y="12" font-size="9.2" font-weight="600" fill="#6e7b74" text-anchor="middle">$2,5 M</text><text x="0" y="35" font-size="11" font-weight="800" fill="#16231d">Modalidad 1A</text><text x="0" y="48" font-size="9.6" font-weight="400" fill="#6e7b74">archivos planos</text><text x="0" y="69" font-size="11" font-weight="800" fill="#16231d">Modalidad 1B</text><text x="0" y="82" font-size="9.6" font-weight="400" fill="#6e7b74">con API Helisa Conekta</text><text x="0" y="103" font-size="11" font-weight="800" fill="#16231d">Propuesta 2 · Fase 2</text><text x="0" y="116" font-size="9.6" font-weight="400" fill="#6e7b74">proveedor tecnológico + certificado</text><text x="242.0" y="40" font-size="10" font-weight="600" fill="#1f5e43">Sin costo adicional de terceros: solo la base de la v5</text><rect x="236.0" y="58" width="424.6" height="24" rx="3" fill="#2c5d8a"/><text x="244.0" y="74" font-size="9.8" font-weight="700" fill="#ffffff">Conekta: $211.680 × 12 = $2.540.160 al año (+ IVA y hosting: por confirmar)</text><rect x="236.0" y="92" width="34.3" height="24" rx="3" fill="#2c5d8a"/><rect x="270.3" y="92" width="59.3" height="24" fill="url(#f9-hatch-b)" stroke="#2c5d8a"/><rect x="329.6" y="92" width="25.1" height="24" fill="url(#f9-hatch-a)" stroke="#a86a00" stroke-dasharray="3 2"/><text x="362.6714285714286" y="103" font-size="9.8" font-weight="700" fill="#16231d">≈ $205.000 a $560.000 según proveedor y volumen,</text><text x="362.6714285714286" y="116" font-size="9.8" font-weight="400" fill="#46534c">+ certificado ≈ $150.000 si no está incluido</text></svg></figure>
+
+  <div class="tw">
+  <table>
+    <colgroup><col style="width:25%"><col style="width:16%"><col style="width:20%"><col style="width:39%"></colgroup>
+    <thead><tr><th>Concepto</th><th>Proveedor</th><th class="num">Valor</th><th>Fuente o estado</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">Base de la v5 · las dos propuestas</td></tr>
+      <tr><td>Servidor con respaldos, almacenamiento de PDF y fotos, dominio, correo y monitoreo</td><td>Hostinger o DigitalOcean, Cloudflare R2, registrador, planes gratuitos</td><td class="num">≈ $55.000 a $90.000 / mes</td><td>Valores de la v5, en dólares (varían con la tasa de cambio); <span class="pc">por confirmar</span></td></tr>
+      <tr><td>Publicación de la app Android</td><td>Google Play Console</td><td class="num">US$25 una vez</td><td>Valor de la v5</td></tr>
+      <tr><td>Soporte de Helisa para importaciones</td><td>Proasistemas</td><td class="num">$99.960 / hora</td><td>Valor de la v5 (Fase 0 y 1); <span class="pc">por confirmar</span></td></tr>
+      <tr><td>Habilitar el documento Pedido</td><td>Helisa</td><td class="num">—</td><td><span class="pc">por confirmar</span></td></tr>
+      <tr class="grp"><td colspan="4">Modalidad 1B · opcional también en la Propuesta 2</td></tr>
+      <tr><td>Helisa Conekta (API)</td><td>Helisa</td><td class="num">$211.680 / mes</td><td>Según la página del proveedor a 22 oct 2026; contrato anual; IVA <span class="pc">por confirmar</span></td></tr>
+      <tr><td>Hosting de Helisa (requisito de Conekta)</td><td>Helisa</td><td class="num">$60.000 / usuario / mes</td><td>Según la página del proveedor a 22 oct 2026; si ya lo tiene: <span class="pc">por confirmar</span></td></tr>
+      <tr class="grp"><td colspan="4">Propuesta 2 · Fase 2 (planes anuales por documentos)</td></tr>
+      <tr><td>Plemsi (proveedor tecnológico)</td><td>ECA SAS</td><td class="num">$205.200 · $367.200 · $529.200</td><td>1.200 · 2.400 · 6.000 docs/año; según la página del proveedor a 22 oct 2026; empresa en el listado DIAN <span class="pc">por confirmar</span></td></tr>
+      <tr><td>Dataico (proveedor tecnológico)</td><td>Dataico</td><td class="num">Cotización</td><td>Pruebas gratis, certificado incluido; según la página del proveedor a 22 oct 2026</td></tr>
+      <tr><td>MATIAS API (modalidad software propio)</td><td>Lopezsoft</td><td class="num">$265.000 · $365.000 · $560.000</td><td>1.200 · 3.000 · 8.000 docs/año; certificado según el plan <span class="pc">por confirmar</span>; página del proveedor a 22 oct 2026</td></tr>
+      <tr><td>The Factory HKA (control)</td><td>The Factory HKA</td><td class="num">Cotización</td><td>Para comparar</td></tr>
+      <tr><td>Certificado de firma digital</td><td>Entidad acreditada</td><td class="num">≈ $150.000 / año</td><td>Si el plan no lo incluye; referencia de mercado <span class="pc">por confirmar</span></td></tr>
+      <tr class="grp"><td colspan="4">Referencia · lo que cobra hoy Helisa por factura electrónica</td></tr>
+      <tr><td>Plan de facturación electrónica</td><td>Helisa</td><td class="num">$835.380 · $963.900</td><td>3.000 · 6.000 docs/año; según la página del proveedor a 22 oct 2026. Lo que paga hoy Comserva: <span class="pc">por confirmar</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="card b" style="margin-top:8px"><p class="small"><b>En la Propuesta 2 Comserva podría reducir su plan de facturación electrónica de Helisa</b> <span class="pc">por confirmar</span>: Helisa seguiría facturando solo productos y arrendamiento. IVA de cada valor: <span class="pc">por confirmar</span>. C2 suma WhatsApp (menos de US$5 al mes, según la v5).</p></div>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 11 · TRAZABILIDAD ============================ -->
+<section class="sheet" id="trazabilidad">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Trazabilidad</span></div>
+  <header class="sec"><span class="n">10</span><div><h2>Trazabilidad: qué gana Comserva en control</h2><p class="kick">En las dos propuestas la trazabilidad es un módulo visible (TRZ): cada cliente y periodo tiene su <b>cadena documental</b> completa, de la visita al cruce del pago en Helisa.</p></div></header>
+
+  <p class="figtitle">Ejemplo: Cofema, septiembre de 2026 (visitas, kilos, total y FVE reales de la v5; el abono es de prueba)</p>
+  <figure class="fig"><svg viewBox="0 0 720 254" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cadena documental de Cofema, septiembre de 2026: visitas y constancias, cierre, planilla RH, pedido y FVE 25756 (o factura electrónica en la Propuesta 2), recibo de caja, archivo RC, cruce en Helisa y expediente descargable."><defs><marker id="f10-ah-n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#46534c"/></marker><marker id="f10-ah-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2f7d59"/></marker><marker id="f10-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2c5d8a"/></marker><marker id="f10-ah-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b4b8a"/></marker><marker id="f10-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a86a00"/></marker><marker id="f10-ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a9271f"/></marker><filter id="f10-sh" x="-10%" y="-10%" width="120%" height="135%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#16231d" flood-opacity="0.10"/></filter><pattern id="f10-hatch-b" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e6eef6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2c5d8a" stroke-width="2" opacity="0.45"/></pattern><pattern id="f10-hatch-r" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fbe3e1"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a9271f" stroke-width="2" opacity="0.5"/></pattern><pattern id="f10-hatch-g" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e7f2ec"/><line x1="0" y1="0" x2="0" y2="6" stroke="#2f7d59" stroke-width="2" opacity="0.5"/></pattern><pattern id="f10-hatch-a" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#fdf1d6"/><line x1="0" y1="0" x2="0" y2="6" stroke="#a86a00" stroke-width="2" opacity="0.45"/></pattern></defs><g filter="url(#f10-sh)"><rect x="0" y="16" width="160" height="98" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="10" y="14.8" width="140" height="4" rx="2" fill="#2f7d59"/><circle cx="15" cy="16" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="15" y="19.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">1</text><text x="11" y="38" font-size="11" font-weight="800" fill="#16231d">Visitas y constancias</text><text x="11" y="54" font-size="10.3" fill="#46534c">4 visitas: 5, 12, 19 y 22</text><text x="11" y="67.2" font-size="10.3" fill="#46534c">de septiembre de 2026;</text><text x="11" y="80.4" font-size="10.3" fill="#46534c">constancias con hash</text><g filter="url(#f10-sh)"><rect x="186" y="16" width="160" height="98" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="196" y="14.8" width="140" height="4" rx="2" fill="#2f7d59"/><circle cx="201" cy="16" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="201" y="19.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">2</text><text x="197" y="38" font-size="11" font-weight="800" fill="#16231d">Cierre del cliente</text><text x="197" y="54" font-size="10.3" fill="#46534c">413,85 kg en el periodo;</text><text x="197" y="67.2" font-size="10.3" fill="#46534c">básico $74.790 + 393,85</text><text x="197" y="80.4" font-size="10.3" fill="#46534c">kg adicionales a $4.600</text><g filter="url(#f10-sh)"><rect x="372" y="16" width="160" height="98" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="382" y="14.8" width="140" height="4" rx="2" fill="#2f7d59"/><circle cx="387" cy="16" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="387" y="19.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">3</text><text x="383" y="38" font-size="11" font-weight="800" fill="#16231d">Planilla RH</text><text x="383" y="54" font-size="10.3" fill="#46534c">Total <tspan font-weight="700" fill="#16231d">$2.244.935</tspan></text><text x="383" y="67.2" font-size="10.3" fill="#46534c">PDF con hash, enlazado</text><text x="383" y="80.4" font-size="10.3" fill="#46534c">a sus visitas</text><g filter="url(#f10-sh)"><rect x="558" y="16" width="160" height="98" rx="9" fill="#fff" stroke="#c2ccc6" stroke-width="1.3"/></g><path d="M559 25 a8 8 0 0 1 8 -8 h142 a8 8 0 0 1 8 8 v40.0 h-158 z" fill="#e7f2ec"/><path d="M559 65.0 h158 v40.0 a8 8 0 0 1 -8 8 h-142 a8 8 0 0 1 -8 -8 z" fill="#e6eef6"/><rect x="558" y="16" width="160" height="98" rx="9" fill="none" stroke="#c2ccc6" stroke-width="1.3"/><circle cx="573" cy="16" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="573" y="19.8" font-size="10.5" font-weight="800" fill="#ffffff" text-anchor="middle">4</text><text x="569" y="36" font-size="10.4" font-weight="400" fill="#1f5e43"><tspan font-weight="700">P1</tspan> · Pedido → <tspan font-weight="700">FVE 25756</tspan></text><text x="569" y="50" font-size="9.8" font-weight="400" fill="#46534c">registrada y validada (± $1)</text><text x="569" y="82.0" font-size="10.4" font-weight="400" fill="#2c5d8a"><tspan font-weight="700">P2</tspan> · Factura electrónica</text><text x="569" y="96.0" font-size="9.8" font-weight="400" fill="#46534c">CUFE, estado DIAN, RADIAN</text><g filter="url(#f10-sh)"><rect x="558" y="152" width="160" height="98" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="568" y="150.8" width="140" height="4" rx="2" fill="#2f7d59"/><circle cx="573" cy="152" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="573" y="155.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">5</text><text x="569" y="174" font-size="11" font-weight="800" fill="#16231d">Recibo de caja</text><text x="569" y="190" font-size="10.3" fill="#46534c">Abono de <tspan font-weight="700" fill="#16231d">$500.000</tspan>,</text><text x="569" y="203.2" font-size="10.3" fill="#46534c">solo con factura</text><text x="569" y="216.39999999999998" font-size="10.3" fill="#46534c">registrada</text><g filter="url(#f10-sh)"><rect x="372" y="152" width="160" height="98" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="382" y="150.8" width="140" height="4" rx="2" fill="#2f7d59"/><circle cx="387" cy="152" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="387" y="155.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">6</text><text x="383" y="174" font-size="11" font-weight="800" fill="#16231d">Archivo RC o envío</text><text x="383" y="190" font-size="10.3" fill="#46534c">1305 contra caja;</text><text x="383" y="203.2" font-size="10.3" fill="#46534c">cruza la FVE 25756;</text><text x="383" y="216.39999999999998" font-size="10.3" fill="#46534c">libros F y N</text><g filter="url(#f10-sh)"><rect x="186" y="152" width="160" height="98" rx="9" fill="#ffffff" stroke="#2f7d59" stroke-width="1.3"/></g><rect x="196" y="150.8" width="140" height="4" rx="2" fill="#2f7d59"/><circle cx="201" cy="152" r="9.5" fill="#1f5e43" stroke="#fff" stroke-width="1.6"/><text x="201" y="155.8" font-size="10.5" font-weight="800" fill="#fff" text-anchor="middle">7</text><text x="197" y="174" font-size="11" font-weight="800" fill="#16231d">Cruce en Helisa</text><text x="197" y="190" font-size="10.3" fill="#46534c">Saldo <tspan font-weight="700" fill="#16231d">$1.744.935</tspan>,</text><text x="197" y="203.2" font-size="10.3" fill="#46534c">visible en la matriz</text><text x="197" y="216.39999999999998" font-size="10.3" fill="#46534c">del periodo</text><g filter="url(#f10-sh)"><rect x="0" y="152" width="160" height="98" rx="9" fill="#fdf1d6" stroke="#e3b341" stroke-width="1.3" stroke-dasharray="5 3"/></g><text x="11" y="174" font-size="11" font-weight="800" fill="#16231d">Expediente</text><text x="11" y="190" font-size="10.3" fill="#46534c">Índice de todos los</text><text x="11" y="203.2" font-size="10.3" fill="#46534c">documentos con hashes,</text><text x="11" y="216.39999999999998" font-size="10.3" fill="#46534c">descargable</text><rect x="89.0" y="94.3" width="61.0" height="15.4" rx="7.7" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/><text x="119.5" y="105.0" font-size="8.4" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.2">COMPLETO</text><rect x="275.0" y="94.3" width="61.0" height="15.4" rx="7.7" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/><text x="305.5" y="105.0" font-size="8.4" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.2">COMPLETO</text><rect x="461.0" y="94.3" width="61.0" height="15.4" rx="7.7" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/><text x="491.5" y="105.0" font-size="8.4" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.2">COMPLETO</text><rect x="647.0" y="230.3" width="61.0" height="15.4" rx="7.7" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/><text x="677.5" y="241.0" font-size="8.4" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.2">COMPLETO</text><rect x="455.1" y="230.3" width="66.9" height="15.4" rx="7.7" fill="#e7f2ec" stroke="#2f7d59" stroke-width="1"/><text x="488.5" y="241.0" font-size="8.4" font-weight="800" fill="#1f5e43" text-anchor="middle" letter-spacing="0.2">IMPORTADO</text><rect x="270.3" y="230.3" width="65.7" height="15.4" rx="7.7" fill="#fdf1d6" stroke="#e3b341" stroke-width="1"/><text x="303.2" y="241.0" font-size="8.4" font-weight="800" fill="#a86a00" text-anchor="middle" letter-spacing="0.2">CON SALDO</text><path d="M161 65.0 L184 65.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f10-ah-g)" stroke-linejoin="round"/><path d="M347 65.0 L370 65.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f10-ah-g)" stroke-linejoin="round"/><path d="M533 65.0 L556 65.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f10-ah-g)" stroke-linejoin="round"/><path d="M638.0 115 L638.0 141" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f10-ah-g)" stroke-linejoin="round"/><path d="M557 201.0 L534 201.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f10-ah-g)" stroke-linejoin="round"/><path d="M371 201.0 L348 201.0" fill="none" stroke="#2f7d59" stroke-width="1.5" marker-end="url(#f10-ah-g)" stroke-linejoin="round"/><path d="M185 201.0 L162 201.0" fill="none" stroke="#a86a00" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#f10-ah-a)" stroke-linejoin="round"/></svg></figure>
+  <div class="linkinfo"><span class="lbl">Cada eslabón muestra</span><span>Estado</span><span>Fecha y hora</span><span>Usuario</span><span>Documento descargable</span><span>Hash o CUFE</span><span>Enlace al siguiente</span><span class="pend">Si falta: «falta registrar FVE»</span></div>
+
+  <div class="grid2 trz" style="margin-top:10px">
+    <div class="card">
+      <h3>Matriz del periodo</h3>
+      <div class="filters"><span class="on">Todos</span><span>Sin FVE</span><span>Con saldo</span><span>Rechazados</span></div>
+      <div class="tw">
+      <table class="matrix">
+        <thead><tr><th>Cliente</th><th>Visitas</th><th>Cierre</th><th>RH</th><th>Pedido/FE</th><th>FVE</th><th>Recibos</th><th>Cruce</th></tr></thead>
+        <tbody>
+          <tr><td>Cofema</td><td>4</td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td>25756</td><td>1</td><td><span class="st pe">saldo</span></td></tr>
+          <tr><td>IPS Salud Vital</td><td>4</td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td><span class="st pe">falta</span></td><td>—</td><td><span class="st na">—</span></td></tr>
+          <tr><td>Lab. Amazonía</td><td>2</td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td><span class="st no">rechazo</span></td><td>—</td><td>—</td><td><span class="st na">—</span></td></tr>
+          <tr><td>Visión Sur</td><td>4</td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td><span class="st ok">ok</span></td><td>1</td><td><span class="st ok">al día</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="figcap">Ilustración: Cofema con sus datos reales; los otros son clientes ficticios de los mockups, con estados de ejemplo.</p>
+    </div>
+    <div class="card g">
+      <h3>Qué se gana en control</h3>
+      <ul class="gain small">
+        <li><b>De dónde sale cada peso facturado</b>: de la factura a las visitas y sus constancias, en un clic.</li>
+        <li><b>Lo que falta, antes de que sea un problema</b>: clientes sin FVE, con saldo o con rechazos.</li>
+        <li><b>Todo con un número</b>: constancia, planilla (ej. 22690-26), pedido, FVE o CUFE, recibo o archivo abren la cadena completa.</li>
+        <li><b>Expediente del cliente-periodo</b> descargable, con índice y hashes, para un cliente, una auditoría o la autoridad ambiental.</li>
+        <li><b>Bitácora de auditoría</b>: quién hizo qué y cuándo.</li>
+        <li>En la Propuesta 2, <b>control de la doble facturación</b>: cada cierre tiene una sola salida, pedido o factura.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Búsqueda por cualquier número</h3>
+    <div class="sbox"><span class="q">FVE 25756</span><span class="hint">constancia · planilla · pedido · FVE o CUFE · recibo · archivo</span></div>
+    <div class="chain-mini"><span>4 visitas y constancias</span><i>→</i><span>Cierre 413,85 kg</span><i>→</i><span>Planilla RH $2.244.935</span><i>→</i><span>Pedido</span><i>→</i><span>FVE 25756</span><i>→</i><span>Recibo $500.000</span><i>→</i><span>Archivo RC</span><i>→</i><span>Cruce: saldo $1.744.935</span></div>
+    <p class="small muted" style="margin-top:6px">Un solo número abre la cadena completa del cliente y el periodo, con cada documento listo para descargar o reenviar.</p>
+  </div>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+<!-- ============================ 12 · LO QUE NECESITAMOS ============================ -->
+<section class="sheet" id="necesitamos">
+  <div class="top"><span><span class="dot"></span>RH digital + Helisa · Comparativo v6</span><span>Lo que necesitamos</span></div>
+  <header class="sec"><span class="n">11</span><div><h2>Lo que necesitamos el viernes y antes de empezar</h2><p class="kick">Diez preguntas para cerrar el viernes 23 de octubre (≈ 30 minutos) y la información que le pedimos a Julio por escrito.</p></div></header>
+
+  <h3 style="margin-bottom:5px">El viernes: preguntas que definen las propuestas</h3>
+  <div class="tw">
+  <table class="qa">
+    <thead><tr><th>#</th><th>Pregunta</th><th>Para qué</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>¿Se puede habilitar el documento <b>Pedido</b> en el Helisa de Comserva? ¿Tiene costo o licencia? ¿Qué tipo usaría («OP») y quién lo habilita?</td><td>Sin pedido no hay Propuesta 1.</td></tr>
+      <tr><td>2</td><td><b>Formato oficial del pedido</b>: campos obligatorios, separador, codificación, decimales y número del pedido. ¿Cuándo y por qué medio llega?</td><td>Archivos que entren sin errores.</td></tr>
+      <tr><td>3</td><td><b>Formato oficial del recibo</b>: columna de cruce, RC1 o RC2, cuentas de caja, de cada banco y de cartera 1305, y cómo van los dos libros.</td><td>Archivo RC correcto.</td></tr>
+      <tr><td>4</td><td><b>Conceptos de Helisa</b> para el servicio: ¿uno por categoría en kilos o «recolección» + «kilogramos adicionales»? Códigos, lista de precio y texto del mes.</td><td>Tabla de equivalencias.</td></tr>
+      <tr><td>5</td><td>¿<b>Cuántas facturas</b> emiten al mes y en qué fechas? ¿Cuántas son del servicio y cuántas de productos?</td><td>Peso de la factura una a una y plan de facturación.</td></tr>
+      <tr><td>6</td><td><b>Esquemas de tarifa</b>: ¿cuántos clientes pagan solo por kilo, cuántos un fijo y cuántos básico con kilos?</td><td>Tres esquemas desde la Fase 1.</td></tr>
+      <tr><td>7</td><td><b>API</b>: ¿Comserva confirma por escrito que paga Conekta? ¿A nombre de quién? ¿Se puede instalar en el servidor de Helisa?</td><td>Decidir entre 1A y 1B.</td></tr>
+      <tr><td>8</td><td><b>Propuesta 2</b>: ¿proveedor preferido? ¿Cuántos documentos quedan en el plan de Helisa y hasta cuándo? ¿Seguirán facturando productos en Helisa? ¿Quién gestiona la numeración?</td><td>Dimensionar la Fase 2.</td></tr>
+      <tr><td>9</td><td>¿Qué es la <b>«factura en sitio»</b>? ¿Algún cliente exige factura por servicio en vez de mensual?</td><td>Saber si entra al alcance.</td></tr>
+      <tr><td>10</td><td>¿Aceptan las <b>fases</b> (P1 ahora y P2 si la P1 funciona)? ¿Con qué criterio deciden pasar a la P2?</td><td>Cerrar la propuesta económica.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 style="margin:10px 0 6px">Antes de empezar: lo que le pedimos a Julio, por escrito y en Excel</h3>
+  <div class="grid3">
+    <div class="card g"><p class="eyebrow" style="color:var(--g)">Pedido · Propuesta 1</p>
+      <ul class="checks small">
+        <li>Estructura de importación de pedidos, campo por campo (24 campos).</li>
+        <li>Pasos para habilitar Pedido y código del tipo.</li>
+        <li>Conceptos con código e IVA; listas de precio y su regla de uso.</li>
+        <li>Cartilla de clientes con código y código adicional por sede.</li>
+        <li>Valores fijos: vendedor, centro de costo, negocio y bodega.</li>
+        <li>Forma de pago, plazo, retenciones e IVA al facturar.</li>
+      </ul></div>
+    <div class="card b"><p class="eyebrow" style="color:var(--b)">Recibo · las dos propuestas</p>
+      <ul class="checks small">
+        <li>Estructura de importación de movimiento contable, con un recibo de ejemplo anonimizado.</li>
+        <li>RC1 o RC2, columna de cruce, formas de pago y módulos que se marcan.</li>
+        <li>Cuentas del recibo en los dos libros: caja, cada banco, cartera 1305, anticipos y retenciones.</li>
+      </ul></div>
+    <div class="card"><p class="eyebrow">Propuesta 2 y prueba conjunta</p>
+      <ul class="checks small">
+        <li>Plantilla «servicio → cuenta» en los dos libros y tipo de documento para facturas emitidas fuera de Helisa.</li>
+        <li>Importar un pedido y un recibo de prueba con Cofema de septiembre (413,85 kg; $2.244.935; abono de $500.000) y compartir la lista de errores.</li>
+        <li>Saber si Helisa exporta el listado de FVE del periodo.</li>
+      </ul></div>
+  </div>
+  <p class="src">Pedimos ejemplos sin datos de pacientes ni de clientes reales. Lo que no llegue antes de empezar se trabaja en la Fase 0; cada demora corre el calendario.</p>
+  <footer class="foot"><span>RH digital + Helisa · Comparativo de propuestas (v6)</span><span class="pg"></span></footer>
+</section>
+
+</main>
+</body>
+</html>

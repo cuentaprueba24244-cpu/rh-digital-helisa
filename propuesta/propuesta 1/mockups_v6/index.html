@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta 1 · RH digital hasta Helisa</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px var(--gutter) 80px; display: grid; gap: 22px; }
+  .hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 800px) { .hero { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: 30px; font-weight: 700; letter-spacing: -.01em; }
+  .hero p { color: var(--fg-2); max-width: 62ch; margin-top: 10px; font-size: 15px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .tile { display: flex; flex-direction: column; gap: 8px; padding: 18px; text-decoration: none; color: inherit; transition: transform .12s; }
+  .tile:hover { transform: translateY(-2px); text-decoration: none; border-color: var(--accent); }
+  .tile .ico { width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-soft-fg); display: grid; place-items: center; font-size: 18px; font-weight: 700; }
+  .tile h3 { font-size: 16px; }
+  .tile p { color: var(--fg-3); font-size: 13px; }
+  .tile .links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .tile .links span { font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 999px; color: var(--fg-2); }
+  ol.flow { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-size: 14px; }
+  ol.flow li b { font-weight: 600; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; }
+  /* v6: tarjeta destacada de trazabilidad con una mini cadena */
+  .tile.featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 10px 28px; align-items: center; border-color: var(--accent); background: linear-gradient(135deg, var(--accent-soft), var(--surface) 65%); }
+  .tile.featured .txt { display: flex; flex-direction: column; gap: 8px; }
+  @media (max-width: 800px) { .tile.featured { grid-template-columns: 1fr; } }
+  .mini-chain { display: grid; grid-template-columns: repeat(var(--n, 8), minmax(0, 1fr)); }
+  .mini-chain .st { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 10.5px; color: var(--fg-3); text-align: center; line-height: 1.2; }
+  .mini-chain .st::before { content: ''; position: absolute; top: 8px; right: 50%; width: 100%; border-top: 2px var(--seg-s) var(--seg); }
+  .mini-chain .st:first-child::before { display: none; }
+  .mini-chain i { position: relative; z-index: 1; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--st); background: var(--st); }
+  .mini-chain .st[data-st="pendiente"] i { background: var(--surface); border-style: dashed; }
+  .tile .cap { font-size: 12px; color: var(--fg-3); margin-top: 8px; text-align: center; }
+  .fases { font-size: 13px; color: var(--fg-2); margin-top: 10px; }
+  ol.flow li .min { display: inline-block; min-width: 54px; margin-right: 6px; font-size: 11px; font-weight: 700; color: var(--accent-soft-fg); background: var(--accent-soft); border-radius: 999px; padding: 0 8px; text-align: center; }
+  .mods { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: 12.5px; color: var(--fg-2); }
+  .mods span { display: inline-flex; align-items: center; gap: 6px; }
+  .mods b { display: inline-grid; place-items: center; min-width: 28px; height: 20px; border-radius: 999px; background: var(--accent); color: var(--accent-fg); font-size: 11px; }
+  .mods b.b { background: var(--info); color: #fff; }
+  .f2 { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px 28px; align-items: start; padding: 20px; border-style: dashed; border-color: var(--info); background: linear-gradient(135deg, var(--info-soft), var(--surface) 70%); }
+  @media (max-width: 800px) { .f2 { grid-template-columns: 1fr; } }
+  .f2 h3 { font-size: 17px; }
+  .f2 p { font-size: 13.5px; color: var(--fg-2); margin-top: 8px; }
+  .f2 ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--fg-2); }
+  .f2 .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Versión 6 · prototipo navegable con datos de prueba</div>
+      <h1>Propuesta 1 · RH digital hasta Helisa</h1>
+      <p>El sistema hace todo el trabajo de campo y de oficina (visitas con firmas, constancias, cierre por cliente y planilla RH con valores) y <b>llega hasta Helisa</b>: del cierre sale el <b>pedido</b> que Helisa importa (archivo OP o envío por la API Helisa Conekta); Lucrecia elabora cada factura en Helisa llamando el pedido con <b>F3</b>, el sistema registra la FVE y la compara con el RH (± $1); del recibo de caja sale el <b>movimiento contable</b> que cruza el pago. La factura electrónica sigue en Helisa, una a una.</p>
+      <div class="mods"><span><b>1A</b> Archivos planos · base, sin costo recurrente adicional</span><span><b class="b">1B</b> API Helisa Conekta · opcional, simulada en el mockup</span><span id="mod-activa"></span></div>
+      <p>Nada se guarda: cada recarga vuelve al estado inicial. "Hoy" es el <b>jueves 22 de octubre de 2026</b>, dentro del periodo de octubre (27 de septiembre al 26 de octubre); desde el día 20 se puede cerrar cliente por cliente. Los números de Cofema de septiembre de 2026 son los reales (413,85 kg y $2.244.935, FVE 25756).</p>
+      <p class="fases"><b>Fases de la v6:</b> Fase 0 · definición; Fase 1 · núcleo hasta Helisa; Fase 2 · facturación electrónica (solo en la propuesta 2). Lo que en la v5 eran la fase 2 (acta y portal) y la fase 3 (caja formal y mensajería) pasan a ser los complementos <b>C1 · Acta y portal</b> y <b>C2 · Caja formal y mensajería</b>, que se pueden contratar después en cualquiera de las dos propuestas.</p>
+    </div>
+    <div class="card pad">
+      <h3>Cómo recorrer el proceso en 10 minutos</h3>
+      <ol class="flow" style="margin-top:10px">
+        <li><span class="min">1 min</span><a href="panel/index.html"><b>Inicio del panel</b></a>: en «Requiere atención» está lo pendiente hacia Helisa: un archivo de pedidos sin importar, una FVE por registrar, dos cierres de hoy sin pedido y un recibo sin archivo RC.</li>
+        <li><span class="min">1 min</span><a href="app/index.html"><b>App del operario</b></a>: una visita con kilos, firmas y GPS (también sin señal) y el recibo de caja, que solo se emite si el cliente tiene FVE registrada.</li>
+        <li><span class="min">1,5 min</span><a href="panel/cierre.html#2026-09|c-cofema"><b>Cierre de septiembre · Cofema</b></a>: 4 visitas, 413,85 kg, liquidación de $2.244.935, las líneas del pedido OP 101 y la FVE 25756 registrada e igual al RH.</li>
+        <li><span class="min">1 min</span><a href="panel/planos.html#ap-op-2026-09-001"><b>El archivo de pedidos de Cofema</b></a>: el TXT con «|» de 24 campos y la cuadrícula legible; los <span class="mono">&lt;COD_…&gt;</span> son códigos por confirmar con Julio. También en <a href="documentos/pedido.html#ap-op-2026-09-001">vista para imprimir</a>.</li>
+        <li><span class="min">1,5 min</span><a href="panel/cierre.html#2026-10"><b>Octubre, hoy</b></a>: en «Avance de la facturación en Helisa» (0 de 4) marque importado el pedido OP 114, registre las FVE por el listado de Helisa o digitándolas (pruebe un total distinto para ver la validación ± $1) y genere los pedidos de Sonrisas y del Dr. Ramírez.</li>
+        <li><span class="min">1 min</span><a href="panel/planos.html#plantillas"><b>Plantillas y equivalencias</b></a>: el pedido de 24 campos sin cuentas y el recibo con libros F y N, los dos en borrador; en «Equivalencias» borre el código de Sonrisas y verá que un cliente sin código no se exporta.</li>
+        <li><span class="min">1 min</span><a href="panel/planos.html#conekta"><b>Conexión con Helisa</b></a>: 1A frente a 1B y la cola simulada de Conekta (reintentos, un error de cruce, lectura de FVE). Con o sin API, la factura se elabora una a una.</li>
+        <li><span class="min">1 min</span><a href="panel/recaudo.html#35686"><b>Recaudo</b></a>: el recibo 35686 de Piel Viva y su movimiento contable (1305 contra caja, libros F y N); genere su <a href="panel/planos.html#rc">archivo RC</a> y registre el recibo definitivo.</li>
+        <li><span class="min">1 min</span><a href="panel/trazabilidad.html#c-cofema|2026-09"><b>Trazabilidad</b></a>: la cadena de Cofema de la visita a la FVE y su abono de prueba (recibo 35672 de $500.000 → archivo RC → cruce, saldo de $1.744.935), la de Sonrisas completa hasta el cruce, la búsqueda por «OP 114» o «25756», la matriz del periodo y el expediente.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="card f2" aria-labelledby="f2-t">
+    <div>
+      <div class="eyebrow">Lo que agrega la Propuesta 2</div>
+      <h3 id="f2-t" style="margin-top:4px">Fase 2 · el sistema emite la factura electrónica</h3>
+      <p>En esta propuesta la factura sigue en Helisa: Lucrecia la elabora una a una llamando el pedido (≈ 240 FVE en 4 semanas, estimado por confirmar). La <b>Propuesta 2</b> agrega la <b>Fase 2</b>: el sistema emite la factura electrónica por medio de un <b>proveedor tecnológico autorizado por la DIAN</b>, y Helisa queda para la contabilidad.</p>
+      <div class="links"><a class="btn sm" href="../../Comparativo de propuestas (v6).html">Comparativo de las dos propuestas</a><a class="btn sm ghost" href="../../propuesta 2/mockups_v6/index.html">Mockups de la Propuesta 2</a></div>
+    </div>
+    <ol>
+      <li>Se conecta donde hoy sale el pedido: cierre → prefactura → emisión por lote → CUFE, XML, PDF y QR → envío al cliente y eventos RADIAN; notas crédito y débito electrónicas.</li>
+      <li>Lo de la Fase 1 se conserva: campo, oficina, cierre, RH, recibos, trazabilidad. Helisa recibe el movimiento contable de facturas y recibos.</li>
+      <li>Compuerta: al terminar el piloto de la Fase 1 se mide el tiempo real de facturar una a una y los errores; si Comserva lo ve viable, se contrata la Fase 2.</li>
+    </ol>
+  </section>
+
+  <section class="tiles">
+    <a class="card tile featured" href="panel/trazabilidad.html">
+      <div class="txt">
+      <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9.5 14.5l5-5"/><path d="M11 6.6l1.4-1.4a4 4 0 0 1 5.7 5.7l-1.4 1.4"/><path d="M13 17.4l-1.4 1.4a4 4 0 0 1-5.7-5.7l1.4-1.4"/></svg></div>
+      <h3>Trazabilidad <span class="badge ok plain" style="vertical-align:2px">Nuevo en la v6</span></h3>
+      <p>La cadena documental de cada cliente y periodo: visitas y constancias, cierre, planilla RH, pedido (archivo OP o envío por Conekta), FVE registrada, recibos, movimiento contable del recibo y cruce en Helisa, con estado, fecha y hora, usuario y huella de cada documento. Buscador por cualquier número, matriz del periodo y expediente con índice de huellas.</p>
+      <div class="links"><span>Cofema · septiembre</span><span>Buscar por número</span><span>Matriz del periodo</span><span>Expediente</span></div>
+      </div>
+      <div><div class="mini-chain" id="mini-chain" aria-hidden="true"></div><div class="cap" id="mini-cap"></div></div>
+    </a>
+    <a class="card tile" href="app/index.html">
+      <div class="ico">📱</div>
+      <h3>App móvil del operario</h3>
+      <p>17 pantallas: inicio de sesión, inicio de jornada, ruta del día, visita en cuatro pasos y visita sin residuos, constancia, recibo de caja solo con factura registrada (tipo y aplicación a facturas), visita fallida, historial, sincronización y cliente nuevo en campo.</p>
+      <div class="links"><span>Firmas en pantalla</span><span>Sin señal</span><span>Recibo solo con factura</span></div>
+    </a>
+    <a class="card tile" href="panel/index.html">
+      <div class="ico">🖥</div>
+      <h3>Panel web de oficina</h3>
+      <p>Inicio, bandeja de visitas, clientes y tarifas (tres esquemas: básico + kilos, solo por kilo y cobro fijo), catálogos, cierre con RH y cierres por cliente desde el día 20, «Helisa: pedidos y recibos» (bandeja, plantillas, equivalencias y conexión 1A/1B), registro de la FVE por tres vías, recaudo, trazabilidad y auditoría.</p>
+      <div class="links"><span>Pedidos OP</span><span>FVE X de Y</span><span>Recibo RC F y N</span><span>Conekta simulado</span></div>
+    </a>
+    <a class="card tile" href="documentos/index.html">
+      <div class="ico">📄</div>
+      <h3>Documentos PDF</h3>
+      <p>Constancia de visita, planilla mensual RHPS (RH), archivo de pedidos para Helisa, recibo de caja provisional, reporte de cierre (contingencia) y, como anticipo del complemento C1, el acta de gestión integral.</p>
+      <div class="links"><span>Consecutivos</span><span>QR de verificación</span><span>Formato actual</span></div>
+    </a>
+    <a class="card tile" href="portal/index.html">
+      <div class="ico">🔐</div>
+      <h3>Portal del cliente (complemento C1)</h3>
+      <p>Anticipo: el cliente entra con usuario y clave, descarga constancias, planillas y recibos, y el acta solo si está al día. Página de verificación de documentos por QR.</p>
+      <div class="links"><span>Regla de cartera</span><span>Verificación</span></div>
+    </a>
+  </section>
+
+  <section class="card pad">
+    <h3>Convenciones de estado</h3>
+    <div class="legend" style="margin-top:10px">
+      <div><span class="badge plain">Borrador</span> se puede editar; solo existe en el celular.</div>
+      <div><span class="badge warn">Guardada en el celular</span> firmada y con número; espera señal.</div>
+      <div><span class="badge ok">Transmitida</span> recibida por el servidor.</div>
+      <div><span class="badge danger">Rechazada</span> el servidor la devolvió; la oficina revisa.</div>
+      <div><span class="badge info">En el cierre</span> ya cuenta para un periodo cerrado.</div>
+      <div><span class="badge danger">Anulada</span> con motivo y usuario; se emitió otra.</div>
+    </div>
+    <h3 style="margin-top:16px">Pedidos y archivos para Helisa</h3>
+    <div class="legend" style="margin-top:10px">
+      <div><span class="badge warn">Generado</span> el archivo existe; falta descargarlo.</div>
+      <div><span class="badge info">Descargado</span> falta importarlo en Helisa.</div>
+      <div><span class="badge ok">Importado en Helisa</span> o <span class="badge ok">Enviado por Conekta</span>: listo para facturar con F3.</div>
+      <div><span class="badge danger">Rechazado por Helisa</span> con la lista de errores; se corrige y se genera otro.</div>
+      <div><span class="badge ok">Facturado</span> la FVE quedó registrada e igual al RH (± $1).</div>
+    </div>
+    <h3 style="margin-top:16px">Estados de un eslabón en la trazabilidad</h3>
+    <div class="legend" style="margin-top:10px">
+      <div><span class="badge ok">Completo</span> el documento existe y tiene huella.</div>
+      <div><span class="badge info">En curso</span> empezó pero falta un paso (p. ej. archivo de pedidos descargado sin importar).</div>
+      <div><span class="badge plain">Pendiente</span> todavía no existe; la cadena lo muestra punteado.</div>
+      <div><span class="badge danger">Con alerta</span> rechazo, anulación, vencimiento o diferencia con el RH.</div>
+    </div>
+  </section>
+
+  <section class="card pad">
+    <h3>Datos de prueba</h3>
+    <p class="muted" style="margin-top:6px" id="datos-prueba"></p>
+  </section>
+</div>
+<script src="assets/data.js"></script>
+<script>
+  (function () {
+    const D = window.DATA;
+    document.getElementById('bar').innerHTML = D.mockBar('Inicio').replace(/\.\.\//g, '');
+    document.getElementById('mod-activa').innerHTML = `Activa en el mockup: <b class="${D.p1.modalidad === '1B' ? 'b' : ''}">${D.p1.modalidad}</b> <a href="panel/planos.html#conekta">cambiar</a>`;
+    // mini cadena de Cofema · septiembre (se dibuja desde DATA.traza, igual que la página de trazabilidad)
+    const ch = D.traza.cadena('c-cofema', '2026-09');
+    const mc = document.getElementById('mini-chain'); mc.style.setProperty('--n', ch.eslabones.length);
+    mc.innerHTML = ch.eslabones.map((e) => `<span class="st" data-st="${e.estado}"><i></i>${e.def.corto}</span>`).join('');
+    document.getElementById('mini-cap').textContent = `Cofema · septiembre de 2026: ${ch.completos} de ${ch.total} eslabones completos; ${ch.siguiente ? 'sigue ' + ch.siguiente.def.etiqueta.toLowerCase() + ' (' + ch.siguiente.sub.charAt(0).toLowerCase() + ch.siguiente.sub.slice(1) + ')' : 'cadena completa'}.`;
+    // conteos calculados de data.js (no se escriben a mano)
+    const n = (arr, f) => arr.filter(f).length;
+    const vs = D.visitas, rs = D.recibos;
+    const est = (k) => n(rs, (r) => r.estado === k);
+    const pl = (k, uno, varios) => `${k} ${k === 1 ? uno : varios}`;
+    document.getElementById('datos-prueba').innerHTML = `${n(D.clientes, (c) => c.estado === 'activo')} clientes activos (${n(D.clientes, (c) => c.dato_prueba)} ficticios marcados «dato de prueba» para los esquemas solo por kilo y cobro fijo) y ${n(D.clientes, (c) => c.estado === 'pendiente_validar')} pendiente de validar, ${D.operarios.length} operarios, ${D.vehiculos.length} vehículos, ${D.categorias.length} categorías, ${D.periodos.length} periodos (agosto y septiembre cerrados, octubre abierto con ${n(D.cierres_cliente, (x) => x.periodo === '2026-10')} cierres anticipados), ${vs.length} visitas (${pl(n(vs, (v) => v.tipo === 'fallida'), 'fallida', 'fallidas')}, ${pl(n(vs, (v) => v.estado === 'rechazada'), 'rechazada', 'rechazadas')}, ${pl(n(vs, (v) => v.estado === 'anulada'), 'anulada', 'anuladas')} con reemplazo, ${n(vs, (v) => v.estado === 'cerrada')} en cola sin señal y ${n(vs, (v) => v.estado === 'borrador')} borrador), ${D.pedidos.length} pedidos de prueba hacia Helisa, ${D.facturas.length} facturas registradas (FVE), ${D.archivos_op.length} archivos de pedidos, ${rs.length} recibos de caja (${pl(est('cruzado'), 'cruzado', 'cruzados')}, ${pl(est('entregado'), 'entregado', 'entregados')}, ${pl(est('emitido'), 'emitido', 'emitidos')} y ${pl(est('anulado'), 'anulado', 'anulados')}), ${D.plantillas_plano.length} plantillas en borrador (pedido de 24 campos y recibo con libros F y N) y ${D.archivos_plano.length} archivos de recibos (RC). Todo está en <span class="mono">assets/data.js</span>, que también contiene la liquidación con los tres esquemas de tarifa (redondeo de Helisa al centavo), la tabla de equivalencias con Helisa y el módulo de trazabilidad.`;
+  })();
+</script>
+</body>
+</html>

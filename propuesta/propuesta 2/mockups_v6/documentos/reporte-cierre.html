@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reporte de cierre · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  .sheet.landscape { padding: 10mm 12mm 20mm; font-size: 9pt; }
+  .brandline { display: flex; align-items: center; gap: 10px; }
+  .brandline .word { font-family: var(--font-doc-display); font-size: 17pt; font-weight: 700; color: #1f5e43; line-height: 1; }
+  .brandline small { display: block; font-size: 6.5pt; color: #333; letter-spacing: .04em; text-transform: uppercase; margin-top: 3px; max-width: 150px; }
+  .rep-head { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; border-bottom: 2px solid #1f5e43; padding-bottom: 6px; margin-bottom: 8px; }
+  .rep-head h1 { font-size: 13pt; }
+  .rep-head .meta { font-size: 8.5pt; color: #333; margin-top: 3px; }
+  .rep-head .right { text-align: right; font-size: 8.5pt; }
+  .rep-head .right b { display: block; font-size: 14pt; color: #b3261e; font-family: var(--font-mono); font-weight: 500; white-space: nowrap; }
+  .kpis { display: flex; gap: 18px; font-size: 8.5pt; margin-bottom: 6px; flex-wrap: wrap; color: #333; }
+  .kpis b { font-size: 11pt; margin-right: 3px; color: #111; }
+  .table-wrap { overflow-x: auto; }
+  table.rep { font-size: 7.5pt; min-width: 900px; }
+  table.rep th { font-size: 6.4pt; padding: 3px 4px; vertical-align: middle; line-height: 1.15; }
+  table.rep td { padding: 2px 4px; vertical-align: middle; line-height: 1.25; }
+  table.rep td .sub { display: block; font-size: 6.5pt; color: #666; }
+  table.rep td.lin { font-size: 6.6pt; line-height: 1.2; }
+  table.rep td.mono { font-size: 7pt; white-space: nowrap; }
+  table.rep td.num { white-space: nowrap; }
+  .linea3 { font-size: 8pt; color: #333; margin-top: 4px; }
+  .cols2 { display: grid; grid-template-columns: 1.1fr 1fr; gap: 14px; margin-top: 8px; font-size: 8.5pt; }
+  .cols2 h3 { font-size: 8pt; font-family: var(--font-doc); text-transform: uppercase; letter-spacing: .06em; color: #1f5e43; border-bottom: 1px solid #1f5e43; margin-bottom: 4px; padding-bottom: 2px; }
+  .cols2 ul { margin: 0; padding-left: 16px; }
+  .cols2 li { margin: 1px 0; }
+  .cols2 .verif { margin-top: 8px; }
+  .sheet .foot { left: 12mm; right: 12mm; bottom: 7mm; }
+  .sheet .watermark span.prev { color: rgba(0, 0, 0, .06); }
+  @media print {
+    @page { size: A4 landscape; margin: 10mm; }
+    .sheet, .sheet.landscape { zoom: 1 !important; min-height: 0; width: auto; padding: 0 !important; page-break-after: auto; }
+    .sheet .foot { position: static; margin-top: 8mm; }
+    table.rep { min-width: 0; }
+    table.rep thead { display: table-header-group; }
+    table.rep tr, .cols2 > div, .kpis { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Periodo</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <button class="btn" id="copy" type="button">Copiar tabla para Excel</button>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage"><div class="sheet landscape" id="sheet" aria-live="polite"></div></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+  function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2800); }
+
+  const LOGO = '<svg width="54" height="54" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#1f5e43"/><circle cx="32" cy="32" r="25" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.5"/><path d="M32 12c11 7 15 18 10 31-7-2-11-7-13-14-1 9-3 14-9 17-6-13-1-26 12-34z" fill="#fff"/><path d="M27 46c3-8 6-14 11-20" stroke="#1f5e43" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>';
+  const brand = () => `<div class="brandline">${LOGO}<div><span class="word">ComServa</span><small>${esc(E.razon_social)}</small></div></div>`;
+
+  const LINEA1 = 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS';
+  const LINEA2 = 'KILOGRAMOS ADICIONALES';
+  const PERIODOS = D.periodos.filter((p) => D.visitas.some((v) => v.periodo === p.id));
+  const DEFAULT = '2026-09';
+  const mesCorto = (iso) => { const d = D.parseISO(iso); return `${d.getDate()} ${D.MESES[d.getMonth()].slice(0, 3)}`; };
+  const rango = (p) => `${mesCorto(p.inicio)} – ${mesCorto(p.fin)}`;
+
+  const sel = document.getElementById('sel');
+  sel.innerHTML = PERIODOS.slice().reverse().map((p) => `<option value="${p.id}">${esc(p.nombre)} (${rango(p)})${p.estado === 'abierto' ? ' · en curso' : ''}</option>`).join('');
+
+  function actual() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    return PERIODOS.find((p) => p.id === id) || PERIODOS.find((p) => p.id === DEFAULT);
+  }
+
+  let current = { p: null, rows: [], tot: null };
+
+  function render() {
+    const p = actual();
+    sel.value = p.id;
+    const rows = D.cierrePeriodo(p.id);
+    const tot = rows.reduce((a, r) => {
+      a.kg += r.kg;
+      if (r.factura) { a.basico += r.factura.basico; a.adic += r.factura.adicionales; a.valAdic += r.factura.valorAdicionales; a.sub += r.factura.subtotal; a.iva += r.factura.iva; a.total += r.factura.total; }
+      return a;
+    }, { kg: 0, basico: 0, adic: 0, valAdic: 0, sub: 0, iva: 0, total: 0 });
+    current = { p, rows, tot };
+    const abierto = p.estado !== 'cerrado';
+    const fin = D.parseISO(p.fin);
+    const mesFactura = `${D.MESES[fin.getMonth()].toUpperCase()} ${fin.getFullYear()}`;
+    const version = p.version || (abierto ? null : 1);
+    const id = `cierre|${p.id}|v${version || 0}`;
+    const hash = D.hashFake(id);
+    const visitasTotal = rows.reduce((a, r) => a + r.visitas.length, 0);
+    const sinVisitas = rows.filter((r) => r.visitas.length === 0);
+    const conFallidas = rows.filter((r) => r.fallidas > 0);
+    const sinTrat = [];
+    rows.forEach((r) => D.categorias.filter((c) => !c.en_acta).forEach((c) => { if (r.porCat[c.codigo] > 0) sinTrat.push(`${r.cliente.nombre_comercial}: ${D.fmtKg(r.porCat[c.codigo])} kg de ${c.nombre.toLowerCase()}`); }));
+    const efectivo = rows.filter((r) => r.tarifa && /efectivo/i.test(r.tarifa.plazo));
+    const mora = rows.filter((r) => r.cliente.cartera === 'en_mora');
+    const notas = rows.filter((r) => r.tarifa && r.tarifa.nota && !/efectivo/i.test(r.tarifa.nota));
+    const sinLinea2 = rows.filter((r) => r.factura && r.factura.adicionales <= 0);
+    const noIncluidas = D.visitas.filter((v) => v.periodo === p.id && ['cerrada', 'rechazada', 'borrador'].includes(v.estado));
+    const anuladas = D.visitas.filter((v) => v.periodo === p.id && v.estado === 'anulada');
+    document.title = `Reporte de cierre · ${p.nombre}`;
+    document.getElementById('state').textContent = `${rows.length} clientes · ${D.fmtKg(tot.kg)} kg · ${D.fmtCOP(tot.total)} a facturar${abierto ? ' (vista previa)' : ''}`;
+
+    const filas = rows.map((r, i) => {
+      const f = r.factura, c = r.cliente;
+      const nv = r.visitas.length;
+      const sub = `${esc(c.nombre_comercial)} · ${nv} visita${nv === 1 ? '' : 's'}${r.fallidas ? ` · ${r.fallidas} sin recolección` : ''}`;
+      const datos = f ? `
+        <td class="num">${D.fmtCOP(f.basico)}</td>
+        <td class="num">${D.fmtNum(f.incluidos)}</td>
+        <td class="num">${D.fmtKg(f.adicionales)}</td>
+        <td class="num">${D.fmtCOP(f.precio_kg)}</td>
+        <td class="num">${D.fmtCOP(f.subtotal)}</td>
+        <td class="num">${D.fmtCOP(f.iva)}</td>
+        <td class="num"><b>${D.fmtCOP(f.total)}</b></td>
+        <td>${esc(r.tarifa.plazo)}</td>
+        <td class="lin">${LINEA1}<br>cant. 1 · ${D.fmtCOP(f.basico)}</td>
+        <td class="lin">${f.adicionales > 0 ? `${LINEA2}<br>cant. ${D.fmtKg(f.adicionales)} · ${D.fmtCOP(f.precio_kg)}` : '<i>Sin línea 2: no superó los kilos incluidos</i>'}</td>`
+        : '<td colspan="10"><i>Sin tarifa vigente: completar en Clientes y tarifas antes de facturar</i></td>';
+      return `<tr><td class="num">${i + 1}</td><td class="mono">${D.nitCompleto(c)}</td><td>${esc(c.razon_social)}<span class="sub">${sub}</span></td><td class="num"><b>${D.fmtKg(r.kg)}</b></td>${datos}</tr>`;
+    }).join('');
+
+    document.getElementById('sheet').innerHTML = `
+      ${abierto ? '<div class="watermark"><span class="prev">VISTA PREVIA</span></div>' : ''}
+      <div class="rep-head">
+        ${brand()}
+        <div>
+          <h1>Reporte de cierre del periodo · ${esc(p.nombre)} (${rango(p)})</h1>
+          <div class="meta">${abierto ? `Periodo abierto: vista previa generada el ${D.fmtFechaCorta(D.HOY)}. El reporte definitivo se numera al cerrar el periodo.` : `Generado el ${esc(p.cerrado_en)} por ${esc(p.cerrado_por)} · Versión ${version}`} · Camino A: Lucrecia digita en Helisa las dos líneas de cada factura con estos valores.</div>
+        </div>
+        <div class="right">Reporte<b>${p.id}${version ? ' · v' + version : ' · sin cerrar'}</b>${esc(E.nombre_corto)} · NIT ${E.nit}</div>
+      </div>
+      <div class="kpis">
+        <span><b>${rows.length}</b>clientes activos</span>
+        <span><b>${visitasTotal}</b>visitas con recolección</span>
+        <span><b>${D.fmtKg(tot.kg)}</b>kg del periodo</span>
+        <span><b>${D.fmtCOP(tot.sub)}</b>subtotal</span>
+        <span><b>${D.fmtCOP(tot.iva)}</b>IVA ${D.parametros.iva_pct}%</span>
+        <span><b>${D.fmtCOP(tot.total)}</b>total a facturar</span>
+      </div>
+      <div class="table-wrap">
+      <table class="rep">
+        <thead><tr>
+          <th>#</th><th>NIT</th><th>Razón social (como va en la factura)</th><th class="num">Kg del periodo</th><th class="num">Básico</th><th class="num">Kg incl.</th><th class="num">Kg adic.</th><th class="num">$/kg</th><th class="num">Subtotal</th><th class="num">IVA</th><th class="num">Total</th><th>Plazo</th><th>Línea 1 de la factura</th><th>Línea 2 de la factura</th>
+        </tr></thead>
+        <tbody>
+          ${filas}
+          <tr class="total"><td colspan="3">TOTALES DEL PERIODO · ${rows.length} clientes</td><td class="num">${D.fmtKg(tot.kg)}</td><td class="num">${D.fmtCOP(tot.basico)}</td><td></td><td class="num">${D.fmtKg(tot.adic)}</td><td></td><td class="num">${D.fmtCOP(tot.sub)}</td><td class="num">${D.fmtCOP(tot.iva)}</td><td class="num">${D.fmtCOP(tot.total)}</td><td colspan="3">Kilos adicionales: ${D.fmtCOP(tot.valAdic)}</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="linea3">Línea 3 de cada factura (solo texto, sin valor): "SERVICIO ESPECIAL DE ASEO PRESTADO MES DE ${mesFactura}". Fórmula: total = (básico + máx(0, kg − kg incluidos) × precio del kg) × 1,${D.parametros.iva_pct}. Los kilos vienen de las constancias de visita; los valores de la tarifa vigente al ${D.fmtFechaCorta(p.fin)}.</div>
+      <div class="cols2">
+        <div>
+          <h3>Observaciones del cierre</h3>
+          <ul>
+            <li>Clientes sin visitas con recolección: ${sinVisitas.length ? sinVisitas.map((r) => esc(r.cliente.nombre_comercial)).join(', ') + ' (se factura solo el básico).' : 'ninguno.'}</li>
+            <li>Visitas sin recolección (fallidas): ${conFallidas.length ? conFallidas.map((r) => `${esc(r.cliente.nombre_comercial)} (${r.fallidas})`).join(', ') + '.' : 'ninguna.'}</li>
+            <li>Categorías sin tratamiento definido: ${sinTrat.length ? sinTrat.map(esc).join('; ') + '. No entran en el acta; la gerencia debe definir el dispositor.' : 'sin kilos en el periodo.'}</li>
+            <li>Pagan en efectivo en la visita: ${efectivo.length ? efectivo.map((r) => esc(r.cliente.nombre_comercial)).join(', ') + '. Se cruzan con los recibos de caja provisionales.' : 'ninguno.'}</li>
+            <li>Clientes en mora según cartera: ${mora.length ? mora.map((r) => esc(r.cliente.nombre_comercial)).join(', ') + '. El acta (complemento C1) queda retenida.' : 'ninguno.'}</li>
+            ${sinLinea2.length ? `<li>Sin kilos adicionales (solo línea 1): ${sinLinea2.map((r) => esc(r.cliente.nombre_comercial)).join(', ')}.</li>` : ''}
+            ${notas.length ? `<li>Notas de tarifa: ${notas.map((r) => `${esc(r.cliente.nombre_comercial)}: ${esc(r.tarifa.nota)}`).join('; ')}.</li>` : ''}
+            ${anuladas.length ? `<li>Constancias anuladas en el periodo (no suman): ${anuladas.map((v) => `N.º ${v.consecutivo} (${esc(D.cliente(v.cliente).nombre_comercial)})`).join(', ')}.</li>` : ''}
+            ${noIncluidas.length ? `<li>Registros no incluidos por su estado: ${noIncluidas.map((v) => `${esc(D.cliente(v.cliente).nombre_comercial)} · ${D.ESTADO_VISITA_LABEL[v.estado].toLowerCase()}${v.consecutivo ? ' (N.º ' + v.consecutivo + ')' : ''}`).join('; ')}. Deben resolverse antes de cerrar.</li>` : ''}
+          </ul>
+        </div>
+        <div>
+          <h3>Uso de este reporte</h3>
+          <p>Es el control del cierre: muestra, cliente por cliente, las líneas que van en la factura electrónica. Si el proveedor tecnológico no está disponible por mucho tiempo, sirve de base al plan de contingencia que apruebe la gerencia. No reemplaza el flujo normal del sistema.</p>
+          <div class="verif">
+            ${D.qrSVG(id)}
+            <div>
+              <div>Verifique este documento en comserva.com.co/verificar con el código <span class="mono">${hash.slice(0, 16)}</span></div>
+              <div class="legal">Documento generado electrónicamente por RH digital Comserva; firmado en pantalla conforme a la Ley 527 de 1999 y el Decreto 2364 de 2012.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot">
+        <span>${esc(E.razon_social)} · NIT ${E.nit} · ${esc(E.licencia)}</span>
+        <span style="text-align:right">${esc(E.direccion)}, ${esc(E.ciudad)} · <span style="white-space:nowrap">Tel. ${esc(E.telefonos)}</span></span>
+      </div>`;
+    fit();
+  }
+
+  function tsv() {
+    const { rows, tot } = current;
+    const H = ['#', 'NIT', 'Razón social', 'Kg periodo', 'Básico', 'Kg incluidos', 'Kg adicionales', '$/kg', 'Subtotal', 'IVA', 'Total', 'Plazo', 'Línea 1', 'Cant. 1', 'Valor 1', 'Línea 2', 'Cant. 2', 'Valor 2'];
+    const L = rows.map((r, i) => {
+      const f = r.factura, c = r.cliente;
+      return [i + 1, D.nitCompleto(c), c.razon_social, D.fmtKg(r.kg), f ? f.basico : '', f ? f.incluidos : '', f ? D.fmtKg(f.adicionales) : '', f ? f.precio_kg : '', f ? f.subtotal : '', f ? f.iva : '', f ? f.total : '', r.tarifa ? r.tarifa.plazo : '',
+        f ? LINEA1 : '', f ? 1 : '', f ? f.basico : '',
+        f && f.adicionales > 0 ? LINEA2 : '', f && f.adicionales > 0 ? D.fmtKg(f.adicionales) : '', f && f.adicionales > 0 ? f.precio_kg : ''];
+    });
+    L.push(['', '', 'TOTAL', D.fmtKg(tot.kg), tot.basico, '', D.fmtKg(tot.adic), '', tot.sub, tot.iva, tot.total, '', '', '', '', '', '', '']);
+    return [H, ...L].map((r) => r.join('\t')).join('\n');
+  }
+
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => {
+      const nominal = s.classList.contains('landscape') ? 1122.5 : 793.7;
+      const z = Math.min(1, avail / nominal);
+      s.style.zoom = z < 1 ? z.toFixed(3) : '';
+      s.style.maxWidth = z < 1 ? 'none' : '';
+    });
+  }
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    const text = tsv();
+    try {
+      if (!navigator.clipboard) throw new Error('sin portapapeles');
+      await navigator.clipboard.writeText(text);
+      toast(`Tabla copiada: ${current.rows.length} clientes, lista para pegar en Excel`);
+    } catch (e) {
+      toast('No se pudo copiar automáticamente; el navegador bloqueó el portapapeles');
+    }
+  });
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>

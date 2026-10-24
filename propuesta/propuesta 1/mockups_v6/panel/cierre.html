@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cierre del periodo · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* estilos propios de la página de cierre (los tokens vienen de style.css) */
+  .chip-state { font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--surface-2); color: var(--fg-3); }
+  .chip.on .chip-state { background: var(--surface); }
+  .chip-state.abierto { color: var(--warn); }
+  .periodo-head { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+  .periodo-head h2 { font-size: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .periodo-head .meta { color: var(--fg-3); font-size: 13px; margin-top: 6px; display: grid; gap: 2px; }
+  .periodo-head .actions { justify-content: flex-end; }
+  .hint { font-size: 11.5px; color: var(--fg-3); width: 100%; text-align: right; }
+  .dd { position: relative; display: inline-block; }
+  .dd summary { list-style: none; }
+  .dd summary::-webkit-details-marker { display: none; }
+  .dd summary::after { content: ' ▾'; font-size: 11px; }
+  .dd-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 300px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 6px; display: grid; }
+  .dd-menu a { display: flex; justify-content: space-between; gap: 10px; padding: 7px 10px; border-radius: 7px; color: var(--fg); font-size: 13px; }
+  .dd-menu a:hover { background: var(--surface-2); text-decoration: none; }
+  .dd-menu a .mono { color: var(--fg-3); }
+  .dd-menu .dd-title { padding: 6px 10px 4px; }
+  .stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 1200px) { .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .stat .value { font-size: 22px; }
+  .stat .value.money { font-size: 20px; }
+  .check-list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .check-list li { display: grid; grid-template-columns: 112px 1fr auto; gap: 14px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .check-list li:last-child { border-bottom: 0; }
+  .check-list .what b { display: block; font-weight: 600; }
+  .check-list .what .det { color: var(--fg-2); margin-top: 2px; }
+  .check-list .what .det .mono { color: var(--fg-3); }
+  .check-list .go { white-space: nowrap; font-weight: 600; font-size: 12.5px; }
+  @media (max-width: 640px) { .check-list li { grid-template-columns: 1fr; gap: 6px; } }
+  .check-sum { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 12.5px; color: var(--fg-2); }
+  table.tbl.dense th, table.tbl.dense td { padding: 7px 7px; font-size: 12px; }
+  table.tbl.dense th { white-space: nowrap; }
+  table.tbl.dense th small { display: block; font-size: 10px; letter-spacing: .02em; text-transform: none; color: var(--fg-3); font-weight: 500; }
+  table.tbl.dense th.cat.sin-trat { color: var(--warn); }
+  /* cabeceras de categoría compactas: código de la planilla RHPS arriba y nombre corto abajo, con salto de línea permitido */
+  table.tbl.dense th.cat { white-space: normal; line-height: 1.15; letter-spacing: .02em; min-width: 62px; }
+  table.tbl.dense th.cat small { white-space: normal; max-width: 92px; margin-left: auto; }
+  table.tbl tbody tr.row { cursor: pointer; }
+  table.tbl tbody tr.row td:first-child, table.tbl thead th:first-child { position: sticky; left: 0; z-index: 2; background: var(--surface); border-right: 1px solid var(--border); }
+  table.tbl tbody tr.row:hover td:first-child { background: var(--surface-2); }
+  table.tbl tbody tr.row.open td { background: var(--surface-2); }
+  table.tbl tr.total td { background: var(--surface); }
+  table.tbl tr.total td:first-child { position: sticky; left: 0; z-index: 2; border-right: 1px solid var(--border); }
+  /* la columna Total se ancla a la derecha SOLO cuando la tabla ya se desplazó (.stick-total la pone ajustarTabla):
+     en la posición inicial las columnas se ven completas y nada tapa a IVA; al desplazar, lo que Lucrecia factura sigue a la vista */
+  table.tbl thead th:first-child { z-index: 3; }
+  .table-wrap.stick-total th.total-col, .table-wrap.stick-total td.total-col { position: sticky; right: 0; z-index: 2; background: var(--surface); border-left: 1px solid var(--border); }
+  .table-wrap.stick-total thead th.total-col { z-index: 3; background: var(--surface-2); }
+  .table-wrap.stick-total tbody tr.row:hover td.total-col, .table-wrap.stick-total tbody tr.row.open td.total-col { background: var(--surface-2); }
+  /* contenedor con desplazamiento horizontal: barra siempre visible (en macOS la barra superpuesta no deja pista) y sombras hacia el lado oculto */
+  .table-wrap.x-scroll { scrollbar-width: thin; scrollbar-color: var(--border-2) var(--surface-2); }
+  .table-wrap.x-scroll::-webkit-scrollbar { height: 10px; }
+  .table-wrap.x-scroll::-webkit-scrollbar-track { background: var(--surface-2); }
+  .table-wrap.x-scroll::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 5px; border: 2px solid var(--surface-2); }
+  .table-wrap.x-scroll.stick-total.more-right th.total-col, .table-wrap.x-scroll.stick-total.more-right td.total-col { box-shadow: -12px 0 14px -10px rgba(0, 0, 0, .55); }
+  .table-wrap.x-scroll.more-left thead th:first-child, .table-wrap.x-scroll.more-left tr.row td:first-child, .table-wrap.x-scroll.more-left tr.total td:first-child { box-shadow: 12px 0 14px -10px rgba(0, 0, 0, .55); }
+  .table-nav { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 8px 14px; font-size: 12px; color: var(--fg-2); border-bottom: 1px solid var(--border); background: var(--surface-2); flex-wrap: wrap; }
+  .table-nav .arrows { display: inline-flex; gap: 4px; }
+  .table-nav .arrows .btn { padding: 2px 9px; font-size: 13px; line-height: 1.4; }
+  .legend .btn { font-size: 12px; padding: 3px 9px; }
+  @media (max-width: 640px) { .table-wrap.stick-total th.total-col, .table-wrap.stick-total td.total-col { position: static; box-shadow: none !important; border-left: 0; } }
+  .row-toggle { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 5px; border: 1px solid var(--border-2); background: var(--surface); color: var(--fg-2); font-size: 11px; cursor: pointer; padding: 0; margin-right: 8px; vertical-align: middle; flex: none; }
+  .cliente-cell { display: flex; align-items: center; min-width: 190px; }
+  .cliente-cell .name { font-weight: 600; }
+  .cliente-cell .name .sub { display: block; font-weight: 400; }
+  td.plazo { font-size: 11.5px; color: var(--fg-2); white-space: normal; min-width: 110px; line-height: 1.3; }
+  td.muted-num { color: var(--fg-3); }
+  tr.detail > td { padding: 0 !important; border-bottom: 1px solid var(--border-2); background: var(--bg) !important; }
+  /* el detalle va dentro de una celda tan ancha como la tabla: se fija al ancho visible del contenedor con scroll */
+  .detail-wrap { position: sticky; left: 0; width: var(--wrap-w, 100%); padding: 16px 16px 18px 44px; background: var(--bg); display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 360px); gap: 16px; }
+  .detail-wrap > div { min-width: 0; }
+  @media (max-width: 1100px) { .detail-wrap { grid-template-columns: minmax(0, 1fr); padding-left: 16px; } }
+  .detail-wrap h4 { margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .detail-wrap h4 small { font-weight: 400; }
+  .detail-wrap table.tbl { font-size: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .detail-wrap table.tbl th, .detail-wrap table.tbl td { padding: 6px 8px; position: static; }
+  .detail-wrap table.tbl tbody tr:hover td { background: var(--surface); }
+  .liq { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: grid; gap: 10px; }
+  .liq .kv { gap: 5px 14px; }
+  .liq .kv dd { text-align: right; font-variant-numeric: tabular-nums; }
+  .liq .kv dt.total, .liq .kv dd.total { font-weight: 700; border-top: 1px solid var(--border-2); padding-top: 6px; }
+  .liq .frase { font-size: 12.5px; color: var(--fg-2); border-left: 3px solid var(--accent); padding-left: 10px; line-height: 1.5; }
+  .liq .helisa { font-size: 12px; background: var(--surface-2); border-radius: 6px; padding: 8px 10px; }
+  .liq .helisa b { display: block; margin-bottom: 2px; }
+  .excluidas { font-size: 12px; color: var(--fg-3); margin-top: 8px; display: grid; gap: 3px; }
+  .caminos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 900px) { .caminos { grid-template-columns: 1fr; } }
+  .camino { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
+  .camino.hoy { border-color: var(--accent); background: var(--accent-soft); }
+  .camino .letra { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; background: var(--surface); border: 1px solid var(--border-2); }
+  .camino.hoy .letra { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .camino h4 { font-size: 13.5px; }
+  .camino p { font-size: 12.5px; color: var(--fg-2); }
+  .reglas { margin: 8px 0 0 16px; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+  .modal .kv-box { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 640px) { .modal .kv-box { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .modal .kv-box div { background: var(--surface-2); border-radius: 8px; padding: 10px 12px; }
+  .modal .kv-box small { display: block; color: var(--fg-3); font-size: 11.5px; }
+  .modal .kv-box b { font-size: 16px; font-variant-numeric: tabular-nums; }
+  .modal p { font-size: 13.5px; color: var(--fg-2); }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; margin-top: 1px; flex: none; }
+  .textarea { min-height: 84px; resize: vertical; }
+  .section-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 22px 0 10px; }
+  .section-title h3 { font-size: 15px; }
+  .mb { margin-bottom: 14px; }
+  .mt { margin-top: 14px; }
+  .legend { font-size: 12px; color: var(--fg-3); display: flex; gap: 14px; flex-wrap: wrap; }
+  /* P1 · avance de la facturación en Helisa, pedido y registro de la FVE */
+  .av-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; }
+  @media (max-width: 760px) { .av-head { grid-template-columns: minmax(0, 1fr); } }
+  .av-big { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .av-big b { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .av-big span { font-size: 15px; color: var(--fg-2); }
+  .av-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--border); margin-top: 12px; }
+  .av-bar i { display: block; height: 100%; }
+  .av-bar i + i { border-left: 2px solid var(--surface); }
+  .av-leg { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12.5px; color: var(--fg-2); }
+  .av-leg span { display: inline-flex; gap: 6px; align-items: center; }
+  .av-leg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .c-ok { background: var(--ok); } .c-dif { background: var(--danger); } .c-fac { background: var(--info); } .c-imp { background: var(--warn); } .c-sin { background: var(--border-2); }
+  .av-note { font-size: 12px; color: var(--fg-3); max-width: 46ch; }
+  .av-note b { color: var(--fg-2); }
+  .hand { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: 1px 8px; vertical-align: 2px; }
+  table.tbl.work td, table.tbl.work th { padding: 8px 10px; font-size: 12.5px; }
+  .fve-ok { color: var(--ok); font-weight: 700; }
+  .fve-bad { color: var(--danger); font-weight: 700; }
+  .ped-lines { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+  .ped-lines td { padding: 3px 0; border-bottom: 1px dashed var(--border); vertical-align: top; }
+  .ped-lines td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 8px; }
+  .ped-lines tr.com td { color: var(--fg-3); font-style: italic; }
+  .ped-lines .k { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-3); }
+  .modal.wide { width: min(860px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; }
+  .modal.wide .modal-body { overflow: auto; }
+  .seg { display: inline-flex; border: 1px solid var(--border-2); border-radius: 9px; overflow: hidden; background: var(--surface); flex-wrap: wrap; }
+  .seg button { border: 0; background: transparent; padding: 7px 13px; font-size: 13px; cursor: pointer; border-right: 1px solid var(--border-2); }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on { background: var(--accent-soft); color: var(--accent-soft-fg); font-weight: 600; }
+  .modal table.tbl td .input { padding: 6px 8px; font-size: 13px; }
+  .modal table.tbl td .input.num { text-align: right; }
+  .val-cell { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .modal table.tbl thead th:first-child, .modal table.tbl td:first-child { position: static; border-right: 0; }
+  .modal table.tbl thead th:first-child { background: var(--surface-2); }
+  .nw { white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Periodo · RH y pedidos hacia Helisa · Propuesta 1</div>
+        <h1 style="margin-top:4px">Cierre del periodo</h1>
+        <p>Suma las visitas de cada cliente entre dos fechas de corte (o desde el día 20, cliente por cliente), aplica la tarifa vigente y congela el <b>RH</b> de cada cliente. Del RH sale el <a href="planos.html#op">pedido para Helisa</a> (archivo OP o envío por Conekta); usted elabora cada factura en Helisa llamando el pedido con <b>F3</b> y registra aquí la FVE, que se valida contra el RH (± $1). Con la FVE registrada el cierre queda facturado. Lo que se cierra no se edita: se reabre con autorización de la gerencia.</p>
+      </div>
+      <div class="chips" id="chips" role="tablist" aria-label="Periodo"></div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+<div id="modal-root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['planos.html','⇄','Helisa: pedidos y recibos'],['trazabilidad.html','⛓︎','Trazabilidad']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtKg, fmtNum, fmtFecha, fmtFechaCorta } = D;
+
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+  document.getElementById('sidebar').innerHTML = sidebar('cierre.html');
+
+  // Factura real con la que se valida la fórmula (dato del cliente, no de la demo)
+  const FACTURA_REAL = { cliente: 'c-cofema', periodo: '2026-09', numero: 'FVE 25756', fecha: '2026-09-23', total: 2244935 };
+  const USUARIO = 'Lucrecia';
+
+  // Estado en memoria: copia de los periodos para poder cerrar octubre en la demo
+  // P1: se usan los mismos objetos de data.js (no copias) para que estadoCierre, cierreDe y los pedidos vean el cierre de la demo
+  const periodos = D.periodos;
+  const P1 = D.p1; const es1B = P1.modalidad === '1B';
+  const ahoraR = () => { const d = new Date(); return `${D.HOY} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  // copia local de la auditoría: el cierre de octubre en la demo agrega su propio evento sin tocar DATA
+  const auditoria = D.auditoria.slice();
+  const state = {
+    periodo: '2026-09',
+    planillaBase: { '2026-09': 22690 },      // septiembre: 22690-26 en adelante, en el orden de la tabla
+    siguientePlanilla: D.parametros.siguiente_planilla,
+    abiertos: new Set(),
+    // Kg incl., $/kg y Plazo: columnas secundarias. Se muestran de entrada en pantallas anchas (≥ 1500 px);
+    // en portátiles quedan tras el botón "Mostrar…" para que Cliente → Total quepa sin desplazar.
+    masColumnas: window.matchMedia('(min-width: 1500px)').matches,
+  };
+  // Enlace profundo: #<periodoId> o #<periodoId>|<clienteId> (abre el periodo y despliega ese cliente)
+  const [hashPeriodo, hashCliente] = decodeURIComponent(location.hash.replace('#', '')).split('|');
+  if (periodos.some((p) => p.id === hashPeriodo)) state.periodo = hashPeriodo;
+  if (hashCliente && D.cliente(hashCliente)) state.abiertos.add(hashCliente);
+
+  // ---------- utilidades ----------
+  const periodo = (id) => periodos.find((p) => p.id === id);
+  function toast(msg) {
+    $$('.toast').forEach((t) => t.remove()); // un solo aviso a la vez: el nuevo reemplaza al anterior en vez de taparlo
+    const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+  function fechaHora(s) { return `${fmtFecha(s)} a las ${s.slice(11, 16)}`; }
+  function diasEntre(a, b) { return Math.round((D.parseISO(b) - D.parseISO(a)) / 86400000); }
+  const CARTERA_BADGE = { al_dia: 'ok', en_mora: 'danger', sin_info: '' };
+  const badgeEstado = (p) => p.estado === 'cerrado' ? '<span class="badge info">Cerrado</span>' : '<span class="badge warn">Abierto</span>';
+
+  function categoriasConKilos(rows) {
+    return D.categorias.slice().sort((a, b) => a.orden - b.orden).filter((c) => rows.some((r) => r.porCat[c.codigo] > 0));
+  }
+  function resumen(rows) {
+    const r = { clientesConVisitas: 0, visitas: 0, fallidas: 0, kg: 0, total: 0, iva: 0, subtotal: 0, basico: 0, incluidos: 0, adicionales: 0, valorAdicionales: 0, porCat: {} };
+    rows.forEach((x) => {
+      if (x.visitas.length) r.clientesConVisitas++;
+      r.visitas += x.visitas.length; r.fallidas += x.fallidas; r.kg += x.kg;
+      Object.entries(x.porCat).forEach(([k, v]) => { r.porCat[k] = (r.porCat[k] || 0) + v; });
+      if (x.factura) { r.total += x.factura.total; r.iva += x.factura.iva; r.subtotal += x.factura.subtotal; r.basico += x.factura.basico; r.incluidos += x.factura.incluidos; r.adicionales += x.factura.adicionales; r.valorAdicionales += x.factura.valorAdicionales; }
+    });
+    r.kg = Math.round(r.kg * 100) / 100;
+    return r;
+  }
+  // Visitas que SÍ cuentan en el cierre: las de D.visitasDe menos las guardadas en el celular sin transmitir ('cerrada').
+  // D.visitasDe solo excluye anulada/borrador/rechazada; la regla del cierre es que lo que no llegó al servidor no se suma.
+  const visitasValidas = (clienteId, pid) => D.visitasDe(clienteId, pid).filter((v) => v.estado !== 'cerrada');
+  // Filas del cierre recalculadas con esa regla (envoltorio local de D.cierrePeriodo; no toca data.js)
+  function filasCierre(pid) {
+    return D.cierrePeriodo(pid).map((r) => {
+      const visitas = r.visitas.filter((v) => v.estado !== 'cerrada');
+      if (visitas.length === r.visitas.length) return r;
+      const porCat = {}; D.categorias.forEach((c) => { porCat[c.codigo] = 0; });
+      visitas.forEach((v) => Object.entries(v.kilos).forEach(([k, kg]) => { porCat[k] = Math.round((porCat[k] + kg) * 100) / 100; }));
+      const kg = Math.round(Object.values(porCat).reduce((a, b) => a + b, 0) * 100) / 100;
+      return { ...r, visitas, porCat, kg, factura: D.calcularFactura(r.tarifa, kg) };
+    });
+  }
+  const actaDe = (clienteId, pid) => D.actas.find((a) => a.cliente === clienteId && a.periodo === pid);
+  function planillaNo(p, idx, clienteId) {
+    const pre = clienteId && D.cierreAnticipado(clienteId, p.id); // v6: cierre anticipado del cliente (desde el día 20)
+    if (pre) return pre.rh;
+    if (p.estado !== 'cerrado') return null;
+    if (state.planillaBase[p.id] != null) { // periodo cerrado en esta demo: consecutivo solo para los que no se cerraron antes
+      const sinPre = D.cierrePeriodo(p.id).filter((r) => !D.cierreAnticipado(r.cliente.id, p.id)).map((r) => r.cliente.id);
+      const i = clienteId ? sinPre.indexOf(clienteId) : idx; return i < 0 ? null : D.consecutivoPlanilla(state.planillaBase[p.id] + i, p.fin);
+    }
+    return clienteId ? D.numeroRH(clienteId, p.id) : (p.planilla_base == null ? null : D.consecutivoPlanilla(p.planilla_base + idx, p.fin));
+  }
+  function liquidacionFrase(f) {
+    if (f && f.esquema && f.esquema !== 'basico_kg') return D.fraseLiquidacion(f); // v6: solo por kilo y cobro fijo
+    if (!f) return 'Sin tarifa vigente a la fecha de corte: no se puede liquidar.';
+    const pasoKilos = f.adicionales > 0
+      ? `${fmtKg(f.kg)} kg − ${fmtNum(f.incluidos)} kg incluidos = ${fmtKg(f.adicionales)} kg adicionales × ${fmtCOP(f.precio_kg)} = ${fmtCOP(f.valorAdicionales)}; + básico ${fmtCOP(f.basico)} = ${fmtCOP(f.subtotal)}`
+      : `${fmtKg(f.kg)} kg no superan los ${fmtNum(f.incluidos)} kg incluidos: 0 kg adicionales; básico ${fmtCOP(f.basico)} = ${fmtCOP(f.subtotal)}`;
+    return `${pasoKilos}; IVA ${f.iva_pct} % ${fmtCOP(f.iva)}; total ${fmtCOP(f.total)}`;
+  }
+
+  // ---------- lista de verificación (periodo abierto) ----------
+  function checklist(p) {
+    const vs = D.visitas.filter((v) => v.periodo === p.id);
+    const items = [];
+    const sinTransmitir = vs.filter((v) => v.estado === 'cerrada');
+    items.push({
+      estado: sinTransmitir.length ? 'warn' : 'ok', titulo: 'Visitas guardadas en celulares sin transmitir', n: sinTransmitir.length,
+      corto: ['visita guardada en un celular sin transmitir', 'visitas guardadas en celulares sin transmitir'],
+      detalle: sinTransmitir.length ? sinTransmitir.map((v) => `N.º ${v.consecutivo} · ${esc(D.cliente(v.cliente).nombre_comercial)} · ${esc(D.operario(v.operario).nombre)} · en cola desde ${fechaHora(v.pendiente_desde)} · ${v.intentos} intentos (${esc(v.ultimo_error)})`).join('<br>') + '<br>No entran al cierre mientras el celular no tenga señal.' : 'Todas las visitas cerradas en los celulares llegaron al servidor.',
+      href: 'visitas.html#estado=cerrada', go: 'Ver cola de envío',
+    });
+    const rechazadas = vs.filter((v) => v.estado === 'rechazada');
+    items.push({
+      estado: rechazadas.length ? 'danger' : 'ok', titulo: 'Visitas rechazadas por el servidor', n: rechazadas.length,
+      corto: ['visita rechazada por el servidor', 'visitas rechazadas por el servidor'],
+      detalle: rechazadas.length ? rechazadas.map((v) => `N.º ${v.consecutivo} · ${esc(D.cliente(v.cliente).nombre_comercial)} · ${fmtFecha(v.fecha)} · ${fmtKg(D.totalKg(v))} kg · <span class="mono">${esc(v.rechazo)}</span>`).join('<br>') : 'Ninguna.',
+      href: 'visitas.html#estado=rechazada', go: 'Revisar rechazadas',
+    });
+    const borradores = vs.filter((v) => v.estado === 'borrador');
+    items.push({
+      estado: borradores.length ? 'info' : 'ok', titulo: 'Borradores abiertos en los celulares', n: borradores.length,
+      corto: ['borrador abierto en un celular', 'borradores abiertos en los celulares'],
+      detalle: borradores.length ? borradores.map((v) => `${esc(D.cliente(v.cliente).nombre_comercial)} · ${esc(D.operario(v.operario).nombre)} · ${fmtFecha(v.fecha)} ${v.hora}`).join('<br>') + '<br>Un borrador no tiene consecutivo ni firmas; solo cuenta cuando el operario lo cierra y se transmite.' : 'Ninguno.',
+      href: 'visitas.html#estado=borrador', go: 'Ver borradores',
+    });
+    // visitas esperadas según la frecuencia del cliente; en un periodo abierto se prorratean a los días transcurridos
+    const ESPERADAS = { semanal: 4, quincenal: 2, mensual: 1, demanda: 0 };
+    const duracion = diasEntre(p.inicio, p.fin) + 1;
+    const transcurridos = p.estado === 'abierto' ? Math.min(duracion, diasEntre(p.inicio, D.HOY) + 1) : duracion;
+    const esperadas = (c) => { const e = ESPERADAS[c.frecuencia] || 0; return e ? Math.max(1, Math.floor(e * transcurridos / duracion)) : 0; };
+    const activos = D.clientes.filter((c) => c.estado === 'activo');
+    const sinVisita = activos.filter((c) => visitasValidas(c.id, p.id).length === 0);
+    const pocas = activos.filter((c) => { const n = visitasValidas(c.id, p.id).length; return n > 0 && n < esperadas(c); });
+    items.push({
+      estado: sinVisita.length ? 'warn' : pocas.length ? 'info' : 'ok', titulo: 'Clientes activos sin visita válida en el periodo, según su frecuencia', n: sinVisita.length,
+      corto: ['cliente activo sin visita válida', 'clientes activos sin visita válida'],
+      detalle: (sinVisita.length ? sinVisita.map((c) => {
+        const fall = D.visitas.filter((v) => v.cliente === c.id && v.periodo === p.id && v.tipo === 'fallida');
+        const ruta = D.ruta_hoy.find((r) => r.cliente === c.id);
+        const extra = [D.FRECUENCIA_LABEL[c.frecuencia] + (c.dia_visita ? ' · ' + c.dia_visita.toLowerCase() : ''), fall.length ? `visita fallida el ${fmtFecha(fall[0].fecha)}` : '', ruta ? 'en la ruta de hoy' : '', c.cartera_fuente === 'Recibo de caja' ? 'paga en efectivo' : ''].filter(Boolean);
+        return `${esc(c.nombre_comercial)} · ${esc(extra.join(' · '))}`;
+      }).join('<br>') + '<br>Si se cierra así, se les factura solo el básico.' : 'Todos los clientes activos tienen al menos una visita válida.')
+        + (pocas.length
+          ? `<br>Con menos visitas de las esperadas a la fecha: ${pocas.map((c) => `${esc(c.nombre_comercial)} (${visitasValidas(c.id, p.id).length} de ${esperadas(c)}, ${D.FRECUENCIA_LABEL[c.frecuencia].toLowerCase()})`).join(', ')}.`
+          : `<br>Los demás llevan las visitas esperadas para su frecuencia a la fecha (${transcurridos} de ${duracion} días del periodo).`),
+      href: 'clientes.html', go: 'Ver clientes',
+    });
+    const sinTrat = [];
+    vs.filter((v) => v.tipo === 'recoleccion' && !['anulada', 'borrador', 'rechazada', 'cerrada'].includes(v.estado)).forEach((v) => {
+      Object.entries(v.kilos).forEach(([k, kg]) => { const cat = D.categoria(k); if (cat && !cat.en_acta && kg > 0) sinTrat.push({ v, cat, kg }); });
+    });
+    items.push({
+      estado: sinTrat.length ? 'warn' : 'ok', titulo: 'Kilos en categorías sin tratamiento definido', n: sinTrat.length,
+      corto: ['visita con kilos en una categoría sin tratamiento definido', 'visitas con kilos en categorías sin tratamiento definido'],
+      detalle: sinTrat.length ? sinTrat.map((x) => `${esc(D.cliente(x.v.cliente).nombre_comercial)} · ${fmtKg(x.kg)} kg de ${esc(x.cat.nombre)} · visita N.º ${x.v.consecutivo} del ${fmtFecha(x.v.fecha)}`).join('<br>') + '<br>Se cobran como kilos; no entran al acta hasta que la gerencia defina tratamiento y dispositor.' : 'Ninguno.',
+      href: 'catalogos.html#categorias', go: 'Ver catálogo',
+    });
+    const pendientes = D.clientes.filter((c) => c.estado === 'pendiente_validar');
+    items.push({
+      estado: pendientes.length ? 'danger' : 'ok', titulo: 'Clientes pendientes de validar', n: pendientes.length,
+      corto: ['cliente pendiente de validar', 'clientes pendientes de validar'],
+      detalle: pendientes.length ? pendientes.map((c) => `${esc(c.nombre_comercial)} · NIT ${fmtNum(c.nit)} (sin dígito de verificación) · creado por ${esc(c.creado_por || 'el operario')} el ${fmtFecha(c.creado)} · sin tarifa`).join('<br>') + '<br>Sus visitas quedan rechazadas hasta que la oficina complete NIT, tarifa y frecuencia.' : 'Ninguno.',
+      // clientes.html abre la ficha con #<clienteId>; si hay un solo pendiente se enlaza directo, si no, la lista
+      href: pendientes.length === 1 ? 'clientes.html#' + pendientes[0].id : 'clientes.html', go: pendientes.length === 1 ? 'Validar cliente' : 'Ver clientes',
+    });
+    const sinTarifa = D.clientes.filter((c) => c.estado === 'activo' && !D.tarifaVigente(c, p.fin));
+    items.push({
+      estado: sinTarifa.length ? 'danger' : 'ok', titulo: 'Tarifas vencidas o faltantes a la fecha de corte', n: sinTarifa.length,
+      corto: ['cliente sin tarifa vigente a la fecha de corte', 'clientes sin tarifa vigente a la fecha de corte'],
+      detalle: sinTarifa.length ? sinTarifa.map((c) => esc(c.nombre_comercial)).join(', ') : `Ninguna: las ${D.clientes.filter((c) => c.estado === 'activo').length} tarifas vigentes cubren el ${fmtFecha(p.fin)}.`,
+      href: 'clientes.html', go: 'Ver tarifas',
+    });
+    return items;
+  }
+  const ESTADO_CHECK = { ok: ['ok', 'En orden'], warn: ['warn', 'Aviso'], danger: ['danger', 'Por resolver'], info: ['info', 'Informativo'] };
+
+  // ---------- plantillas ----------
+  function renderChips() {
+    $('#chips').innerHTML = periodos.map((x) => `<button type="button" class="chip${x.id === state.periodo ? ' on' : ''}" role="tab" aria-selected="${x.id === state.periodo}" data-periodo="${x.id}">${esc(x.nombre)}<span class="chip-state ${x.estado}">${x.estado === 'cerrado' ? 'Cerrado' : 'Abierto'}</span></button>`).join('');
+  }
+
+  function cabecera(p, rows, res) {
+    const abierto = p.estado === 'abierto';
+    const meta = abierto
+      ? `<span>Del ${fmtFecha(p.inicio)} al ${fmtFecha(p.fin)} · corte el día ${D.parametros.dia_corte} · cierres por cliente desde el día ${D.parametros.dia_inicio_cierre}</span><span>Faltan ${diasEntre(D.HOY, p.fin)} días para el corte. Hoy es ${fmtFecha(D.HOY, { dia: true })}.</span>${(() => { const pre = D.cierres_cliente.filter((x) => x.periodo === p.id); return pre.length ? `<span>Ya cerrados (cierre anticipado): ${pre.map((x) => `${esc(D.cliente(x.cliente).nombre_comercial)} · RH ${esc(x.rh)}`).join(' · ')}</span>` : ''; })()}`
+      : `<span>Del ${fmtFecha(p.inicio)} al ${fmtFecha(p.fin)}</span><span>Cerrado por ${esc(p.cerrado_por)} el ${fechaHora(p.cerrado_en)} · versión ${p.version || 1}${p.reabierto ? ' (reabierto)' : ''}</span>`;
+    let acciones;
+    if (abierto) {
+      const sp = sinPedido(p.id), pf = porFacturar(p.id);
+      acciones = `<button type="button" class="btn primary" data-act="cerrar">Cerrar periodo</button>
+        <button type="button" class="btn" data-act="preview">Vista previa del cierre</button>
+        ${sp.length ? `<button type="button" class="btn" data-act="pedidos">${es1B ? 'Enviar por Conekta' : 'Generar pedidos'} (${sp.length})</button>` : ''}
+        ${pf.length ? `<button type="button" class="btn" data-act="fve">Registrar FVE (${pf.length})</button>` : ''}
+        <a class="btn" href="trazabilidad.html#${D.cierres_cliente.filter((x) => x.periodo === p.id).map((x) => x.cliente)[0] || 'c-cofema'}|${p.id}">Trazabilidad del periodo</a>
+        <span class="hint">Cierres por cliente desde el día ${D.parametros.dia_inicio_cierre}: ${D.cierres_cliente.filter((x) => x.periodo === p.id).length} ya cerrados; sus pedidos y FVE se manejan igual que en un periodo cerrado.</span>`;
+    } else if (!rows) {
+      acciones = `<button type="button" class="btn primary" disabled title="Periodo anterior a los datos de prueba detallados">Pedidos para Helisa</button>
+        <button type="button" class="btn" disabled title="Periodo anterior a los datos de prueba detallados">Planillas mensuales (${p.clientes} PDF)</button>
+        <span class="hint">Los documentos de este periodo no están en los datos de prueba.</span>`;
+    } else {
+      const sp = sinPedido(p.id), pf = porFacturar(p.id);
+      acciones = `${sp.length ? `<button type="button" class="btn primary" data-act="pedidos">${es1B ? 'Enviar por Conekta' : 'Generar pedidos'} (${sp.length})</button>` : `<a class="btn primary" href="planos.html#op|${p.id}">Pedidos en Helisa · ver</a>`}
+        ${pf.length ? `<button type="button" class="btn" data-act="fve">Registrar FVE (${pf.length})</button>` : ''}
+        <details class="dd"><summary class="btn" aria-haspopup="true">Planillas mensuales (${rows.length} PDF)</summary>
+          <div class="dd-menu"><div class="eyebrow dd-title">Una planilla RHPS por cliente</div>${rows.map((r, i) => `<a href="../documentos/planilla.html#${r.cliente.id}|${p.id}"><span>${esc(r.cliente.nombre_comercial)}</span><span class="mono">${planillaNo(p, i, r.cliente.id)}</span></a>`).join('')}</div>
+        </details>
+        <a class="btn" href="../documentos/reporte-cierre.html#${p.id}" title="Solo si no se puede importar el pedido (por ejemplo, si Pedido no está habilitado)">Reporte de cierre <span class="badge warn plain">contingencia</span></a>
+        <a class="btn" href="../documentos/acta.html#c-cofema|${p.id}">Actas <span class="badge info plain">Complemento C1</span></a>
+        <a class="btn" href="trazabilidad.html#c-cofema|${p.id}">Trazabilidad</a>
+        <button type="button" class="btn danger" data-act="reabrir">Reabrir periodo</button>
+        <span class="hint" id="hint-helisa">Pedidos y recibos para Helisa: «Helisa: pedidos y recibos». Reabrir: solo gerencia y solo si ningún cliente está facturado.</span>`;
+    }
+    return `<div class="card pad mb">
+      <div class="periodo-head">
+        <div>
+          <h2>${esc(p.nombre)} ${badgeEstado(p)}</h2>
+          <div class="meta">${meta}</div>
+        </div>
+        <div class="actions">${acciones}</div>
+      </div>
+    </div>`;
+  }
+
+  function statsRow(p, res) {
+    const abierto = p.estado === 'abierto';
+    return `<div class="stats mb">
+      <div class="card stat"><div class="label">Clientes con visitas</div><div class="value">${res.clientesConVisitas}<span class="muted" style="font-size:14px;font-weight:500"> / ${res.clientes}</span></div><div class="delta">${res.clientes - res.clientesConVisitas ? (res.clientes - res.clientesConVisitas) + ' sin visita: solo básico' : 'Todos con visita'}</div></div>
+      <div class="card stat"><div class="label">Visitas válidas</div><div class="value">${res.visitas}</div><div class="delta">${abierto ? 'Recolecciones transmitidas' : 'Recolecciones incluidas en el cierre'}</div></div>
+      <div class="card stat"><div class="label">Visitas fallidas</div><div class="value">${res.fallidas}</div><div class="delta">Con evidencia; no suman kilos</div></div>
+      <div class="card stat"><div class="label">Kilos totales</div><div class="value">${fmtKg(res.kg)}<span class="muted" style="font-size:13px;font-weight:500"> kg</span></div><div class="delta">${fmtKg(res.adicionales)} kg adicionales</div></div>
+      <div class="card stat"><div class="label">${abierto ? 'Valor a facturar (si cerrara hoy)' : 'Valor total a facturar'}</div><div class="value money">${fmtCOP(res.total)}</div><div class="delta">Subtotal ${fmtCOP(res.subtotal)}</div></div>
+      <div class="card stat"><div class="label">IVA total</div><div class="value money">${fmtCOP(res.iva)}</div><div class="delta">${D.parametros.iva_pct} % sobre el subtotal</div></div>
+    </div>`;
+  }
+
+  function checklistCard(p) {
+    const items = checklist(p);
+    const cnt = { ok: 0, warn: 0, danger: 0, info: 0 }; items.forEach((i) => cnt[i.estado]++);
+    return `<div class="card mb">
+      <div class="card-head">
+        <div><h3>Lista de verificación antes de cerrar</h3><small>Calculada ahora mismo sobre las visitas y los clientes del periodo</small></div>
+        <div class="check-sum">${cnt.danger ? `<span class="badge danger">${cnt.danger} por resolver</span>` : ''}${cnt.warn ? `<span class="badge warn">${cnt.warn} ${cnt.warn === 1 ? 'aviso' : 'avisos'}</span>` : ''}${cnt.info ? `<span class="badge info">${cnt.info} ${cnt.info === 1 ? 'informativo' : 'informativos'}</span>` : ''}<span class="badge ok">${cnt.ok} en orden</span></div>
+      </div>
+      <div class="card-body" style="padding-top:4px;padding-bottom:6px">
+        <ul class="check-list">${items.map((i) => `<li>
+          <span class="badge ${ESTADO_CHECK[i.estado][0]}">${ESTADO_CHECK[i.estado][1]}</span>
+          <div class="what"><b>${i.titulo}${i.n ? ` (${i.n})` : ''}</b><div class="det">${i.detalle}</div></div>
+          <a class="go" href="${i.href}">${i.go} →</a>
+        </li>`).join('')}</ul>
+      </div>
+      <div class="card-body" style="border-top:1px solid var(--border)">
+        <div class="callout warn">Puede cerrar con pendientes, pero las visitas que lleguen después del cierre caerán en el periodo siguiente.</div>
+      </div>
+    </div>`;
+  }
+
+  // texto del evento de cierre, calculado de las mismas filas que la tabla (no del texto fijo de la auditoría, que puede quedar desactualizado)
+  const detalleCierre = (rows, res) => `${rows.length} clientes, ${res.visitas} visitas, ${fmtKg(res.kg)} kg; ${rows.length} RH generados`;
+  function registroCierre(p, rows, res) {
+    const eventos = auditoria.filter((a) => a.entidad.includes(p.nombre));
+    if (!eventos.length) return '';
+    const detalle = (e) => (e.accion === 'Cerró el periodo' ? detalleCierre(rows, res) : e.detalle);
+    return `<div class="card mb">
+      <div class="card-head"><h3>Registro del cierre</h3><small>Auditoría del periodo</small></div>
+      <div class="card-body"><ul class="timeline">${eventos.map((e) => `<li><div><div>${esc(e.accion)} · <b>${esc(e.quien)}</b>${detalle(e) ? ` <span class="muted">· ${esc(detalle(e))}</span>` : ''}</div><div class="when">${fechaHora(e.en)}</div></div></li>`).join('')}</ul></div>
+    </div>`;
+  }
+
+  // Columnas de la tabla por cliente. Las marcadas "extra" (Kg incl., $/kg, Plazo) se muestran solo con "Más columnas".
+  const numCols = (cats) => 11 + cats.length + (state.masColumnas ? 3 : 0);
+
+  function filaCliente(p, r, i, cats) {
+    const c = r.cliente, f = r.factura, more = state.masColumnas;
+    const acta = actaDe(c.id, p.id);
+    const actaHtml = acta ? (acta.estado === 'emitida' ? `<span class="badge ok">Emitida N.º ${acta.consecutivo}</span>` : `<span class="badge warn" title="${esc(acta.retenida_motivo || '')}">Retenida por mora</span>`) : '<span class="muted">pendiente</span>';
+    const planilla = planillaNo(p, i, c.id);
+    const sinVisitas = r.visitas.length === 0;
+    const carteraCls = CARTERA_BADGE[c.cartera] || '';
+    return `<tr class="row" data-cliente="${c.id}">
+      <td><div class="cliente-cell"><button type="button" class="row-toggle" aria-label="Ver detalle de ${esc(c.nombre_comercial)}" aria-expanded="false">▸</button><div class="name">${esc(c.nombre_comercial)}<span class="sub">NIT ${D.nitCompleto(c)}${sinVisitas ? ' · <span class="badge warn" style="font-size:10.5px;padding:0 7px">Sin visitas</span>' : ''}</span></div></div></td>
+      <td class="num">${r.visitas.length}${r.fallidas ? ` <span class="muted">(${r.fallidas})</span>` : ''}</td>
+      ${cats.map((k) => `<td class="num${r.porCat[k.codigo] ? '' : ' muted-num'}">${r.porCat[k.codigo] ? fmtKg(r.porCat[k.codigo]) : '–'}</td>`).join('')}
+      <td class="num"><b>${fmtKg(r.kg)}</b></td>
+      <td class="num">${f ? fmtCOP(f.basico) : '–'}</td>
+      ${more ? `<td class="num">${f ? fmtNum(f.incluidos) : '–'}</td>` : ''}
+      <td class="num${f && f.adicionales ? '' : ' muted-num'}">${f ? fmtKg(f.adicionales) : '–'}</td>
+      ${more ? `<td class="num">${f ? fmtCOP(f.precio_kg) : '–'}</td>` : ''}
+      <td class="num">${f ? fmtCOP(f.subtotal) : '–'}</td>
+      <td class="num">${f ? fmtCOP(f.iva) : '–'}</td>
+      <td class="num total-col"><b>${f ? fmtCOP(f.total) : 'Sin tarifa'}</b></td>
+      ${more ? `<td class="plazo">${esc(r.tarifa ? r.tarifa.plazo : '–')}</td>` : ''}
+      <td>${celdaEstado(p, c)}</td>
+      <td class="mono">${planilla || '<span class="muted" style="font-family:var(--font-ui)">se asigna al cerrar</span>'}</td>
+      <td>${actaHtml}</td>
+    </tr>
+    <tr class="detail" data-detail="${c.id}" hidden><td colspan="${numCols(cats)}">${detalleCliente(p, r, cats)}</td></tr>`;
+  }
+
+  function detalleCliente(p, r, cats) {
+    const c = r.cliente, f = r.factura;
+    const catsCliente = cats.filter((k) => r.porCat[k.codigo] > 0);
+    const todas = D.visitasDe(c.id, p.id, { todas: true });
+    const excluidas = todas.filter((v) => !r.visitas.includes(v));
+    const EXCL = {
+      fallida: (v) => `Visita fallida N.º ${v.consecutivo} del ${fmtFecha(v.fecha)} ${v.hora}: ${esc(v.motivo_fallida)}${v.testigo ? ` (testigo: ${esc(v.testigo)})` : ''}. Deja evidencia; no suma kilos.`,
+      anulada: (v) => `Visita N.º ${v.consecutivo} anulada por ${esc(v.anulada_por)} el ${fechaHora(v.anulada_en)}: ${esc(v.anulacion_motivo)} No cuenta.`,
+      cerrada: (v) => `Visita N.º ${v.consecutivo} del ${fmtFecha(v.fecha)} (${fmtKg(D.totalKg(v))} kg) guardada en el celular de ${esc(D.operario(v.operario).nombre)} sin transmitir: no entra hasta que llegue al servidor.`,
+      borrador: (v) => `Borrador del ${fmtFecha(v.fecha)} ${v.hora} en el celular de ${esc(D.operario(v.operario).nombre)}: sin consecutivo ni firmas; no cuenta.`,
+      rechazada: (v) => `Visita N.º ${v.consecutivo} rechazada por el servidor: ${esc(v.rechazo)}`,
+    };
+    const visitasHtml = r.visitas.length ? `<div class="table-wrap"><table class="tbl">
+        <thead><tr><th>N.º</th><th>Fecha</th><th>Hora</th>${catsCliente.map((k) => `<th class="num" title="${esc(k.nombre)}" abbr="${esc(k.nombre)}">${esc(k.codigo)}</th>`).join('')}<th class="num">Total kg</th><th>Operario</th></tr></thead>
+        <tbody>${r.visitas.map((v) => `<tr><td class="mono">${v.consecutivo}</td><td>${fmtFechaCorta(v.fecha)}</td><td>${v.hora}</td>${catsCliente.map((k) => `<td class="num">${v.kilos[k.codigo] ? fmtKg(v.kilos[k.codigo]) : '<span class="muted">–</span>'}</td>`).join('')}<td class="num"><b>${fmtKg(D.totalKg(v))}</b></td><td>${esc(D.operario(v.operario).nombre.split(' ').slice(0, 2).join(' '))}</td></tr>`).join('')}
+        <tr class="total"><td colspan="3">Total del periodo</td>${catsCliente.map((k) => `<td class="num">${fmtKg(r.porCat[k.codigo])}</td>`).join('')}<td class="num">${fmtKg(r.kg)}</td><td></td></tr></tbody>
+      </table></div>`
+      : `<div class="callout warn">Sin visitas válidas en el periodo. Se factura solo el básico de la tarifa vigente; confirmar esta regla con Lucrecia.</div>`;
+
+    const avisos = [];
+    if (FACTURA_REAL.cliente === c.id && FACTURA_REAL.periodo === p.id && f) {
+      avisos.push(f.total === FACTURA_REAL.total
+        ? `<div class="callout ok"><b>Coincide con la factura real ${FACTURA_REAL.numero}</b> del ${fmtFecha(FACTURA_REAL.fecha)} (${fmtCOP(FACTURA_REAL.total)}). La fórmula reproduce lo que Lucrecia facturó a mano en Helisa.</div>`
+        : `<div class="callout danger"><b>No coincide con la factura real ${FACTURA_REAL.numero}</b> (${fmtCOP(FACTURA_REAL.total)}): revisar la tarifa o las visitas.</div>`);
+    }
+    D.facturas_referencia.filter((x) => x.cliente === c.id && x.periodo === p.id && x.numero !== FACTURA_REAL.numero && f).forEach((x) => {
+      const ok = Math.abs(f.total - x.total) < 0.005;
+      avisos.push(`<div class="callout ${ok ? 'ok' : 'warn'}"><b>${ok ? 'Mismo total que' : 'No coincide con'} la ${esc(x.numero)}</b> (${fmtCOP(x.total)}): ${esc(x.nota)} ${ok ? 'La liquidación reproduce el redondeo de Helisa al centavo.' : ''}</div>`);
+    });
+    const pre = D.cierreAnticipado(c.id, p.id);
+    if (pre && p.estado === 'abierto') avisos.push(`<div class="callout info"><b>Cierre anticipado</b> el ${fechaHora(pre.cerrado_en)} por ${esc(pre.cerrado_por)} · RH ${esc(pre.rh)}. Las visitas que lleguen después de esa hora caen en el periodo siguiente.</div>`);
+    avisos.push(`<div><a class="btn sm" href="trazabilidad.html#${c.id}|${p.id}">Ver trazabilidad de ${esc(c.nombre_comercial)} →</a></div>`);
+    const sinTrat = Object.entries(r.porCat).filter(([k, kg]) => kg > 0 && !D.categoria(k).en_acta);
+    sinTrat.forEach(([k, kg]) => avisos.push(`<div class="callout warn"><b>${fmtKg(kg)} kg de ${esc(D.categoria(k).nombre)} sin tratamiento definido.</b> Sí se cobran como kilos del periodo, pero no entran al acta de gestión hasta que la gerencia decida tratamiento y dispositor.</div>`));
+    if (r.tarifa && r.tarifa.nota && /confirmar/i.test(r.tarifa.nota)) avisos.push(`<div class="callout info">Tarifa: ${esc(r.tarifa.nota)}.</div>`);
+
+    const filasEsquema = !f ? '' : f.esquema === 'solo_kg'
+      ? `<dt>Kilos del periodo</dt><dd>${fmtKg(f.kg)} kg</dd>
+        <dt>Esquema</dt><dd>${esc(D.ESQUEMA_TARIFA_LABEL.solo_kg)}</dd>
+        <dt>Kilos × precio</dt><dd>${fmtKg(f.kg)} kg × ${fmtCOP(f.precio_kg)} = ${fmtCOP(f.valorAdicionales)}</dd>`
+      : f.esquema === 'fijo'
+        ? `<dt>Kilos del periodo</dt><dd>${fmtKg(f.kg)} kg (informativo)</dd>
+        <dt>Esquema</dt><dd>${esc(D.ESQUEMA_TARIFA_LABEL.fijo)}</dd>
+        <dt>Valor fijo</dt><dd>${fmtCOP(f.basico)}</dd>`
+        : `<dt>Kilos del periodo</dt><dd>${fmtKg(f.kg)} kg</dd>
+        <dt>Kilos incluidos en el básico</dt><dd>${fmtNum(f.incluidos)} kg</dd>
+        <dt>Kilos adicionales</dt><dd>${fmtKg(f.adicionales)} kg × ${fmtCOP(f.precio_kg)} = ${fmtCOP(f.valorAdicionales)}</dd>
+        <dt>Básico mensual</dt><dd>${fmtCOP(f.basico)}</dd>`;
+    const liq = f ? `<dl class="kv">
+        ${filasEsquema}
+        <dt>Subtotal</dt><dd>${fmtCOP(f.subtotal)}</dd>
+        <dt>IVA ${f.iva_pct} %</dt><dd>${fmtCOP(f.iva)}</dd>
+        <dt class="total">Total a facturar</dt><dd class="total">${fmtCOP(f.total)}</dd>
+      </dl>
+      <div class="frase">${liquidacionFrase(f)}</div>
+      ${bloquePedido(p, r)}`
+      : `<div class="callout danger">Sin tarifa vigente al ${fmtFecha(p.fin)}: no se puede liquidar. Registre la tarifa en Clientes y tarifas.</div>`;
+
+    return `<div class="detail-wrap">
+      <div>
+        <h4>Visitas de ${esc(c.nombre_comercial)} en ${esc(p.nombre.toLowerCase())} <small class="muted">${r.visitas.length} válida${r.visitas.length === 1 ? '' : 's'}${r.visitas.length ? ` (${[...new Set(r.visitas.map((v) => D.ESTADO_VISITA_LABEL[v.estado].toLowerCase()))].join(', ')})` : ''}${r.fallidas ? ` · ${r.fallidas} fallida${r.fallidas > 1 ? 's' : ''}` : ''}</small></h4>
+        ${visitasHtml}
+        ${excluidas.length ? `<div class="excluidas"><b style="color:var(--fg-2)">No cuentan en este cierre</b>${excluidas.map((v) => `<span>· ${(EXCL[v.tipo === 'fallida' ? 'fallida' : v.estado] || ((x) => `Visita N.º ${x.consecutivo} en estado ${x.estado}.`))(v)}</span>`).join('')}</div>` : ''}
+        ${avisos.length ? `<div class="grid mt" style="gap:8px">${avisos.join('')}</div>` : ''}
+      </div>
+      <div>
+        <h4>Liquidación paso a paso <small class="muted">tarifa vigente al ${fmtFechaCorta(p.fin)}</small></h4>
+        <div class="liq">${liq}</div>
+      </div>
+    </div>`;
+  }
+
+  // nombres cortos para la cabecera de la tabla (el nombre completo va en el title y en el detalle)
+  const NOMBRE_CORTO = { ANATO: 'Anatomopat.', CORTO: 'Cortopunz.' };
+  function thCategoria(k) {
+    const corto = NOMBRE_CORTO[k.codigo] || k.nombre;
+    const sub = [corto !== k.codigo ? corto : '', k.en_acta ? '' : 'sin tratamiento'].filter(Boolean).join(' · ');
+    return `<th class="num cat${k.en_acta ? '' : ' sin-trat'}" scope="col" title="${esc(k.nombre)} (kg) · ${esc(k.tratamiento)}" abbr="${esc(k.nombre)}">${esc(k.codigo)}${sub ? `<small>${esc(sub)}</small>` : ''}</th>`;
+  }
+
+  function tablaClientes(p, rows, res, cats) {
+    const abierto = p.estado === 'abierto', more = state.masColumnas;
+    return `<div class="card mb">
+      <div class="card-head">
+        <div><h3>Totales por cliente (RH)</h3><small>${abierto ? 'Proyección con las visitas transmitidas hasta hoy; cambia hasta el cierre (los cierres anticipados ya están congelados)' : 'El RH de cada cliente: de aquí sale el pedido que Helisa importa'} · haga clic en una fila para ver sus visitas, la liquidación y el pedido</small></div>
+        <div class="legend"><span>Kilos por categoría con el código de la planilla RHPS; solo las categorías con kilos en el periodo</span>
+          <button type="button" class="btn" data-act="columnas" aria-pressed="${more}" title="Kg incluidos en el básico, precio por kilo y plazo de pago">${more ? 'Ocultar' : 'Mostrar'} Kg incl., $/kg y plazo</button></div>
+      </div>
+      <div class="table-nav" id="table-nav" hidden>
+        <span>La tabla sigue hacia la derecha (Total, estado con pedido y FVE, planilla y acta); la columna Cliente queda fija y Total se ancla a la derecha al desplazar.</span>
+        <span class="arrows"><button type="button" class="btn" data-scroll="-1" aria-label="Desplazar la tabla a la izquierda">◂</button><button type="button" class="btn" data-scroll="1" aria-label="Desplazar la tabla a la derecha">▸</button></span>
+      </div>
+      <div class="table-wrap x-scroll" id="wrap-clientes">
+        <table class="tbl dense" id="tabla-clientes">
+          <thead><tr>
+            <th scope="col">Cliente</th>
+            <th class="num" scope="col" title="Visitas válidas (fallidas entre paréntesis)">Visitas<small>(fallidas)</small></th>
+            ${cats.map(thCategoria).join('')}
+            <th class="num" scope="col">Kg total</th>
+            <th class="num" scope="col" title="Servicio básico mensual de la tarifa vigente">Básico</th>
+            ${more ? '<th class="num" scope="col" title="Kilos incluidos en el básico">Kg incl.</th>' : ''}
+            <th class="num" scope="col" title="Kilos por encima de los incluidos; se cobran a $/kg">Kg adic.</th>
+            ${more ? '<th class="num" scope="col" title="Precio por kilo adicional">$/kg</th>' : ''}
+            <th class="num" scope="col">Subtotal</th>
+            <th class="num" scope="col">IVA</th>
+            <th class="num total-col" scope="col">Total</th>
+            ${more ? '<th scope="col">Plazo</th>' : ''}
+            <th scope="col">Estado · Pedido · FVE</th>
+            <th scope="col">Planilla N.º</th>
+            <th scope="col">Acta<small>complemento C1</small></th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((r, i) => filaCliente(p, r, i, cats)).join('')}
+            <tr class="total">
+              <td>TOTAL · ${rows.length} clientes</td>
+              <td class="num">${res.visitas}${res.fallidas ? ` <span class="muted">(${res.fallidas})</span>` : ''}</td>
+              ${cats.map((k) => `<td class="num">${fmtKg(res.porCat[k.codigo] || 0)}</td>`).join('')}
+              <td class="num">${fmtKg(res.kg)}</td>
+              <td class="num">${fmtCOP(res.basico)}</td>
+              ${more ? `<td class="num">${fmtNum(res.incluidos)}</td>` : ''}
+              <td class="num">${fmtKg(res.adicionales)}</td>
+              ${more ? '<td class="num muted-num">–</td>' : ''}
+              <td class="num">${fmtCOP(res.subtotal)}</td>
+              <td class="num">${fmtCOP(res.iva)}</td>
+              <td class="num total-col">${fmtCOP(res.total)}</td>
+              <td colspan="${more ? 4 : 3}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-body" style="border-top:1px solid var(--border)">
+        <div class="callout">Si el cliente no tuvo visitas se factura el básico; confirmar esta regla con Lucrecia. Las filas marcadas <span class="badge warn" style="font-size:10.5px;padding:0 7px">Sin visitas</span> aparecen con 0 kg y solo el básico.</div>
+      </div>
+    </div>`;
+  }
+
+  function caminos(p) {
+    return `<div class="card mb">
+      <div class="card-head"><div><h3>Qué recibe Lucrecia · Propuesta 1</h3><small>Pedidos y recibos hacia Helisa ${es1B ? 'por Conekta (modalidad 1B, simulada) con archivos de contingencia' : 'en archivos planos (modalidad 1A)'}; el reporte de cierre queda solo como contingencia</small></div></div>
+      <div class="card-body">
+        <div class="caminos">
+          <div class="camino hoy">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="letra">OP</span><span class="badge ok">Fase 1 · desde el RH</span></div>
+            <h4>Pedido para Helisa</h4>
+            <p>Por cada RH, un pedido sin cuentas ni IVA: líneas de concepto (código del concepto, cantidad, valor unitario) y de comentario. ${es1B ? 'Se inserta por Conekta.' : 'Va en un TXT con «|» que usted importa en Helisa.'} Después usted elabora la factura llamando el pedido con F3 y registra la FVE aquí.</p>
+            <a class="btn sm" href="planos.html#op|${p.id}">Pedidos de ${esc(p.nombre.toLowerCase())}</a>
+          </div>
+          <div class="camino hoy">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="letra">RC</span><span class="badge ok">Fase 1 · desde el recibo</span></div>
+            <h4>Movimiento contable del recibo</h4>
+            <p>Por cada recibo entregado en la oficina: débito a caja y crédito a cartera 1305 en los libros F y N, con la FVE que se cruza. Helisa lo importa al módulo de cartera y usted registra el recibo definitivo.</p>
+            <a class="btn sm" href="planos.html#rc">${es1B ? 'Recibos por Conekta' : 'Generar archivo RC'}</a>
+          </div>
+          <div class="camino">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="letra">A</span><span class="badge warn">Contingencia</span></div>
+            <h4>Reporte de cierre para digitar</h4>
+            <p>Solo si el pedido no se puede importar (por ejemplo, mientras Pedido no esté habilitado en Helisa): una fila por cliente con las líneas para digitar la factura a mano y registrar la FVE.</p>
+            <a class="btn sm ghost" href="../documentos/reporte-cierre.html#${p.id}">Ver el reporte de ${esc(p.nombre.toLowerCase())}</a>
+          </div>
+        </div>
+        <div class="callout info mt"><b>Las plantillas y la tabla de equivalencias se configuran en el panel</b> sin programar: <a href="planos.html#plantillas">plantilla del pedido (24 campos) y del recibo (libros F y N)</a> y <a href="planos.html#equivalencias">códigos de Helisa</a> (conceptos, lista de precio, código de cada cliente o sede). Las dos plantillas están en borrador hasta recibir las estructuras oficiales de Julio.</div>
+        <div class="callout info mt">
+          <b>Reglas del cierre</b>
+          <ul class="reglas">
+            <li>El cierre suma cada visita una sola vez; una visita anulada no cuenta.</li>
+            <li>Una visita incluida en un cierre no entra en otro: las que lleguen después caen en el periodo siguiente.</li>
+            <li>La tarifa aplicada es la vigente a la fecha de corte y queda congelada con el cierre, aunque la tarifa cambie después.</li>
+            <li>Cada RH entra en un solo pedido vigente; un cliente sin código en Helisa no se exporta.</li>
+            <li>La FVE se registra solo si coincide con el RH (± $1); si difiere, queda marcada para revisión.</li>
+            <li>Lo cerrado solo se reabre con autorización de la gerencia y si ningún cliente está facturado; la reapertura queda en auditoría y genera una nueva versión del cierre.</li>
+          </ul>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderDetallado(p) {
+    const rows = filasCierre(p.id);
+    const res = resumen(rows); res.clientes = rows.length;
+    const cats = categoriasConKilos(rows);
+    return cabecera(p, rows, res)
+      + avanceCard(p)
+      + (p.estado === 'abierto' ? checklistCard(p) : registroCierre(p, rows, res))
+      + statsRow(p, res)
+      + tablaClientes(p, rows, res, cats)
+      + caminos(p);
+  }
+
+  function renderAgosto(p) {
+    return cabecera(p, null, null)
+      + `<div class="callout warn mb">Periodo anterior a los datos de prueba detallados: solo se conserva el resumen guardado al cerrar.</div>
+      <div class="stats mb" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <div class="card stat"><div class="label">Clientes facturados</div><div class="value">${p.clientes}</div><div class="delta">Resumen guardado al cerrar</div></div>
+        <div class="card stat"><div class="label">Visitas válidas</div><div class="value">${p.visitas}</div><div class="delta">Recolecciones del periodo</div></div>
+        <div class="card stat"><div class="label">Kilos totales</div><div class="value">${fmtKg(p.kg)}<span class="muted" style="font-size:13px;font-weight:500"> kg</span></div><div class="delta">Suma de las planillas</div></div>
+      </div>`
+      + caminos(p);
+  }
+
+  // =====================================================================
+  // P1 · pedidos para Helisa, avance de la facturación (X de Y) y registro de la FVE por tres vías
+  // Todo se hace en memoria sobre los datos de esta página: nada se guarda al recargar.
+  // =====================================================================
+  const enHelisa = (ped) => !!ped && ['importado', 'enviado'].includes(ped.estado);
+  const cierresListos = (pid) => D.cierrePeriodo(pid).filter((cz) => cz.factura && D.cierreDe(cz.cliente.id, pid));
+  const sinPedido = (pid) => cierresListos(pid).filter((cz) => { const ped = D.pedidoDe(cz.cliente.id, pid); return !ped || ped.estado === 'rechazado'; });
+  const porFacturar = (pid) => cierresListos(pid).filter((cz) => enHelisa(D.pedidoDe(cz.cliente.id, pid)) && !D.facturaDe(cz.cliente.id, pid));
+  const rhDe = (p, cid) => planillaNo(p, null, cid);
+  const porAPI = (p) => es1B && p.id >= P1.CONEKTA.desde.slice(0, 7);
+  const parsePesos = (s) => { const t = String(s || '').replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'); const n = Number(t); return Number.isFinite(n) ? n : NaN; };
+  const fmtPesosInput = (n) => D.r2(n).toLocaleString('es-CO', { minimumFractionDigits: Number.isInteger(D.r2(n)) ? 0 : 2, maximumFractionDigits: 2 });
+
+  function celdaEstado(p, c) {
+    const st = D.estadoCierre(c.id, p.id); const ped = D.pedidoDe(c.id, p.id); const fv = D.facturaDe(c.id, p.id);
+    const cls = { abierto: 'plain', cerrado: 'warn', exportado: 'info', facturado: 'ok' }[st];
+    let html = `<span class="badge ${cls}">${D.ESTADO_CIERRE_LABEL[st]}</span>`;
+    if (ped && ped.estado !== 'anulado') html += `<span class="sub"><span class="mono">${esc(ped.numero)}</span> · ${esc(P1.ESTADO_LABEL[ped.estado] || ped.estado)}</span>`;
+    else if (st === 'cerrado') html += '<span class="sub" style="color:var(--warn)">sin pedido para Helisa</span>';
+    if (fv) { const v = D.validacionFVE(fv); html += `<span class="sub"><span class="mono">${esc(fv.numero)}</span> <span class="${v && v.ok ? 'fve-ok' : 'fve-bad'}" title="${v && v.ok ? 'Igual al RH (± $1)' : 'Difiere del RH'}">${v && v.ok ? '✓' : '≠'}</span> · ${fmtFechaCorta(fv.fecha)}</span>`; }
+    else if (enHelisa(ped)) html += `<span class="sub" style="color:var(--warn)">falta la FVE (F3 en Helisa)</span>`;
+    return html;
+  }
+
+  function bloquePedido(p, r) {
+    const c = r.cliente, f = r.factura; const ped = D.pedidoDe(c.id, p.id); const fv = D.facturaDe(c.id, p.id);
+    const rh = rhDe(p, c.id);
+    const tmp = ped && ped.estado !== 'rechazado' ? ped : { numero: 'OP —', cliente: c.id, periodo: p.id, rh, fecha: D.HOY };
+    const ls = P1.lineasPedido(tmp);
+    const filas = ls.map((l) => (l.tipo_concepto === 2
+      ? `<tr><td>${esc(l.concepto)}<div class="k">${P1.numPlano(l.cantidad)} × ${fmtCOP(l.unitario)} · tipo 2 · concepto ${esc(l.codigo || '<' + l.codigo_ph + '>')}</div></td><td class="num">${fmtCOP(D.r2(l.cantidad * l.unitario))}</td></tr>`
+      : `<tr class="com"><td colspan="2">${esc(l.texto)}<div class="k">tipo 3 · comentario</div></td></tr>`)).join('');
+    let estado;
+    if (fv) {
+      const v = D.validacionFVE(fv);
+      estado = `<div class="callout ${v && v.ok ? 'ok' : 'danger'}" style="margin-top:8px"><b>FVE registrada: ${esc(fv.numero)}</b> del ${fmtFechaCorta(fv.fecha)} · ${fmtCOP(fv.total)} · ${v && v.ok ? `igual al RH (diferencia ${fmtCOP(v.diferencia)})` : `difiere del RH en ${fmtCOP(v ? v.diferencia : 0)}: revisar`}. ${esc(D.VIA_REGISTRO_LABEL[fv.via_registro] || '')}${fv.dato_prueba ? ' · dato de prueba' : ''}. Saldo de referencia ${fmtCOP(D.saldoReferencia(fv.id))}.</div>`;
+    } else if (enHelisa(ped)) {
+      estado = `<div class="callout warn" style="margin-top:8px"><b>Pedido ${esc(ped.numero)} en Helisa.</b> Falta elaborar la factura llamando el pedido con F3 y registrar la FVE. <button type="button" class="btn sm" data-av-fve="${c.id}" style="margin-top:6px">Registrar FVE</button></div>`;
+    } else if (ped && ped.estado !== 'rechazado') {
+      estado = `<div class="callout info" style="margin-top:8px"><b>Pedido ${esc(ped.numero)} · ${esc(P1.ESTADO_LABEL[ped.estado])}.</b> Falta importarlo en Helisa.${ped.archivo ? ` <button type="button" class="btn sm" data-av-imp="${esc(ped.archivo)}" style="margin-top:6px">Marcar el archivo importado</button>` : ''}</div>`;
+    } else if (D.cierreDe(c.id, p.id)) {
+      estado = `<div class="callout warn" style="margin-top:8px"><b>Sin pedido todavía.</b>${ped ? ' El archivo anterior fue rechazado.' : ''} <button type="button" class="btn sm" data-av-ped="${c.id}" style="margin-top:6px">${porAPI(p) ? 'Enviar por Conekta' : 'Generar pedido'}</button></div>`;
+    } else {
+      estado = '<div class="muted" style="font-size:12px;margin-top:8px">Vista previa: el pedido se genera cuando se cierra el cliente o el periodo.</div>';
+    }
+    return `<div class="helisa"><b>Lo que va en el pedido para Helisa${ped && ped.estado !== 'rechazado' ? ` · ${esc(ped.numero)}` : ''}</b>Sin cuentas ni IVA: Helisa pone el IVA y la contabilización por concepto al facturar.
+      <table class="ped-lines">${filas}<tr><td><b>Subtotal del pedido</b> <span class="k">= subtotal del RH</span></td><td class="num"><b>${fmtCOP(f.subtotal)}</b></td></tr><tr><td class="muted">IVA ${f.iva_pct} % (lo calcula Helisa por concepto)</td><td class="num muted">${fmtCOP(f.iva)}</td></tr><tr><td><b>Total esperado de la FVE</b></td><td class="num"><b>${fmtCOP(f.total)}</b></td></tr></table>
+      ${estado}</div>`;
+  }
+
+  const ORDEN_PASO = ['por_facturar', 'por_importar', 'sin_pedido', 'rechazado', 'diferencia', 'registrada'];
+  function avanceCard(p) {
+    const filas = cierresListos(p.id).map((cz) => { const c = cz.cliente; const ped = D.pedidoDe(c.id, p.id); const f = D.facturaDe(c.id, p.id); return { cz, c, ped, f, paso: P1.pasoFacturacion(ped, f) }; });
+    if (!filas.length) return '';
+    filas.sort((a, b) => ORDEN_PASO.indexOf(a.paso) - ORDEN_PASO.indexOf(b.paso));
+    const n = (k) => filas.filter((x) => x.paso === k).length;
+    const tot = filas.length, reg = n('registrada') + n('diferencia');
+    const SEG = [['registrada', 'c-ok'], ['diferencia', 'c-dif'], ['por_facturar', 'c-fac'], ['por_importar', 'c-imp'], ['rechazado', 'c-dif'], ['sin_pedido', 'c-sin']];
+    const pend = filas.filter((x) => x.paso !== 'registrada');
+    const sp = n('sin_pedido') + n('rechazado'), pf = n('por_facturar');
+    const fila = (x, i) => {
+      const cod = x.c.helisa.codigo_cliente;
+      let acc = '';
+      if (x.paso === 'por_facturar') acc = `<button type="button" class="btn sm primary" data-av-fve="${x.c.id}">Registrar FVE</button>`;
+      else if (x.paso === 'por_importar') acc = x.ped.archivo ? `<button type="button" class="btn sm" data-av-imp="${esc(x.ped.archivo)}">Marcar importado</button>` : '';
+      else if (x.paso === 'sin_pedido' || x.paso === 'rechazado') acc = `<button type="button" class="btn sm" data-av-ped="${x.c.id}">${porAPI(p) ? 'Enviar por Conekta' : 'Generar pedido'}</button>`;
+      else acc = `<a class="btn sm ghost" href="trazabilidad.html#${x.c.id}|${p.id}|fve">Cadena</a>`;
+      return `<tr><td class="num muted">${i + 1}</td><td><b>${esc(x.c.nombre_comercial)}</b>${x.c.dato_prueba ? ' <span class="badge warn plain" style="font-size:10px">prueba</span>' : ''}<span class="sub">NIT ${esc(x.c.nit)} · código Helisa ${cod ? esc(cod) : '<b style="color:var(--danger)">falta</b>'}</span></td><td class="mono">${x.ped && x.ped.estado !== 'rechazado' ? esc(x.ped.numero) : '—'}<span class="sub" style="font-family:var(--font-ui)">${x.ped ? esc(x.ped.via === 'conekta' ? 'por Conekta' : 'archivo OP') : ''}</span></td><td class="num"><b>${fmtCOP(x.cz.factura.total)}</b></td><td><span class="badge ${P1.PASO_BADGE[x.paso]}">${esc(P1.PASO_LABEL[x.paso])}</span></td><td>${x.f ? `<span class="mono">${esc(x.f.numero)}</span> <span class="${x.paso === 'registrada' ? 'fve-ok' : 'fve-bad'}">${x.paso === 'registrada' ? '✓' : '≠'}</span>` : '<span class="muted">—</span>'}</td><td>${acc}</td></tr>`;
+    };
+    const tabla = (lista) => `<div class="table-wrap"><table class="tbl work"><thead><tr><th class="num">#</th><th>Cliente</th><th>Pedido</th><th class="num">Total esperado</th><th>Paso</th><th>FVE</th><th></th></tr></thead><tbody>${lista.map(fila).join('')}</tbody></table></div>`;
+    return `<div class="card mb" id="avance">
+      <div class="card-head"><div><h3>Avance de la facturación en Helisa <span class="hand">Una a una · F3</span></h3><small>Hoja de trabajo de ${esc(p.nombre.toLowerCase())}: cada factura la elabora usted en Helisa llamando el pedido; el sistema registra la FVE y la compara con el RH (± $1)</small></div>
+        <div class="actions">${sp ? `<button type="button" class="btn" data-av-ped="*">${porAPI(p) ? 'Enviar por Conekta' : 'Generar pedidos'} (${sp})</button>` : ''}${pf ? `<button type="button" class="btn primary" data-av-fve="*">Registrar FVE (${pf})</button>` : ''}</div></div>
+      <div class="card-body">
+        <div class="av-head">
+          <div><div class="av-big"><b>${reg} de ${tot}</b><span>facturas elaboradas en Helisa y registradas${n('diferencia') ? ` · <span style="color:var(--danger)">${n('diferencia')} con diferencia</span>` : ''}</span></div>
+            <div class="av-bar" role="img" aria-label="${reg} de ${tot} facturas registradas">${SEG.map(([k, cls]) => (n(k) ? `<i class="${cls}" style="width:${n(k) / tot * 100}%" title="${esc(P1.PASO_LABEL[k])}: ${n(k)}"></i>` : '')).join('')}</div>
+            <div class="av-leg">${SEG.filter(([k]) => n(k)).map(([k, cls]) => `<span><i class="${cls}"></i>${esc(P1.PASO_LABEL[k])} <b>${n(k)}</b></span>`).join('')}</div></div>
+          <div class="av-note"><b>Con o sin Conekta, la factura se elabora una a una en Helisa.</b> En producción serían ≈ 240 FVE en 4 semanas (estimado; incluye todo lo que factura Comserva, por confirmar). El registro de la FVE se hace por lectura de Conekta (1B), por el listado exportado de Helisa o digitándola.</div>
+        </div>
+      </div>
+      ${pend.length ? tabla(pend) : `<div class="card-body" style="padding-top:0"><div class="callout ok">Las ${tot} FVE de ${esc(p.nombre.toLowerCase())} están registradas y coinciden con el RH.</div></div>`}
+      ${filas.length > pend.length ? `<details style="padding:0 16px 14px"><summary style="cursor:pointer;font-size:13px;font-weight:600;padding:10px 0">Ver ${pend.length ? 'también ' : ''}${filas.length - pend.length === 1 ? 'la FVE ya registrada' : `las ${filas.length - pend.length} FVE ya registradas`}</summary>${tabla(filas.filter((x) => x.paso === 'registrada'))}</details>` : ''}
+    </div>`;
+  }
+
+  // ---------- generar pedidos desde el cierre ----------
+  function generarPedidos(p, ids) {
+    let lista = sinPedido(p.id); if (ids) lista = lista.filter((cz) => ids.includes(cz.cliente.id));
+    if (!lista.length) return;
+    const api = porAPI(p);
+    const val = lista.map((cz) => ({ cz, prev: D.pedidoDe(cz.cliente.id, p.id), v: P1.validarPedido({ numero: 'OP 0', cliente: cz.cliente.id, periodo: p.id, rh: rhDe(p, cz.cliente.id), fecha: D.HOY }) }));
+    const ok = val.filter((x) => !x.v.errores.length), mal = val.filter((x) => x.v.errores.length);
+    if (!ok.length) { openModal(`<div class="modal-head" id="modal-title">No se generó ningún pedido</div><div class="modal-body"><p>Estos clientes no se exportan:</p><ul class="reglas" style="color:var(--danger)">${mal.flatMap((x) => x.v.errores).map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div><div class="modal-foot"><a class="btn" href="planos.html#equivalencias">Ir a equivalencias</a><button type="button" class="btn primary" data-close>Entendido</button></div>`); return; }
+    const en = ahoraR(); let a = null;
+    if (!api) {
+      const k = D.archivos_op.filter((x) => x.periodo === p.id).length + 1;
+      a = { id: `ap-op-${p.id}-${String(k).padStart(3, '0')}`, periodo: p.id, nombre: `COMSERVA_OP_${p.id}_${String(k).padStart(3, '0')}.txt`, estado: 'generado', generado_en: en, generado_por: USUARIO, pedidos: ok.length, via: 'archivo', plantilla: 'pl-op-1', formato: 'txt' };
+      a.sha256 = D.hashFake(a.nombre + en + Math.random()); D.archivos_op.push(a);
+    }
+    let num = Math.max(100, ...D.pedidos.map((x) => Number(String(x.numero).replace(/\D/g, '')) || 0)) + 1;
+    const creados = ok.map((x) => {
+      const c = x.cz.cliente;
+      if (x.prev && x.prev.estado === 'rechazado') { x.prev.historial = (x.prev.historial || []).concat([{ archivo: x.prev.archivo, estado: 'rechazado', en: x.prev.rechazado_en || en, propio: true, detalle: 'archivo rechazado por Helisa' }]); Object.assign(x.prev, { archivo: a ? a.id : null, via: a ? 'archivo' : 'conekta', estado: a ? 'generado' : 'enviado', generado_en: en, generado_por: USUARIO, fecha: D.HOY }); return x.prev; }
+      const ped = { id: 'op-' + num, numero: 'OP ' + num, cliente: c.id, periodo: p.id, rh: rhDe(p, c.id), archivo: a ? a.id : null, via: a ? 'archivo' : 'conekta', fecha: D.HOY, subtotal: x.cz.factura.subtotal, estado: a ? 'generado' : 'enviado', generado_en: en, generado_por: USUARIO, importado_en: a ? null : en, historial: [], envio: a ? undefined : { id: 'cnk-' + (100 + num), en, respuesta: '200 · insertado (simulado)' } };
+      num++; D.pedidos.push(ped); return ped;
+    });
+    creados.forEach((ped) => { ped.lineas = P1.lineasPedido(ped).length; });
+    if (a) a.lineas = creados.reduce((s2, x) => s2 + x.lineas, 0);
+    auditoria.unshift({ en, quien: USUARIO, accion: a ? 'Generó el archivo de pedidos' : 'Envió pedidos por Helisa Conekta', entidad: `Pedidos · ${a ? a.nombre : p.nombre}`, detalle: creados.map((x) => x.numero).join(', ') });
+    render();
+    const txt = a ? P1.txtArchivoOP(a) : '';
+    openModal(`<div class="modal-head" id="modal-title">${a ? `Archivo de pedidos generado · ${esc(a.nombre)}` : 'Pedidos enviados por Conekta (simulado)'}</div>
+      <div class="modal-body">
+        <p>${creados.length} pedido${creados.length === 1 ? '' : 's'}: ${creados.map((x) => `<b>${esc(x.numero)}</b> ${esc(D.cliente(x.cliente).nombre_comercial)}`).join(' · ')}. ${a ? 'Descárguelo, impórtelo en Helisa (Importación de pedidos, «Otro símbolo» = «|», origen ANSI) y márquelo como importado en la hoja de trabajo.' : 'Ya están en Helisa: elabore cada factura llamando el pedido con F3; la FVE se leerá en la siguiente lectura programada.'}</p>
+        ${a ? `<pre style="margin:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font-mono);font-size:11px;line-height:1.6;max-height:220px;overflow:auto;white-space:pre">${esc(txt)}</pre><div class="muted" style="font-size:12px">TXT sin encabezado, 24 campos por línea, Windows-1252. Los &lt;COD_…&gt; son códigos de concepto por confirmar con Julio. La bandeja completa está en «Helisa: pedidos y recibos» (en el mockup, lo generado aquí no pasa a otra página).</div>` : ''}
+        ${mal.length ? `<div class="callout danger"><b>No se exportaron:</b><ul class="reglas">${mal.flatMap((x) => x.v.errores).map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div>` : ''}
+      </div>
+      <div class="modal-foot">${a ? '<button type="button" class="btn" id="m-dl">Descargar TXT</button>' : ''}<button type="button" class="btn primary" data-close>Listo</button></div>`);
+    const dl = $('#m-dl'); if (dl) dl.addEventListener('click', () => { const b = new Uint8Array(txt.length); for (let i = 0; i < txt.length; i++) { const k = txt.charCodeAt(i); b[i] = k < 256 ? k : 63; } const u = URL.createObjectURL(new Blob([b], { type: 'text/plain;charset=windows-1252' })); const l = document.createElement('a'); l.href = u; l.download = a.nombre; document.body.appendChild(l); l.click(); l.remove(); if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahoraR(); D.pedidos.filter((x) => x.archivo === a.id).forEach((x) => { x.estado = 'descargado'; }); render(); } });
+  }
+  function marcarImportado(id) {
+    const a = D.archivos_op.find((x) => x.id === id); if (!a) return;
+    const en = ahoraR(); a.estado = 'importado'; a.importado_en = en; a.importado_por = USUARIO; if (!a.descargado_en) a.descargado_en = en;
+    const ps = D.pedidos.filter((x) => x.archivo === a.id); ps.forEach((x) => { x.estado = 'importado'; x.importado_en = en; });
+    auditoria.unshift({ en, quien: USUARIO, accion: 'Marcó importado en Helisa el archivo de pedidos', entidad: `Pedidos · ${a.nombre}`, detalle: ps.map((x) => x.numero).join(', ') });
+    render(); toast(`${a.nombre} importado: ${ps.map((x) => x.numero).join(', ')} en Helisa. Siguiente paso: elaborar cada factura con F3 y registrar la FVE.`);
+  }
+
+  // ---------- registro de la FVE: lectura por Conekta, listado exportado de Helisa o digitación ----------
+  function modalFVE(p, soloCliente) {
+    const pend = porFacturar(p.id).filter((cz) => !soloCliente || cz.cliente.id === soloCliente);
+    if (!pend.length) { toast('No hay pedidos en Helisa pendientes de FVE en este periodo.'); return; }
+    const base = Math.max(26009, ...D.facturas.map((f) => Number(String(f.numero).replace(/\D/g, '')) || 0)) + 1;
+    const sug = pend.map((cz, i) => ({ cz, c: cz.cliente, ped: D.pedidoDe(cz.cliente.id, p.id), numero: 'FVE ' + (base + i), total: cz.factura.total }));
+    let via = es1B ? 'conekta' : (soloCliente ? 'digitada' : 'listado'); let cargado = false;
+    const validar = (total, rh) => { const d = D.r2(total - rh); return { ok: Math.abs(d) <= 1, d }; };
+    const valHTML = (v) => (v.ok ? `<span class="val-cell fve-ok">✓ igual al RH${v.d ? ` (${fmtCOP(v.d)})` : ''}</span>` : `<span class="val-cell fve-bad">≠ difiere en ${fmtCOP(v.d)}</span>`);
+    function cuerpo() {
+      if (via === 'conekta') {
+        if (!es1B) return `<div class="callout info"><b>Disponible con la modalidad 1B (Helisa Conekta).</b> El sistema lee el detalle de las facturas electrónicas (billDetails) y registra sola cada FVE que corresponde a un pedido. La modalidad activa en el mockup es 1A: use el listado de Helisa o la digitación, o cambie la modalidad en <a href="planos.html#conekta">Helisa: pedidos y recibos → Conexión con Helisa</a>.</div>`;
+        return `<p>Lectura simulada de Conekta (summary/billDetails) del ${fmtFechaCorta(p.inicio)} a hoy: el sistema empareja cada FVE con su pedido y la compara con el RH.</p>
+          <div class="table-wrap"><table class="tbl compact"><thead><tr><th>Pedido</th><th>Cliente</th><th>FVE leída</th><th class="num">Total Helisa</th><th class="num">Total RH</th><th>Validación</th></tr></thead><tbody>${sug.map((x) => `<tr><td class="mono">${esc(x.ped.numero)}</td><td>${esc(x.c.nombre_comercial)}</td><td class="mono nw">${esc(x.numero)} <span class="badge warn plain" style="font-size:10px">prueba</span></td><td class="num">${fmtCOP(x.total)}</td><td class="num">${fmtCOP(x.cz.factura.total)}</td><td>${valHTML(validar(x.total, x.cz.factura.total))}</td></tr>`).join('')}</tbody></table></div>`;
+      }
+      if (via === 'listado') {
+        if (!cargado) return `<ol class="reglas" style="margin-left:18px"><li>En Helisa, exporte el listado de facturas del periodo (por ejemplo, Exportar → movimiento de contabilidad o índice de documentos FVE; el formato exacto está por confirmar con Julio).</li><li>Cárguelo aquí: el sistema empareja cada FVE con su pedido por NIT, documento origen y valor, y la compara con el RH (± $1).</li></ol><button type="button" class="btn primary" id="fve-cargar" style="margin-top:4px">Cargar listado de prueba</button>`;
+        const extra = { numero: 'FVE ' + (base + sug.length), nit: '900999003', cli: 'Venta de bolsas rojas (dato de prueba)', origen: '—', total: 35700 };
+        return `<p>Listado cargado: <span class="mono">LISTADO_FVE_${esc(p.id)}.csv</span> (dato de prueba) · ${sug.length + 1} facturas.</p>
+          <div class="table-wrap"><table class="tbl compact"><thead><tr><th>FVE</th><th>Fecha</th><th>NIT</th><th>Cliente</th><th>Doc. origen</th><th class="num">Total</th><th>Resultado</th></tr></thead><tbody>
+            ${sug.map((x) => `<tr><td class="mono nw">${esc(x.numero)}</td><td class="nw">${fmtFechaCorta(D.HOY)}</td><td class="mono">${esc(x.c.nit)}</td><td>${esc(x.c.nombre_comercial)}</td><td class="mono">${esc(x.ped.numero)}</td><td class="num">${fmtCOP(x.total)}</td><td>${valHTML(validar(x.total, x.cz.factura.total))}</td></tr>`).join('')}
+            <tr style="color:var(--fg-3)"><td class="mono nw">${extra.numero}</td><td class="nw">${fmtFechaCorta(D.HOY)}</td><td class="mono">${extra.nit}</td><td>${esc(extra.cli)}</td><td class="mono">${extra.origen}</td><td class="num">${fmtCOP(extra.total)}</td><td><span class="val-cell">No viene de un pedido del sistema: se ignora</span></td></tr>
+          </tbody></table></div>`;
+      }
+      return `<p>Escriba lo que muestra Helisa al guardar cada factura. El sistema la compara con el RH: si difiere en más de $1 queda marcada para revisión.</p>
+        <div class="table-wrap"><table class="tbl compact"><thead><tr><th>Cliente · pedido</th><th class="num">Total RH</th><th>N.º FVE</th><th>Fecha</th><th>Total según Helisa</th><th>Validación</th></tr></thead><tbody>
+          ${sug.map((x, i) => `<tr><td><b>${esc(x.c.nombre_comercial)}</b><span class="sub mono">${esc(x.ped.numero)}</span></td><td class="num">${fmtCOP(x.cz.factura.total)}</td><td><input class="input mono" data-dn="${i}" value="${esc(x.numero)}" style="width:120px" aria-label="Número FVE de ${esc(x.c.nombre_comercial)}"></td><td><input class="input" type="date" data-df="${i}" value="${D.HOY}" style="width:150px" aria-label="Fecha"></td><td><input class="input num" data-dt="${i}" value="${fmtPesosInput(x.total)}" style="width:130px" aria-label="Total según Helisa"></td><td data-dv="${i}">${valHTML(validar(x.total, x.cz.factura.total))}</td></tr>`).join('')}
+        </tbody></table></div>
+        <label class="check" id="fve-dif-box" hidden><input type="checkbox" id="fve-dif"> <span>Registrar también las que difieren: quedan marcadas para revisión (la diferencia se corrige con nota crédito en Helisa)</span></label>`;
+    }
+    function pintar() {
+      $('#fve-tabs').innerHTML = [['conekta', 'Lectura por Conekta'], ['listado', 'Importar listado de Helisa'], ['digitada', 'Digitar']].map(([k, t]) => `<button type="button" class="${via === k ? 'on' : ''}" data-via="${k}" aria-pressed="${via === k}">${t}</button>`).join('');
+      $('#fve-body').innerHTML = cuerpo();
+      $$('#fve-tabs [data-via]').forEach((b) => b.addEventListener('click', () => { via = b.dataset.via; pintar(); }));
+      const cg = $('#fve-cargar'); if (cg) cg.addEventListener('click', () => { cargado = true; pintar(); });
+      $$('[data-dt]').forEach((inp) => inp.addEventListener('input', revisar));
+      const ok = $('#fve-ok');
+      const listo = (via === 'conekta' && es1B) || (via === 'listado' && cargado) || via === 'digitada';
+      ok.disabled = !listo; ok.textContent = via === 'digitada' ? 'Registrar' : `Registrar ${sug.length} FVE`;
+      if (via === 'digitada') revisar();
+    }
+    function revisar() {
+      let dif = 0;
+      sug.forEach((x, i) => { const t = parsePesos($(`[data-dt="${i}"]`).value); const v = Number.isFinite(t) ? validar(t, x.cz.factura.total) : { ok: false, d: NaN }; if (!v.ok) dif++; $(`[data-dv="${i}"]`).innerHTML = Number.isFinite(t) ? valHTML(v) : '<span class="val-cell fve-bad">valor inválido</span>'; });
+      const box = $('#fve-dif-box'); if (box) box.hidden = !dif;
+    }
+    openModal(`<div class="modal-head" id="modal-title">Registrar FVE · ${esc(p.nombre)}${soloCliente ? ' · ' + esc(D.cliente(soloCliente).nombre_comercial) : ''}</div>
+      <div class="modal-body">
+        <div class="callout warn">Cada factura la elaboró Lucrecia en Helisa, una a una, llamando el pedido con <b>F3</b>. Aquí solo se registra lo que Helisa devolvió; con la FVE registrada la app permite recibos de caja a ese cliente.</div>
+        <div class="seg" id="fve-tabs" role="group" aria-label="Vía de registro"></div>
+        <div id="fve-body" style="display:grid;gap:10px"></div>
+        <div class="muted" style="font-size:12px">Números de FVE de prueba. El CUFE se guarda si la vía lo trae (Conekta o listado).</div>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="fve-ok">Registrar</button></div>`, true);
+    $('#fve-ok').addEventListener('click', () => {
+      const en = ahoraR(); const hechos = [];
+      sug.forEach((x, i) => {
+        let numero = x.numero, fecha = D.HOY, total = x.total;
+        if (via === 'digitada') { numero = $(`[data-dn="${i}"]`).value.trim(); fecha = $(`[data-df="${i}"]`).value || D.HOY; total = parsePesos($(`[data-dt="${i}"]`).value); if (!numero || !Number.isFinite(total)) return; if (!validar(total, x.cz.factura.total).ok && !($('#fve-dif') && $('#fve-dif').checked)) return; }
+        const t = D.tarifaVigente(x.c, p.fin) || {}; const plazo = /30/.test(t.plazo || '') ? 30 : 0;
+        const f = { id: 'f-' + numero.replace(/\D/g, ''), numero, cliente: x.c.id, periodo: p.id, fecha, vence: D.sumarDias(fecha, plazo), total: D.r2(total), pagada_otro_medio: 0, pedido: x.ped.numero, via_registro: via, registrada_por: via === 'conekta' ? 'Sistema (Helisa Conekta)' : USUARIO, registrada_en: en, dato_prueba: true, origen: `Elaborada en Helisa llamando el pedido ${x.ped.numero} (F3)` };
+        if (via !== 'digitada') { f.cufe = D.hashFake('cufe|' + numero).repeat(3).slice(0, 96); f.cufe_prueba = true; }
+        D.facturas.push(f); x.ped.estado = 'facturado'; hechos.push(f);
+      });
+      if (!hechos.length) { toast('No se registró ninguna FVE: revise los números y los totales.'); return; }
+      auditoria.unshift({ en, quien: via === 'conekta' ? 'Sistema' : USUARIO, accion: `Registró ${hechos.length} FVE (${D.VIA_REGISTRO_LABEL[via].toLowerCase()})`, entidad: `Periodo · ${p.nombre}`, detalle: hechos.map((f) => f.numero).join(', ') + ' · validadas contra el RH (± $1)' });
+      closeModal(); render();
+      const dif = hechos.filter((f) => !D.validacionFVE(f).ok).length;
+      toast(`${hechos.length} FVE registrada${hechos.length === 1 ? '' : 's'} (${hechos.map((f) => f.numero).join(', ')})${dif ? `; ${dif} con diferencia, marcada${dif === 1 ? '' : 's'} para revisión` : (hechos.length === 1 ? ', igual al RH' : ', iguales al RH')}. La app ya permite recibos de caja a ${hechos.length === 1 ? 'ese cliente' : 'esos clientes'}.`);
+    });
+    pintar();
+  }
+
+  // ---------- modales ----------
+  let opener = null; // control que abrió el modal: recupera el foco al cerrar
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  function openModal(html, wide) {
+    opener = document.activeElement;
+    const root = $('#modal-root');
+    root.innerHTML = `<div class="modal-backdrop" data-close-backdrop><div class="modal${wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">${html}</div></div>`;
+    root.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeModal));
+    root.firstElementChild.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close-backdrop')) closeModal(); });
+    // foco al primer control útil; si el modal es solo informativo, al propio diálogo
+    const first = root.querySelector('input, textarea, button:not([data-close])');
+    (first || root.querySelector('.modal')).focus();
+  }
+  function closeModal() {
+    const root = $('#modal-root'); if (!root.firstElementChild) return;
+    root.innerHTML = '';
+    if (opener && document.contains(opener) && typeof opener.focus === 'function') opener.focus();
+    opener = null;
+  }
+  document.addEventListener('keydown', (e) => {
+    const modal = $('#modal-root .modal'); if (!modal) return;
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (e.key !== 'Tab') return;
+    // trampa de foco: Tab y Shift+Tab ciclan dentro del diálogo mientras esté abierto
+    const f = $$(FOCUSABLE, modal);
+    if (!f.length) { e.preventDefault(); modal.focus(); return; }
+    const first = f[0], last = f[f.length - 1], act = document.activeElement;
+    if (e.shiftKey && (act === first || act === modal || !modal.contains(act))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (act === last || act === modal || !modal.contains(act))) { e.preventDefault(); first.focus(); }
+  });
+
+  function resumenBox(res) {
+    return `<div class="kv-box">
+      <div><small>Clientes</small><b>${res.clientes}</b></div>
+      <div><small>Visitas válidas</small><b>${res.visitas}</b></div>
+      <div><small>Kilos</small><b>${fmtKg(res.kg)}</b></div>
+      <div><small>Valor total (IVA incl.)</small><b>${fmtCOP(res.total)}</b></div>
+    </div>`;
+  }
+  function pendientesTexto(p) {
+    const items = checklist(p).filter((i) => i.estado !== 'ok' && i.n);
+    return items.map((i) => `${i.n} ${i.corto[i.n === 1 ? 0 : 1]}`).join(' · ');
+  }
+
+  function modalCerrar(p) {
+    const rows = filasCierre(p.id); const res = resumen(rows); res.clientes = rows.length;
+    const pend = pendientesTexto(p);
+    openModal(`<div class="modal-head" id="modal-title">Cerrar el periodo ${esc(p.nombre)}</div>
+      <div class="modal-body">
+        <p>Al cerrar, el sistema suma las visitas transmitidas de cada cliente entre el ${fmtFecha(p.inicio)} y el ${fmtFecha(p.fin)}, aplica la tarifa vigente a la fecha de corte, asigna los consecutivos de las ${rows.length - D.cierres_cliente.filter((x) => x.periodo === p.id).length} planillas que faltan y congela el RH de cada cliente. Después se generan los pedidos para Helisa (${es1B ? 'o se envían por Conekta' : 'archivo OP'}); los ${D.cierres_cliente.filter((x) => x.periodo === p.id).length} clientes con cierre anticipado conservan su RH. Lo cerrado no se edita.</p>
+        ${resumenBox(res)}
+        ${pend ? `<div class="callout warn"><b>Pendientes:</b> ${pend}. Las visitas que lleguen después del cierre caerán en el periodo siguiente.</div>` : '<div class="callout ok">Sin pendientes en la lista de verificación.</div>'}
+        <label class="check"><input type="checkbox" id="ack"> <span>Entiendo que las visitas no transmitidas no entrarán en este cierre</span></label>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="confirm-cerrar" disabled>Cerrar periodo</button></div>`);
+    const ack = $('#ack'), btn = $('#confirm-cerrar');
+    ack.addEventListener('change', () => { btn.disabled = !ack.checked; });
+    btn.addEventListener('click', () => {
+      const ahora = `${D.HOY} 17:35`; // hora fija del mock: la demo se ve igual en cada corrida
+      Object.assign(p, { estado: 'cerrado', cerrado_en: ahora, cerrado_por: USUARIO, version: 1 });
+      const nuevos = rows.filter((r) => !D.cierreAnticipado(r.cliente.id, p.id)).length;
+      state.planillaBase[p.id] = state.siguientePlanilla;
+      state.siguientePlanilla += nuevos;
+      auditoria.unshift({ en: ahora, quien: USUARIO, accion: 'Cerró el periodo', entidad: 'Periodo · ' + p.nombre, detalle: detalleCierre(rows, res) });
+      closeModal(); render();
+      const primero = $('.periodo-head .actions .btn'); if (primero) primero.focus(); // el botón que abrió el modal ya no existe: el foco pasa a la primera acción del periodo cerrado
+      toast(`Periodo ${p.nombre} cerrado: ${nuevos} planillas nuevas (${D.consecutivoPlanilla(state.planillaBase[p.id], p.fin)} a ${D.consecutivoPlanilla(state.planillaBase[p.id] + nuevos - 1, p.fin)}) además de los cierres anticipados. Siguiente paso: ${es1B ? 'enviar los pedidos por Conekta' : 'generar los pedidos para Helisa'}.`);
+    });
+  }
+
+  function modalPreview(p) {
+    const rows = filasCierre(p.id); const res = resumen(rows); res.clientes = rows.length;
+    const pend = pendientesTexto(p);
+    openModal(`<div class="modal-head" id="modal-title">Vista previa del cierre · ${esc(p.nombre)}</div>
+      <div class="modal-body">
+        <p>Así quedaría el cierre si se hiciera hoy, ${fmtFecha(D.HOY)}. Nada se guarda: los valores cambian con cada visita que llegue hasta el ${fmtFecha(p.fin)}.</p>
+        ${resumenBox(res)}
+        ${pend ? `<div class="callout warn"><b>Quedarían por fuera:</b> ${pend}.</div>` : ''}
+        <p>El reporte en borrador lleva marca de agua y no asigna consecutivos de planilla ni genera pedidos.</p>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cerrar</button><a class="btn primary" href="../documentos/reporte-cierre.html#${p.id}">Abrir reporte en borrador</a></div>`);
+  }
+
+  function modalReabrir(p) {
+    openModal(`<div class="modal-head" id="modal-title">Reabrir el periodo ${esc(p.nombre)}</div>
+      <div class="modal-body">
+        <p>Reabrir crea la versión ${(p.version || 1) + 1} del cierre, conserva la versión ${p.version || 1} en auditoría y vuelve a dejar las visitas del periodo disponibles para correcciones. Requiere la autorización de un usuario de gerencia (${esc(D.usuarios.find((u) => u.rol === 'gerencia').nombre)}).</p>
+        <div class="callout danger">Las planillas, los RH y los pedidos no importados de la versión ${p.version || 1} quedan anulados con motivo. Un cliente con FVE registrada no se reabre: la corrección va como ajuste del periodo siguiente y nota crédito en Helisa.</div>
+        <div class="field"><label for="motivo">Motivo de la reapertura (obligatorio)</label><textarea class="textarea" id="motivo" placeholder="Ejemplo: llegó la visita 1208 de Funeraria Los Olivos después del cierre y el cliente pide incluirla en octubre"></textarea><span class="help">Mínimo 15 caracteres. Queda en la auditoría junto con su usuario y la hora.</span></div>
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn danger" id="confirm-reabrir" disabled>Solicitar reapertura</button></div>`);
+    const motivo = $('#motivo'), btn = $('#confirm-reabrir');
+    motivo.addEventListener('input', () => { btn.disabled = motivo.value.trim().length < 15; });
+    btn.addEventListener('click', () => { closeModal(); toast('Solicitud registrada: requiere usuario de gerencia'); });
+  }
+
+  // ---------- render y eventos ----------
+  function render() {
+    const p = periodo(state.periodo);
+    renderChips();
+    $('#content').innerHTML = p.id === '2026-08' ? renderAgosto(p) : renderDetallado(p);
+    bind(p);
+    ajustarTabla();
+  }
+  // Ancho visible de la tabla de clientes (para que el detalle desplegado no se vaya con el scroll horizontal),
+  // pista de desplazamiento cuando la tabla es más ancha que el contenedor y sombras hacia el lado oculto.
+  function ajustarTabla() {
+    const wrap = $('#wrap-clientes'); if (!wrap) return;
+    wrap.style.setProperty('--wrap-w', wrap.clientWidth + 'px');
+    const scrollable = wrap.scrollWidth > wrap.clientWidth + 2;
+    const nav = $('#table-nav'); if (nav) nav.hidden = !scrollable;
+    wrap.classList.toggle('more-left', wrap.scrollLeft > 2);
+    wrap.classList.toggle('more-right', scrollable && wrap.scrollLeft + wrap.clientWidth < wrap.scrollWidth - 2);
+    // Total fijo a la derecha solo después de desplazar: en la posición inicial no tapa la columna IVA
+    wrap.classList.toggle('stick-total', wrap.scrollLeft > 2);
+  }
+  window.addEventListener('resize', ajustarTabla);
+
+  function toggleRow(tr) {
+    const id = tr.dataset.cliente;
+    const det = $(`tr.detail[data-detail="${id}"]`);
+    const open = det.hidden;
+    det.hidden = !open;
+    tr.classList.toggle('open', open);
+    const btn = tr.querySelector('.row-toggle'); btn.setAttribute('aria-expanded', String(open)); btn.textContent = open ? '▾' : '▸';
+    if (open) state.abiertos.add(id); else state.abiertos.delete(id);
+  }
+
+  function toggleColumnas() {
+    state.masColumnas = !state.masColumnas;
+    render();
+    const b = $('[data-act="columnas"]'); if (b) b.focus();
+  }
+
+  function bind(p) {
+    $$('#chips .chip').forEach((b) => b.addEventListener('click', () => {
+      state.periodo = b.dataset.periodo; state.abiertos.clear();
+      history.replaceState(null, '', '#' + state.periodo);
+      render();
+    }));
+    $$('[data-act]').forEach((b) => b.addEventListener('click', () => {
+      ({ cerrar: modalCerrar, preview: modalPreview, reabrir: modalReabrir, columnas: toggleColumnas, pedidos: () => generarPedidos(p), fve: () => modalFVE(p) })[b.dataset.act](p);
+    }));
+    const wrap = $('#wrap-clientes');
+    if (wrap) {
+      wrap.addEventListener('scroll', ajustarTabla, { passive: true });
+      $$('[data-scroll]').forEach((b) => b.addEventListener('click', () => wrap.scrollBy({ left: Number(b.dataset.scroll) * Math.round(wrap.clientWidth * 0.6), behavior: 'smooth' })));
+    }
+    $$('tr.row').forEach((tr) => {
+      tr.addEventListener('click', (e) => { if (e.target.closest('a') || e.target.closest('[data-av-fve], [data-av-imp], [data-av-ped]')) return; toggleRow(tr); });
+      tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target === tr) toggleRow(tr); });
+      if (state.abiertos.has(tr.dataset.cliente)) toggleRow(tr);
+    });
+  }
+
+  // P1: acciones de la hoja de trabajo y del detalle (delegadas: el contenido se vuelve a pintar en cada cambio)
+  $('#content').addEventListener('click', (e) => {
+    const p = periodo(state.periodo);
+    const f = e.target.closest('[data-av-fve]'); if (f) { modalFVE(p, f.dataset.avFve === '*' ? null : f.dataset.avFve); return; }
+    const i = e.target.closest('[data-av-imp]'); if (i) { marcarImportado(i.dataset.avImp); return; }
+    const g = e.target.closest('[data-av-ped]'); if (g) { generarPedidos(p, g.dataset.avPed === '*' ? null : [g.dataset.avPed]); }
+  });
+  // cerrar el desplegable de planillas al hacer clic fuera
+  document.addEventListener('click', (e) => { $$('details.dd[open]').forEach((d) => { if (!d.contains(e.target)) d.removeAttribute('open'); }); });
+
+  render();
+})();
+</script>
+</body>
+</html>

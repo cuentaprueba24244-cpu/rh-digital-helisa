@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planilla RHPS mensual · Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .doc-tools { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px var(--gutter); }
+  .doc-tools .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+  .doc-tools label { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+  .doc-tools .select { width: auto; max-width: 100%; min-width: 220px; padding: 7px 10px; font-size: 13px; }
+  .doc-tools .spacer { flex: 1; }
+  .doc-tools .state { font-size: 12px; color: var(--fg-3); }
+  .sheet.landscape { padding: 10mm 12mm 22mm; font-size: 9pt; }
+  .brandline { display: flex; align-items: center; gap: 10px; }
+  .brandline .word { font-family: var(--font-doc-display); font-size: 17pt; font-weight: 700; color: #1f5e43; line-height: 1; }
+  .brandline small { display: block; font-size: 6.5pt; color: #333; letter-spacing: .04em; text-transform: uppercase; margin-top: 3px; max-width: 150px; }
+  .rh-head { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+  .rh-head .center { text-align: center; }
+  .rh-head .center b { display: block; font-size: 11pt; font-family: var(--font-doc-display); }
+  .rh-head .center div { font-size: 8.5pt; }
+  .sheet .doc-no b { white-space: nowrap; }
+  .sheet .doc-no b.pend { font-size: 10pt; font-family: var(--font-doc); font-weight: 700; }
+  .rh-title { text-align: center; font-weight: 700; font-size: 9.5pt; border-top: 2px solid #1f5e43; border-bottom: 1px solid #999; padding: 4px 0; margin: 6px 0; }
+  .rh-boxes { display: grid; grid-template-columns: 1.5fr 1fr 1.3fr; gap: 3px 18px; margin-bottom: 6px; font-size: 9pt; }
+  .rh-boxes .box { border-bottom: 1px solid #111; padding: 2px 0; display: flex; gap: 6px; align-items: baseline; min-height: 18px; }
+  .rh-boxes .box b { font-size: 7.5pt; text-transform: uppercase; white-space: nowrap; color: #333; font-weight: 700; }
+  .rh-boxes .box span { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  table.rh { font-size: 8pt; table-layout: fixed; }
+  table.rh th { font-size: 6.3pt; padding: 3px 2px; text-align: center; vertical-align: middle; line-height: 1.15; }
+  table.rh th.grp { background: #e3ece6; }
+  table.rh td { padding: 2px 4px; height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  table.rh td.c { text-align: center; }
+  table.rh td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.rh tr.total td { font-weight: 700; background: #f4f4f4; }
+  .below { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; margin-top: 6px; font-size: 8.5pt; }
+  .obs { border: 1px solid #999; padding: 4px 6px; min-height: 44px; }
+  .lbl { font-size: 7.5pt; text-transform: uppercase; font-weight: 700; }
+  .fallidas ul { margin: 2px 0 0 14px; padding: 0; }
+  .rh-firmas { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; margin-top: 8px; align-items: end; }
+  .rh-firmas .firma { text-align: center; font-size: 8pt; }
+  .rh-firmas .firma .pad { height: 48px; display: grid; place-items: center; }
+  .rh-firmas .firma .pad svg { height: 48px; width: auto; }
+  .rh-firmas .firma .line { border-top: 1px solid #111; padding-top: 3px; }
+  .rh-firmas .verif { margin-top: 0; }
+  .sheet .foot { left: 12mm; right: 12mm; bottom: 7mm; justify-content: center; text-align: center; font-weight: 600; }
+  .sheet .watermark span.prev { color: rgba(0, 0, 0, .06); }
+  @media print { @page { size: A4 landscape; margin: 10mm; } .sheet, .sheet.landscape { zoom: 1 !important; min-height: 0; width: auto; padding: 0 0 14mm !important; page-break-after: auto; } .sheet .foot { left: 10mm; right: 10mm; bottom: 6mm; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="doc-tools no-print">
+  <div class="row">
+    <a class="btn sm ghost" href="index.html">‹ Documentos</a>
+    <label for="sel">Cliente y periodo</label>
+    <select id="sel" class="select"></select>
+    <span class="state" id="state"></span>
+    <span class="spacer"></span>
+    <button class="btn primary" id="print" type="button">Imprimir / guardar PDF</button>
+  </div>
+</div>
+<div class="doc-stage"><div class="sheet landscape" id="sheet" aria-live="polite"></div></div>
+
+<script src="../assets/data.js"></script>
+<script>
+(function () {
+  const D = window.DATA;
+  const E = D.empresa;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  document.getElementById('bar').innerHTML = D.mockBar('Documentos PDF');
+
+  const LOGO = '<svg width="54" height="54" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#1f5e43"/><circle cx="32" cy="32" r="25" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.5"/><path d="M32 12c11 7 15 18 10 31-7-2-11-7-13-14-1 9-3 14-9 17-6-13-1-26 12-34z" fill="#fff"/><path d="M27 46c3-8 6-14 11-20" stroke="#1f5e43" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>';
+  const brand = () => `<div class="brandline">${LOGO}<div><span class="word">ComServa</span><small>${esc(E.razon_social)}</small></div></div>`;
+
+  // Numeración de la planilla: base del periodo cerrado de septiembre + índice del cliente activo.
+  // 22690 + 12 clientes activos = 22702, que es parametros.siguiente_planilla.
+  const BASE = 22690;
+  const CLIENTES = D.clientes.filter((c) => c.estado === 'activo');
+  const PERIODOS = D.periodos.filter((p) => D.visitas.some((v) => v.periodo === p.id));
+  const DEFAULT = 'c-cofema|2026-09';
+  const COLS = ['BIO', 'CORTO', 'ANATO', 'ANIMAL', 'CORROS', 'EXPLOS', 'REACT', 'TOX', 'RAEES'];
+  const MIN_FILAS = 12;
+
+  const sel = document.getElementById('sel');
+  sel.innerHTML = PERIODOS.slice().reverse().map((p) => `<optgroup label="${esc(p.nombre)}${p.estado === 'abierto' ? ' (en curso)' : ''}">` + CLIENTES.filter((c) => !c.creado || c.creado <= p.fin).map((c) => {
+    const n = D.visitasDe(c.id, p.id).length;
+    return `<option value="${c.id}|${p.id}">${esc(c.nombre_comercial)} · ${n} visita${n === 1 ? '' : 's'}</option>`;
+  }).join('') + '</optgroup>').join('');
+
+  function actual() {
+    const [cid, pid] = decodeURIComponent(location.hash.slice(1)).split('|');
+    const c = CLIENTES.find((x) => x.id === cid), p = PERIODOS.find((x) => x.id === pid);
+    if (c && p) return { c, p };
+    const [dc, dp] = DEFAULT.split('|');
+    return { c: D.cliente(dc), p: D.periodos.find((x) => x.id === dp) };
+  }
+  function numero(c, p) {
+    const pre = D.cierreAnticipado(c.id, p.id); if (pre) return pre.rh; // v6: cierre anticipado (desde el día 20)
+    if (p.estado !== 'cerrado') return null;
+    return D.consecutivoPlanilla(BASE + CLIENTES.indexOf(c), p.fin);
+  }
+  const nombreCorto = (op) => op.nombre.split(' ').slice(0, 2).join(' ');
+
+  function render() {
+    const { c, p } = actual();
+    sel.value = `${c.id}|${p.id}`;
+    const vs = D.visitasDe(c.id, p.id).slice().sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+    const t = D.totalizar(c.id, p.id);
+    const fallidas = D.visitas.filter((v) => v.cliente === c.id && v.periodo === p.id && v.tipo === 'fallida');
+    const anuladas = D.visitas.filter((v) => v.cliente === c.id && v.periodo === p.id && v.estado === 'anulada');
+    const num = numero(c, p);
+    const id = `planilla|${c.id}|${p.id}`;
+    const hash = D.hashFake(id);
+    const fin = D.parseISO(p.fin);
+    const mesNombre = D.MESES[fin.getMonth()].toUpperCase();
+    const bolsas = vs.reduce((a, v) => a + (v.bolsas || 0), 0);
+    const guardianes = vs.reduce((a, v) => a + (v.guardianes || 0), 0);
+    const sinTrat = COLS.filter((k) => !D.categoria(k).en_acta && t.porCat[k] > 0);
+    const planillaManual = (vs.find((v) => v.planilla) || {}).planilla;
+    document.title = `Planilla RHPS ${num || 'en curso'} · ${c.nombre_comercial} · ${p.nombre}`;
+    document.getElementById('state').textContent = `${vs.length} visita${vs.length === 1 ? '' : 's'} · ${D.fmtKg(t.kg)} kg · ${p.estado === 'cerrado' ? 'periodo cerrado el ' + p.cerrado_en : 'periodo en curso'}`;
+
+    const obs = [];
+    obs.push(`${vs.length} visita${vs.length === 1 ? '' : 's'} con recolección entre el ${D.fmtFechaCorta(p.inicio)} y el ${D.fmtFechaCorta(p.fin)}; total ${D.fmtKg(t.kg)} kg.`);
+    sinTrat.forEach((k) => obs.push(`Incluye ${D.fmtKg(t.porCat[k])} kg de ${D.categoria(k).nombre} (categoría sin tratamiento definido; no entra en el acta).`));
+    if (planillaManual) obs.push(`Equivale a la planilla manual N.º ${planillaManual} del archivo en papel.`);
+    if (p.estado === 'abierto' && !D.cierreAnticipado(c.id, p.id)) obs.push('Periodo en curso: la planilla se numera y se firma al cerrar el periodo.');
+    if (D.cierreAnticipado(c.id, p.id)) obs.push(`Cierre anticipado del ${D.fmtFecha(D.cierreAnticipado(c.id, p.id).cerrado_en)} (desde el día ${D.parametros.dia_inicio_cierre} se puede cerrar cliente por cliente).`);
+    if (!vs.length) obs.push('Sin visitas con recolección en el periodo.');
+
+    const filas = vs.map((v) => {
+      const op = D.operario(v.operario);
+      return `<tr>
+        <td class="c">${D.parseISO(v.fecha).getDate()}</td>
+        <td class="c">${v.hora}</td>
+        <td class="num"><b>${D.fmtKg(D.totalKg(v))}</b></td>
+        ${COLS.map((k) => `<td class="num">${v.kilos[k] ? D.fmtKg(v.kilos[k]) : ''}</td>`).join('')}
+        <td class="c">${v.bolsas || ''}</td>
+        <td class="c">${v.guardianes || ''}</td>
+        <td title="${esc(v.entrega_nombre)}">${esc(v.entrega_nombre)}</td>
+        <td>${esc(nombreCorto(op))}</td>
+        <td class="c">${esc(v.placa)}</td>
+        <td class="c mono">${v.consecutivo}</td>
+      </tr>`;
+    }).join('');
+    const vacias = Array.from({ length: Math.max(0, MIN_FILAS - vs.length) }, () => `<tr>${'<td>&nbsp;</td>'.repeat(18)}</tr>`).join('');
+
+    document.getElementById('sheet').innerHTML = `
+      ${p.estado === 'abierto' && !num ? '<div class="watermark"><span class="prev">VISTA PREVIA</span></div>' : ''}
+      <div class="rh-head">
+        ${brand()}
+        <div class="center">
+          <b>${esc(E.razon_social.toUpperCase())} - SERVICIO ESPECIAL DE ASEO</b>
+          <div>Nit. ${E.nit} · ${esc(E.responsable_iva)}</div>
+          <div>${esc(E.licencia)}</div>
+        </div>
+        <div class="doc-no">N.º ${num ? `<b>${num}</b>` : '<b class="pend">Pendiente de cierre</b>'}</div>
+      </div>
+      <div class="rh-title">FORMULARIO RHPS "RECOLECCIÓN Y TRANSPORTE DE RESIDUOS GENERADOS EN LA ATENCIÓN EN SALUD Y OTRAS ACTIVIDADES"</div>
+      <div class="rh-boxes">
+        <div class="box"><b>Generador:</b><span title="${esc(c.razon_social)}">${esc(c.razon_social)}</span></div>
+        <div class="box"><b>Mes:</b><span>${mesNombre}</span></div>
+        <div class="box"><b>Periodicidad:</b><span>${D.FRECUENCIA_LABEL[c.frecuencia]}${c.dia_visita ? ' · ' + esc(c.dia_visita) : ''}</span></div>
+        <div class="box"><b>Ciudad/Municipio:</b><span>${esc(c.ciudad)}, ${esc(c.departamento)}</span></div>
+        <div class="box"><b>Año:</b><span>${fin.getFullYear()}</span></div>
+        <div class="box"><b>Dirección:</b><span title="${esc(c.direccion)}">${esc(c.direccion)}</span></div>
+        <div class="box"><b>NIT/CC:</b><span>${D.nitCompleto(c)}</span></div>
+        <div class="box"><b>Periodo:</b><span>${D.fmtFechaCorta(p.inicio)} – ${D.fmtFechaCorta(p.fin)}</span></div>
+        <div class="box"><b>Sede:</b><span>${esc(c.sede)}</span></div>
+      </div>
+      <table class="rh">
+        <colgroup><col style="width:4%"><col style="width:5%"><col style="width:6.5%">${'<col style="width:4.7%">'.repeat(9)}<col style="width:4.7%"><col style="width:5.8%"><col style="width:11.7%"><col style="width:9%"><col style="width:5.5%"><col style="width:5.5%"></colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2">DÍA</th><th rowspan="2">HORA</th><th rowspan="2">TOTAL KILOS</th>
+            <th colspan="4" class="grp">RESIDUOS BIOLÓGICOS - INFECCIOSOS - PELIGROSOS</th>
+            <th colspan="4" class="grp">OTROS RESIDUOS O DESECHOS PELIGROSOS</th>
+            <th rowspan="2">RAEES</th><th rowspan="2">N.º DE BOLSAS</th><th rowspan="2">N.º GUARDIANES</th>
+            <th rowspan="2">RESPONSABLE DE LA ENTREGA</th><th rowspan="2">FUNCIONARIO DE COMSERVA</th><th rowspan="2">PLACA DEL VEHÍCULO</th><th rowspan="2">CONSTANCIA N.º</th>
+          </tr>
+          <tr><th>BIO</th><th>CORTO</th><th>ANATO</th><th>ANIMAL</th><th>CORROS</th><th>EXPLOS</th><th>REACT</th><th>TOX</th></tr>
+        </thead>
+        <tbody>
+          ${filas}${vacias}
+          <tr class="total">
+            <td colspan="2" class="c">TOTAL</td>
+            <td class="num">${D.fmtKg(t.kg)}</td>
+            ${COLS.map((k) => `<td class="num">${t.porCat[k] ? D.fmtKg(t.porCat[k]) : ''}</td>`).join('')}
+            <td class="c">${bolsas || ''}</td>
+            <td class="c">${guardianes || ''}</td>
+            <td colspan="4"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="below">
+        <div class="obs"><span class="lbl">Observaciones:</span> ${obs.map(esc).join(' ')}</div>
+        <div class="fallidas">
+          <span class="lbl">Visitas sin recolección</span>
+          ${fallidas.length ? `<ul>${fallidas.map((v) => `<li>${D.fmtFechaCorta(v.fecha)} ${v.hora} · ${esc(v.motivo_fallida)} · constancia N.º ${v.consecutivo}</li>`).join('')}</ul>` : '<div>Ninguna en el periodo.</div>'}
+          ${anuladas.length ? `<div style="margin-top:3px"><span class="lbl">Constancias anuladas:</span> ${anuladas.map((v) => { const r = v.reemplazo ? D.visitas.find((x) => x.id === v.reemplazo) : null; return `N.º ${v.consecutivo} del ${D.fmtFechaCorta(v.fecha)}${r ? ` (reemplazada por la N.º ${r.consecutivo})` : ''}`; }).join('; ')}. No suman en el total.</div>` : ''}
+        </div>
+      </div>
+      <div class="rh-firmas">
+        <div class="firma">
+          <div class="pad">${num ? D.firmaSVG('gerente', '#1b2a66') : ''}</div>
+          <div class="line"><b>${esc(E.gerente)}</b><br>Gerente · ${esc(E.nombre_corto)}${num ? '' : '<br><i>Se firma al cerrar el periodo</i>'}</div>
+        </div>
+        <div class="firma">
+          <div class="pad"></div>
+          <div class="line"><b>Recibido por el generador</b><br>Nombre y documento: ____________________________</div>
+        </div>
+        <div class="verif">
+          ${D.qrSVG(id)}
+          <div>
+            <div>Verifique este documento en comserva.com.co/verificar con el código <span class="mono">${hash.slice(0, 16)}</span></div>
+            <div class="legal">Documento generado electrónicamente por RH digital Comserva; firmado en pantalla conforme a la Ley 527 de 1999 y el Decreto 2364 de 2012.</div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>${esc(E.direccion)} del Municipio de ${esc(E.ciudad)} - Cel. ${esc(E.telefonos)}</span></div>`;
+    fit();
+  }
+
+  function fit() {
+    const avail = document.documentElement.clientWidth - 32;
+    document.querySelectorAll('.sheet').forEach((s) => {
+      const nominal = s.classList.contains('landscape') ? 1122.5 : 793.7;
+      const z = Math.min(1, avail / nominal);
+      s.style.zoom = z < 1 ? z.toFixed(3) : '';
+      s.style.maxWidth = z < 1 ? 'none' : '';
+    });
+  }
+
+  sel.addEventListener('change', (e) => { location.hash = e.target.value; });
+  window.addEventListener('hashchange', render);
+  window.addEventListener('resize', fit);
+  document.getElementById('print').addEventListener('click', () => window.print());
+  render();
+})();
+</script>
+</body>
+</html>

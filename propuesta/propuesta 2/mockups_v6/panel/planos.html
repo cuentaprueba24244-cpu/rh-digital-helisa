@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contabilidad en Helisa · Panel Comserva</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* Propuesta 2: Helisa queda para la contabilidad. Componentes comunes en style.css. */
+  .main > * { min-width: 0; }
+  .page-head { align-items: flex-start; }
+  .page-head .lead { max-width: 76ch; }
+  .canal { display: grid; gap: 6px; justify-items: end; }
+  .canal small { color: var(--fg-3); font-size: 11.5px; max-width: 44ch; text-align: right; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin: 16px 0; }
+  .tabs button { border: 0; background: transparent; padding: 10px 14px 9px; font-size: 13.5px; font-weight: 600; color: var(--fg-3); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1px; display: inline-flex; gap: 7px; align-items: center; }
+  .tabs button:hover { color: var(--fg); }
+  .tabs button.on { color: var(--fg); border-bottom-color: var(--accent); }
+  .tabs .cnt { font-size: 11px; font-weight: 700; background: var(--warn-soft); color: var(--warn); border-radius: 999px; padding: 0 7px; }
+  .stats4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 1100px) { .stats4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .stats4 { grid-template-columns: minmax(0, 1fr); } }
+  .stat .value.warn { color: var(--warn); }
+  .two { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 1200px) { .two { grid-template-columns: minmax(0, 1fr); } }
+  .two > * { min-width: 0; }
+  .card-head h2 small, .card-head h3 small { font-weight: 400; color: var(--fg-3); font-size: 12px; margin-left: 6px; }
+  .asiento { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 640px) { .asiento { grid-template-columns: minmax(0, 1fr); } }
+  .libro { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .libro .lh { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; background: var(--surface-2); border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; }
+  .libro .lh span { color: var(--fg-3); font-weight: 500; }
+  .libro table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .libro td { padding: 6px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .libro tr:last-child td { border-bottom: 0; }
+  .libro td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .libro .dc { font-family: var(--font-mono); font-weight: 600; font-size: 11px; width: 22px; }
+  .libro .dc.D { color: var(--info); } .libro .dc.C { color: var(--accent); }
+  .libro .cta { font-family: var(--font-mono); font-size: 11.5px; white-space: nowrap; }
+  .libro .cta small { display: block; font-family: var(--font-ui); color: var(--fg-3); font-size: 10.5px; white-space: normal; }
+  .libro tfoot td { font-weight: 700; background: var(--surface-2); }
+  .acts { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  table.tbl tr.anulado td { color: var(--fg-3); }
+  /* panel lateral con las filas del archivo */
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(10, 20, 15, .35); z-index: 90; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(980px, 100%); background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow); z-index: 95; display: flex; flex-direction: column; }
+  .drawer .d-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: flex-start; }
+  .drawer .d-head .no { font-family: var(--font-mono); font-size: 17px; color: var(--accent); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+  .drawer .d-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-2); background: var(--surface); cursor: pointer; font-size: 15px; flex: none; }
+  .drawer .d-body { padding: 16px 20px; overflow: auto; flex: 1; display: grid; gap: 16px; align-content: start; }
+  .drawer .d-body > * { min-width: 0; }
+  .drawer .d-foot { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+  .drawer h3 { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 8px; }
+  .lineas-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: 460px; }
+  table.plano { border-collapse: collapse; font-family: var(--font-mono); font-size: 11.5px; white-space: nowrap; }
+  table.plano th, table.plano td { padding: 4px 8px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  table.plano th { background: var(--surface-2); position: sticky; top: 0; font-weight: 600; z-index: 1; }
+  table.plano td.num { text-align: right; }
+  table.plano tr.doc-start td { border-top: 2px solid var(--border-2); }
+  table.plano tr.libro-N td { background: color-mix(in srgb, var(--info-soft) 45%, transparent); }
+  table.plano td.doc { font-family: var(--font-ui); color: var(--fg-3); }
+  .pre-tot { display: flex; gap: 8px 18px; flex-wrap: wrap; font-size: 13px; }
+  .pre-tot b { font-variant-numeric: tabular-nums; }
+  .ok-txt { color: var(--accent); font-weight: 600; }
+  .err-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--danger); display: grid; gap: 4px; }
+  .textarea { min-height: 90px; resize: vertical; font-family: var(--font-mono); font-size: 12.5px; }
+  .req::after { content: ' *'; color: var(--danger); }
+  .muted-note { font-size: 12px; color: var(--fg-3); }
+  .rules { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--fg-2); }
+  .cols-ex td:nth-child(5) { font-family: var(--font-mono); font-size: 12px; }
+  @media (max-width: 720px) { .canal { justify-items: start; } .canal small { text-align: left; } .tabs button { padding: 9px 10px 8px; font-size: 13px; } }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="panel">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">Periodo · Helisa queda para la contabilidad</div>
+        <h1 style="margin-top:4px">Contabilidad en Helisa</h1>
+        <p class="lead">El sistema ya emitió la factura electrónica: a Helisa solo va la <b>contabilidad</b>. Por cada factura y nota se arma el <b>movimiento contable</b> (débito 1305 cartera; crédito ingreso por concepto; crédito IVA con su base; libros F y N) y por cada recibo de caja, el del <b>recibo</b> (caja o bancos contra 1305, cruzando la factura RHD). Lucrecia lo importa en Helisa con «Importación de movimiento contable» en el módulo de cartera; con Helisa Conekta (opcional) se envía por API.</p>
+      </div>
+      <div class="canal">
+        <div class="seg" id="canal" role="group" aria-label="Canal hacia Helisa"><button type="button" data-canal="archivo">Archivo plano</button><button type="button" data-canal="conekta">Helisa Conekta (opcional)</button></div>
+        <small id="canal-note"></small>
+      </div>
+    </div>
+    <div class="fe-ribbon" id="ribbon"></div>
+    <div class="stats4" id="stats"></div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones"></nav>
+    <div id="content"></div>
+  </main>
+</div>
+<div id="overlay"></div>
+<div id="modal-root"></div>
+
+<script src="../assets/data.js"></script>
+<script>
+function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],['visitas.html','☰','Visitas'],['recaudo.html','$','Recaudo']]],['Periodo',[['cierre.html','▣','Cierre del periodo'],['facturacion.html','◈','Facturación electrónica'],['planos.html','⇄','Contabilidad en Helisa'],['trazabilidad.html','⛓︎','Trazabilidad']]],['Maestros',[['clientes.html','◉','Clientes y tarifas'],['catalogos.html','≡','Catálogos y parámetros']]],['Sistema',[['catalogos.html#usuarios','⚙','Usuarios y auditoría']]]]; return '<div class="brand"><div class="logo">CS</div><div><b>Comserva</b><small>RH digital · panel de oficina</small></div></div>'+g.map(([s,items])=>'<div class="section eyebrow">'+s+'</div>'+items.map(([h,i,t])=>'<a class="nav'+(h===active?' active':'')+'" href="'+h+'"><span class="ico">'+i+'</span>'+t+'</a>').join('')).join('')+'<div class="user"><b>Lucrecia</b><br><span class="muted">Facturación y cartera</span><br><a href="#" class="muted">Salir</a></div>'; }
+</script>
+<script>
+(function () {
+  const D = window.DATA, F = D.fe;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const { fmtCOP, fmtFechaCorta } = D;
+  document.getElementById('bar').innerHTML = D.mockBar('Panel web');
+  document.getElementById('sidebar').innerHTML = sidebar('planos.html');
+  const USUARIO = 'Lucrecia';
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const fh = (s) => (s ? `${fmtFechaCorta(s)} ${s.slice(11, 16)}` : '');
+  let reloj = 10 * 60; const ahora = () => { reloj += 1; return `${D.HOY} ${String(Math.floor(reloj / 60)).padStart(2, '0')}:${String(reloj % 60).padStart(2, '0')}`; };
+  function toast(msg) { $$('.toast').forEach((x) => x.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4000); }
+
+  // ---------- estado en memoria (nada se guarda) ----------
+  const S = {
+    archivos: clone(D.archivos_plano),
+    recibos: clone(D.recibos),
+    envios: [],                 // envíos por Helisa Conekta (simulados)
+    contabilizadas: new Set(),  // documentos enviados por Conekta en la sesión
+  };
+  const state = { tab: 'facturas', canal: 'archivo' };
+  const PL_MC = D.plantillas_plano.find((p) => p.id === 'pl-mcfv-2');
+  const PL_RC = D.plantillas_plano.find((p) => p.id === 'pl-rc-2');
+  const plantilla = (id) => D.plantillas_plano.find((p) => p.id === id);
+  const factura = (id) => D.facturas.find((f) => f.id === id);
+  const nota = (id) => D.notas_fe.find((n) => n.id === id);
+  const BADGE = { generado: 'warn', descargado: 'info', importado: 'ok', rechazado: 'danger', anulado: 'plain' };
+  const TIPO = { MCFV: 'Movimiento contable de facturas y notas', RC: 'Movimiento contable de recibos' };
+
+  // Documentos por contabilizar: facturas VALIDADAS por la DIAN y notas validadas que aún no están en un archivo vigente
+  const enArchivo = (campo, id) => S.archivos.some((a) => a.tipo === 'MCFV' && !a.es_prueba && !['anulado', 'rechazado'].includes(a.estado) && (a[campo] || []).includes(id)) || S.contabilizadas.has(id);
+  const facturasPend = () => D.facturas.filter((f) => f.prefijo === 'RHD' && f.estado_dian === 'validada' && !enArchivo('facturas', f.id));
+  const notasPend = () => D.notas_fe.filter((n) => n.estado === 'validada' && !enArchivo('notas', n.id));
+  const enEspera = () => D.facturas.filter((f) => f.prefijo === 'RHD' && f.estado_dian && f.estado_dian !== 'validada');
+  const recibosPend = () => S.recibos.filter((r) => r.estado === 'entregado' && !S.contabilizadas.has(r.id));
+  const porImportar = () => S.archivos.filter((a) => ['generado', 'descargado'].includes(a.estado) && !a.es_prueba);
+
+  // ---------- cabecera ----------
+  function renderCanal() {
+    $$('#canal [data-canal]').forEach((b) => b.classList.toggle('on', b.dataset.canal === state.canal));
+    $('#canal-note').textContent = state.canal === 'archivo' ? 'Modalidad base: archivo CSV que Lucrecia importa en Helisa' : 'Opcional: Comserva paga la suscripción ($211.680 al mes según helisa.com; IVA y hosting de Helisa por confirmar) · simulado';
+    $('#ribbon').innerHTML = `<span class="tag">Datos de prueba</span><span><b>Cuentas de ejemplo:</b> la plantilla «servicio → cuenta» la entrega Julio (por confirmar). El tipo de documento contable (FV) y el cruce de la cartera de Helisa con el prefijo RHD están <b>por confirmar</b> con una importación de prueba.${state.canal === 'conekta' ? ' <b>Helisa Conekta simulado.</b>' : ''}</span>`;
+  }
+  function renderStats() {
+    const fp = facturasPend(), np = notasPend(), rp = recibosPend(), pi = porImportar();
+    const imp = S.archivos.filter((a) => a.estado === 'importado').length, rech = S.archivos.filter((a) => a.estado === 'rechazado').length;
+    $('#stats').innerHTML = `
+      <div class="card stat"><div class="label">Facturas y notas por contabilizar</div><div class="value ${fp.length + np.length ? 'warn' : ''}">${fp.length + np.length}</div><div class="delta">${fp.length} factura${fp.length === 1 ? '' : 's'} · ${np.length} nota${np.length === 1 ? '' : 's'} · ${enEspera().length} en espera de la DIAN</div></div>
+      <div class="card stat"><div class="label">Recibos por exportar</div><div class="value ${rp.length ? 'warn' : ''}">${rp.length}</div><div class="delta">entregados en la oficina · solo de facturas validadas</div></div>
+      <div class="card stat"><div class="label">${state.canal === 'archivo' ? 'Archivos por importar en Helisa' : 'Envíos por API en la sesión'}</div><div class="value ${state.canal === 'archivo' && pi.length ? 'warn' : ''}">${state.canal === 'archivo' ? pi.length : S.envios.length}</div><div class="delta">${state.canal === 'archivo' ? 'generados o descargados sin marcar importados' : 'Helisa Conekta (simulado)'}</div></div>
+      <div class="card stat"><div class="label">Archivos importados</div><div class="value">${imp}</div><div class="delta">${rech} rechazado${rech === 1 ? '' : 's'} por Helisa y regenerado${rech === 1 ? '' : 's'}</div></div>`;
+  }
+  const TABS = [['facturas', 'Facturas y notas (MC-FV)'], ['recibos', 'Recibos (RC)'], ['cuentas', 'Servicio → cuenta'], ['plantilla', 'Plantilla de 22 columnas']];
+  function renderTabs() {
+    const n = { facturas: facturasPend().length + notasPend().length, recibos: recibosPend().length, cuentas: 0, plantilla: 0 };
+    $('#tabs').innerHTML = TABS.map(([k, t]) => `<button type="button" role="tab" aria-selected="${state.tab === k}" class="${state.tab === k ? 'on' : ''}" data-tab="${k}">${t}${n[k] ? `<span class="cnt">${n[k]}</span>` : ''}</button>`).join('');
+    $$('#tabs [data-tab]').forEach((b) => b.addEventListener('click', () => { state.tab = b.dataset.tab; history.replaceState(null, '', '#' + state.tab); render(); }));
+  }
+
+  // ---------- vista del asiento en los dos libros ----------
+  function vistaLibros(doc) {
+    const r = F.movimientoDocumento(doc, PL_MC);
+    const libro = (L) => {
+      const fs = r.filas.filter((x) => x.libro === L);
+      const d = fs.filter((x) => x.naturaleza === 'D').reduce((a, x) => a + x.valor, 0), c = fs.filter((x) => x.naturaleza === 'C').reduce((a, x) => a + x.valor, 0);
+      return `<div class="libro"><div class="lh">Libro ${L} <span>${L === 'F' ? 'tributario (fiscal)' : 'contable (NIIF)'}</span></div><table><tbody>${fs.map((x) => `<tr><td class="dc ${x.naturaleza}">${x.naturaleza}</td><td class="cta">${esc(x.fila.CUENTA)}<small>${esc(x.uso === 'cartera' ? 'Cartera 1305 · cruce ' + x.fila['DOC FUENTE'] : (x.uso === 'iva' ? 'IVA generado · base ' + fmtCOP(Number(String(x.fila.BASE).replace(',', '.'))) : x.fila.CONCEPTO.toLowerCase()))}</small></td><td class="num">${fmtCOP(x.valor)}</td></tr>`).join('')}</tbody><tfoot><tr><td></td><td>D = C</td><td class="num">${fmtCOP(d)}</td></tr></tfoot></table></div>`;
+    };
+    return `<div class="asiento">${libro('F')}${libro('N')}</div>`;
+  }
+
+  // ---------- pestaña FACTURAS Y NOTAS ----------
+  function renderFacturas() {
+    const fp = facturasPend(), np = notasPend(), esp = enEspera();
+    const docs = [...fp.map((f) => ({ id: f.id, numero: f.numero, cliente: f.cliente, fecha: f.validada_en || f.fecha, total: f.total, sub: `${f.lineas_fe.length} línea${f.lineas_fe.length === 1 ? '' : 's'} de ingreso · IVA ${fmtCOP(f.iva)}` })), ...np.map((n) => ({ id: n.id, numero: n.numero, cliente: n.cliente, fecha: n.validada_en, total: n.total, sub: `Nota crédito a la ${factura(n.factura).numero} · al revés de la factura` }))];
+    const arch = S.archivos.filter((a) => a.tipo === 'MCFV').sort((a, b) => b.generado_en.localeCompare(a.generado_en));
+    const cof = factura('f-rhd-1');
+    return `<div class="two">
+      <section class="card">
+        <div class="card-head"><div><h2>Por contabilizar<small>${docs.length} documento${docs.length === 1 ? '' : 's'}</small></h2><small class="muted">Facturas validadas por la DIAN y notas validadas que todavía no están en un archivo.</small></div></div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Documento</th><th>Cliente</th><th>Validada</th><th class="num">Total</th></tr></thead>
+          <tbody>${docs.length ? docs.map((d) => `<tr><td><b class="mono">${esc(d.numero)}</b><span class="sub">${esc(d.sub)}</span></td><td>${esc(D.cliente(d.cliente).nombre_comercial)}</td><td style="white-space:nowrap">${fh(d.fecha)}</td><td class="num"><b>${fmtCOP(d.total)}</b></td></tr>`).join('') : '<tr><td colspan="4" class="muted" style="padding:16px">Todo lo validado por la DIAN ya está contabilizado.</td></tr>'}
+          ${esp.map((f) => `<tr><td><b class="mono">${esc(f.numero)}</b><span class="sub">${esc(F.ESTADO[f.estado_dian])}</span></td><td>${esc(D.cliente(f.cliente).nombre_comercial)}</td><td colspan="2"><span class="muted">Se contabiliza cuando la DIAN la valide</span></td></tr>`).join('')}</tbody>
+        </table></div>
+        <div class="card-body acts" style="border-top:1px solid var(--border)">
+          ${state.canal === 'archivo'
+            ? `<button type="button" class="btn primary" id="g-mc" ${docs.length ? '' : 'disabled'}>Generar movimiento contable (${docs.length})</button>`
+            : `<button type="button" class="btn primary" id="api-mc" ${docs.length ? '' : 'disabled'}>Enviar por Conekta (${docs.length})</button>`}
+          <button type="button" class="btn" id="g-prueba">Archivo de prueba con Cofema (RHD 1)</button>
+          <span class="muted-note">Una factura entra en un solo archivo vigente; si Helisa lo rechaza, se corrige y se regenera.</span>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><h2>Así queda en Helisa la ${esc(cof.numero)}<small>Cofema · ${fmtCOP(cof.total)}</small></h2><small class="muted">Mismo total que la FVE 25756 real. Cuentas de ejemplo (por confirmar con Julio).</small></div></div>
+        <div class="card-body">${vistaLibros(cof)}<p class="muted-note" style="margin-top:10px">Cada línea del libro F tiene su espejo en el libro N con la cuenta equivalente; se relacionan por el indicador fiscal (columna IND A AFECTAR). Si Helisa genera sola la línea N por la cuenta espejo, se apaga en la plantilla (por confirmar).</p></div>
+      </section>
+    </div>
+    ${tablaArchivos(arch, 'Archivos de facturas y notas')}`;
+  }
+  function tablaArchivos(arch, titulo) {
+    if (state.canal === 'conekta') {
+      const env = S.envios.filter((e) => (state.tab === 'recibos') === (e.tipo === 'RC'));
+      return `<section class="card" style="margin-top:14px">
+        <div class="card-head"><div><h2>Envíos por Helisa Conekta<small>simulado</small></h2><small class="muted">Con la API no hay archivo: cada documento se inserta en Helisa y vuelve con su número de transacción. Los archivos planos quedan como contingencia.</small></div><button type="button" class="btn" id="api-cartera">Leer cartera de Helisa</button></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Envío</th><th>Documento</th><th>Cliente</th><th class="num">Valor</th><th>Estado</th><th>Respuesta</th></tr></thead><tbody>
+          ${env.length ? env.map((e) => `<tr><td class="mono">${esc(e.id)}<span class="sub" style="font-family:var(--font-ui)">${fh(e.en)}</span></td><td class="mono">${esc(e.numero)}</td><td>${esc(e.cliente)}</td><td class="num">${fmtCOP(e.valor)}</td><td><span class="badge ok">Aceptado por Helisa</span></td><td class="muted" style="font-size:12px">${esc(e.respuesta)}</td></tr>`).join('') : '<tr><td colspan="6" class="muted" style="padding:16px">Todavía no hay envíos en esta sesión.</td></tr>'}
+        </tbody></table></div>
+      </section>`;
+    }
+    return `<section class="card" style="margin-top:14px">
+      <div class="card-head"><div><h2>${esc(titulo)}<small>${arch.length} archivo${arch.length === 1 ? '' : 's'}</small></h2><small class="muted">CSV con «;», Windows-1252 y títulos. En Helisa: Importación de movimiento contable → importar a módulo de cartera.</small></div></div>
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>Archivo</th><th>Periodo</th><th class="num">Docs</th><th class="num">Filas</th><th class="num">D = C por libro</th><th>Estado</th><th>Generado</th><th></th></tr></thead>
+        <tbody>${arch.length ? arch.map((a) => { const pl = plantilla(a.plantilla) || {}; return `<tr class="${a.estado === 'anulado' ? 'anulado' : ''}">
+          <td><span class="mono">${esc(a.nombre)}</span>${a.es_prueba ? ' <span class="badge warn">PRUEBA</span>' : ''}<span class="sub">SHA-256 ${esc(a.sha256.slice(0, 16))}… · plantilla ${pl.tipo === 'MCFV' ? 'MC-FV' : esc(pl.tipo)} v${pl.version}</span></td>
+          <td>${esc(D.byId(D.periodos, a.periodo) ? D.byId(D.periodos, a.periodo).nombre : a.periodo)}</td>
+          <td class="num">${a.documentos}</td><td class="num">${a.filas}</td><td class="num">${fmtCOP(a.debitos)}</td>
+          <td><span class="badge ${BADGE[a.estado]}">${esc(D.ESTADO_PLANO_LABEL[a.estado])}</span>${a.estado === 'rechazado' ? `<span class="sub" style="max-width:300px;white-space:normal">${esc(a.errores.split('\n')[0])}</span>` : (a.nota ? `<span class="sub" style="max-width:300px;white-space:normal">${esc(a.nota)}</span>` : '')}</td>
+          <td style="white-space:nowrap">${esc(a.generado_por.split(' ')[0])}<span class="sub">${fh(a.generado_en)}</span></td>
+          <td><div class="acts"><button type="button" class="btn sm ghost" data-ver="${a.id}">Ver líneas</button>${['generado', 'descargado'].includes(a.estado) && !a.es_prueba ? `<button type="button" class="btn sm" data-descargar="${a.id}">Descargar</button><button type="button" class="btn sm" data-importado="${a.id}">Importado</button><button type="button" class="btn sm danger" data-rechazado="${a.id}">Rechazado</button>` : ''}</div></td>
+        </tr>`; }).join('') : '<tr><td colspan="8" class="muted" style="padding:16px">Sin archivos.</td></tr>'}</tbody>
+      </table></div>
+    </section>`;
+  }
+
+  // ---------- pestaña RECIBOS ----------
+  function renderRecibos() {
+    const rp = recibosPend();
+    const emitidos = S.recibos.filter((r) => r.estado === 'emitido');
+    const arch = S.archivos.filter((a) => a.tipo === 'RC').sort((a, b) => b.generado_en.localeCompare(a.generado_en));
+    const ej = D.recibos.find((r) => r.id === 'r-35672'); // abono de prueba de Cofema: el ejemplo del levantamiento y de la SPEC
+    const gEj = D.generarPlano(PL_RC, { recibos: [ej] });
+    return `<div class="two">
+      <section class="card">
+        <div class="card-head"><div><h2>Recibos por exportar<small>${rp.length}</small></h2><small class="muted">Recibos provisionales cuyo efectivo ya entregó el operario en la oficina. Solo existen recibos de facturas validadas por la DIAN.</small></div></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Recibo</th><th>Cliente</th><th>Tipo</th><th>Cruza la factura</th><th class="num">Valor</th></tr></thead><tbody>
+          ${rp.length ? rp.map((r) => `<tr><td class="mono">${r.consecutivo}<span class="sub" style="font-family:var(--font-ui)">entregado ${fh(r.entregado_en)}</span></td><td>${esc(D.cliente(r.cliente).nombre_comercial)}</td><td>${esc(D.TIPO_RECIBO_LABEL[r.tipo])}</td><td class="mono">${(r.aplicaciones || []).map((a) => esc(factura(a.factura) ? factura(a.factura).numero : a.factura)).join(', ')}</td><td class="num"><b>${fmtCOP(r.valor)}</b></td></tr>`).join('') : '<tr><td colspan="5" class="muted" style="padding:16px">Nada por exportar. Los recibos entran cuando la oficina confirma la entrega del efectivo (Recaudo).</td></tr>'}
+        </tbody></table></div>
+        <div class="card-body acts" style="border-top:1px solid var(--border)">
+          ${state.canal === 'archivo' ? `<button type="button" class="btn primary" id="g-rc" ${rp.length ? '' : 'disabled'}>Generar movimiento del recibo (${rp.length})</button>` : `<button type="button" class="btn primary" id="api-rc" ${rp.length ? '' : 'disabled'}>Enviar por Conekta (${rp.length})</button>`}
+          ${S.recibos.some((r) => r.estado === 'exportado') ? '<button type="button" class="btn" id="g-def">Registrar recibo definitivo</button>' : ''}
+          <a class="btn ghost" href="recaudo.html">Ir a Recaudo</a>
+          <span class="muted-note">${emitidos.length} recibo${emitidos.length === 1 ? '' : 's'} emitido${emitidos.length === 1 ? '' : 's'} sin entregar en la oficina (todavía no entra${emitidos.length === 1 ? '' : 'n'}).</span>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-head"><div><h2>Ejemplo · recibo 35672 de Cofema (abono de prueba)<small>${fmtCOP(ej.valor)}</small></h2><small class="muted">Abona a la RHD 1; Helisa lo cruzó como ${esc(ej.recibo_helisa)} y la factura queda con saldo de ${fmtCOP(D.saldoReferencia(ej.aplicaciones[0].factura))}, igual al saldo de referencia del sistema.</small></div></div>
+        <div class="card-body">
+          <div class="asiento">${['F', 'N'].map((L) => { const fs = gEj.filas.filter((x) => x.linea.clase === L); return `<div class="libro"><div class="lh">Libro ${L} <span>${L === 'F' ? 'tributario (fiscal)' : 'contable (NIIF)'}</span></div><table><tbody>${fs.map((x) => `<tr><td class="dc ${x.naturaleza}">${x.naturaleza}</td><td class="cta">${esc(x.fila.CUENTA)}<small>${x.linea.tipo === 'caja' ? 'Caja · efectivo' : 'Cartera 1305 · cruce ' + esc(x.fila['DOC FUENTE'])}</small></td><td class="num">${fmtCOP(x.valor)}</td></tr>`).join('')}</tbody></table></div>`; }).join('')}</div>
+          <ul class="rules" style="margin-top:12px"><li><b>DOC FUENTE</b> = prefijo y número de la factura que se cruza (RHD1). Nombre y posición de la columna: por confirmar con la estructura de Julio.</li><li>Tipo de recibo en Helisa: <b>RC1 o RC2</b> (por confirmar). La cuenta de caja del libro N: por confirmar.</li><li>Si el pago fue por transferencia, la línea débito va a bancos (cuenta por confirmar).</li></ul>
+        </div>
+      </section>
+    </div>
+    ${tablaArchivos(arch, 'Archivos de recibos')}`;
+  }
+
+  // ---------- pestaña SERVICIO → CUENTA ----------
+  function renderCuentas() {
+    const USO = { ingreso: 'Ingreso', iva: 'IVA generado', cartera: 'Cartera', caja: 'Caja', banco: 'Bancos' };
+    return `<div class="two">
+      <section class="card">
+        <div class="card-head"><div><h2>Plantilla «servicio → cuenta»<small>la entrega Julio</small></h2><small class="muted">Qué cuenta usa cada concepto de la factura en cada libro. Es un dato: se carga y se cambia sin programar, con aprobación y fecha de vigencia.</small></div><span class="badge warn plain">Por confirmar</span></div>
+        <div class="table-wrap"><table class="tbl"><thead><tr><th>Uso</th><th>Concepto de la factura</th><th>Libro F (fiscal)</th><th>Libro N (NIIF)</th></tr></thead><tbody>
+          ${F.cuentas.map((c) => { const k = F.conceptos.find((x) => x.codigo === c.concepto); return `<tr><td>${esc(USO[c.uso])}</td><td>${k ? `${esc(k.descripcion)}<span class="sub mono">${esc(k.codigo)}</span>` : `<span class="muted">${esc(c.etiqueta)}</span>`}</td><td class="mono">${esc(c.F)}</td><td class="mono">${esc(c.N)}</td></tr>`; }).join('')}
+        </tbody></table></div>
+        <div class="card-body acts" style="border-top:1px solid var(--border)"><button type="button" class="btn primary" id="cargar-cuentas">Cargar la plantilla de Julio (Excel)</button><span class="muted-note">Las cuentas de la tabla son de ejemplo (plantilla v5). No se contabiliza en producción hasta que Julio las entregue y el contador las apruebe.</span></div>
+      </section>
+      <section class="card pad">
+        <div class="eyebrow">Lo que hay que confirmar con Julio</div>
+        <ul class="rules" style="margin-top:10px">
+          <li>Cuentas de ingreso por concepto e IVA en los dos libros, y la de cartera (1305) en el libro N.</li>
+          <li>Tipo de documento contable para registrar la factura (¿FV «factura de venta» contable?) y si la cartera de Helisa acepta facturas con otro prefijo (RHD) para que el recibo las cruce.</li>
+          <li>Si Helisa genera sola la línea del libro N por la cuenta espejo o hay que enviarla.</li>
+          <li>Cuentas de caja y bancos (recibos) y tipo de recibo RC1 o RC2.</li>
+          <li>Centro de costo (0101 FLORENCIA, visto en la reunión) y si van código de negocio o vendedor.</li>
+        </ul>
+        <div class="callout info" style="margin-top:12px">Comserva podría <b>reducir su plan de facturación electrónica de Helisa</b> si allí solo quedan productos y arrendamiento (por confirmar). Lo de RH ya no se factura en Helisa.</div>
+      </section>
+    </div>`;
+  }
+
+  // ---------- pestaña PLANTILLA ----------
+  function renderPlantilla() {
+    const cof = factura('f-rhd-1');
+    const r = F.movimientoDocumento(cof, PL_MC);
+    const ej = r.filas[0].fila;
+    const pl = PL_MC;
+    return `<div class="two">
+      <section class="card">
+        <div class="card-head"><div><h2>MC-FV · versión ${pl.version} <span class="badge ok">Aprobada</span></h2><small class="muted">Vigente desde ${fmtFechaCorta(pl.vigente_desde)} · aprobó ${esc(pl.aprobada_por)}</small></div><button type="button" class="btn" id="copiar">Copiar como versión nueva</button></div>
+        <div class="table-wrap"><table class="tbl cols-ex"><thead><tr><th class="num">#</th><th>Título en el archivo</th><th>Origen</th><th>Campo</th><th>Ejemplo (RHD 1, primera fila)</th></tr></thead><tbody>
+          ${pl.columnas.map((c) => `<tr><td class="num">${c.orden}</td><td class="mono" style="white-space:nowrap">${esc(c.titulo)}</td><td>${c.origen === 'campo' ? 'campo' : (c.origen === 'constante' ? 'constante' : '<span class="muted">vacío</span>')}</td><td class="mono" style="font-size:12px">${esc(c.campo || '')}</td><td>${esc(ej[c.titulo] || '')}</td></tr>`).join('')}
+        </tbody></table></div>
+      </section>
+      <div style="display:grid;gap:14px">
+        <section class="card pad">
+          <div class="eyebrow">Qué cambió frente a la v5</div>
+          <ul class="rules" style="margin-top:10px"><li>En la v5 este archivo era «para que Helisa genere la factura»: Helisa no importa facturas. Aquí registra la factura que <b>ya emitió el sistema</b>; la plantilla de 22 columnas sirve casi tal cual.</li><li><b>Una línea de ingreso por concepto</b> (básico, kilos adicionales, por kilo o cobro fijo), IVA con su base y cartera 1305 por el total; las notas crédito, al revés.</li><li><b>Libros F y N</b>: cada documento lleva sus líneas en los dos libros, con el indicador fiscal reiniciado en cada uno.</li><li><b>Dos decimales</b>: la liquidación va al centavo, como en Helisa.</li></ul>
+        </section>
+        <section class="card pad">
+          <div class="eyebrow">Formato del archivo</div>
+          <dl class="kv" style="margin-top:10px"><dt>Formato</dt><dd>.csv · separador «${esc(pl.separador)}» · con fila de títulos</dd><dt>Codificación</dt><dd>${esc(pl.codificacion)} (ANSI: un archivo UTF-8 dañó las tildes en la reunión)</dd><dt>Fecha</dt><dd>${esc(pl.formato_fecha)}</dd><dt>Texto</dt><dd>Mayúsculas, sin tildes ni eñes</dd><dt>Tipo de documento</dt><dd>${esc(pl.tipo_documento)} contable (por confirmar) · notas: NC o ND</dd><dt>Centro de costo</dt><dd>${esc(pl.centro_costo)} FLORENCIA (visto en la reunión)</dd><dt>DOC FUENTE</dt><dd>Prefijo y número de la factura (RHD1); en una nota, la línea de cartera cruza la factura que corrige</dd><dt>Validaciones</dt><dd>D = C por libro y por documento; tercero existente en Helisa</dd></dl>
+          <p class="muted-note" style="margin-top:10px">El configurador de plantillas de la v5 se mantiene: columnas, orden, cuentas, formato y validaciones se cambian sin programar, con versión, prueba con Cofema y aprobación de Gerencia.</p>
+        </section>
+      </div>
+    </div>`;
+  }
+
+  // ---------- generación, descarga e importación ----------
+  function genDe(a) {
+    if (a.gen) return a.gen;
+    if (a.tipo === 'MCFV') a.gen = F.generarMovimiento(plantilla(a.plantilla), (a.facturas || []).map(factura).concat((a.notas || []).map(nota)));
+    else a.gen = D.generarPlano(plantilla(a.plantilla), { recibos: S.recibos.filter((r) => r.archivo === a.id) });
+    return a.gen;
+  }
+  function generarMC(opts = {}) {
+    const fs = opts.prueba ? [factura('f-rhd-1')] : facturasPend();
+    const ns = opts.prueba ? [] : notasPend();
+    const gen = F.generarMovimiento(PL_MC, fs.concat(ns));
+    if (gen.errores.length) { modalErrores(gen.errores); return; }
+    const pid = opts.prueba ? '2026-09' : D.periodos.find((p) => p.estado === 'abierto').id;
+    const n = S.archivos.filter((a) => a.tipo === 'MCFV' && a.periodo === pid && !a.es_prueba).length + 1;
+    const a = { id: `ap-mcfv-${pid}-${String(n).padStart(3, '0')}${opts.prueba ? '-prueba' : ''}`, tipo: 'MCFV', periodo: pid, plantilla: PL_MC.id, consecutivo: n, nombre: opts.prueba ? 'COMSERVA_MCFV_PRUEBA_RHD1.csv' : `COMSERVA_MCFV_${pid}_${String(n).padStart(3, '0')}.csv`, estado: 'generado', generado_por: USUARIO, generado_en: ahora(), facturas: fs.map((f) => f.id), notas: ns.map((x) => x.id), documentos: gen.documentos, filas: gen.filas.length, debitos: gen.debitos, creditos: gen.creditos, sha256: D.hashFake('mcfv' + Date.now()), es_prueba: !!opts.prueba, gen, nota: opts.prueba ? 'Archivo de prueba: no cambia estados. Para importar en una empresa de pruebas de Helisa.' : fs.map((f) => f.numero).concat(ns.map((x) => x.numero)).join(', ') };
+    S.archivos.push(a); render(); abrirArchivo(a.id);
+    toast(`${a.nombre}: ${gen.documentos} documento${gen.documentos === 1 ? '' : 's'}, ${gen.filas.length} filas, D = C = ${fmtCOP(gen.debitos)} por libro.`);
+  }
+  function generarRC() {
+    const rs = recibosPend(); if (!rs.length) return;
+    const gen = D.generarPlano(PL_RC, { recibos: rs });
+    if (gen.errores.length) { modalErrores(gen.errores); return; }
+    const pid = D.periodos.find((p) => p.estado === 'abierto').id;
+    const n = S.archivos.filter((a) => a.tipo === 'RC' && a.periodo === pid).length + 1;
+    const a = { id: `ap-rc-${pid}-${String(n).padStart(3, '0')}`, tipo: 'RC', periodo: pid, plantilla: PL_RC.id, consecutivo: n, nombre: `COMSERVA_RC_${pid}_${String(n).padStart(3, '0')}.csv`, estado: 'generado', generado_por: USUARIO, generado_en: ahora(), documentos: gen.documentos, filas: gen.filas.length, debitos: gen.debitos, creditos: gen.creditos, sha256: D.hashFake('rc' + Date.now()) };
+    rs.forEach((r) => { r.estado = 'exportado'; r.archivo = a.id; });
+    S.archivos.push(a); render(); abrirArchivo(a.id);
+    toast(`${a.nombre} generado: ${gen.documentos} recibo${gen.documentos === 1 ? '' : 's'}, líneas en los libros F y N.`);
+  }
+  function enviarConekta(tipo) {
+    const docs = tipo === 'RC' ? recibosPend().map((r) => ({ id: r.id, numero: 'Recibo ' + r.consecutivo, cliente: D.cliente(r.cliente).nombre_comercial, valor: r.valor }))
+      : facturasPend().map((f) => ({ id: f.id, numero: f.numero, cliente: D.cliente(f.cliente).nombre_comercial, valor: f.total })).concat(notasPend().map((x) => ({ id: x.id, numero: x.numero, cliente: D.cliente(x.cliente).nombre_comercial, valor: x.total })));
+    docs.forEach((d) => { S.contabilizadas.add(d.id); S.envios.push({ id: 'CNK-' + D.hashFake(d.id + Date.now()).slice(0, 8).toUpperCase(), tipo, numero: d.numero, cliente: d.cliente, valor: d.valor, en: ahora(), respuesta: tipo === 'RC' ? 'Recibo insertado y aplicado a su factura (simulado)' : 'Documento contable insertado en los libros F y N (simulado)' }); });
+    render(); toast(`${docs.length} documento${docs.length === 1 ? '' : 's'} enviado${docs.length === 1 ? '' : 's'} a Helisa por Conekta (simulado). Sin archivos que subir.`);
+  }
+  function descargar(id) {
+    const a = S.archivos.find((x) => x.id === id); const pl = plantilla(a.plantilla); const gen = genDe(a);
+    const txt = D.textoArchivo(pl, gen);
+    const u = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); const l = document.createElement('a'); l.href = u; l.download = a.nombre; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+    if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahora(); }
+    render(); if ($('#overlay .drawer')) abrirArchivo(a.id);
+    toast(`${a.nombre} descargado (en la demostración, en UTF-8; el sistema real escribe Windows-1252). Impórtelo en Helisa: Importación de movimiento contable, módulo de cartera.`);
+  }
+
+  function abrirArchivo(id) {
+    const a = S.archivos.find((x) => x.id === id); if (!a) return;
+    const pl = plantilla(a.plantilla); const gen = genDe(a);
+    const cols = pl.columnas.map((c) => c.titulo); let last = null;
+    $('#overlay').innerHTML = `<div class="drawer-backdrop" data-cerrar></div>
+      <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title">
+        <div class="d-head"><div style="min-width:0"><div class="eyebrow">${esc(TIPO[a.tipo])} · plantilla ${pl.tipo === 'MCFV' ? 'MC-FV' : esc(pl.tipo)} v${pl.version} · ${esc(pl.codificacion)}</div><div class="no" id="d-title">${esc(a.nombre)}</div>
+          <div class="muted" style="font-size:12.5px;margin-top:4px">Generado por ${esc(a.generado_por)} el ${fh(a.generado_en)} · SHA-256 <span class="mono">${esc(a.sha256)}</span></div>
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><span class="badge ${BADGE[a.estado]}">${esc(D.ESTADO_PLANO_LABEL[a.estado])}</span>${a.es_prueba ? '<span class="badge warn">PRUEBA · no cambia estados</span>' : ''}</div></div>
+          <button type="button" class="close" data-cerrar aria-label="Cerrar">✕</button></div>
+        <div class="d-body">
+          ${a.estado === 'rechazado' ? `<div class="callout danger"><b>Rechazado por Helisa</b> el ${fh(a.rechazado_en)}. Lista de errores:<pre style="margin:6px 0 0;white-space:pre-wrap;font-size:12px">${esc(a.errores)}</pre></div>` : ''}
+          ${a.estado === 'importado' ? `<div class="callout ok"><b>Importado en Helisa</b> el ${fh(a.importado_en)} por ${esc(a.importado_por)}.${a.nota ? ' ' + esc(a.nota) : ''} El archivo es inmutable y se conserva con su huella.</div>` : ''}
+          <div class="pre-tot"><span>Documentos <b>${a.documentos}</b></span><span>Filas <b>${a.filas}</b></span><span>Débitos (libro F) <b>${fmtCOP(a.debitos)}</b></span><span>Créditos (libro F) <b>${fmtCOP(a.creditos)}</b></span><span class="${Math.abs(a.debitos - a.creditos) < 0.005 ? 'ok-txt' : ''}">${Math.abs(a.debitos - a.creditos) < 0.005 ? '✓ cuadra en cada libro' : '✗ no cuadra'}</span></div>
+          <section><h3>Filas tal como van en el archivo (${cols.length} columnas) · las del libro N, sombreadas</h3>
+            <div class="lineas-wrap"><table class="plano"><thead><tr><th>Documento</th>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>
+              ${gen.filas.map((f) => { const start = f.doc !== last; last = f.doc; const libro = f.libro || (f.linea && f.linea.clase); return `<tr class="${start ? 'doc-start' : ''} libro-${libro}"><td class="doc">${start ? esc(f.doc) : ''}</td>${cols.map((c) => `<td class="${c === 'VALOR' || c === 'BASE' ? 'num' : ''}">${esc(f.fila[c])}</td>`).join('')}</tr>`; }).join('')}
+            </tbody></table></div></section>
+          <section><h3>Línea de tiempo</h3><ul class="timeline">
+            <li><div>Generado por ${esc(a.generado_por)}<div class="when">${fh(a.generado_en)}</div></div></li>
+            ${a.descargado_en ? `<li><div>Descargado<div class="when">${fh(a.descargado_en)}</div></div></li>` : ''}
+            ${a.rechazado_en ? `<li><div>Marcado rechazado con la lista de errores de Helisa<div class="when">${fh(a.rechazado_en)}</div></div></li>` : ''}
+            ${a.importado_en ? `<li><div>Marcado importado por ${esc(a.importado_por)}<div class="when">${fh(a.importado_en)}</div></div></li>` : ''}
+          </ul></section>
+        </div>
+        <div class="d-foot"><button type="button" class="btn primary" data-descargar="${a.id}">Descargar CSV</button>${['generado', 'descargado'].includes(a.estado) && !a.es_prueba ? `<button type="button" class="btn" data-importado="${a.id}">Marcar importado</button><button type="button" class="btn danger" data-rechazado="${a.id}">Marcar rechazado</button>` : ''}</div>
+      </aside>`;
+    $('#overlay .close').focus();
+    $$('#overlay [data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDrawer));
+    bindAcciones($('#overlay'));
+  }
+  function cerrarDrawer() { $('#overlay').innerHTML = ''; }
+
+  // ---------- modales ----------
+  let opener = null;
+  function openModal(html) {
+    opener = document.activeElement;
+    $('#modal-root').innerHTML = `<div class="modal-backdrop" data-bd><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" tabindex="-1">${html}</div></div>`;
+    $$('#modal-root [data-close]').forEach((b) => b.addEventListener('click', closeModal));
+    $('#modal-root [data-bd]').addEventListener('click', (e) => { if (e.target.hasAttribute('data-bd')) closeModal(); });
+    const first = $('#modal-root .modal-body input, #modal-root .modal-body textarea'); (first || $('#modal-root .modal')).focus();
+  }
+  function closeModal() { $('#modal-root').innerHTML = ''; if (opener && document.contains(opener)) opener.focus(); opener = null; }
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('#modal-root .modal')) closeModal(); else cerrarDrawer(); });
+  function modalErrores(errs) {
+    openModal(`<div class="modal-head" id="m-title">El archivo no se puede generar</div><div class="modal-body"><p>La validación previa encontró estos problemas. Nada se generó.</p><ul class="err-list">${errs.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div><div class="modal-foot"><button type="button" class="btn primary" data-close>Entendido</button></div>`);
+  }
+  function modalImportado(id) {
+    const a = S.archivos.find((x) => x.id === id);
+    const rcs = a.tipo === 'RC' ? S.recibos.filter((r) => r.archivo === a.id && r.estado === 'exportado') : [];
+    openModal(`<div class="modal-head" id="m-title">Marcar importado · ${esc(a.nombre)}</div>
+      <div class="modal-body">
+        ${a.tipo === 'RC' ? `<p>Helisa registró el recibo definitivo y cruzó el pago contra la factura. Escriba el número del recibo definitivo de cada uno.</p>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>Recibo provisional</th><th class="num">Valor</th><th>Recibo en Helisa</th></tr></thead><tbody>${rcs.map((r, i) => `<tr><td class="mono">${r.consecutivo}<span class="sub" style="font-family:var(--font-ui)">${esc(D.cliente(r.cliente).nombre_comercial)}</span></td><td class="num">${fmtCOP(r.valor)}</td><td><input class="input" style="padding:5px 8px" data-def="${r.id}" value="RC ${8852 + i}" aria-label="Número del recibo definitivo"></td></tr>`).join('') || '<tr><td colspan="3" class="muted">Nada pendiente.</td></tr>'}</tbody></table></div>`
+        : '<p>Confirme que Helisa importó el movimiento sin errores (Importación de movimiento contable → importar a módulo de cartera). Las facturas quedan <b>contabilizadas</b> y su cierre pasa a ese estado.</p>'}
+      </div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn primary" id="m-ok">Marcar importado</button></div>`);
+    $('#m-ok').addEventListener('click', () => {
+      rcs.forEach((r) => { const v = $(`[data-def="${r.id}"]`).value.trim(); if (!v) return; r.estado = 'cruzado'; r.recibo_helisa = v; r.cruzado_en = ahora(); r.conciliado = true; });
+      a.estado = 'importado'; a.importado_en = ahora(); a.importado_por = USUARIO;
+      closeModal(); render(); cerrarDrawer();
+      toast(a.tipo === 'RC' ? `${rcs.length} recibo${rcs.length === 1 ? '' : 's'} cruzado${rcs.length === 1 ? '' : 's'} en Helisa.` : `${a.nombre} importado: ${a.documentos} documento${a.documentos === 1 ? '' : 's'} contabilizado${a.documentos === 1 ? '' : 's'}.`);
+    });
+  }
+  function modalRechazado(id) {
+    const a = S.archivos.find((x) => x.id === id);
+    openModal(`<div class="modal-head" id="m-title">Marcar ${esc(a.nombre)} como rechazado</div>
+      <div class="modal-body"><div class="callout warn">Pegue la «lista de errores» que mostró Helisa. Los documentos vuelven a quedar por contabilizar y podrá regenerar después de corregir.</div><div class="field"><label for="m-err" class="req">Lista de errores de Helisa</label><textarea class="textarea" id="m-err" placeholder="Ejemplo: el tercero 900555017 no existe en Helisa."></textarea></div></div>
+      <div class="modal-foot"><button type="button" class="btn" data-close>Cancelar</button><button type="button" class="btn danger" id="m-ok">Marcar rechazado</button></div>`);
+    $('#m-ok').addEventListener('click', () => {
+      const t = $('#m-err').value.trim(); if (t.length < 8) { $('#m-err').style.borderColor = 'var(--danger)'; $('#m-err').focus(); return; }
+      a.estado = 'rechazado'; a.rechazado_en = ahora(); a.errores = t;
+      if (a.tipo === 'RC') S.recibos.filter((r) => r.archivo === a.id).forEach((r) => { r.estado = 'entregado'; r.archivo = null; });
+      closeModal(); render(); cerrarDrawer(); toast(`${a.nombre} rechazado: corrija y regenere.`);
+    });
+  }
+
+  // ---------- render y eventos ----------
+  function render() {
+    renderCanal(); renderStats(); renderTabs();
+    $('#content').innerHTML = { facturas: renderFacturas, recibos: renderRecibos, cuentas: renderCuentas, plantilla: renderPlantilla }[state.tab]();
+    bind();
+  }
+  function bindAcciones(root) {
+    $$('[data-ver]', root).forEach((b) => b.addEventListener('click', () => abrirArchivo(b.dataset.ver)));
+    $$('[data-descargar]', root).forEach((b) => b.addEventListener('click', () => descargar(b.dataset.descargar)));
+    $$('[data-importado]', root).forEach((b) => b.addEventListener('click', () => modalImportado(b.dataset.importado)));
+    $$('[data-rechazado]', root).forEach((b) => b.addEventListener('click', () => modalRechazado(b.dataset.rechazado)));
+  }
+  function bind() {
+    bindAcciones($('#content'));
+    const on = (sel, fn) => { const el = $(sel); if (el) el.addEventListener('click', fn); };
+    on('#g-mc', () => generarMC()); on('#g-prueba', () => generarMC({ prueba: true })); on('#g-rc', generarRC);
+    on('#api-mc', () => enviarConekta('MCFV')); on('#api-rc', () => enviarConekta('RC'));
+    on('#api-cartera', () => toast('Lectura de cartera por Conekta (simulado): saldos por cliente y facturas abiertas, para compararlos con el saldo de referencia del sistema.'));
+    on('#g-def', () => { const a = S.archivos.find((x) => x.tipo === 'RC' && S.recibos.some((r) => r.archivo === x.id && r.estado === 'exportado')); if (a) modalImportado(a.id); });
+    on('#cargar-cuentas', () => toast('Simulado: se elige el Excel de Julio, se revisa fila por fila (cuenta existente, libro F y N) y Gerencia aprueba la versión con fecha de vigencia.'));
+    on('#copiar', () => toast('En el sistema real abre el configurador de plantillas (columnas, cuentas, formato) como versión nueva en borrador.'));
+  }
+  $$('#canal [data-canal]').forEach((b) => b.addEventListener('click', () => { state.canal = b.dataset.canal; render(); toast(state.canal === 'conekta' ? 'Helisa Conekta (opcional, simulado): los documentos se insertan en Helisa por API; los archivos planos quedan como contingencia.' : 'Archivo plano: la modalidad base.'); }));
+
+  // hash: #facturas · #recibos · #rc · #cuentas · #plantilla · #<id de archivo>
+  function aplicarHash() {
+    const h = decodeURIComponent(location.hash.replace(/^#/, '')).trim(); if (!h) return;
+    if (h === 'rc') { state.tab = 'recibos'; render(); return; }
+    if (TABS.some(([k]) => k === h)) { state.tab = h; render(); return; }
+    const a = S.archivos.find((x) => x.id === h);
+    if (a) { state.tab = a.tipo === 'RC' ? 'recibos' : 'facturas'; render(); abrirArchivo(h); }
+  }
+  window.addEventListener('hashchange', aplicarHash);
+  render(); aplicarHash();
+})();
+</script>
+</body>
+</html>
