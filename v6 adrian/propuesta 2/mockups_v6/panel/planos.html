@@ -154,7 +154,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
       <div class="card stat"><div class="label">${state.canal === 'archivo' ? 'Archivos por importar en Helisa' : 'Envíos por API en la sesión'}</div><div class="value ${state.canal === 'archivo' && pi.length ? 'warn' : ''}">${state.canal === 'archivo' ? pi.length : S.envios.length}</div><div class="delta">${state.canal === 'archivo' ? 'generados o descargados sin marcar importados' : 'Helisa Conekta (simulado)'}</div></div>
       <div class="card stat"><div class="label">Archivos importados</div><div class="value">${imp}</div><div class="delta">${rech} rechazado${rech === 1 ? '' : 's'} por Helisa y regenerado${rech === 1 ? '' : 's'}</div></div>`;
   }
-  const TABS = [['facturas', 'Facturas y notas (MC-FV)'], ['recibos', 'Recibos (RC)'], ['cuentas', 'Servicio → cuenta'], ['plantilla', 'Plantilla de 22 columnas']];
+  const TABS = [['facturas', 'Facturas y notas (MC-FV)'], ['recibos', 'Recibos (RC)'], ['cuentas', 'Servicio → cuenta'], ['plantilla', 'Plantilla MC-FV (22 columnas)']];
   function renderTabs() {
     const n = { facturas: facturasPend().length + notasPend().length, recibos: recibosPend().length, cuentas: 0, plantilla: 0 };
     $('#tabs').innerHTML = TABS.map(([k, t]) => `<button type="button" role="tab" aria-selected="${state.tab === k}" class="${state.tab === k ? 'on' : ''}" data-tab="${k}">${t}${n[k] ? `<span class="cnt">${n[k]}</span>` : ''}</button>`).join('');
@@ -250,8 +250,8 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
       <section class="card">
         <div class="card-head"><div><h2>Ejemplo · recibo 35672 de Cofema (abono de prueba)<small>${fmtCOP(ej.valor)}</small></h2><small class="muted">Abona a la RHD 1; Helisa lo cruzó como ${esc(ej.recibo_helisa)} y la factura queda con saldo de ${fmtCOP(D.saldoReferencia(ej.aplicaciones[0].factura))}, igual al saldo de referencia del sistema.</small></div></div>
         <div class="card-body">
-          <div class="asiento">${['F', 'N'].map((L) => { const fs = gEj.filas.filter((x) => x.linea.clase === L); return `<div class="libro"><div class="lh">Libro ${L} <span>${L === 'F' ? 'tributario (fiscal)' : 'contable (NIIF)'}</span></div><table><tbody>${fs.map((x) => `<tr><td class="dc ${x.naturaleza}">${x.naturaleza}</td><td class="cta">${esc(x.fila.CUENTA)}<small>${x.linea.tipo === 'caja' ? 'Caja · efectivo' : 'Cartera 1305 · cruce ' + esc(x.fila['DOC FUENTE'])}</small></td><td class="num">${fmtCOP(x.valor)}</td></tr>`).join('')}</tbody></table></div>`; }).join('')}</div>
-          <ul class="rules" style="margin-top:12px"><li><b>DOC FUENTE</b> = prefijo y número de la factura que se cruza (RHD1). Nombre y posición de la columna: por confirmar con la estructura de Julio.</li><li>Tipo de recibo en Helisa: <b>RC1 o RC2</b> (por confirmar). La cuenta de caja del libro N: por confirmar.</li><li>Si el pago fue por transferencia, la línea débito va a bancos (cuenta por confirmar).</li></ul>
+          <div class="asiento">${['F', 'N'].map((L) => { const fs = gEj.filas.filter((x) => x.linea.clase === L); return `<div class="libro"><div class="lh">Libro ${L} <span>${L === 'F' ? 'tributario (fiscal)' : 'contable (NIIF)'}</span></div><table><tbody>${fs.map((x) => `<tr><td class="dc ${x.naturaleza}">${x.naturaleza}</td><td class="cta">${esc(x.fila.CUENTA)}<small>${x.linea.tipo === 'caja' ? 'Caja · efectivo' : (x.linea.cruce ? `Cartera · cruza ${esc(x.fila['TIPO DE DOCUMENTO QUE AFECTA'])} ${esc(x.fila['NUMERO DE DOCUMENTO QUE AFECTA'])} cuota ${esc(x.fila['CUOTA QUE AFECTA'])} · cobrador ${esc(x.fila['ID VENDEDDOR / COBRADOR'])}` : 'Cartera · sin cruce (libro N)')}</small></td><td class="num">${fmtCOP(x.valor)}</td></tr>`).join('')}</tbody></table></div>`; }).join('')}</div>
+          <ul class="rules" style="margin-top:12px"><li><b>Recibo RC oficial</b> (Excel de Julio, 23 oct): 17 columnas y 4 filas por recibo: caja F 11050501 y N 111050501 al débito, cartera F 13050501 y N 112050501 al crédito.</li><li>El cruce va <b>solo en la fila de cartera F</b>: TIPO DE DOCUMENTO QUE AFECTA = RHD, NUMERO = consecutivo, CUOTA = 1, con el cobrador 828002730. Que la cartera de Helisa acepte el prefijo RHD: por confirmar con la importación de prueba.</li><li>Por confirmar: cuentas del libro N (contador), si RC equivale a RC1 o RC2 y la cuenta de bancos si el pago fue por transferencia.</li></ul>
         </div>
       </section>
     </div>
@@ -275,8 +275,8 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
           <li>Cuentas de ingreso por concepto e IVA en los dos libros, y la de cartera (1305) en el libro N.</li>
           <li>Tipo de documento contable para registrar la factura (¿FV «factura de venta» contable?) y si la cartera de Helisa acepta facturas con otro prefijo (RHD) para que el recibo las cruce.</li>
           <li>Si Helisa genera sola la línea del libro N por la cuenta espejo o hay que enviarla.</li>
-          <li>Cuentas de caja y bancos (recibos) y tipo de recibo RC1 o RC2.</li>
-          <li>Centro de costo (0101 FLORENCIA, visto en la reunión) y si van código de negocio o vendedor.</li>
+          <li>Recibos: el Excel de Julio (23 oct) ya trae caja 11050501/111050501 y cartera 13050501/112050501; faltan bancos, confirmar las del libro N y si RC equivale a RC1 o RC2.</li>
+          <li>Centro de costo en el movimiento de facturas (en el pedido de Julio va 0101; en su recibo, vacío).</li>
         </ul>
         <div class="callout info" style="margin-top:12px">Comserva podría <b>reducir su plan de facturación electrónica de Helisa</b> si allí solo quedan productos y arrendamiento (por confirmar). Lo de RH ya no se factura en Helisa.</div>
       </section>
@@ -334,10 +334,10 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
     if (gen.errores.length) { modalErrores(gen.errores); return; }
     const pid = D.periodos.find((p) => p.estado === 'abierto').id;
     const n = S.archivos.filter((a) => a.tipo === 'RC' && a.periodo === pid).length + 1;
-    const a = { id: `ap-rc-${pid}-${String(n).padStart(3, '0')}`, tipo: 'RC', periodo: pid, plantilla: PL_RC.id, consecutivo: n, nombre: `COMSERVA_RC_${pid}_${String(n).padStart(3, '0')}.csv`, estado: 'generado', generado_por: USUARIO, generado_en: ahora(), documentos: gen.documentos, filas: gen.filas.length, debitos: gen.debitos, creditos: gen.creditos, sha256: D.hashFake('rc' + Date.now()) };
+    const a = { id: `ap-rc-${pid}-${String(n).padStart(3, '0')}`, tipo: 'RC', periodo: pid, plantilla: PL_RC.id, consecutivo: n, nombre: `COMSERVA_RC_${pid}_${String(n).padStart(3, '0')}.xlsx`, estado: 'generado', generado_por: USUARIO, generado_en: ahora(), documentos: gen.documentos, filas: gen.filas.length, debitos: gen.debitos, creditos: gen.creditos, sha256: D.hashFake('rc' + Date.now()) };
     rs.forEach((r) => { r.estado = 'exportado'; r.archivo = a.id; });
     S.archivos.push(a); render(); abrirArchivo(a.id);
-    toast(`${a.nombre} generado: ${gen.documentos} recibo${gen.documentos === 1 ? '' : 's'}, líneas en los libros F y N.`);
+    toast(`${a.nombre} generado: ${gen.documentos} recibo${gen.documentos === 1 ? '' : 's'}, 4 filas por recibo (recibo RC oficial de 17 columnas).`);
   }
   function enviarConekta(tipo) {
     const docs = tipo === 'RC' ? recibosPend().map((r) => ({ id: r.id, numero: 'Recibo ' + r.consecutivo, cliente: D.cliente(r.cliente).nombre_comercial, valor: r.valor }))
@@ -348,7 +348,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
   function descargar(id) {
     const a = S.archivos.find((x) => x.id === id); const pl = plantilla(a.plantilla); const gen = genDe(a);
     const txt = D.textoArchivo(pl, gen);
-    const u = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); const l = document.createElement('a'); l.href = u; l.download = a.nombre; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+    const u = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); const l = document.createElement('a'); l.href = u; l.download = /\.xlsx$/.test(a.nombre) ? a.nombre.replace(/\.xlsx$/, '_vista.csv') : a.nombre; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
     if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahora(); }
     render(); if ($('#overlay .drawer')) abrirArchivo(a.id);
     toast(`${a.nombre} descargado (en la demostración, en UTF-8; el sistema real escribe Windows-1252). Impórtelo en Helisa: Importación de movimiento contable, módulo de cartera.`);
@@ -379,7 +379,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
             ${a.importado_en ? `<li><div>Marcado importado por ${esc(a.importado_por)}<div class="when">${fh(a.importado_en)}</div></div></li>` : ''}
           </ul></section>
         </div>
-        <div class="d-foot"><button type="button" class="btn primary" data-descargar="${a.id}">Descargar CSV</button>${['generado', 'descargado'].includes(a.estado) && !a.es_prueba ? `<button type="button" class="btn" data-importado="${a.id}">Marcar importado</button><button type="button" class="btn danger" data-rechazado="${a.id}">Marcar rechazado</button>` : ''}</div>
+        <div class="d-foot"><button type="button" class="btn primary" data-descargar="${a.id}">${/\.xlsx$/.test(a.nombre) ? 'Descargar (vista .csv del .xlsx)' : 'Descargar CSV'}</button>${['generado', 'descargado'].includes(a.estado) && !a.es_prueba ? `<button type="button" class="btn" data-importado="${a.id}">Marcar importado</button><button type="button" class="btn danger" data-rechazado="${a.id}">Marcar rechazado</button>` : ''}</div>
       </aside>`;
     $('#overlay .close').focus();
     $$('#overlay [data-cerrar]').forEach((el) => el.addEventListener('click', cerrarDrawer));

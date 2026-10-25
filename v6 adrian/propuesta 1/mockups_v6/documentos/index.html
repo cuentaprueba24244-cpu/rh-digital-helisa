@@ -103,7 +103,7 @@
     },
     {
       titulo: 'Archivo de pedidos para Helisa (OP)', fase: 'Fase 1 · Propuesta 1', badge: 'ok', ambito: 'Oficina · Helisa lo importa para facturar',
-      que: 'Vista imprimible del archivo de pedidos: el TXT con «|» tal como lo importa Helisa (24 campos, sin encabezado, Windows-1252), la cuadrícula legible por pedido y el total esperado de cada FVE. Lucrecia elabora cada factura en Helisa llamando el pedido con F3.',
+      que: 'Vista imprimible del archivo de pedidos: el pedido OP con la estructura oficial del Excel de Julio (24 columnas con títulos, .xlsx), la cuadrícula legible por pedido y el total esperado de cada FVE. Lucrecia elabora cada factura en Helisa llamando el pedido con F3.',
       cuando: 'Al generar los pedidos de los cierres (por cliente desde el día 20 o con el corte). Con la modalidad 1B el pedido va por Conekta y el archivo queda de contingencia.',
       firma: 'No se firma: queda la huella SHA-256 del archivo, quién lo generó y cuándo se importó.',
       consecutivo: `Nombre COMSERVA_OP_aaaa-mm_nnn.txt; pedidos OP ${D.pedidos[0].numero.replace(/\D/g, '')} en adelante (números de prueba).`,

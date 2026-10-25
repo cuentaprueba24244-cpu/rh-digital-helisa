@@ -92,14 +92,14 @@
     const o = actual(); sel.value = o.id;
     const peds = o.tipo === 'archivo' ? P1.pedidosDeArchivo(o.a) : [o.ped];
     const fecha = o.tipo === 'archivo' ? o.a.generado_en.slice(0, 10) : o.ped.fecha;
-    const filas = P1.filasArchivoOP(o.a || { generado_en: o.ped.generado_en }, peds).map((f) => ({ ...f, campos: P1.camposLinea(f.ped, f.l, { fecha }) }));
+    const filas = P1.filasArchivoOP(o.a || { generado_en: o.ped.generado_en }, peds).map((f) => ({ ...f, campos: P1.camposLinea(f.ped, f.l, { fecha, numero: peds.indexOf(f.ped) + 1 }) }));
     const estado = o.tipo === 'archivo' ? o.a.estado : o.ped.estado;
     const hash = o.tipo === 'archivo' ? o.a.sha256 : D.hashFake('conekta|' + o.ped.numero + '|' + ((o.ped.envio || {}).en || ''));
     document.getElementById('state').textContent = `${P1.ESTADO_LABEL[estado] || estado} · ${peds.length} pedido${peds.length === 1 ? '' : 's'} · ${filas.length} líneas · huella ${hash.slice(0, 16)}`;
     document.getElementById('ir-bandeja').href = o.tipo === 'archivo' ? `../panel/planos.html#${o.a.id}` : '../panel/planos.html#conekta';
     const totales = peds.map((x) => { const v = P1.validarPedido(x); const cz = D.cierreCliente(x.cliente, x.periodo); return { x, v, cz, f: D.facturaDe(x.cliente, x.periodo) }; });
     const sum = totales.reduce((a, t) => a + t.v.subtotal, 0), sumT = totales.reduce((a, t) => a + (t.v.total_rh || 0), 0);
-    const txt = filas.map((f, i) => `<div class="l${f.primera ? ' first' : ''}"><span class="n">${i + 1}</span><span>${f.campos.map(celda).join('<span class="s">|</span>')}</span></div>`).join('');
+    const txt = `<div class="l"><span class="n">1</span><span>${P1.CAMPOS_OP.map((c) => esc(c.titulo)).join('<span class="s">;</span>')}</span></div>` + filas.map((f, i) => `<div class="l${f.primera ? ' first' : ''}"><span class="n">${i + 2}</span><span>${f.campos.map(celda).join('<span class="s">;</span>')}</span></div>`).join('');
     const grid = totales.map((t) => {
       const c = D.cliente(t.x.cliente); const ls = filas.filter((f) => f.ped === t.x); const k = ls[0].campos;
       return `<tr class="cab"><td colspan="9">${esc(t.x.numero)} · ${esc(c.nombre_comercial)} — campos 1 a 6: ${esc(k[0].v)} · ${esc(k[1].v)} · ${esc(k[2].v)} · NIT ${esc(k[3].v)} · código ${celda(k[4])} · vendedor ${esc(k[5].v)} · RH ${esc(t.x.rh || '')}</td></tr>`
@@ -109,7 +109,7 @@
     document.getElementById('sheet').innerHTML = `
       <div class="doc-head">
         <div class="doc-logo">COMSERVA<br>S.A.S.</div>
-        <div class="doc-title"><h1>ARCHIVO DE PEDIDOS PARA HELISA</h1><p>${esc(E.razon_social)} · NIT ${esc(E.nit)} · Propuesta 1 · plantilla «${esc(P1.plantilla_op.nombre)}» v1, borrador pendiente de la estructura oficial de Julio</p></div>
+        <div class="doc-title"><h1>ARCHIVO DE PEDIDOS PARA HELISA</h1><p>${esc(E.razon_social)} · NIT ${esc(E.nit)} · Propuesta 1 · plantilla «${esc(P1.plantilla_op.nombre)}» v${P1.plantilla_op.version}, estructura oficial (falta la importación de prueba)${o.tipo === 'archivo' && o.a.plantilla_usada ? ` · este archivo se generó con la v1 retirada` : ''}</p></div>
         <div class="doc-no">${o.tipo === 'archivo' ? 'Archivo' : 'Pedido'}<b>${esc(o.tipo === 'archivo' ? o.a.nombre : o.ped.numero)}</b><span class="estado ${ESTADO_CLS[estado] || ''}">${esc(P1.ESTADO_LABEL[estado] || estado)}</span></div>
       </div>
       <div class="meta-grid">
@@ -117,9 +117,9 @@
         <div><b>Generado</b><span>${esc(o.tipo === 'archivo' ? o.a.generado_por : o.ped.generado_por)} · ${fh(o.tipo === 'archivo' ? o.a.generado_en : o.ped.generado_en)}</span></div>
         <div><b>${o.tipo === 'archivo' ? 'Importado en Helisa' : 'Respuesta de Conekta'}</b><span>${o.tipo === 'archivo' ? (o.a.importado_en ? `${esc(o.a.importado_por)} · ${fh(o.a.importado_en)}` : (o.a.estado === 'rechazado' ? `Rechazado el ${fh(o.a.rechazado_en)}` : 'Pendiente')) : esc((o.ped.envio || {}).respuesta || '—')}</span></div>
         <div><b>Contenido</b><span>${peds.length} pedido${peds.length === 1 ? '' : 's'} · ${filas.length} líneas · subtotal ${fmtCOP(sum)}</span></div>
-        <div><b>Formato</b><span>TXT separado por «|», sin encabezado, 24 campos por línea</span></div>
-        <div><b>Codificación</b><span>Windows-1252 (ANSI) · fin de línea CRLF · sin tildes</span></div>
-        <div><b>Fecha y números</b><span>dd/mm/aaaa · decimal «.» (por confirmar) · sin separador de miles</span></div>
+        <div><b>Formato</b><span>.xlsx con fila de títulos, 24 columnas (hoja «Plano Pedidos» del Excel de Julio, 23 oct)</span></div>
+        <div><b>Celdas</b><span>fecha como celda de fecha · centro de costo 0101 como texto · NIT sin DV</span></div>
+        <div><b>Números</b><span>decimal «.» · sin separador de miles · total y descuentos vacíos (Helisa multiplica)</span></div>
         <div><b>Huella SHA-256</b><span class="mono">${esc(hash.slice(0, 32))}</span></div>
       </div>
       ${o.tipo === 'archivo' && o.a.estado === 'rechazado' ? `<p style="font-size:8.5pt;color:#b3261e;margin:4px 0"><b>Lista de errores de Helisa:</b> ${esc(o.a.errores)}</p>` : ''}
@@ -130,17 +130,17 @@
         <tr class="total"><td colspan="6">Total del ${o.tipo === 'archivo' ? 'archivo' : 'envío'}</td><td class="num">${fmtCOP(sum)}</td><td class="num">${fmtCOP(sumT - sum)}</td><td class="num">${fmtCOP(sumT)}</td><td></td></tr>
       </tbody></table>
 
-      <h2>2. Texto del archivo <small>tal como lo lee el asistente de «Importación de pedidos» (delimitado, «Otro símbolo» = «|», origen ANSI)${o.tipo === 'conekta' ? '; en la modalidad 1B es el archivo de contingencia' : ''}</small></h2>
+      <h2>2. Contenido del archivo <small>fila de títulos y 24 columnas; en esta vista las celdas se separan con «;»${o.tipo === 'conekta' ? '; en la modalidad 1B es el archivo de contingencia' : ''}</small></h2>
       <div class="txt">${txt}</div>
-      <div class="legend"><span><mark>&lt;COD_…&gt;</mark> código de concepto por confirmar con Julio</span><span><span class="t">1001</span> código de cliente de prueba (sale de la cartilla de clientes de Helisa)</span><span>«OP» es el tipo visto en otra empresa: en la Helisa de Comserva el documento Pedido no está habilitado</span></div>
+      <div class="legend"><span><mark>&lt;COD_…&gt;</mark> código de concepto por confirmar con Julio</span><span><span class="t">1001</span> código de cliente de prueba (sale de la cartilla de clientes de Helisa)</span><span>«OP», códigos 2/3, vendedor 828002730 y centro 0101: Excel de Julio (23 oct). Falta habilitar el documento Pedido en la Helisa de Comserva</span></div>
 
-      <h2>3. Cuadrícula legible <small>solo los campos con datos; van vacíos los campos 9, 10, 11, 13, 17 a 21 y 24</small></h2>
+      <h2>3. Cuadrícula legible <small>solo las columnas con datos; van vacías las columnas 5 (si es el mismo NIT, por confirmar), 9 a 11, 13, 17 a 21, 23 y 24</small></h2>
       <table class="pgrid"><thead><tr><th>7 · Tipo concepto</th><th>8 · Código concepto</th><th>12 · Artículo / servicio</th><th>14 · Lista</th><th class="num">15 · Cantidad</th><th class="num">16 · Valor unitario</th><th class="num">Valor de la línea<small>informativo</small></th><th>22 · C. costo</th><th>23 · Negocio</th></tr></thead><tbody>${grid}</tbody></table>
 
       <ul class="notas">
         <li>El pedido no lleva cuentas ni IVA: al facturar, Lucrecia abre la factura del cliente en Helisa, llama el pedido con F3, elige contado o crédito y Helisa contabiliza (1305) y envía la FVE a la DIAN.</li>
         <li>Prueba de aceptación: el pedido de Cofema de septiembre (OP 101) debe dar una FVE con gravado $1.886.500, IVA $358.435 y total $2.244.935, igual a la FVE 25756.</li>
-        <li>Pendientes de la estructura oficial: ${pend.length ? pend.map((x) => '&lt;' + x + '&gt;').join(', ') + ', ' : ''}tipo y número del pedido, obligatoriedad del código del cliente, símbolo decimal y si el valor unitario reemplaza el de la lista de precio.</li>
+        <li>Estructura oficial recibida el 23 de octubre. Siguen por confirmar: ${pend.length ? pend.map((x) => '&lt;' + x + '&gt;').join(', ') + ', ' : ''}la lista de precio de cada cliente, si el código del cliente va vacío cuando es el mismo NIT y el formato que acepta el asistente (.xlsx, .xls o .txt).</li>
         <li>Un cliente sin código en Helisa no se exporta. Si el mismo NIT está creado varias veces (sedes), cada sede facturable lleva su código adicional.</li>
       </ul>
       <div class="sello">${D.qrSVG('pedido|' + hash, 54)}<div>Huella del ${o.tipo === 'archivo' ? 'archivo' : 'envío'}: <b>${esc(hash)}</b><br>Documento de trabajo generado por RH digital · datos de prueba salvo Cofema de septiembre de 2026 · ${esc(D.fmtFecha(D.HOY))}</div></div>

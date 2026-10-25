@@ -97,8 +97,8 @@
           <li>Solo efectivo. Transferencias y consignaciones se contabilizan en Helisa; aquí solo se marcan para el saldo de referencia (la caja formal es el complemento C2).</li>
           <li>El consecutivo sale del rango de recibos reservado a cada operario, con o sin señal.</li>
           <li>Un recibo emitido no se edita: se anula con motivo y se emite otro. Un recibo ya importado en Helisa no se anula aquí.</li>
-          <li>El cruce lo hace Helisa al importar el movimiento contable del recibo (1305 contra caja, libros F y N, DOC FUENTE = FVE) por «Importación de movimiento contable» al módulo de cartera; el sistema termina en el archivo o en el envío por Conekta.</li>
-          <li>Por confirmar con Julio: tipo de recibo (RC1 o RC2), cuentas de los dos libros y columna exacta de la factura que se cruza.</li>
+          <li>El cruce lo hace Helisa al importar el recibo RC (Excel de Julio, 23 oct: 4 filas, caja 11050501/111050501 contra cartera 13050501/112050501; la fila de cartera F lleva la factura que se cruza) por «Importación de movimiento contable» al módulo de cartera; el sistema termina en el archivo o en el envío por Conekta.</li>
+          <li>Por confirmar con Julio: si el tipo RC equivale a RC1 o RC2, las cuentas del libro N (contador), el prefijo del cruce (FEV o FVE) y la cuenta de bancos para transferencias.</li>
         </ul>
       </div>
     </div>
@@ -215,8 +215,8 @@
     if (r.estado === 'anulado' || !(r.aplicaciones || []).length) return '';
     const filas = D.p1.movimientoRecibo(r); const cu = { F: 0, N: 0 }; filas.forEach((f) => { if (f.naturaleza === 'D') cu[f.clase] += f.valor; });
     return `<section><h3>Movimiento contable que va a Helisa</h3>
-      <div class="table-wrap"><table class="tbl" style="font-size:12px"><thead><tr><th>Libro</th><th>Cuenta</th><th>D/C</th><th class="num">Valor</th><th>Cruza</th></tr></thead><tbody>${filas.map((f) => `<tr><td><span class="badge ${f.clase === 'F' ? 'ok' : 'info'} plain">${f.clase}</span></td><td class="mono" style="${f.cuenta_m === 'falta' ? 'color:var(--warn)' : ''}">${esc(f.cuenta)}</td><td class="mono">${f.naturaleza}</td><td class="num">${D.fmtCOP(f.valor)}</td><td class="mono">${esc(f.cruce || '')}</td></tr>`).join('')}</tbody></table></div>
-      <div class="muted" style="font-size:12px;margin-top:6px">Tipo ${esc(D.p1.plantilla_rc.tipo_documento)} (RC1 o RC2 por confirmar) · cuentas de prueba o por confirmar con Julio · cada libro cuadra: ${D.fmtCOP(cu.F)} en F y ${D.fmtCOP(cu.N)} en N.</div></section>`;
+      <div class="table-wrap"><table class="tbl" style="font-size:12px"><thead><tr><th>Libro</th><th>Cuenta</th><th>D/C</th><th class="num">Valor</th><th>Cruza</th></tr></thead><tbody>${filas.map((f) => `<tr><td><span class="badge ${f.clase === 'F' ? 'ok' : 'info'} plain">${f.clase}</span></td><td class="mono" style="${f.cuenta_m === 'falta' ? 'color:var(--warn)' : ''}">${esc(f.cuenta)}</td><td class="mono">${f.naturaleza}</td><td class="num">${D.fmtCOP(f.valor)}</td><td class="mono">${f.cruce ? esc(`${f.cruce.tipo} ${f.cruce.numero} · cuota ${f.cruce.cuota}`) : ''}</td></tr>`).join('')}</tbody></table></div>
+      <div class="muted" style="font-size:12px;margin-top:6px">Tipo ${esc(D.p1.plantilla_rc.tipo_documento)} (archivo de Julio) · cuentas del Excel de Julio; las del libro N, por confirmar con el contador · cada libro cuadra: ${D.fmtCOP(cu.F)} en F y ${D.fmtCOP(cu.N)} en N.</div></section>`;
   }
 
   // ---------- detalle ----------

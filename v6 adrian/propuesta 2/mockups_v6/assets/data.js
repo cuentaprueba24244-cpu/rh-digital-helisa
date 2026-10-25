@@ -141,33 +141,57 @@ window.DATA = (function () {
 
   // ---------------------------------------------------------------------
   // v6 · Equivalencias con Helisa (tabla nueva común a las dos propuestas)
-  // Valores vistos en la Helisa de Comserva el 21 de octubre: lista de precio 2 «BASICA 30000»,
-  // centro de costo 0101 FLORENCIA, negocio 1 COMSERVA, vendedor 828002730 COMSERVA.
-  // Los CÓDIGOS de concepto no se vieron: van «por confirmar» hasta que Julio entregue la cartilla.
+  // Valores vistos en la Helisa de Comserva el 21 de octubre y CONFIRMADOS con el Excel que envió Julio el 23 de octubre
+  // («Plano pedido.xlsx», hojas «Plano Pedidos», «Servicios» y «Plano Recibos»): vendedor 828002730, centro de costo
+  // 0101 (texto), negocio VACÍO, siete listas de precio y la cartilla de servicios (códigos 2, 3, 4 a 21 y 54).
+  // Siguen por confirmar: la lista de cada cliente, el código del cliente (vacío si es el mismo NIT) y el uso de los códigos por categoría.
   // ---------------------------------------------------------------------
+  // Listas de precio de Helisa (hoja «Servicios», Excel de Julio 23 oct). Mismos códigos de servicio en las 7 listas.
+  // En las listas especiales (3 a 7) el precio de la cartilla es 0: el valor unitario va en el pedido.
+  const LISTAS_PRECIO_HELISA = [
+    { id: '1', nombre: 'BASICA 25000', basico: 25000, kg: 3850, especial: false }, { id: '2', nombre: 'BASICA 30000', basico: 30000, kg: 4000, especial: false },
+    { id: '3', nombre: 'ESPECIAL 80000', basico: 0, kg: 0, especial: true }, { id: '4', nombre: 'ESPECIAL 42000', basico: 0, kg: 0, especial: true }, { id: '5', nombre: 'ESPECIAL 110000', basico: 0, kg: 0, especial: true },
+    { id: '6', nombre: 'TARIFA ESPECIAL 2', basico: 0, kg: 0, especial: true }, { id: '7', nombre: 'TARIFA ESPECIAL 3', basico: 0, kg: 0, especial: true },
+  ];
+  const listaPrecio = (id) => LISTAS_PRECIO_HELISA.find((l) => l.id === String(id)) || null;
+  // Cartilla de servicios de Helisa que usa el servicio de residuos (de 57 códigos). iva: 19 o null (sin IVA en la cartilla).
+  const CARTILLA_HELISA = [
+    [2, 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', 19, 'basico'], [3, 'KILOGRAMOS ADICIONALES', 19, 'kg_adicionales'],
+    [4, 'ANATOMOPATOLÓGICOS (KILOGRAMOS)', 19, 'categoria'], [5, 'BIOSANITARIOS (KILOGRAMOS)', 19, 'categoria'], [6, 'CORTOPUNZANTES (KILOGRAMOS)', 19, 'categoria'],
+    [7, 'QUIMICOS (GALON)', null, 'categoria'], [8, 'TÓXICOS (KILOGRAMOS)', 19, 'categoria'], [9, 'MEDICAMENTOS VENCIDOS (KILOGRAMOS)', 19, 'categoria'], [10, 'INDUSTRIALES (KILOGRAMOS)', null, 'categoria'],
+    [11, 'ANIMALES (KILOGRAMOS)', 19, 'categoria'], [12, 'BIOLÓGICOS (KILOGRAMOS)', 19, 'categoria'], [13, 'VIDRIO RESULTANTE DE LABORATORIO (KILOGRAMOS)', 19, 'categoria'],
+    [16, 'RESIDUOS APARATOS ELCTRÓNICOS Y ELECTRÓNICOS RAEES (KILOS)', 19, 'categoria'], [17, 'RESIDUOS DE PILAS Y BATERIAS (KILOGRAMOS)', 19, 'categoria'], [20, 'LLANTAS (KILOGRAMOS)', 19, 'categoria'],
+    [54, 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS EXENTO', null, 'exento'],
+  ].map(([codigo, nombre, iva, uso]) => ({ codigo: String(codigo), nombre, iva, uso }));
+  const FUENTE_HELISA = 'Excel de Julio, 23 oct';
   const helisa = {
     version: '4.12.2.0 (TSplus, helisacloud.com)',
-    lista_precio: { codigo: '2', nombre: 'BASICA 30000', estado: 'visto' },
-    centro_costo: { codigo: '0101', nombre: 'FLORENCIA', estado: 'visto' },
-    negocio: { codigo: '1', nombre: 'COMSERVA', estado: 'visto' },
-    vendedor: { identidad: '828002730', nombre: 'COMSERVA', estado: 'visto' },
-    bodega: { codigo: '', nombre: 'Múltiples bodegas', estado: 'por confirmar' },
-    tipo_pedido: { codigo: '', nombre: 'Pedido (no habilitado aún en la Helisa de Comserva)', estado: 'por confirmar' },
-    tipo_recibo: { codigo: 'RC1 o RC2', nombre: 'Recibo de caja', estado: 'por confirmar' },
-    tipo_factura: { codigo: 'FVE', nombre: 'Factura de venta electrónica', estado: 'visto' },
+    fuente: FUENTE_HELISA,
+    lista_precio: { codigo: '', nombre: 'Por cliente (listas 1 a 7)', estado: 'por confirmar' },
+    listas: LISTAS_PRECIO_HELISA,
+    centro_costo: { codigo: '0101', nombre: 'FLORENCIA (texto, también en la línea de comentario)', estado: 'oficial' },
+    negocio: { codigo: '', nombre: 'Vacío en el Excel de Julio', estado: 'oficial' },
+    vendedor: { identidad: '828002730', nombre: 'COMSERVA (NIT sin DV)', estado: 'oficial' },
+    bodega: { codigo: '', nombre: 'Vacío en el Excel de Julio', estado: 'oficial' },
+    tipo_pedido: { codigo: 'OP', nombre: 'Pedido (habilitarlo en la Helisa de Comserva: Fase 0)', estado: 'oficial' },
+    tipo_recibo: { codigo: 'RC', nombre: 'Recibo de caja (el archivo de Julio dice RC; confirmar si equivale a RC1 o RC2)', estado: 'oficial' },
+    tipo_factura: { codigo: 'FVE', nombre: 'Factura de venta electrónica (en el cruce, el ejemplo de Julio dice FEV: por confirmar)', estado: 'visto' },
   };
-  // Componente de la tarifa → concepto de Helisa. tipo_concepto: 2 = servicio, 3 = comentario (visto en el pedido de otra empresa).
+  // Componente de la tarifa → concepto de Helisa. tipo_concepto: 2 = servicio, 3 = comentario (Excel de Julio, 23 oct).
+  // La lista de precio de la línea es la del CLIENTE (c.helisa.lista_precio).
   const equivalencias_helisa = [
-    { componente: 'basico', etiqueta: 'Servicio básico mensual', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', lista_precio: '2', estado: 'por confirmar', cantidad: '1', unitario: 'Básico de la tarifa' },
-    { componente: 'kg_adicionales', etiqueta: 'Kilos adicionales', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'KILOGRAMOS ADICIONALES', lista_precio: '2', estado: 'por confirmar', cantidad: 'Kilos adicionales', unitario: 'Precio del kilo adicional' },
-    { componente: 'kg_todos', etiqueta: 'Solo por kilo', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', lista_precio: '2', estado: 'por confirmar', cantidad: 'Kilos del periodo', unitario: 'Precio del kilo' },
-    { componente: 'fijo', etiqueta: 'Cobro fijo mensual', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'Concepto del cobro fijo (por confirmar)', lista_precio: '2', estado: 'por confirmar', cantidad: '1', unitario: 'Valor fijo' },
-    { componente: 'comentario', etiqueta: 'Línea de comentario', tipo_concepto: 3, codigo_concepto: '', nombre_concepto: 'SERVICIO ESPECIAL DE ASEO PRESTADO MES DE {MES} {AÑO}', lista_precio: '', estado: 'visto en la FVE 25997', cantidad: '', unitario: '' },
-    // Alternativa por confirmar con Julio: un concepto por categoría en kilos (se vieron en el catálogo de conceptos)
-    { categoria: 'BIO', etiqueta: 'Biológicos', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'BIOLÓGICOS (KILOGRAMOS)', lista_precio: '2', estado: 'por confirmar (alternativa)' },
-    { categoria: 'ANATO', etiqueta: 'Anatomopatológicos', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'ANATOMOPATOLÓGICOS (KILOGRAMOS)', lista_precio: '2', estado: 'por confirmar (alternativa)' },
-    { categoria: 'ANIMAL', etiqueta: 'Animales', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'ANIMALES (KILOGRAMOS)', lista_precio: '2', estado: 'por confirmar (alternativa)' },
-    { categoria: 'CORTO', etiqueta: 'Cortopunzantes', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'Por confirmar (¿BIOSANITARIOS (KILOGRAMOS)?)', lista_precio: '2', estado: 'por confirmar (alternativa)' },
+    { componente: 'basico', etiqueta: 'Servicio básico mensual', tipo_concepto: 2, codigo_concepto: '2', nombre_concepto: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS', lista_precio: 'del cliente', estado: 'oficial', cantidad: '1', unitario: 'Básico de la tarifa' },
+    { componente: 'kg_adicionales', etiqueta: 'Kilos adicionales', tipo_concepto: 2, codigo_concepto: '3', nombre_concepto: 'KILOGRAMOS ADICIONALES', lista_precio: 'del cliente', estado: 'oficial', cantidad: 'Kilos adicionales', unitario: 'Precio del kilo adicional' },
+    { componente: 'kg_todos', etiqueta: 'Solo por kilo', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'KILOGRAMOS ADICIONALES o el concepto de la categoría', lista_precio: 'del cliente', estado: 'por confirmar', nota: '¿Código 3 o el de la categoría (4 a 21)? Se confirma con Julio.', cantidad: 'Kilos del periodo', unitario: 'Precio del kilo' },
+    { componente: 'fijo', etiqueta: 'Cobro fijo mensual', tipo_concepto: 2, codigo_concepto: '', nombre_concepto: 'Concepto del cobro fijo (¿código 2?)', lista_precio: 'del cliente', estado: 'por confirmar', cantidad: '1', unitario: 'Valor fijo' },
+    { componente: 'exento', etiqueta: 'Servicio básico exento de IVA', tipo_concepto: 2, codigo_concepto: '54', nombre_concepto: 'RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS EXENTO', lista_precio: 'del cliente', estado: 'oficial', nota: 'Para los clientes exentos; ningún cliente del mockup lo usa.', cantidad: '1', unitario: 'Básico de la tarifa (sin IVA)' },
+    { componente: 'comentario', etiqueta: 'Línea de comentario', tipo_concepto: 3, codigo_concepto: '', nombre_concepto: 'SERVICIO ESPECIAL DE ASEO PRESTADO MES DE {MES} {AÑO}', lista_precio: '', estado: 'oficial', cantidad: '', unitario: '' },
+    // Alternativa por confirmar con Julio: un concepto por categoría en kilos (códigos 4 a 21 de la cartilla)
+    { categoria: 'ANATO', etiqueta: 'Anatomopatológicos', tipo_concepto: 2, codigo_concepto: '4', nombre_concepto: 'ANATOMOPATOLÓGICOS (KILOGRAMOS)', lista_precio: 'del cliente', estado: 'por confirmar (alternativa)' },
+    { categoria: 'BIOSAN', etiqueta: 'Biosanitarios', tipo_concepto: 2, codigo_concepto: '5', nombre_concepto: 'BIOSANITARIOS (KILOGRAMOS)', lista_precio: 'del cliente', estado: 'por confirmar (alternativa)' },
+    { categoria: 'CORTO', etiqueta: 'Cortopunzantes', tipo_concepto: 2, codigo_concepto: '6', nombre_concepto: 'CORTOPUNZANTES (KILOGRAMOS)', lista_precio: 'del cliente', estado: 'por confirmar (alternativa)' },
+    { categoria: 'ANIMAL', etiqueta: 'Animales', tipo_concepto: 2, codigo_concepto: '11', nombre_concepto: 'ANIMALES (KILOGRAMOS)', lista_precio: 'del cliente', estado: 'por confirmar (alternativa)' },
+    { categoria: 'BIO', etiqueta: 'Biológicos', tipo_concepto: 2, codigo_concepto: '12', nombre_concepto: 'BIOLÓGICOS (KILOGRAMOS)', lista_precio: 'del cliente', estado: 'por confirmar (alternativa)' },
   ];
   const equivalencia = (componente) => equivalencias_helisa.find((e) => e.componente === componente) || null;
 
@@ -175,12 +199,20 @@ window.DATA = (function () {
   // y campos fiscales OPCIONALES (obligatorios solo si se factura electrónicamente desde el sistema, propuesta 2).
   // Los códigos son DE PRUEBA: los reales salen de la cartilla de clientes que exporta Helisa (por confirmar).
   const DANE = { Florencia: '18001', Morelia: '18479' };
+  // Lista de precio del cliente: 1 o 2 si su tarifa coincide con una lista básica; si no, una lista especial (3, supuesto)
+  // con el valor unitario en el pedido. Cofema (74.790 y 4.600 el kilo) no coincide: va con lista especial. Julio confirma cada una.
+  function listaCliente(c) {
+    const t = tarifaVigente(c) || (c.tarifas || [])[0] || {};
+    const l = (!t.esquema || t.esquema === 'basico_kg') ? LISTAS_PRECIO_HELISA.find((x) => !x.especial && x.basico === t.basico && x.kg === t.precio_kg) : null;
+    return l ? { id: l.id, estado: 'por confirmar' } : { id: '3', estado: 'por confirmar' };
+  }
   clientes.forEach((c, i) => {
     const valido = c.estado !== 'pendiente_validar';
     c.helisa = {
       codigo_cliente: valido ? String(1001 + i) : '',
       codigo_estado: valido ? 'prueba' : 'falta', // prueba | confirmado | falta
-      lista_precio: valido ? helisa.lista_precio.codigo : '',
+      lista_precio: valido ? listaCliente(c).id : '',
+      lista_estado: valido ? listaCliente(c).estado : 'falta', // 'por confirmar' siempre: Julio confirma la lista de cada cliente
       factura_por_sede: false,
       sedes: [{ sede: c.sede, codigo_cliente: valido ? String(1001 + i) : '' }],
     };
@@ -822,6 +854,9 @@ window.DATA = (function () {
       'cliente.nit': pl.nit_con_dv ? c.nit + c.dv : c.nit, 'cliente.dv': c.dv, 'cliente.razon_social_helisa': c.razon_social, 'cliente.direccion': c.direccion, 'cliente.telefono': c.telefono, 'cliente.ciudad': c.ciudad, 'cliente.email': c.email,
       'recibo.numero': String(r.consecutivo), 'recibo.tipo': TIPO_RECIBO_LABEL[r.tipo] || r.tipo || '', 'recibo.valor': String(r.valor), 'recibo.medio': 'Efectivo',
       'aplicacion.factura_numero': fa ? fa.numero.replace(/\s/g, '') : '', 'aplicacion.valor': a ? String(a.valor) : '',
+      // Recibo RC oficial (Excel de Julio, 23 oct): número a 8 dígitos y factura que se cruza en columnas separadas
+      'recibo.numero8': String(r.consecutivo).replace(/\D/g, '').padStart(8, '0'),
+      'aplicacion.factura_prefijo': fa ? (fa.prefijo || (fa.numero.match(/^[A-Z]+/) || [''])[0]) : '', 'aplicacion.factura_consecutivo': fa ? String(fa.consecutivo || fa.numero.replace(/^\D+/, '')).trim() : '',
     };
   }
   const plantillaTexto = (t, ctx) => String(t || '').replace(/\{([a-z_.]+)\}/g, (m, k) => (ctx[k] ?? ''));
@@ -835,7 +870,10 @@ window.DATA = (function () {
     lineasValor.forEach(({ l, valor, ctx }) => {
       if (l.omitir_cero && !valor) return;
       orden++;
-      const lc = { ...ctx, 'linea.cuenta': l.cuenta, 'linea.concepto': plantillaTexto(l.concepto, ctx), 'linea.valor': fmtValorPlano(valor, pl), 'linea.naturaleza': l.naturaleza, 'linea.base': l.base ? fmtValorPlano(ctx['rh.subtotal'] || 0, pl) : '', 'linea.clase': l.clase, 'linea.orden': String(orden) };
+      const lc = { ...ctx, 'linea.cuenta': l.cuenta, 'linea.concepto': plantillaTexto(l.concepto, ctx), 'linea.valor': fmtValorPlano(valor, pl), 'linea.naturaleza': l.naturaleza, 'linea.base': l.base ? fmtValorPlano(ctx['rh.subtotal'] || 0, pl) : '', 'linea.clase': l.clase, 'linea.orden': String(orden),
+        // RC oficial: IND. A AFECTAR por línea; cobrador y cruce solo en la línea que los lleva (cartera F)
+        'linea.ind_afectar': l.ind_afectar || '', 'linea.cobrador': l.cobrador ? (pl.cobrador || '') : '',
+        'cruce.tipo': l.cruce ? (ctx['aplicacion.factura_prefijo'] || '') : '', 'cruce.numero': l.cruce ? (ctx['aplicacion.factura_consecutivo'] || '') : '', 'cruce.cuota': l.cruce ? '1' : '' };
       const fila = {};
       pl.columnas.forEach((col) => { let v = ''; if (col.origen === 'campo') v = lc[col.campo] ?? ''; else if (col.origen === 'constante') v = col.constante; fila[col.titulo] = textoPlano(v, pl); });
       filas.push({ fila, linea: l, valor, naturaleza: l.naturaleza });
@@ -911,8 +949,25 @@ window.DATA = (function () {
     const proveedores = [
       { id: 'plemsi', nombre: 'Plemsi', tipo: 'Proveedor tecnológico', nota: 'API para emitir y consultar; planes anuales con precio público. Figura en el listado de la DIAN como ECA S.A.S. (por confirmar).' },
       { id: 'dataico', nombre: 'Dataico', tipo: 'Proveedor tecnológico', nota: 'Figura en el listado de la DIAN; API con ambiente de pruebas gratuito; precio por cotización.' },
+      { id: 'factus', nombre: 'Factus', tipo: 'Proveedor tecnológico · probado en el sandbox el 23 oct', nota: 'Único proveedor probado: factura y nota crédito validadas en su ambiente de pruebas (sandbox compartido, no llega a la DIAN real). Precio por escrito. Falta la constancia de habilitación ante la DIAN (por confirmar).' },
       { id: 'por_elegir', nombre: 'Por elegir', tipo: 'Decisión de la Fase 0', nota: 'Se decide con las cotizaciones. Alternativa: MATIAS API (modalidad software propio: Comserva quedaría como titular directa ante la DIAN).' },
     ];
+    // Prueba real en el sandbox de Factus (pruebas/sandbox-factus, 23 oct 2026). Sin credenciales ni datos de clientes: solo lo que sirve para decidir.
+    const factus_sandbox = {
+      fecha: '23 oct 2026', ambiente: 'Sandbox compartido de Factus (API v2): los documentos no llegan a la DIAN real', dian_verificado: false,
+      prefijo_prueba: 'SETP', rango_prueba: 'Rango de prueba del sandbox (990000000 a 995000000)', rango_nc: 'CRTE', nota_rango: 'Prefijos del ambiente de pruebas de Factus, compartidos entre aliados: NO son los de Comserva. El prefijo RHD de la demostración y el de producción se definen con la habilitación (por confirmar).',
+      pasos: [
+        ['Token OAuth2', 'Respondió 200; dura 1 hora'],
+        ['Rangos de numeración', 'Factura con prefijo SETP y nota crédito con CRTE'],
+        ['Emitir la factura de Cofema de septiembre', 'Validada (201) en ≈ 2,3 s, con CUFE y QR de la DIAN de habilitación; total igual al RH'],
+        ['Consultar y descargar el PDF', 'Respondió 200'],
+        ['Reenviar con la misma referencia', 'Devolvió la misma factura (no duplica)'],
+        ['Nota crédito de anulación', 'Validada (201) con CUDE, prefijo CRTE'],
+        ['Factura sin identificación del cliente', 'Rechazada (422) con el campo señalado'],
+      ],
+      aprendido: 'Unidad KGM para los kilos · User-Agent propio (Cloudflare) · sin webhooks: consulta periódica · 80 peticiones por minuto · revisar la referencia de la factura en la nota crédito (aviso CBF02).',
+      planes: [[150, 169000], [1600, 220000], [5000, 290000]], nota_planes: 'Plan anual por conexión API y por NIT (precio recibido de Factus; incluye notas). Con ≥ 60 facturas al mes de residuos corresponde el de 1.600; con ≈ 240 en total, el de 5.000. Por confirmar el volumen y si el certificado va incluido.',
+    };
     const config = { proveedor: 'por_elegir', ambiente: 'pruebas', simulado: true, alerta_pct: 90, alerta_dias: 60, envia_correo: 'Proveedor tecnológico (si no lo hace, el sistema con el ZIP que exige la DIAN)', reintento_min: 30, entrega_maxima_mb: 2 };
     const emisor = { nit: empresa.nit, razon_social: empresa.razon_social, nombre_comercial: empresa.nombre_corto, direccion: empresa.direccion, municipio: 'Florencia · 18001', departamento: 'Caquetá · 18', ciiu: '3822', tributo: '01 · IVA (responsable)', responsabilidades: 'R-99-PN', correo_recepcion: 'Por confirmar', correo_contacto: empresa.email, telefonos: empresa.telefonos, fuente: 'Actividad 3822, responsable de IVA y R-99-PN como aparecen en la FVE 25756; confirmar con el RUT.' };
     // Numeración: la de PRUEBA es la única activa en el mockup. Alertas cuando quede el 10 % del rango (90 % usado) o falten 60 días para el vencimiento (parámetros, FEV-02).
@@ -1103,7 +1158,7 @@ window.DATA = (function () {
       docs.forEach((d) => { const r = movimientoDocumento(d, pl); out.filas.push(...r.filas); out.documentos++; out.debitos = r2(out.debitos + r.deb); out.creditos = r2(out.creditos + r.cre); if (Math.abs(r.deb - r.cre) > 0.005) out.errores.push(`${d.numero}: débitos ≠ créditos`); });
       return out;
     }
-    return { ESTADO, CLASE, EVENTOS, CONCEPTOS_NC, CONCEPTOS_ND, TITULO_LABEL, proveedores, config, emisor, resoluciones, conceptos, cuentas, cuenta, lotes, notas: notas_fe, FESTIVOS,
+    return { ESTADO, CLASE, EVENTOS, CONCEPTOS_NC, CONCEPTOS_ND, TITULO_LABEL, proveedores, factus_sandbox, config, emisor, resoluciones, conceptos, cuentas, cuenta, lotes, notas: notas_fe, FESTIVOS,
       lineas, totales, notasDocumento, prefactura, prefacturas, radian, numeracion, sumarHabiles, esHabil, diasHabilesEntre, qrUrl, masMin, movimientoDocumento, generarMovimiento, cufe: cufePrueba,
       emitidas: (periodoId) => facturas.filter((f) => f.prefijo === 'RHD' && (!periodoId || f.periodo === periodoId)).sort((a, b) => a.consecutivo - b.consecutivo),
       notasDe: (facturaId) => notas_fe.filter((n) => n.factura === facturaId) };
@@ -1117,18 +1172,19 @@ window.DATA = (function () {
     { id: 'pl-mcfv-2', tipo: 'MCFV', version: 2, nombre: 'Movimiento contable de facturas y notas · libros F y N (22 columnas de la v5)', estado: 'aprobada', vigente_desde: '2026-09-21', aprobada_por: 'Diego', aprobada_en: '2026-09-21 16:30', creada_por: 'Equipo RH digital', creada_en: '2026-09-18', nota_cambio: 'Plantilla FV de la v5 adaptada: tipo de documento contable FV (por confirmar con Julio), DOC FUENTE = prefijo y número de la factura electrónica, una línea de ingreso por concepto, IVA con base y cartera 1305, repetidas en el libro N. Cuentas de EJEMPLO: las reales salen de la plantilla «servicio → cuenta» que entregará Julio.',
       formato: 'csv', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 2, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'FV', centro_costo: '0101', prefijo_doc_fuente: '', nit_con_dv: false, agrupacion: 'lote', prefijo_archivo: 'COMSERVA', valida_cuadre: true, valida_tercero: true, valida_fve: false,
       columnas: colsHelisa(), lineas: [] },
-    { id: 'pl-rc-2', tipo: 'RC', version: 2, nombre: 'Recibo de caja · libros F y N', estado: 'aprobada', vigente_desde: '2026-10-21', aprobada_por: 'Diego', aprobada_en: '2026-10-21 17:30', creada_por: 'Equipo RH digital', creada_en: '2026-10-21', nota_cambio: 'Agrega las líneas del libro N (la cuenta de caja del libro N queda POR CONFIRMAR con Julio). DOC FUENTE = prefijo y número de la factura que se cruza (RHD…). Tipo de recibo RC1 o RC2: por confirmar.',
-      formato: 'csv', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 2, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'RC', centro_costo: '0101', prefijo_doc_fuente: '', nit_con_dv: false, agrupacion: 'periodo', recibos_incluidos: 'entregados', prefijo_archivo: 'COMSERVA', valida_cuadre: true, valida_tercero: true, valida_fve: true,
-      columnas: colsHelisa(),
+    // Recibo RC OFICIAL: hoja «Plano Recibos» del Excel de Julio (23 oct). 17 columnas con títulos exactos (con sus erratas) y 4 filas por recibo.
+    { id: 'pl-rc-2', tipo: 'RC', version: 2, nombre: 'Recibo RC oficial · Excel de Julio, 23 oct (17 columnas, 4 filas)', estado: 'aprobada', vigente_desde: '2026-10-21', aprobada_por: 'Diego', aprobada_en: '2026-10-21 17:30', creada_por: 'Equipo RH digital', creada_en: '2026-10-23', nota_cambio: 'Estructura oficial de la hoja «Plano Recibos» que envió Julio el 23 de octubre: TIPO RC, número del recibo a 8 dígitos, CENTRO vacío y 4 filas por recibo (caja F 11050501 y N 111050501 al débito; cartera F 13050501 y N 112050501 al crédito). La fila de cartera F lleva el cobrador (828002730) y el cruce: tipo (prefijo RHD), número y cuota de la factura electrónica. Reemplaza la v2 de 22 columnas (DOC FUENTE). Por confirmar: cuentas del libro N con el contador, que la cartera de Helisa acepte el prefijo RHD en el cruce, la cuenta de bancos para transferencias y si RC equivale a RC1 o RC2. Falta la importación de prueba.',
+      formato: 'xlsx', separador: ';', codificacion: 'windows-1252', con_titulos: true, formato_fecha: 'dd/MM/yyyy', decimales: 0, separador_decimal: ',', mayusculas: true, quitar_tildes: true, tipo_documento: 'RC', centro_costo: '', prefijo_doc_fuente: '', nit_con_dv: false, agrupacion: 'periodo', recibos_incluidos: 'entregados', prefijo_archivo: 'COMSERVA', valida_cuadre: true, valida_tercero: true, valida_fve: true, cobrador: '828002730',
+      columnas: [['TIPO', 'campo', 'plantilla.tipo_documento'], ['FECHA', 'campo', 'documento.fecha'], ['NUMERO DE DOC.', 'campo', 'recibo.numero8'], ['CUENTA', 'campo', 'linea.cuenta'], ['CONCEPTO', 'campo', 'linea.concepto'], ['CENTRO', 'vacio', ''], ['VALOR', 'campo', 'linea.valor'], ['NATURALEZA', 'campo', 'linea.naturaleza'], ['INDENTIDAD TERCERO', 'campo', 'cliente.nit'], ['CUENTA BANCARIA', 'vacio', ''], ['ID VENDEDDOR / COBRADOR', 'campo', 'linea.cobrador'], ['FECHA CHEQUE', 'vacio', ''], ['CLASE MOV.', 'campo', 'linea.clase'], ['IND. A AFECTAR', 'campo', 'linea.ind_afectar'], ['TIPO DE DOCUMENTO QUE AFECTA', 'campo', 'cruce.tipo'], ['NUMERO DE DOCUMENTO QUE AFECTA', 'campo', 'cruce.numero'], ['CUOTA QUE AFECTA', 'campo', 'cruce.cuota']].map(([titulo, origen, campo], i) => ({ orden: i + 1, titulo, origen, campo, constante: '' })),
       lineas: [
-        { orden: 1, tipo: 'caja', clase: 'F', cuenta: '110505', naturaleza: 'D', concepto: 'RECIBO PROVISIONAL {recibo.numero} {recibo.tipo}', base: false, tercero: true, omitir_cero: false },
-        { orden: 2, tipo: 'cartera', clase: 'F', cuenta: '130505', naturaleza: 'C', concepto: 'ABONO A {aplicacion.factura_numero}', base: false, tercero: true, omitir_cero: false },
-        { orden: 3, tipo: 'caja', clase: 'N', cuenta: 'POR CONFIRMAR', naturaleza: 'D', concepto: 'RECIBO PROVISIONAL {recibo.numero} {recibo.tipo}', base: false, tercero: true, omitir_cero: false },
-        { orden: 4, tipo: 'cartera', clase: 'N', cuenta: '112050502', naturaleza: 'C', concepto: 'ABONO A {aplicacion.factura_numero}', base: false, tercero: true, omitir_cero: false },
+        { orden: 1, tipo: 'caja', clase: 'F', cuenta: '11050501', naturaleza: 'D', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '1' },
+        { orden: 2, tipo: 'caja', clase: 'N', cuenta: '111050501', naturaleza: 'D', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '1', cuenta_estado: 'por confirmar' },
+        { orden: 3, tipo: 'cartera', clase: 'F', cuenta: '13050501', naturaleza: 'C', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '2', cruce: true, cobrador: true },
+        { orden: 4, tipo: 'cartera', clase: 'N', cuenta: '112050501', naturaleza: 'C', concepto: 'PAGO FACTURA {aplicacion.factura_prefijo} {aplicacion.factura_consecutivo}', base: false, tercero: true, omitir_cero: false, ind_afectar: '2', cuenta_estado: 'por confirmar' },
       ] },
   );
   archivos_plano.forEach((x) => { if (x.tipo === 'RC') { x.nombre = x.nombre.replace(/\.xls$/, '.csv'); x.sha256 = hashFake(x.nombre + x.generado_en); } }); // P2: los movimientos contables van en CSV
-  plantillas_plano.forEach((p) => { if (p.id === 'pl-rc-1') { p.estado = 'retirada'; p.nota_cambio += ' Reemplazada el 21/10 por la v2 (libros F y N).'; } });
+  plantillas_plano.forEach((p) => { if (p.id === 'pl-rc-1') { p.estado = 'retirada'; p.nota_cambio += ' Reemplazada por la v2: recibo RC oficial de 17 columnas y 4 filas (Excel de Julio, 23 oct).'; } });
   for (let i = archivos_plano.length - 1; i >= 0; i--) if (archivos_plano[i].tipo === 'FV') archivos_plano.splice(i, 1);
   const rhd = (a, b) => facturas.filter((f) => f.prefijo === 'RHD' && f.consecutivo >= a && f.consecutivo <= b).map((f) => f.id);
   archivos_plano.push(
@@ -1304,7 +1360,7 @@ window.DATA = (function () {
           nivel_aviso: rech.some((hh) => hh.propio) ? 'alerta' : 'info',
           fecha: a.importado_en || a.generado_en, usuario: nombreCorto(a.importado_por || a.generado_por), hash: a.sha256,
           docs: [{ nombre: `Archivo de pedidos ${a.nombre}`, numero: ped.numero, fecha: a.generado_en, hash: a.sha256, href: 'planos.html' }],
-          detalle: [['Modalidad', ped.via === 'conekta' ? '1B · Helisa Conekta (API)' : '1A · archivo plano (TXT con «|», ANSI)'], ['Líneas', lineas], ['Subtotal del pedido', fmtCOP(ped.subtotal)], ['Código del cliente en Helisa', `${x.c.helisa.codigo_cliente || 'falta'} (${x.c.helisa.codigo_estado})`], ['Lista de precio', `${helisa.lista_precio.codigo} · ${helisa.lista_precio.nombre}`], ['Centro de costo · negocio · vendedor', `${helisa.centro_costo.codigo} · ${helisa.negocio.codigo} · ${helisa.vendedor.identidad}`]],
+          detalle: [['Modalidad', ped.via === 'conekta' ? '1B · Helisa Conekta (API)' : '1A · archivo plano (pedido OP de 24 columnas con títulos, .xlsx; Excel de Julio, 23 oct)'], ['Líneas', lineas], ['Subtotal del pedido', fmtCOP(ped.subtotal)], ['Código del cliente en Helisa', `${x.c.helisa.codigo_cliente || 'falta'} (${x.c.helisa.codigo_estado})`], ['Lista de precio del cliente', `${x.c.helisa.lista_precio || '—'} · ${(listaPrecio(x.c.helisa.lista_precio) || {}).nombre || 'falta'} (por confirmar con Julio)`], ['Centro de costo · negocio · vendedor', `${helisa.centro_costo.codigo} · vacío · ${helisa.vendedor.identidad} (${helisa.fuente})`]],
           enlace: { href: 'planos.html', texto: 'Ver archivos para Helisa' },
           buscar: [a.nombre, ...rech.map((hh) => (archivos_op.find((y) => y.id === hh.archivo) || {}).nombre)],
           eventos,
@@ -1365,7 +1421,7 @@ window.DATA = (function () {
           estado: a.estado === 'importado' ? 'ok' : 'curso', numero: a.nombre ? a.nombre.replace(/^COMSERVA_|\.xls$/g, '').replace(/_/g, ' ') : 'Archivo RC', sub: ESTADO_PLANO_LABEL[a.estado] || '',
           fecha: a.importado_en || a.generado_en, usuario: nombreCorto(a.importado_por || a.generado_por), hash: a.sha256,
           docs: [{ nombre: `Archivo de movimiento contable ${a.nombre}`, numero: a.nombre, fecha: a.generado_en, hash: a.sha256, href: 'planos.html#rc' }],
-          detalle: [['Contenido', 'Débito a caja o bancos, crédito a cartera 1305 con la factura que se cruza'], ['Libros', 'Contable y tributario (líneas F y N, por confirmar con Julio)'], ['Tipo de recibo en Helisa', helisa.tipo_recibo.codigo + ' (por confirmar)']],
+          detalle: [['Contenido', 'Débito a caja o bancos, crédito a cartera 1305 con la factura que se cruza'], ['Libros', 'Contable y tributario (líneas F y N, por confirmar con Julio)'], ['Tipo de recibo en Helisa', helisa.tipo_recibo.codigo + ' (archivo de Julio; confirmar si equivale a RC1 o RC2)'], ['Estructura', 'Recibo RC de 17 columnas y 4 filas: caja F 11050501 y N 111050501, cartera F 13050501 y N 112050501; cruce y cobrador solo en la cartera F (Excel de Julio, 23 oct; cuentas N por confirmar con el contador)']],
           enlace: { href: 'planos.html#rc', texto: 'Ver archivos RC' },
           buscar: [a.nombre || ''],
           eventos: [{ en: a.generado_en, quien: nombreCorto(a.generado_por), accion: `Generó el archivo ${a.nombre}`, nivel: 'ok' }, ...(a.importado_en ? [{ en: a.importado_en, quien: nombreCorto(a.importado_por), accion: 'Lo importó en Helisa (Importación de movimiento contable, módulo de cartera)', nivel: 'ok' }] : [])],
@@ -1592,7 +1648,7 @@ window.DATA = (function () {
       T.constructores[k] = (x) => {
         if (x.factura && x.factura.estado_dian && x.factura.estado_dian !== 'validada') return k === 'recibos' ? { estado: 'pendiente', numero: 'Sin recibos', sub: 'El recibo se habilita cuando la DIAN valide la factura' } : null;
         const e = base[k](x);
-        if (e && k === 'rc') { e.numero = String(e.numero || '').replace(/\.csv$/, ''); e.docs = (e.docs || []).map((d) => ({ ...d, nombre: d.nombre.replace('Archivo de movimiento contable', 'Movimiento contable del recibo') })); e.detalle = [['Contenido', 'Débito a caja o bancos y crédito a la cartera 1305 con la factura electrónica que se cruza (DOC FUENTE = RHD…)'], ['Libros', 'F y N (las cuentas del libro N, por confirmar con Julio)'], ['Tipo de recibo en Helisa', helisa.tipo_recibo.codigo + ' (por confirmar)']]; e.enlace = { href: 'planos.html#rc', texto: 'Ver recibos en Contabilidad' }; }
+        if (e && k === 'rc') { e.numero = String(e.numero || '').replace(/\.(csv|xlsx)$/, ''); e.docs = (e.docs || []).map((d) => ({ ...d, nombre: d.nombre.replace('Archivo de movimiento contable', 'Movimiento contable del recibo') })); e.detalle = [['Contenido', 'Débito a caja y crédito a la cartera con la factura electrónica que se cruza (TIPO y NUMERO DE DOCUMENTO QUE AFECTA = RHD y su número, solo en la fila de cartera F)'], ['Estructura', 'Recibo RC de 17 columnas y 4 filas: caja F 11050501 y N 111050501, cartera F 13050501 y N 112050501 (Excel de Julio, 23 oct; cuentas N por confirmar con el contador)'], ['Tipo de recibo en Helisa', helisa.tipo_recibo.codigo + ' (archivo de Julio; confirmar si equivale a RC1 o RC2)']]; e.enlace = { href: 'planos.html#rc', texto: 'Ver recibos en Contabilidad' }; }
         return e;
       };
     });
@@ -1622,7 +1678,7 @@ window.DATA = (function () {
     fmtCOP, fmtKg, fmtNum, fmtFecha, fmtFechaCorta, fmtMes, cap, parseISO, byId, cliente, operario, categoria, dispositor, nitCompleto, iniciales,
     tarifaVigente, totalKg, visitasDe, totalizar, calcularFactura, cierreCliente, cierrePeriodo, numeroALetras, firmaSVG, qrSVG, hashFake, consecutivoPlanilla, pad, mockBar,
     // v6 · base común
-    mock, r2, ESQUEMA_TARIFA_LABEL, ESQUEMA_TARIFA_CORTO, fraseLiquidacion, tarifaResumen, helisa, equivalencias_helisa, equivalencia,
+    mock, r2, ESQUEMA_TARIFA_LABEL, ESQUEMA_TARIFA_CORTO, fraseLiquidacion, tarifaResumen, helisa, equivalencias_helisa, equivalencia, LISTAS_PRECIO_HELISA, CARTILLA_HELISA, listaPrecio,
     cierres_cliente, cierreAnticipado, cierreDe, numeroRH, pedidos, pedidoDe, archivos_op, ESTADO_PEDIDO_LABEL, VIA_REGISTRO_LABEL, validacionFVE,
     facturas_referencia, pruebaReferencia, traza,
     // PROPUESTA 2 · facturación electrónica

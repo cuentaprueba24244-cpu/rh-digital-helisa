@@ -332,7 +332,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
       <dl class="kv" style="margin-top:8px">
         <dt>Código del cliente en Helisa</dt><dd><span class="mono">${esc(hz.codigo_cliente || '—')}</span> ${hz.codigo_estado === 'prueba' ? '<span class="badge warn plain">de prueba · por confirmar con la cartilla de Helisa</span>' : (hz.codigo_estado === 'falta' ? '<span class="badge danger plain">falta: no entra al pedido</span>' : '<span class="badge ok plain">confirmado</span>')}</dd>
         <dt>Facturación por sede</dt><dd>${hz.factura_por_sede ? 'Sí · un código por sede' : 'No · un solo código'}${(hz.sedes || []).length ? ` <span class="muted">(${(hz.sedes || []).map((x) => esc(x.sede) + ': ' + esc(x.codigo_cliente || 'sin código')).join(' · ')})</span>` : ''}</dd>
-        <dt>Lista de precio</dt><dd>${hz.lista_precio ? `${esc(hz.lista_precio)} · ${esc(D.helisa.lista_precio.nombre)}` : '—'}</dd>
+        <dt>Lista de precio Helisa</dt><dd>${hz.lista_precio ? `${esc(hz.lista_precio)} · ${esc((D.listaPrecio(hz.lista_precio) || {}).nombre || '')} <span class="muted" style="font-size:12px">(supuesta; Julio confirma la lista de cada cliente)</span>` : '—'}</dd>
         <dt>Tipo de persona</dt><dd>${esc(({ juridica: 'Jurídica', natural: 'Natural' })[fi.tipo_persona] || 'Por confirmar (RUT)')}</dd>
         <dt>Responsabilidades fiscales</dt><dd>${esc(fi.responsabilidades || 'Por confirmar (RUT)')}</dd>
         <dt>Municipio (código DANE)</dt><dd>${esc(c.ciudad)} · <span class="mono">${esc(fi.municipio_dane || '—')}</span></dd>

@@ -2,6 +2,8 @@
 
 **22 de octubre de 2026.** Es la v6 que preparó Adrián, en dos propuestas, la 1 y la 2. Hasta el 24 de octubre estuvo en `propuesta/`. La v6 de Ronaldo, con las propuestas A y B, está aparte, en `levantamiento requerimientos/`, `mockups_v6/` y `reunion/`. Esta carpeta reemplaza el planteamiento de la v5 después de la reunión del 21 de octubre con Comserva. Lo que cambió: Helisa no importa facturas, importa **pedidos**. La factura electrónica se sigue haciendo **una a una** en Helisa (llamando el pedido con F3). El recibo sí entra como **movimiento contable**, con cuentas y en dos libros. Comserva y Julio pidieron ver **dos caminos**. Se presentan en la reunión del **viernes 23 de octubre de 2026 a la 1:00 p. m.**
 
+**Actualizado el 25 de octubre de 2026** con lo que aportaron Ronaldo y Avilés (ver «Complementos del 25 oct»). No hay acta de la reunión del viernes 23 en el repositorio: queda pendiente documentarla.
+
 ## Las dos propuestas en una frase
 
 | | Propuesta 1 · RH digital hasta Helisa | Propuesta 2 · RH digital con facturación electrónica |
@@ -34,7 +36,7 @@ Cada carpeta de propuesta trae:
 - `Levantamiento de requerimientos Comserva (v6, propuesta N).html` y `.pdf`: el documento vigente de esa propuesta. Trae una sección 0 nueva («Qué cambió en la v6», con lo que cubre y lo que no). La sección 12 está reescrita (integración con Helisa) y hay requerimientos nuevos: **TRZ** (trazabilidad), **API** (Conekta) y, solo en la P2, **FEV** (factura electrónica).
 - `Flujo RH digital Comserva (v6, propuesta N).html` y `.pdf`: infografía A4 horizontal con carriles, el ejemplo real de Cofema de septiembre y los puntos por confirmar.
 - `mockups_v6/index.html`: prototipo navegable (se abre en el navegador o se sirve con `python3 -m http.server 8765 --directory "v6 adrian/propuesta 1/mockups_v6"`). Trae la página nueva **Trazabilidad**: cadena documental por cliente y periodo, búsqueda por cualquier número, matriz del periodo y expediente. En la P1, «Helisa: pedidos y recibos», con la conexión 1A/1B. En la P2, «Facturación electrónica» y «Contabilidad en Helisa», con la factura y la nota crédito de prueba.
-- `Cambios para el desarrollo (v6, propuesta N).md` y `.pdf`: cómo cambian el SPEC v1.1 y el esquema SQL (reglas, épicas, tablas, contratos, pruebas de regresión y plan por semanas). El DDL es orientativo y no se ha ejecutado.
+- `Cambios para el desarrollo (v6, propuesta N).md` y `.pdf`: cómo cambian el SPEC v1.1 y el esquema SQL (reglas, épicas, tablas, contratos, pruebas de regresión y plan por semanas). El DDL propio es orientativo; desde el 25 oct parte del anexo validado de Ronaldo (`arquitectura/schema_v6_pedido_recibo.sql`) y la sección 11 dice qué se toma de cada uno. En la P2, la sección 12 trae el contrato del adaptador de Factus.
 
 ## Artefactos publicados (privados; se comparten desde el menú Compartir de cada uno)
 
@@ -50,13 +52,40 @@ Cada carpeta de propuesta trae:
 
 ## Datos que siguen por confirmar (se cierran en la Fase 0)
 
+**Ya confirmado (Excel de Julio, 23 oct):** tipo del pedido `OP`; estructura oficial del pedido (24 columnas con títulos) y del recibo (`RC`, 17 columnas, 4 filas por recibo); cartilla de 57 servicios (códigos 2 básico, 3 kilos adicionales, 54 exento) y 7 listas de precio; vendedor 828002730, centro de costo 0101 y negocio vacío; cuentas de caja y cartera en los dos libros (las del libro N, sujetas al contador).
+
+**Sigue por confirmar:**
+
 - Si el documento **Pedido** se puede habilitar en el Helisa de Comserva, y su costo.
-- **Formatos oficiales** del pedido y del recibo, campo por campo (Julio quedó de enviarlos), RC1 o RC2, y las cuentas en los dos libros.
-- Códigos de concepto, lista de precios y código de cada cliente o sede en Helisa.
-- Volumen real de facturas al mes y cuántas son del servicio de residuos.
+- Qué formato acepta de verdad el asistente de importación (.xlsx, .xls 97-2003 o .txt): se cierra importando en una empresa de pruebas los dos Excel de `pruebas/archivosplano/salida/`.
+- Prefijo del cruce en el recibo: **FEV** (ejemplo de Julio) o **FVE** (facturas reales).
+- **Lista de precio de cada cliente** y si el código del cliente va vacío cuando es el mismo NIT.
+- Cuentas del libro N (111050501 y 112050501) con el contador, y la cuenta de bancos para transferencias.
+- Código para el cobro solo por kilo (3 o el de la categoría) y si un recibo con varias facturas repite las filas de cartera.
+- Volumen real de facturas al mes y cuántas son del servicio de residuos (≥ 60 de residuos, hasta ≈ 240 en total).
 - Conekta: el IVA, el hosting de Helisa y a nombre de quién va la suscripción.
-- En la P2: el proveedor tecnológico, el prefijo y la numeración, que la cartera de Helisa acepte facturas con otro prefijo, y el IVA del servicio (art. 476 num. 12, lo confirma el contador).
+- En la P2: la **constancia de habilitación de Factus ante la DIAN** y cómo se asocia el prefijo de Comserva; si el certificado de firma va incluido; si Comserva puede tener dos facturadores (Helisa para productos y Factus para el servicio); que la cartera de Helisa acepte facturas con otro prefijo; el IVA del servicio (art. 476 num. 12, lo confirma el contador).
 
 ## Cifras de referencia que usan todos los documentos
 
-Cofema, septiembre de 2026: 4 visitas, 413,85 kg, **$2.244.935**, FVE 25756 (datos reales de la v5). Cobro solo por kilo (FVE 25997): 108,50 kg × $3.991,60 + IVA 19 % = **$515.375,43**. Conekta: $211.680 al mes según helisa.com (IVA por confirmar). Lo marcado «de prueba» en los mockups (prefijo RHD, CUFE, recibos, códigos de Helisa) no es dato del cliente.
+Cofema, septiembre de 2026: 4 visitas, 413,85 kg, **$2.244.935**, FVE 25756 (datos reales de la v5). Cobro solo por kilo (FVE 25997): 108,50 kg × $3.991,60 + IVA 19 % = **$515.375,43**. Conekta: $211.680 al mes según helisa.com (IVA por confirmar). Factus: $220.000 al año (1.600 documentos) o $290.000 (5.000), según el volumen. Hosting verificado por Avilés: Hostinger KVM 2 ≈ $47.600 al mes. Lo marcado «de prueba» en los mockups (prefijo RHD, CUFE, recibos, códigos de Helisa) no es dato del cliente.
+
+## Complementos del 25 oct
+
+Después de separar esta v6, Ronaldo (Siuu70) y Avilés (XxavilesxX) subieron trabajo que la completa. Se incorporó así:
+
+| Qué llegó | Quién | Dónde está | Dónde se usa en esta carpeta |
+| --- | --- | --- | --- |
+| Excel de Julio con el pedido OP, la cartilla y las listas de precio, y el recibo RC | Julio, vía Ronaldo (23 oct) | `pruebas/archivosplano/` (y `salida/` con dos Excel de ejemplo para la importación de prueba) | `Cambios para el desarrollo` P1 y P2, sección 11 (columnas, reglas, cuentas F/N, pruebas R20–R25) |
+| Anexo SQL v6 validado en PostgreSQL 18.6 (catálogo, listas, plantillas PED v1 y RC v2) | Ronaldo | `arquitectura/schema_v6_pedido_recibo.sql` | Sección 11.7 de los dos `Cambios`: se migra primero y se ajusta el DDL orientativo de Adrián (diferencias en tabla) |
+| Prueba real de la propuesta B en el sandbox de Factus (factura de Cofema validada, idempotencia, nota crédito, error 422) | Ronaldo | `pruebas/sandbox-factus/`, `DocumentacionAPIFACTUS/` | `Cambios` P2, sección 12 (contrato del adaptador Factus); comparativo §4 y §9; estimación §11.3 |
+| Costos detallados y propuesta económica comparativa, con hosting verificado el 22 oct | Avilés | `propuesta/` | Comparativo §9 (remite a la propuesta económica); estimación §11.1 (cuadra exacto con esta v2) |
+
+Decisiones al incorporarlo:
+
+- **Factus** pasa a candidato principal de la P2 (único probado y con precio por escrito), **condicionado** a la constancia de habilitación ante la DIAN. Plemsi y Dataico quedan de respaldo.
+- La **Fase 2 se mantiene en 240 h**, no en las 80–120 h del levantamiento de Ronaldo: la prueba cubre el adaptador, no los datos fiscales, las notas, la contabilización, la habilitación ni el piloto (estimación §11.2).
+- **Volumen:** el plan de Factus de 150 documentos no alcanza; con ≥ 60 facturas al mes de residuos corresponde el de 1.600 y con ≈ 240, el de 5.000.
+- **Tecla para llamar el pedido: F3.** Se ve en la captura de Helisa (`reunion 21 oct 2026/imagenes/img04_helisa_documento_previo_pedidos_F3.png`); en el audio se oye «F5». El levantamiento de Ronaldo (§1 y §12.1) y una línea del README raíz dicen F5: hay que corregirlos a F3.
+- Equivalencia de nombres con la v6 de Ronaldo: P1 = A, P2 = B, MC-FV = plantilla ASI, FEV-xx ≈ FEL-xx, plantilla OP = PED (el tipo de documento en Helisa sigue siendo `OP`).
+- Repositorio público: los Excel y la evidencia del sandbox traen datos de terceros; en esta carpeta no se copian identificaciones de personas naturales, contactos de clientes ni credenciales.

@@ -614,7 +614,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
           <div class="camino hoy">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="letra">OP</span><span class="badge ok">Fase 1 · desde el RH</span></div>
             <h4>Pedido para Helisa</h4>
-            <p>Por cada RH, un pedido sin cuentas ni IVA: líneas de concepto (código del concepto, cantidad, valor unitario) y de comentario. ${es1B ? 'Se inserta por Conekta.' : 'Va en un TXT con «|» que usted importa en Helisa.'} Después usted elabora la factura llamando el pedido con F3 y registra la FVE aquí.</p>
+            <p>Por cada RH, un pedido sin cuentas ni IVA: líneas de concepto (código del concepto, cantidad, valor unitario) y de comentario. ${es1B ? 'Se inserta por Conekta.' : 'Va en un archivo .xlsx con la estructura oficial de Julio (24 columnas con títulos) que usted importa en Helisa.'} Después usted elabora la factura llamando el pedido con F3 y registra la FVE aquí.</p>
             <a class="btn sm" href="planos.html#op|${p.id}">Pedidos de ${esc(p.nombre.toLowerCase())}</a>
           </div>
           <div class="camino hoy">
@@ -630,7 +630,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
             <a class="btn sm ghost" href="../documentos/reporte-cierre.html#${p.id}">Ver el reporte de ${esc(p.nombre.toLowerCase())}</a>
           </div>
         </div>
-        <div class="callout info mt"><b>Las plantillas y la tabla de equivalencias se configuran en el panel</b> sin programar: <a href="planos.html#plantillas">plantilla del pedido (24 campos) y del recibo (libros F y N)</a> y <a href="planos.html#equivalencias">códigos de Helisa</a> (conceptos, lista de precio, código de cada cliente o sede). Las dos plantillas están en borrador hasta recibir las estructuras oficiales de Julio.</div>
+        <div class="callout info mt"><b>Las plantillas y la tabla de equivalencias se configuran en el panel</b> sin programar: <a href="planos.html#plantillas">plantilla del pedido OP (24 columnas) y del recibo RC (17 columnas, 4 filas)</a> y <a href="planos.html#equivalencias">códigos de Helisa</a> (conceptos, lista de precio, código de cada cliente o sede). Las dos plantillas siguen la estructura oficial del Excel de Julio (23 oct); se aprueban con la importación de prueba.</div>
         <div class="callout info mt">
           <b>Reglas del cierre</b>
           <ul class="reglas">
@@ -766,7 +766,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
     const en = ahoraR(); let a = null;
     if (!api) {
       const k = D.archivos_op.filter((x) => x.periodo === p.id).length + 1;
-      a = { id: `ap-op-${p.id}-${String(k).padStart(3, '0')}`, periodo: p.id, nombre: `COMSERVA_OP_${p.id}_${String(k).padStart(3, '0')}.txt`, estado: 'generado', generado_en: en, generado_por: USUARIO, pedidos: ok.length, via: 'archivo', plantilla: 'pl-op-1', formato: 'txt' };
+      a = { id: `ap-op-${p.id}-${String(k).padStart(3, '0')}`, periodo: p.id, nombre: `COMSERVA_OP_${p.id}_${String(k).padStart(3, '0')}.xlsx`, estado: 'generado', generado_en: en, generado_por: USUARIO, pedidos: ok.length, via: 'archivo', plantilla: P1.plantilla_op.id, formato: 'xlsx' };
       a.sha256 = D.hashFake(a.nombre + en + Math.random()); D.archivos_op.push(a);
     }
     let num = Math.max(100, ...D.pedidos.map((x) => Number(String(x.numero).replace(/\D/g, '')) || 0)) + 1;
@@ -783,12 +783,12 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
     const txt = a ? P1.txtArchivoOP(a) : '';
     openModal(`<div class="modal-head" id="modal-title">${a ? `Archivo de pedidos generado · ${esc(a.nombre)}` : 'Pedidos enviados por Conekta (simulado)'}</div>
       <div class="modal-body">
-        <p>${creados.length} pedido${creados.length === 1 ? '' : 's'}: ${creados.map((x) => `<b>${esc(x.numero)}</b> ${esc(D.cliente(x.cliente).nombre_comercial)}`).join(' · ')}. ${a ? 'Descárguelo, impórtelo en Helisa (Importación de pedidos, «Otro símbolo» = «|», origen ANSI) y márquelo como importado en la hoja de trabajo.' : 'Ya están en Helisa: elabore cada factura llamando el pedido con F3; la FVE se leerá en la siguiente lectura programada.'}</p>
-        ${a ? `<pre style="margin:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font-mono);font-size:11px;line-height:1.6;max-height:220px;overflow:auto;white-space:pre">${esc(txt)}</pre><div class="muted" style="font-size:12px">TXT sin encabezado, 24 campos por línea, Windows-1252. Los &lt;COD_…&gt; son códigos de concepto por confirmar con Julio. La bandeja completa está en «Helisa: pedidos y recibos» (en el mockup, lo generado aquí no pasa a otra página).</div>` : ''}
+        <p>${creados.length} pedido${creados.length === 1 ? '' : 's'}: ${creados.map((x) => `<b>${esc(x.numero)}</b> ${esc(D.cliente(x.cliente).nombre_comercial)}`).join(' · ')}. ${a ? 'Descárguelo, impórtelo en Helisa (Importación de pedidos, con fila de títulos) y márquelo como importado en la hoja de trabajo.' : 'Ya están en Helisa: elabore cada factura llamando el pedido con F3; la FVE se leerá en la siguiente lectura programada.'}</p>
+        ${a ? `<pre style="margin:0;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:var(--font-mono);font-size:11px;line-height:1.6;max-height:220px;overflow:auto;white-space:pre">${esc(txt)}</pre><div class="muted" style="font-size:12px">Vista en texto del .xlsx: fila de títulos y 24 columnas por línea (Excel de Julio, 23 oct). Los &lt;COD_…&gt; son códigos por confirmar con Julio (solo por kilo y cobro fijo). La bandeja completa está en «Helisa: pedidos y recibos» (en el mockup, lo generado aquí no pasa a otra página).</div>` : ''}
         ${mal.length ? `<div class="callout danger"><b>No se exportaron:</b><ul class="reglas">${mal.flatMap((x) => x.v.errores).map((e) => `<li>${esc(e)}</li>`).join('')}</ul></div>` : ''}
       </div>
-      <div class="modal-foot">${a ? '<button type="button" class="btn" id="m-dl">Descargar TXT</button>' : ''}<button type="button" class="btn primary" data-close>Listo</button></div>`);
-    const dl = $('#m-dl'); if (dl) dl.addEventListener('click', () => { const b = new Uint8Array(txt.length); for (let i = 0; i < txt.length; i++) { const k = txt.charCodeAt(i); b[i] = k < 256 ? k : 63; } const u = URL.createObjectURL(new Blob([b], { type: 'text/plain;charset=windows-1252' })); const l = document.createElement('a'); l.href = u; l.download = a.nombre; document.body.appendChild(l); l.click(); l.remove(); if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahoraR(); D.pedidos.filter((x) => x.archivo === a.id).forEach((x) => { x.estado = 'descargado'; }); render(); } });
+      <div class="modal-foot">${a ? '<button type="button" class="btn" id="m-dl">Descargar vista (.csv)</button>' : ''}<button type="button" class="btn primary" data-close>Listo</button></div>`);
+    const dl = $('#m-dl'); if (dl) dl.addEventListener('click', () => { const b = new Uint8Array(txt.length); for (let i = 0; i < txt.length; i++) { const k = txt.charCodeAt(i); b[i] = k < 256 ? k : 63; } const u = URL.createObjectURL(new Blob([b], { type: 'text/plain;charset=windows-1252' })); const l = document.createElement('a'); l.href = u; l.download = a.nombre.replace(/\.xlsx$/, '_vista.csv'); document.body.appendChild(l); l.click(); l.remove(); if (a.estado === 'generado') { a.estado = 'descargado'; a.descargado_en = ahoraR(); D.pedidos.filter((x) => x.archivo === a.id).forEach((x) => { x.estado = 'descargado'; }); render(); } });
   }
   function marcarImportado(id) {
     const a = D.archivos_op.find((x) => x.id === id); if (!a) return;

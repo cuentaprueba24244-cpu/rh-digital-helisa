@@ -1,6 +1,6 @@
 # Cambios para el desarrollo · v6 · Propuesta 1
 
-**RH digital Comserva · Propuesta 1 «RH digital hasta Helisa» (pedidos y recibos) · versión 1.0 · 22 de octubre de 2026**
+**RH digital Comserva · Propuesta 1 «RH digital hasta Helisa» (pedidos y recibos) · versión 1.1 · 22 de octubre de 2026, complementada el 25 de octubre de 2026**
 
 Documento técnico **interno del equipo** (no lleva precios). Traduce la Propuesta 1 de la v6 a cambios concretos sobre:
 
@@ -10,16 +10,18 @@ Documento técnico **interno del equipo** (no lleva precios). Traduce la Propues
 
 No reemplaza esos documentos: dice qué cambia en cada uno. Cuando Comserva apruebe la propuesta y lleguen los formatos oficiales, este contenido se funde en un SPEC v2.0 y en un anexo SQL v6 validado. Los requerimientos de negocio están en `v6 adrian/propuesta 1/Levantamiento de requerimientos Comserva (v6, propuesta 1).html`; si un ID o una regla de este documento no coincide con el levantamiento, manda el levantamiento.
 
+**Complemento del 25 de octubre de 2026.** Los formatos oficiales llegaron el 23 de octubre (Excel de Julio, `pruebas/archivosplano/Plano pedido.xlsx`) y Ronaldo los dejó en un anexo SQL ya validado (`arquitectura/schema_v6_pedido_recibo.sql`). La **sección 11** los incorpora y manda sobre lo anterior cuando no coincida. Marcas nuevas: **[Excel Julio 23-oct]**.
+
 **Marcas que se usan:** **[Visto 21-oct]** = se vio en pantalla o se dijo en la reunión del 21 de octubre de 2026 · **[Oficial]** = página oficial de Helisa · **[Inferencia]** = conclusión del equipo · **por confirmar** = nadie lo ha confirmado todavía. Todo el DDL de la sección 5 es **orientativo, no ejecutado: validar** en el contenedor de PostgreSQL 18 antes de migrar.
 
 ---
 
 ## 0. Lo esencial
 
-1. **El archivo de factura de la v5 desaparece.** Helisa no importa facturas: importa **pedidos** [Visto 21-oct]. Del cierre (RH con valores) sale un **archivo de pedidos (OP)**: 24 campos, **sin cuentas, sin naturaleza y sin IVA**, TXT separado por «|», sin fila de títulos, en **Windows-1252 (ANSI)**. Un pedido por cierre de cliente (o de sede facturable) y periodo; un archivo lleva muchos pedidos.
+1. **El archivo de factura de la v5 desaparece.** Helisa no importa facturas: importa **pedidos** [Visto 21-oct]. Del cierre (RH con valores) sale un **archivo de pedidos (OP)**: 24 campos, **sin cuentas, sin naturaleza y sin IVA**, TXT separado por «|», sin fila de títulos, en **Windows-1252 (ANSI)**. Un pedido por cierre de cliente (o de sede facturable) y periodo; un archivo lleva muchos pedidos. *→ Actualizado el 25 oct (sección 11.1): el formato oficial es tipo `OP`, en Excel con fila de títulos, 24 columnas con los títulos exactos de Julio.*
 2. Lucrecia importa los pedidos y **elabora cada FVE en Helisa llamando el pedido** («Documento previo Pedidos», **F3**). La factura electrónica la sigue emitiendo Helisa, una a una.
 3. La **FVE se registra en el sistema** (número, fecha, total y CUFE si se tiene) y se valida contra el RH (± $1) por una de tres vías: lectura automática por Conekta, carga del listado de facturas exportado de Helisa (formato por confirmar) o digitación en el panel.
-4. El **recibo** sigue siendo un **movimiento contable (RC)**: caja o bancos contra cartera 1305, documento cruce = prefijo y número de la FVE, y **cada línea en los dos libros (F y N)**. La plantilla de 22 columnas de la v5 se conserva solo para el recibo.
+4. El **recibo** sigue siendo un **movimiento contable (RC)**: caja o bancos contra cartera 1305, documento cruce = prefijo y número de la FVE, y **cada línea en los dos libros (F y N)**. La plantilla de 22 columnas de la v5 se conserva solo para el recibo. *→ Actualizado el 25 oct (sección 11.3): el recibo oficial tiene 17 columnas y 4 filas (caja y cartera en F y en N) y la cruza solo la fila de cartera F.*
 5. **Tres esquemas de tarifa en la Fase 1:** básico + kilos incluidos + kilos adicionales (Cofema), **solo por kilo** (FVE 25997) y **cobro fijo mensual**.
 6. **Tabla de equivalencias** (dato, no código): componente de tarifa o categoría → concepto de Helisa y lista de precio; cliente o sede → código del cliente en Helisa. Más una **tabla de cuentas** en los dos libros para el recibo.
 7. **Módulo de trazabilidad** visible (épica nueva **TRZ**, TRZ-01 a TRZ-06).
@@ -313,6 +315,8 @@ Solo se construye si Comserva confirma por escrito que contrata Conekta (tarea 0
 | Recibo | emitido → exportado → cruzado · anulado (sin cambio frente a la v5) |
 
 ### 5.3 DDL orientativo del anexo v6 (no ejecutado, validar)
+
+> **25 oct:** el catálogo, las listas y las plantillas PED v1 y RC v2 ya están en `arquitectura/schema_v6_pedido_recibo.sql` (Ronaldo, validado en PostgreSQL 18.6). Ese anexo corre primero; de este DDL se omiten las tablas y semillas que chocan con él. Diferencias y ajustes en la sección 11.7.
 
 ```sql
 -- =====================================================================
@@ -887,6 +891,8 @@ export interface CanalHelisa {
 
 ### 6.3 Exportador de pedidos (archivo OP)
 
+> **25 oct:** el formato oficial (Excel con títulos, tipo OP, códigos 2/3/54, lista por cliente, negocio vacío, un solo comentario) está en las secciones 11.1 y 11.8. Lo que sigue es el diseño contra la estructura observada el 21 de octubre y queda como salida TXT alternativa del configurador.
+
 **Formato inicial** (configurable en la plantilla OP v1; confirmar con la estructura oficial y la importación de prueba): TXT; separador «|»; sin calificador de texto; **sin fila de títulos**; Windows-1252; CRLF; fecha dd/mm/aaaa; sin separador de miles; punto decimal; cantidad con 2 decimales; valores enteros cuando no tienen centavos (74790) y con 2 decimales cuando los tienen (3991.60); **24 campos siempre presentes** (los vacíos entre separadores). Un archivo lleva varios pedidos; cada pedido es un bloque de líneas con el mismo TIPO y NUMERO. Junto al TXT se genera un **XLSX de apoyo** con las mismas líneas, con títulos y totales por pedido, para revisar sin abrir el TXT.
 
 **Mapeo campo a campo** (de `research/formatos.md` §4.1, ajustado a los nombres de la v6):
@@ -935,6 +941,8 @@ export interface CanalHelisa {
 **Lo que vuelve de Helisa:** «Lista de errores» de la importación (se pega en el resultado por pedido, G′6) y, al facturar, la FVE (G4).
 
 ### 6.4 Exportador de movimiento contable (libros F y N)
+
+> **25 oct:** el recibo oficial es el RC de 17 columnas y 4 filas de la sección 11.3, con el cruce en tres columnas solo en la fila de cartera F (ejemplo en 11.8).
 
 Entrada en la Fase 1: un recibo con sus aplicaciones. Salida: un asiento con, por cada libro, un débito a caja o banco por el total y un crédito a la cartera 1305 por cada FVE aplicada, con el documento cruce de esa FVE.
 
@@ -1037,6 +1045,8 @@ Se mantienen los casos de la Arquitectura v1 (§6.2): kilos con dos decimales po
 
 ## 10. Pendientes que bloquean historias (por confirmar)
 
+> **25 oct:** las estructuras oficiales y la cartilla de servicios ya llegaron; la tabla actualizada de esos pendientes está en la sección 11.10.
+
 | Pendiente | Con quién | Historias que bloquea |
 | --- | --- | --- |
 | Tipo de documento Pedido habilitado en Comserva, su código y quién pone el número | Julio y Comserva | G′2 (aprobar), G′4 en real, H6 |
@@ -1051,3 +1061,265 @@ Se mantienen los casos de la Arquitectura v1 (§6.2): kilos con dos decimales po
 | Formato del listado de FVE que se puede exportar de Helisa (para registrar sin digitar) | Julio | G4 (vía b) |
 | Contratación de Conekta, titular de licencia y hosting, endpoint HTTPS, estructura JSON de pedidos y clientes, campos de salida de lectura de facturas y cartera | Comserva y Helisa | Épica API |
 | Volumen real de facturas al mes y cuántas son de residuos | Comserva | Dimensión del piloto y de la compuerta |
+
+---
+
+## 11. Complemento del 25 de octubre de 2026: formatos oficiales de Julio
+
+**Fuentes.** El Excel que Julio envió el 23 de octubre (`pruebas/archivosplano/Plano pedido.xlsx`, hojas «Plano Pedidos», «Servicios» y «Plano Recibos»; resumen en `pruebas/archivosplano/README.md`) y el anexo SQL de Ronaldo `arquitectura/schema_v6_pedido_recibo.sql`, validado el 23 de octubre en PostgreSQL 18.6 (195 objetos). Los Excel de ejemplo generados con esas plantillas están en `pruebas/archivosplano/salida/`. Marca nueva: **[Excel Julio 23-oct]**.
+
+**Prioridad.** Esta sección **manda** sobre las anteriores cuando no coincidan: sección 0 (puntos 1 y 4), las reglas de PEDIDO, ARCHIVOS y RECIBO del CLAUDE.md (sección 3), C4 y la semilla de 4.13, G′2, G′3 y G′5 (4.8), las semillas y tablas de catálogo del DDL (5.3), los formatos de 6.3 y 6.4, las pruebas R4 y R6 (sección 7) y los pendientes (sección 10). Lo demás (épicas, trazabilidad, Conekta y plan por semanas) no cambia.
+
+### 11.0 Qué cambia frente a lo observado el 21 de octubre
+
+| Tema | Lo que decía este documento (visto el 21-oct en otra empresa) | Oficial [Excel Julio 23-oct] |
+| --- | --- | --- |
+| Tipo del pedido | Por confirmar | **`OP`** |
+| Archivo del pedido | TXT con «\|», sin fila de títulos, Windows-1252 | **Excel con fila de títulos** (Julio lo envió en .xlsx). Qué formato acepta de verdad el asistente de importación (.xlsx, .xls 97-2003 o .txt) se confirma con la importación de prueba (tarea 0.6). El escritor TXT se conserva como salida alternativa del configurador |
+| Títulos | Sin tildes (ARTICULO/SERVICIO, CENTRO DE COSTO…) | **Exactos**, con tildes y mayúsculas mixtas: «CÓDIGO DEL CLIENTE», «ARTÍCULO/SERVICIO», «Centro de costo», «CÓDIGO NEGOCIO», «Obsequio» |
+| Códigos de concepto | Provisionales `PEND-01`, `PEND-02` | **`2`** básico, **`3`** kilos adicionales, **`54`** exento; 4 a 21 categorías por kilo |
+| Lista de precio | 2 «BASICA 30000» para todos | **Por cliente**, de 1 a 7; va solo en las líneas de servicio |
+| Negocio | «1», por confirmar | **Vacío** |
+| Código del cliente | Obligatorio, desde la cartilla | **Vacío** en el ejemplo cuando es el mismo NIT (por confirmar si siempre) |
+| Comentarios | Tres (mes, RH y kilos) | **Uno**: «SERVICIO ESPECIAL DE ASEO PRESTADO MES DE {MES AAAA}». Los otros dos quedan en la plantilla, apagados por defecto |
+| Número del pedido | Serie global que nunca se repite | **Consecutivo dentro del archivo** (1, 2…), repetido en todas las líneas del pedido |
+| Recibo | 22 columnas de la v5; RC1 o RC2; CENTRO 0101; cruce «FVE25756» en DOC FUENTE | **17 columnas**, tipo **`RC`**, **4 filas por recibo**, CENTRO vacío, cruce en **tres columnas** (tipo, número y cuota) **solo en la fila de cartera F** |
+| Cuentas del recibo | Por confirmar, «EJEMPLO» en la semilla | Caja **11050501** (F) y **111050501** (N); cartera **13050501** (F) y **112050501** (N). Las del libro N las confirma el contador |
+
+### 11.1 Pedido OP oficial (24 columnas)
+
+| # | Título exacto | Línea de servicio (TIPO CONCEPTO 2) | Línea de comentario (TIPO CONCEPTO 3) | Origen en el sistema |
+| --- | --- | --- | --- | --- |
+| 1 | TIPO | `OP` | `OP` | `plantilla.tipo_documento` |
+| 2 | NUMERO | Consecutivo del pedido dentro del archivo | Igual | `pedido_helisa.numero_archivo` (11.5) |
+| 3 | FECHA | Celda de fecha (se ve dd/mm/aaaa) | Igual | `pedido.fecha` |
+| 4 | IDENTIDAD CLIENTE | NIT o documento **sin DV** | Igual (Julio la repite) | `cliente.nit` |
+| 5 | CÓDIGO DEL CLIENTE | Vacío si es el mismo NIT; si no, código del cliente o código adicional de la sede | Igual | `sede.codigo_helisa` o `cliente.codigo_helisa` |
+| 6 | IDENTIDAD VENDEDOR | `828002730` (NIT de Comserva sin DV) | Igual | `empresa.nit` |
+| 7 | TIPO CONCEPTO | `2` | `3` | Tipo de línea |
+| 8 | CODIGO CONCEPTO | `2`, `3`, `54` o una categoría (4–21) | Vacío | Equivalencia → `servicio_helisa.codigo` |
+| 9–11 | CODIGO UNIDAD · REFERENCIA · CODIGO BARRAS | Vacíos | Vacíos | — |
+| 12 | ARTÍCULO/SERVICIO | Nombre del servicio en la cartilla | Texto del comentario | Cartilla o plantilla |
+| 13 | CODIGO BODEGA | Vacío | Vacío | — |
+| 14 | LISTA DE PRECIO | Lista del cliente (1 a 7) | **Vacío** | `cliente.lista_precio_helisa` |
+| 15 | CANTIDAD | 1 (básico o fijo) o kilos (393.85) | Vacío | Según el esquema |
+| 16 | VALOR UNITARIO | Sin IVA y sin separador de miles | Vacío | Tarifa del cierre |
+| 17 | VALOR TOTAL | **Vacío** (Helisa multiplica) | Vacío | — |
+| 18–21 | Descuentos (tarifa y valor, normal y adicional) | Vacíos | Vacíos | — |
+| 22 | Centro de costo | `0101` **como texto** | `0101` | `plantilla.centro_costo` |
+| 23 | CÓDIGO NEGOCIO | **Vacío** | Vacío | — |
+| 24 | Obsequio | Vacío | Vacío | — |
+
+En Excel: la fecha va como celda de fecha (formato 14) y el centro de costo como texto (formato «@», para que no se pierda el cero). Los números van sin separador de miles; la cantidad con punto decimal dentro de la celda (393.85).
+
+**Líneas por esquema con la cartilla real:**
+
+| Esquema | Líneas de servicio | Lista |
+| --- | --- | --- |
+| `basico_incluidos` (Cofema) | `2` × 1 × básico; `3` × kilos adicionales × precio del kilo (se omite si es 0) | La del cliente. Si su tarifa no coincide con la lista 1 (25.000 / 3.850) ni con la 2 (30.000 / 4.000), va con una especial (3 a 7) y el precio en el pedido |
+| `por_kilo` (FVE 25997) | `3` (o el de la categoría) × kilos totales × precio del kilo: **por confirmar con Julio** | Especial |
+| `fijo_mensual` | `2` × 1 × valor fijo | 1 o 2 si coincide (25.000 o 30.000); si no, especial |
+| Cliente exento | `54` × 1 × básico (sin IVA) | La del cliente |
+
+### 11.2 Cartilla y listas de precio (hoja «Servicios»)
+
+57 códigos de servicio, los mismos en las siete listas. Los que usa el servicio de residuos:
+
+| Código | Servicio | IVA en la cartilla | Uso |
+| --- | --- | --- | --- |
+| 1 | «NO USAR» | — | Nunca |
+| **2** | RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS | 19 % | Básico y cobro fijo |
+| **3** | KILOGRAMOS ADICIONALES | 19 % | Kilos adicionales (y, por confirmar, solo por kilo) |
+| 4–6, 8, 9, 11–13, 16, 17, 20 | Anatomopatológicos, biosanitarios, cortopunzantes, tóxicos, medicamentos vencidos, animales, biológicos, vidrio de laboratorio, RAEE, pilas y baterías, llantas (en kilogramos) | 19 % | Solo si se factura por categoría (por confirmar) |
+| 7 · 10 | QUIMICOS (GALON) · INDUSTRIALES (KILOGRAMOS) | Sin IVA | Ídem |
+| **54** | RECOLEC. … EXENTO | Sin IVA | Clientes exentos |
+
+| Lista | Nombre | Precio del código 2 | Precio del código 3 |
+| --- | --- | ---: | ---: |
+| 1 | BASICA 25000 | 25.000 | 3.850 |
+| 2 | BASICA 30000 | 30.000 | 4.000 |
+| 3 | ESPECIAL 80000 | 0 (va en el pedido) | 0 |
+| 4 | ESPECIAL 42000 | 0 | 0 |
+| 5 | ESPECIAL 110000 | 0 | 0 |
+| 6 | TARIFA ESPECIAL 2 | 0 | 0 |
+| 7 | TARIFA ESPECIAL 3 | 0 | 0 |
+
+El código 54 vale 0 en todas las listas. Cofema (74.790 y 4.600 el kilo) no coincide con ninguna lista básica: va con una especial (Ronaldo asume la 3) y el precio en el pedido. **La lista de cada cliente la confirma Julio.**
+
+### 11.3 Recibo RC oficial (17 columnas, 4 filas por recibo)
+
+Títulos exactos, **con sus erratas** («INDENTIDAD», «VENDEDDOR»), porque son los que espera Helisa: TIPO · FECHA · NUMERO DE DOC. · CUENTA · CONCEPTO · CENTRO · VALOR · NATURALEZA · INDENTIDAD TERCERO · CUENTA BANCARIA · ID VENDEDDOR / COBRADOR · FECHA CHEQUE · CLASE MOV. · IND. A AFECTAR · TIPO DE DOCUMENTO QUE AFECTA · NUMERO DE DOCUMENTO QUE AFECTA · CUOTA QUE AFECTA.
+
+| Fila (en este orden) | CUENTA | NATURALEZA | CLASE MOV. | IND. A AFECTAR | ID VENDEDDOR / COBRADOR | Cruce (tipo · número · cuota) |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 · Caja F | 11050501 | D | F | 1 | — | — |
+| 2 · Caja N | 111050501 | D | N | 1 | — | — |
+| 3 · Cartera F | 13050501 | C | F | 2 | 828002730 | prefijo · consecutivo · 1 |
+| 4 · Cartera N | 112050501 | C | N | 2 | — | — |
+
+- TIPO `RC` en las cuatro filas; FECHA, NUMERO DE DOC., CONCEPTO («PAGO FACTURA {prefijo} {consecutivo}»), VALOR e INDENTIDAD TERCERO (NIT sin DV) se repiten.
+- NUMERO DE DOC. se muestra con 8 dígitos (formato `0000000#`: 00029671); la celda guarda el número.
+- CENTRO, CUENTA BANCARIA y FECHA CHEQUE van vacíos en efectivo. Con transferencia cambian la cuenta de caja por la del banco y se llena la CUENTA BANCARIA (**por confirmar** con Julio).
+- Un recibo que paga varias facturas repite las filas de cartera por factura, cada una con su cruce (propuesta de Ronaldo, LevR §12.2; no está en el Excel: **por confirmar**).
+- El orden es caja F, caja N, cartera F, cartera N (la semilla RC v2 de 5.3 los ponía F, F, N, N).
+- El prefijo del cruce es **FEV** en el ejemplo de Julio y **FVE** en las facturas reales de Comserva: **por confirmar**. El configurador no lo fija; sale de `factura_helisa.prefijo`.
+
+### 11.4 Reglas del CLAUDE.md que cambian
+
+Reemplazan las reglas PEDIDO, ARCHIVOS PARA HELISA y RECIBO de la sección 3:
+
+```markdown
+- PEDIDO (OP): un pedido por cierre de punto facturable y periodo. TIPO 'OP'. NUMERO = consecutivo del pedido dentro del archivo (1, 2…), repetido en todas sus líneas; el número interno del sistema es otro y nunca se reutiliza. Líneas tipo 2 (servicio: código de la cartilla de Helisa, lista del cliente, cantidad, valor unitario sin IVA) y una línea tipo 3 (comentario «SERVICIO ESPECIAL DE ASEO PRESTADO MES DE {MES AAAA}») con código, lista, cantidad y valor vacíos. VALOR TOTAL y los cuatro descuentos SIEMPRE vacíos (Helisa multiplica). CÓDIGO NEGOCIO, Obsequio, bodega, unidad, referencia y código de barras vacíos. Vendedor 828002730 y centro de costo '0101' (texto) en todas las líneas. NIT sin DV. NUNCA cuentas, naturaleza ni IVA. Suma de round(cantidad × unitario, 2) = subtotal del cierre (PEDIDO_NO_CUADRA).
+- LISTA DE PRECIO: la del cliente (cliente.lista_precio_helisa, 1 a 7). Sin lista no hay pedido (CLIENTE_SIN_LISTA). En las listas especiales (precio 0 en la cartilla) el valor unitario del pedido debe ser > 0 (LISTA_ESPECIAL_SIN_VALOR).
+- ARCHIVOS PARA HELISA: los títulos se copian EXACTOS, con tildes y con las erratas de Helisa («INDENTIDAD TERCERO», «ID VENDEDDOR / COBRADOR»). Plantillas oficiales en Excel con fila de títulos: fecha como celda de fecha, centro de costo como texto, número del recibo con formato 0000000#, sin separador de miles. Si la plantilla es .txt o .csv: Windows-1252, CRLF, ningún campo con el separador (SEPARADOR_EN_TEXTO) y caracteres fuera de Windows-1252 = CODIFICACION_INVALIDA.
+- RECIBO → RC de 17 columnas y 4 filas por factura aplicada: caja F (D, ind 1), caja N (D, ind 1), cartera F (C, ind 2) y cartera N (C, ind 2). Cobrador (828002730) y cruce (TIPO, NUMERO y CUOTA del documento que afecta) SOLO en la fila de cartera F. CENTRO vacío. Prefijo del cruce = factura_helisa.prefijo, nunca fijo en el código (CRUCE_SIN_PREFIJO). Débitos = créditos por libro (LIBROS_DESCUADRADOS).
+```
+
+### 11.5 Códigos de error nuevos (se suman a 3.1)
+
+| Código | Cuándo se lanza | Dónde | HTTP |
+| --- | --- | --- | --- |
+| `CLIENTE_SIN_LISTA` | Generar el pedido de un cliente sin `lista_precio_helisa` | Motor de pedidos; bloqueo en pre-cierre | 422 |
+| `LISTA_ESPECIAL_SIN_VALOR` | Línea de servicio con lista especial (precio 0 en la cartilla) y valor unitario 0 o vacío | Motor de pedidos | 422 |
+| `CRUCE_SIN_PREFIJO` | Fila de cartera F de un RC cuya factura no tiene prefijo registrado | Motor de movimiento contable | 422 |
+
+### 11.6 Épicas que cambian
+
+- **0.3 · Estructuras oficiales:** **cumplida el 23 de octubre** (Excel de Julio). Queda cargar las plantillas PED v1 y RC v2 del anexo de Ronaldo en el configurador y aprobarlas cuando se cierren el prefijo y las cuentas N.
+- **0.5 · Cartilla:** la de servicios y listas ya llegó (hoja «Servicios»). Falta la **cartilla de clientes con su lista** y su código.
+- **0.6 · Importación de prueba:** se hace con los dos Excel de `pruebas/archivosplano/salida/` (pedido OP de Cofema de septiembre y un recibo RC de ejemplo) en una **empresa de pruebas** de Julio. Si el asistente no lee .xlsx, se exporta a .xls 97-2003 o a .txt desde el configurador y se repite. Resultado esperado: «Lista de errores» vacía y, al facturar llamando el pedido, gravado $1.886.500, IVA $358.435 y total $2.244.935.
+- **C1 · Clientes:** `lista_precio_helisa` pasa a ser obligatoria para facturar (CLIENTE_SIN_LISTA). El código de cliente deja de ser obligatorio cuando es el mismo NIT (por confirmar).
+- **C4 · Parámetros de Helisa:** vendedor 828002730 y centro 0101 **confirmados**; negocio **vacío**; la lista por defecto desaparece (va por cliente); tipo del pedido `OP`.
+- **C6 · Carga de cartillas:** importa la hoja «Servicios» (57 códigos × 7 listas, con IVA) a `servicio_helisa`, `lista_precio_helisa` y `precio_servicio_helisa`.
+- **C7 · Equivalencias:** semilla real: `basico` → 2, `kg_adicionales` → 3, `fijo` → 2, exento → 54; `kg_total` (por kilo) → 3 **por confirmar**. Ya no hay códigos `PEND-…`.
+- **G′2 · Plantillas:** se usan las semillas del anexo de Ronaldo: **PED v1** «Pedido OP de Helisa · Excel de Julio (24 columnas)» y **RC v2** «Recibo RC de Helisa · Excel de Julio (17 columnas, 4 filas)». La OP v1 «observada 21 oct» y la RC v2 de 22 columnas de este documento **no se siembran** (ver 11.7).
+- **G′3 · Motor y escritores:** escritor **xlsx** con estilos (fecha, texto «0101», `0000000#`), además del TXT/CSV. La vista previa muestra la hoja tal como la verá Julio.
+- **G′4 · Archivo de pedidos:** numera los pedidos 1..n dentro de cada archivo; el número que asigne Helisa al importar se registra en el resultado (G′6), **por confirmar** si lo muestra.
+- **G′5 · Archivo RC:** cuatro filas por factura aplicada, cruce y cobrador solo en la cartera F, tipo `RC`.
+
+### 11.7 DDL: se parte del anexo validado de Ronaldo
+
+El DDL de 5.3 es **orientativo y no se ejecutó**; `arquitectura/schema_v6_pedido_recibo.sql` sí (PostgreSQL 18.6, 23 oct). Orden de migración propuesto: `schema.sql` → `schema_v5_archivos_planos.sql` → **`schema_v6_pedido_recibo.sql` (Ronaldo)** → lo que el anexo de 5.3 tiene y el de Ronaldo no, con los ajustes de abajo.
+
+| Tema | Anexo de 5.3 (Adrián, orientativo) | Anexo de Ronaldo (validado) | Qué se usa |
+| --- | --- | --- | --- |
+| Tipo de plantilla del pedido | `tipo_plano` + `'OP'` | `tipo_plano` + `'PED'`; `tipo_documento = 'OP'` | **`PED`**; `OP` es el tipo de documento en Helisa. Ajustar `ck_archivo_cuadre` a `tipo in ('TER','PED')` |
+| Formato | Sin `xlsx` | `formato_plano` + `'xlsx'` | El de Ronaldo |
+| Catálogo de servicios | `concepto_helisa` (id serial, código `PEND-…`) | `servicio_helisa` (PK `codigo`, `iva_pct`, `uso`) con 17 códigos sembrados | **`servicio_helisa`**, con las columnas que faltan para la Fase 2 (abajo) |
+| Listas | `lista_precio_helisa(codigo text)` | `lista_precio_helisa(id smallint)` + `precio_servicio_helisa` (119 precios) | Las de Ronaldo. **No** crear las de 5.3 |
+| Lista del cliente | `cliente.lista_precio_helisa text` | `cliente.lista_precio_helisa smallint` → FK | La de Ronaldo. **No** repetir el `alter table cliente` de 5.3 para esa columna |
+| Línea de plantilla | `componente`, `uso_cuenta`, `ind_fiscal`; check `ck_linea_familia` (concepto y comentario sin cuenta) | `ind_afectar`, `lleva_cruce`, `lleva_cobrador`; el código del servicio va en `cuenta`; check `ck_linea_cuenta` | Las tres columnas de Ronaldo **más** `componente` y `uso_cuenta` de 5.3. **No** crear `ind_fiscal` (lo cubre `ind_afectar`) ni `ck_linea_familia` (rompe la semilla PED de Ronaldo, que lleva código y naturaleza en las líneas de servicio) |
+| Semillas de plantillas | Ids 3 (OP v1 observada) y 4 (RC v2 de 22 columnas) | Ids 3 (PED v1) y 4 (RC v2 de 17 columnas); retira la RC v1 | **Las de Ronaldo.** Las de 5.3 chocan por id y quedan descartadas |
+| Pedido, equivalencias, cuentas, datos fiscales, FVE, integración y trazabilidad | `pedido_helisa`, `equivalencia_concepto`, `cuenta_contable`, `cliente_fiscal`, `factura_carga`, `integracion_envio`, vistas TRZ | No los tiene | **Los de 5.3**, con los ajustes de abajo |
+
+Además, dos detalles del anexo de Ronaldo que hay que revisar antes de aprobar las plantillas:
+
+1. La línea de comentario de PED v1 tiene `lleva_tercero = false`, pero en el Excel de Julio la línea 3 **sí** repite IDENTIDAD CLIENTE, vendedor y centro de costo. Verificar que el motor no la deje vacía.
+2. La semilla deja `prefijo_doc_fuente = 'FVE'` en la RC v2 mientras se confirma FEV o FVE; el cruce debe salir del prefijo de cada factura registrada.
+
+**Ajustes al anexo de 5.3 (orientativo, validar en el contenedor de PostgreSQL 18):**
+
+```sql
+-- Corre DESPUÉS de arquitectura/schema_v6_pedido_recibo.sql.
+-- Se omiten de 5.3: concepto_helisa, lista_precio_helisa, cliente.lista_precio_helisa,
+-- 'OP' en tipo_plano, ind_fiscal, ck_linea_familia y las semillas de plantillas 3 y 4.
+
+-- Cartilla de Ronaldo con lo que necesita la Fase 2 (catálogo de productos de la factura electrónica)
+alter table servicio_helisa
+  add column tipo           smallint not null default 2 check (tipo in (1, 2)),   -- 2 servicio
+  add column unidad_dian    text,                                                -- '94' unidad · 'KGM' kilogramo (probado en el sandbox de Factus)
+  add column origen         text not null default 'cartilla' check (origen in ('manual', 'cartilla', 'conekta')),
+  add column actualizado_en timestamptz not null default now();
+update servicio_helisa set unidad_dian = case when uso in ('basico', 'exento') then '94' else 'KGM' end;
+
+-- Equivalencias contra la cartilla real
+create table equivalencia_concepto (
+  id               serial primary key,
+  componente       componente_tarifa not null,
+  categoria_id     int references categoria_residuo(id),
+  tarifa_id        int references tarifa(id),
+  servicio_codigo  text not null references servicio_helisa(codigo),   -- antes concepto_id → concepto_helisa
+  texto_linea      text,
+  estado           estado_equivalencia not null default 'borrador',
+  vigente_desde    date,
+  creada_por       uuid not null references usuario(id),
+  creada_en        timestamptz not null default now(),
+  aprobada_por     uuid references usuario(id),
+  aprobada_en      timestamptz,
+  check (componente <> 'kg_categoria' or categoria_id is not null),
+  check (estado <> 'aprobada' or (aprobada_por is not null and vigente_desde is not null))
+);
+-- La lista ya no va en la equivalencia: sale de cliente.lista_precio_helisa.
+
+-- cuenta_contable.concepto_id → servicio_codigo
+--   servicio_codigo text references servicio_helisa(codigo)   -- uso 'ingreso' (Fase 2)
+
+-- Pedido: número del archivo y lista del cliente
+--   en pedido_helisa:  lista_precio_id smallint references lista_precio_helisa(id)   (en lugar de lista_precio text)
+alter table pedido_helisa
+  add column numero_archivo smallint,          -- NUMERO del pedido OP dentro del archivo (1..n)
+  add column numero_helisa  text;              -- el que asigne Helisa al importar, si lo devuelve (por confirmar)
+create unique index ux_pedido_numero_archivo on pedido_helisa (archivo_plano_id, numero_archivo)
+  where archivo_plano_id is not null and estado <> 'anulado';
+
+-- Archivo: el pedido se llama PED
+alter table archivo_plano drop constraint if exists ck_archivo_cuadre;
+alter table archivo_plano add constraint ck_archivo_cuadre check (total_debitos = total_creditos or tipo in ('TER', 'PED'));
+
+-- Plantilla: formato de celda para el escritor xlsx
+alter table plantilla_plano_columna
+  add column formato_celda text check (formato_celda in ('fecha', 'texto', 'entero', 'decimal', '0000000#'));
+```
+
+### 11.8 Exportadores con el formato real (6.3 y 6.4)
+
+**Pedido de Cofema, septiembre de 2026** (lista especial 3 supuesta por Ronaldo, por confirmar; código del cliente vacío porque es el mismo NIT). Así queda la hoja, sin títulos repetidos; las columnas vacías se omiten aquí para leerla:
+
+| TIPO | NUMERO | FECHA | IDENTIDAD CLIENTE | IDENTIDAD VENDEDOR | TIPO CONCEPTO | CODIGO CONCEPTO | ARTÍCULO/SERVICIO | LISTA DE PRECIO | CANTIDAD | VALOR UNITARIO | Centro de costo |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| OP | 1 | 26/09/2026 | 891190218 | 828002730 | 2 | 2 | RECOLEC. TRANSP Y DISPOS. FINAL RESIDUOS BIOLOGICOS | 3 | 1 | 74790 | 0101 |
+| OP | 1 | 26/09/2026 | 891190218 | 828002730 | 2 | 3 | KILOGRAMOS ADICIONALES | 3 | 393.85 | 4600 | 0101 |
+| OP | 1 | 26/09/2026 | 891190218 | 828002730 | 3 | | SERVICIO ESPECIAL DE ASEO PRESTADO MES DE SEPTIEMBRE 2026 | | | | 0101 |
+
+Si la importación de prueba exige TXT, el configurador produce las mismas 24 columnas con el separador que indique Julio; la validación de «exactamente 23 separadores» de 6.3 aplica solo a ese caso.
+
+**Recibo 35672 de $500.000 aplicado a la FVE 25756** (prefijo por confirmar):
+
+| TIPO | FECHA | NUMERO DE DOC. | CUENTA | CONCEPTO | VALOR | NATURALEZA | INDENTIDAD TERCERO | ID VENDEDDOR / COBRADOR | CLASE MOV. | IND. A AFECTAR | TIPO DE DOCUMENTO QUE AFECTA | NUMERO DE DOCUMENTO QUE AFECTA | CUOTA QUE AFECTA |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| RC | fecha | 00035672 | 11050501 | PAGO FACTURA FVE 25756 | 500000 | D | 891190218 | | F | 1 | | | |
+| RC | fecha | 00035672 | 111050501 | PAGO FACTURA FVE 25756 | 500000 | D | 891190218 | | N | 1 | | | |
+| RC | fecha | 00035672 | 13050501 | PAGO FACTURA FVE 25756 | 500000 | C | 891190218 | 828002730 | F | 2 | FVE | 25756 | 1 |
+| RC | fecha | 00035672 | 112050501 | PAGO FACTURA FVE 25756 | 500000 | C | 891190218 | | N | 2 | | | |
+
+En 6.4, la regla «Cruce» pasa de `formato_cruce` en una columna a tres columnas, y la regla «Tipo y número» queda en `RC` (sin RC1 ni RC2, salvo que Julio diga otra cosa).
+
+### 11.9 Pruebas de regresión con el formato real
+
+Se suman a las de la sección 7. R4 y R6 se reemplazan por R20 y R22.
+
+| # | Caso | Datos de entrada | Resultado esperado |
+| --- | --- | --- | --- |
+| R20 | **Pedido de Cofema en el formato de Julio** (reemplaza R4) | Cierre de R1; cliente con lista 3; plantilla PED v1 | Una hoja con fila de títulos idéntica, carácter por carácter, a la del Excel de Julio (24 títulos, con tildes); 3 filas con NUMERO 1; línea 2: código 2, lista 3, cantidad 1, valor 74790; línea 2: código 3, lista 3, cantidad 393.85, valor 4600; línea 3: código, lista, cantidad y valor vacíos; VALOR TOTAL, descuentos, negocio y obsequio vacíos en las tres; FECHA es celda de fecha; «0101» es texto (no 101); suma 1.886.500,00 |
+| R21 | Comparación con el ejemplo de `salida/` | El pedido de R20 y `pruebas/archivosplano/salida/COMSERVA_OP_2026-09_ejemplo.xlsx` | Mismas columnas, mismos valores por celda en las filas de Cofema (salvo la fecha y el código del cliente, que Ronaldo llena con el NIT: diferencia que se documenta mientras Julio confirma) |
+| R22 | **Recibo RC de 4 filas** (reemplaza R6) | Recibo 35672 de $500.000 aplicado a la FVE 25756 | 4 filas en el orden caja F, caja N, cartera F, cartera N; cuentas 11050501, 111050501, 13050501 y 112050501; D = C = 500.000 por libro; cobrador y cruce (FVE · 25756 · 1) solo en la fila 3; CENTRO vacío; NUMERO DE DOC. se ve 00035672 |
+| R23 | Recibo que paga dos facturas | $600.000 aplicado a dos FVE | 6 filas: caja F y N por el total; cartera F y N por cada factura, cada cartera F con su cruce; D = C por libro |
+| R24 | Pedido de dos clientes en un archivo | Cofema (lista 3) y un cliente de cobro fijo de 25.000 (lista 1) | NUMERO 1 y 2; el de lista 1 lleva 25000 (igual al precio de la cartilla); al regenerar sin Cofema, el otro pasa a NUMERO 1 |
+| R25 | Casos negativos del formato real | Cliente sin lista; lista especial con valor 0; factura sin prefijo; un texto con la errata «IDENTIDAD TERCERO» corregida en la plantilla | CLIENTE_SIN_LISTA; LISTA_ESPECIAL_SIN_VALOR; CRUCE_SIN_PREFIJO; la plantilla no se aprueba si un título no coincide con el de Julio |
+
+La prueba de bytes en Windows-1252 (antigua R4) se conserva solo para la salida TXT o CSV, si la importación de prueba la exige.
+
+### 11.10 Pendientes actualizados (reemplazan las filas de formato de la sección 10)
+
+| Pendiente | Estado al 25 oct | Con quién | Bloquea |
+| --- | --- | --- | --- |
+| Estructura del pedido, del recibo, cartilla de servicios y listas | **Recibido** el 23 oct [Excel Julio 23-oct] | — | — |
+| Formato que acepta de verdad el asistente de importación (.xlsx, .xls 97-2003 o .txt) | Por confirmar con la importación de prueba de `salida/` | Julio | 0.6, G′3 |
+| Prefijo del cruce: FEV (ejemplo) o FVE (facturas) | Por confirmar | Julio | G′5 |
+| Lista de precio de cada cliente | Por confirmar | Julio | C1, G′3 |
+| Código del cliente vacío cuando es el mismo NIT, o siempre el de la cartilla | Por confirmar | Julio | C1, G′3 |
+| Cuentas del libro N (111050501 y 112050501) | Por confirmar | Contador | G′5 |
+| Cuenta de bancos y CUENTA BANCARIA para transferencias | Por confirmar | Julio | G′5 |
+| Código para el cobro solo por kilo (3 o el de la categoría) | Por confirmar | Julio y Lucrecia | C7 |
+| Varias facturas en un recibo: repetir las filas de cartera | Por confirmar | Julio | G′5 |
+| Documento Pedido habilitado en el Helisa de Comserva | Sigue pendiente | Julio y Comserva | G′4 en real, H6 |

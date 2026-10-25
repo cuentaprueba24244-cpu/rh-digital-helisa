@@ -2,7 +2,7 @@
 
 # Estimación de tiempo y costo (v2) · RH digital Comserva
 
-**Versión 2.0 · jueves 22 de octubre de 2026.** Reemplaza la *Estimación v1* (18 de octubre, calculada sobre el levantamiento v4) y el ajuste preliminar del README (v5). Se basa en el brief de decisiones v6 del equipo (cuyas cifras manda sobre cualquier otra fuente), en lo visto y dicho en la reunión del 21 de octubre de 2026 con Comserva (hasta el minuto 36:44 de la grabación), en `SPEC.md` v1.1 (épicas A–H y G′) y en la investigación del 22 de octubre sobre Helisa, la DIAN y los proveedores de facturación electrónica.
+**Versión 2.0 · jueves 22 de octubre de 2026 · complementada el domingo 25 de octubre de 2026** (sección 11: reconciliación con los documentos de Avilés y de Ronaldo, y costo de Factus). Reemplaza la *Estimación v1* (18 de octubre, calculada sobre el levantamiento v4) y el ajuste preliminar del README (v5). Se basa en el brief de decisiones v6 del equipo (cuyas cifras manda sobre cualquier otra fuente), en lo visto y dicho en la reunión del 21 de octubre de 2026 con Comserva (hasta el minuto 36:44 de la grabación), en `SPEC.md` v1.1 (épicas A–H y G′) y en la investigación del 22 de octubre sobre Helisa, la DIAN y los proveedores de facturación electrónica.
 
 Responde cinco preguntas: cuánto trabajo es cada propuesta, cuánto tiempo toma con tres personas que trabajan con Claude Code, cuánto cobrar, cuánto le cuesta y cuánto le ahorra a Comserva, y qué hacer si el presupuesto del cliente es menor. Donde algo es inferencia o supuesto, se dice; lo que depende del cliente va marcado **«por confirmar»**.
 
@@ -148,6 +148,8 @@ Notas: la ayuda oficial muestra como imágenes la estructura de pedidos y client
 | Pruebas y piloto | Sandbox del proveedor, regresión con FVE 25756 y 25997, casos de rechazo, piloto en paralelo de un ciclo | 24 | 20–28 |
 | Capacitación | Manual de facturación y sesiones con Lucrecia y Gerencia | 10 | 8–12 |
 | **Total** | | **240** | **200–300** |
+
+**25 oct · prueba en el sandbox de Factus.** Ronaldo emitió, consultó, reenvió (idempotencia) y anuló con nota crédito la factura de Cofema de septiembre en el sandbox de Factus el 23 de octubre (`pruebas/sandbox-factus/`). Eso reduce el riesgo de la partida «Integración con el proveedor» (40 h) y hace defendible el extremo bajo del rango (≈ 200 h), pero **las 240 h centrales se mantienen**: la prueba cubre autenticación, emisión, consulta, PDF, idempotencia y una nota, no los datos fiscales, la numeración, las notas aprobadas, el envío, RADIAN, la contingencia, la contabilización en Helisa, el panel, la habilitación ni el piloto. Ver 11.2.
 
 El archivo de pedidos de la Fase 1 **no se descuenta** aunque se contrate la Propuesta 2 completa desde el inicio: queda como **contingencia** (si el proveedor falla, Comserva puede facturar en Helisa llamando pedidos) y para lo que siga facturando Helisa. «Factura en sitio» no está incluida.
 
@@ -322,7 +324,8 @@ Lectura: a la tarifa mínima, si el proyecto se complica, el neto queda en ≈ $
 | Habilitar el documento Pedido en Helisa | Propuesta 1 | **Por confirmar** | Licencia o parametrización |
 | **Total recurrente típico de la Fase 1** | Ambas | **$55.000–90.000 al mes** | Más IVA si el proveedor lo factura; varía con la TRM |
 | **Helisa Conekta** | 1B (y opcional en la P2) | **$211.680 al mes** = $2.540.160 al año | IVA no indicado (con IVA ≈ $251.899 al mes, $3.022.790 al año); contrato anual; exige Helisa en el hosting de Helisa (≈ $60.000 por usuario al mes; para 3 usuarios $2.160.000 al año, solo si no lo tiene: por confirmar) |
-| **Proveedor tecnológico de facturación electrónica** | P2 | **≈ $205.000–560.000 al año** según proveedor y volumen; cotizar | Plemsi: 1.200 docs $205.200, 2.400 $367.200, 6.000 $529.200. MATIAS API: 1.200 $265.000, 3.000 $365.000, 8.000 $560.000 (certificado incluido; opera como software propio). Dataico: por cotización. Con ≈ 240 facturas al mes (≈ 2.900 al año + notas) aplican los planes de 3.000–6.000 docs: ≈ $365.000–529.200 al año |
+| **Factus** (proveedor tecnológico; probado en sandbox el 23 oct) | P2 | **$220.000 al año** (1.600 docs) **o $290.000** (5.000 docs) | Tabla recibida por escrito de Factus (plan anual, conexión API, 1 NIT, 2026): 150 docs $169.000; 400 $190.000; 1.600 $220.000; 2.500 $260.000; 5.000 $290.000; 10.000 $390.000. Incluye notas crédito y débito, documento soporte y nota de ajuste; rangos ilimitados. Con ≈ 60 facturas al mes de residuos basta el de 1.600; con ≈ 240 al mes (≈ 2.900 al año + notas), el de 5.000. RADIAN de recepción es otro paquete, opcional. **Habilitación de Factus ante la DIAN por verificar** |
+| Proveedor tecnológico alternativo | P2 | ≈ $205.000–560.000 al año según proveedor y volumen; cotizar | Plemsi: 1.200 docs $205.200, 2.400 $367.200, 6.000 $529.200. MATIAS API: 1.200 $265.000, 3.000 $365.000, 8.000 $560.000 (certificado incluido; opera como software propio). Dataico: por cotización. Con ≈ 240 facturas al mes (≈ 2.900 al año + notas) aplican los planes de 3.000–6.000 docs: ≈ $365.000–529.200 al año |
 | Certificado de firma digital | P2 | ≈ $150.000 al año | Solo si el plan no lo incluye |
 | Plan de facturación electrónica de Helisa | P2 | Podría bajar (por confirmar) | Referencia helisa.com: 3.000 docs $835.380 al año; 6.000 $963.900. Si Helisa sigue facturando productos y arrendamiento, Comserva mantiene un plan menor (360 docs $424.116; 1.200 $629.748) |
 | WhatsApp Business (Meta) | C2 | Menos de US$5 al mes | |
@@ -368,13 +371,13 @@ Beneficio neto con los supuestos base (ahorro de horas menos costos recurrentes 
 | | P1 · 1A | P1 · 1B | P2 |
 | --- | ---: | ---: | ---: |
 | Ahorro de horas al mes | $660.000 | $680.000 | $870.000 |
-| Costos recurrentes de terceros al mes | $55.000–90.000 | $55.000–90.000 + Conekta $211.680 (≈ $251.899 con IVA) | $55.000–90.000 + proveedor ≈ $30.400–46.700 + certificado $0–12.500 |
-| **Beneficio neto al mes** | **$570.000–605.000** | $338.000–413.000 | **$721.000–785.000** |
+| Costos recurrentes de terceros al mes | $55.000–90.000 | $55.000–90.000 + Conekta $211.680 (≈ $251.899 con IVA) | $55.000–90.000 + Factus ≈ $18.300–24.200 + certificado $0–12.500 |
+| **Beneficio neto al mes** | **$570.000–605.000** | $338.000–413.000 | **$743.000–797.000** |
 | Precio (tarifa recomendada) | $37,8 M | $42,0 M | $52,2 M |
-| Meses para recuperar (base) | **62–66** | 102–124 | **67–72** |
+| Meses para recuperar (base) | **62–66** | 102–124 | **66–70** |
 | Meses para recuperar (escenario alto) | 35–37 | 48–52 | 35–36 |
 
-En la P2, si Comserva puede bajar su plan de facturación electrónica de Helisa, el beneficio sube ≈ $17.000–45.000 al mes según el plan que tenga hoy (3.000 o 6.000 documentos) y el que conserve (360 o 1.200) (por confirmar).
+Con Factus en lugar de Plemsi (25 oct): antes eran proveedor ≈ $30.400–46.700 al mes, beneficio neto $721.000–785.000 y 67–72 meses; el escenario alto no cambia (35–36). En la P2, si Comserva puede bajar su plan de facturación electrónica de Helisa, el beneficio sube ≈ $17.000–45.000 al mes según el plan que tenga hoy (3.000 o 6.000 documentos) y el que conserve (360 o 1.200) (por confirmar).
 
 ### 7.4 Lectura y cómo usarlo con la gerencia
 
@@ -459,3 +462,60 @@ Si se materializan juntos N3, N4, N8 y el riesgo de sincronización, la Fase 0 +
 - **Investigación interna del 22 de octubre de 2026**: delta de la reunión frente a la v5 (riesgos N1–N14), formatos, Helisa (Conekta, importación de pedidos y de movimiento contable, planes de FE), normativa DIAN de factura electrónica y proveedores tecnológicos con API.
 - **Oficiales y de proveedores** (consultados el 22 de octubre de 2026): Helisa Conekta, condiciones y especificaciones técnicas de la API (helisa.com/producto/helisa-conekta, helisa.com/condicione-generales-del-servicio-helisa-conekta, helisa.com/ayudas/api); Helisa Hosting y planes de facturación electrónica (helisa.com/producto/servicio-helisa-hosting, helisa.com/producto/facturacion-electronica); DIAN, Resolución 000165 de 2023 (habilitación, numeración, notas, contingencia) y Oficio 013246 de 2025 (normograma.dian.gov.co); listado de proveedores tecnológicos habilitados al 31 de agosto de 2026 (dian.gov.co); precios de Plemsi (plemsi.com/precios-facturacion-electronica), MATIAS API (matias-api.com/comparar-planes) y Dataico (dataico.com/planes-y-precios).
 - **Datos tributarios y laborales** (de la v1): Decretos 1469 y 1470 de 2025 (SMMLV), Resolución DIAN 238 de 2025 (UVT), tabla de retención 2026, UGPP (independientes), Superfinanciera (TRM).
+
+---
+
+## 11. Complemento del 25 de octubre de 2026: reconciliación con Avilés y Ronaldo
+
+### 11.1 Con los documentos de Avilés: cuadran
+
+`propuesta/Costos detallados P1 y P2 (v6).html` y `propuesta/Propuesta económica comparativa (v6).html` (XxavilesxX) se derivan de esta v2 y **cuadran exacto** a $60.000 la hora:
+
+| Bloque | Horas | Esta v2 | Avilés |
+| --- | ---: | ---: | ---: |
+| Fase 0 + Fase 1 (1A) | 630 (las mismas 11 épicas de 3.1) | $37,8 M | $37,8 M ✓ |
+| Conekta (1B) | 70 | $4,2 M | $4,2 M ✓ |
+| Fase 2 | 240 | $14,4 M | $14,4 M ✓ |
+| C1 · C2 | 190 · 110 | $11,4 M · $6,6 M | Iguales ✓ |
+| Propuesta 1 · Propuesta 2 | | $37,8 M (con Conekta $42,0 M) · $52,2 M (con Conekta $56,4 M) | Iguales ✓ |
+
+La forma de pago es la de 5.4 (Fase 1 y Fase 2: 30/30/30/10; Conekta: 50/50), con vigencia de 30 días, garantía de 90 días por fase y bolsa de soporte opcional de $480.000 al mes (8 h).
+
+**Lo que Avilés aporta y esta v2 no tenía:**
+
+- **Hosting con precios verificados el 22 de octubre:** Hostinger KVM 2 (recomendado) US$14,99 al mes en renovación ≈ **$47.600 al mes** (primer plazo US$8,79); OVH VPS-2 desde US$8,50; DigitalOcean 4 GB con respaldo diario US$31,20 ≈ $99.000. No sirven el hosting compartido de Hostinger (MySQL, sin PostgreSQL ni generación de PDF) ni los planes gratuitos de Supabase, Neon o Vercel; Vercel Pro + Neon + R2 (≈ $86–130 mil) obligaría a rediseñar. Con R2 (≈ $3.000) y dominio (≈ $6.000), la base de la P1 · 1A queda en **≈ $57.000 al mes**: dentro del rango $55.000–90.000 de la sección 6, en su extremo bajo.
+- Costos fijos al mes: P1 · 1B ≈ $269.000; P2 ≈ $101.000–134.000; P2 + Conekta ≈ $313.000–346.000. Primer año: A $38,5 M · B $45,2 M · C $53,4–53,8 M · D $60,2–60,6 M.
+- Otros: Helisa Hosting 3 usuarios $2,16 M al año; Conekta con IVA ≈ $251.900 al mes; Resend 3.000 correos al mes y Brevo 300 al día; Sentry 5.000 errores al mes gratis (Team US$26); Dataico Empresarial $777.600 sin precio público de API; MATIAS Emprendedor 3.000 documentos $365.000; tabla «Qué asume cada parte».
+
+**Lo que no cuadra con Avilés:** su costo del proveedor en la P2 toma Plemsi (6.000 a 12.000 documentos, $529.200–777.600 al año), contando también los eventos RADIAN como documentos. Con Factus y el volumen real, el proveedor cuesta **$220.000–290.000 al año** (≈ $18.300–24.200 al mes); en Factus RADIAN es un paquete aparte de *recepción*. Recalculado, el costo fijo de la P2 baja a ≈ $75.000–93.000 al mes (VPS + R2 + dominio + Factus + certificado de $0–12.500). Conviene que Avilés lo actualice en la propuesta económica, y que esa propuesta muestre también el escenario de presupuesto de 10–15 M de la sección 8, que hoy no tiene.
+
+### 11.2 Con Ronaldo: por qué se mantienen 240 h en la Fase 2
+
+En su levantamiento v6 (`levantamiento requerimientos/`, §1 y §12.6) Ronaldo estima la propuesta B en **≈ 80–120 h más que A**. Esa cifra cuenta, en la práctica, el adaptador del proveedor y la prefactura, que es lo que su prueba en el sandbox de Factus demostró que funciona. Las 240 h de la sección 3.4 incluyen además trabajo que la prueba no toca:
+
+| Partida de 3.4 | Horas | ¿La cubre la prueba del sandbox? |
+| --- | ---: | --- |
+| Integración con el proveedor | 40 | **En parte**: token, emisión, consulta, PDF, idempotencia y una nota. Faltan XML, renovación del token, cola con 80 peticiones por minuto, traducción de errores y la corrección de CBF02. Se podría bajar 8–10 h |
+| Datos fiscales del cliente | 24 | No |
+| Catálogo e IVA | 10 | No (el IVA lo confirma el contador) |
+| Prefactura y emisión por lote | 20 | No (la prueba fue una factura armada a mano) |
+| Numeración | 8 | En parte (Factus asigna el número) |
+| Notas crédito y débito con aprobación de Gerencia | 24 | Solo la anulación técnica |
+| Envío y RADIAN | 14 | No |
+| Contingencia | 8 | No |
+| Contabilización en Helisa (MC-FV = plantilla ASI de Ronaldo) | 24 | No; las cuentas siguen pendientes |
+| Panel de facturación y conciliación | 20 | No |
+| Habilitación ante la DIAN | 14 | No (y la constancia de Factus está por verificar) |
+| Pruebas y piloto | 24 | No |
+| Capacitación | 10 | No |
+
+Conclusión: **se mantienen 240 h (200–300)**. La prueba justifica el extremo bajo (≈ 200 h) si todo sale bien, no 80–120 h. Cotizar la Fase 2 a 80–120 h dejaría sin pagar ≈ 120–160 h (≈ $7–10 M a la tarifa recomendada). Hay que unificar el mensaje con Ronaldo antes de que su cifra llegue a Comserva.
+
+### 11.3 Costo de Factus en la estimación
+
+- **Plan:** $220.000 al año (1.600 documentos) si el servicio de residuos factura ≈ 60 al mes; $290.000 al año (5.000 documentos) si son ≈ 240 al mes con notas. El plan de 150 documentos que sugería el README de la prueba (con 12 facturas al mes de la v5) no alcanza.
+- **Certificado de firma:** sin cotización formal. Los términos de Factus sugieren que va dentro del plan (el plan corre desde la activación del certificado); se mantiene $0–12.500 al mes hasta tenerlo por escrito.
+- **Condiciones que pesan en el costo:** retracto de 5 días hábiles y sin reembolso después; si el plan vence y no se renueva, la cuenta se bloquea; sin SLA; activación en hasta 3 días hábiles. **Habilitación de Factus ante la DIAN: por verificar** antes de recomendarlo en firme.
+- **Efecto en el costo-beneficio de la P2:** beneficio neto base $743.000–797.000 al mes y 66–70 meses para recuperar la inversión (sección 7.3).
+
+**Fuentes del complemento:** `propuesta/Costos detallados P1 y P2 (v6).html` y `propuesta/Propuesta económica comparativa (v6).html` (Avilés); `levantamiento requerimientos/Levantamiento de requerimientos Comserva (v6).html`, `pruebas/sandbox-factus/` y `DocumentacionAPIFACTUS/` (Ronaldo y Factus, 23 oct 2026).

@@ -257,7 +257,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
   function renderRibbon() {
     const nm = F.numeracion(F.resoluciones[0], S.facturas.length);
     const prov = F.proveedores.find((p) => p.id === S.config.proveedor);
-    $('#ribbon').innerHTML = `<span class="tag">Datos de prueba</span><span><b>Ambiente de pruebas</b> · proveedor tecnológico <b>simulado</b> (${esc(prov.id === 'por_elegir' ? 'por elegir: Plemsi o Dataico' : prov.nombre)}) · prefijo <b>RHD</b> de prueba · CUFE, XML y PDF ficticios: nada se envía a la DIAN.</span>${nm.alertas.length ? `<span class="alert">⚠ ${esc(nm.alertas.join(' · '))}</span>` : ''}<a href="#config" data-goto="config">Configuración</a>`;
+    $('#ribbon').innerHTML = `<span class="tag">Datos de prueba</span><span><b>Ambiente de pruebas</b> · proveedor tecnológico <b>simulado</b> (${esc(prov.id === 'por_elegir' ? 'por elegir: Factus (probado en su sandbox), Plemsi o Dataico' : prov.nombre)}) · prefijo <b>RHD</b> de prueba · CUFE, XML y PDF ficticios: nada se envía a la DIAN.</span>${nm.alertas.length ? `<span class="alert">⚠ ${esc(nm.alertas.join(' · '))}</span>` : ''}<a href="#config" data-goto="config">Configuración</a>`;
     $$('#ribbon [data-goto]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); state.tab = 'config'; render(); }));
   }
   function renderFlow() {
@@ -775,7 +775,7 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
   function renderConfig() {
     const nm = F.numeracion(F.resoluciones[0], S.facturas.length);
     const res = F.resoluciones;
-    const E = F.emisor;
+    const E = F.emisor; const FS = F.factus_sandbox;
     return `<div class="cfg">
       <section class="card">
         <div class="card-head"><h2>Proveedor tecnológico</h2><span class="badge warn plain">Por confirmar</span></div>
@@ -783,7 +783,18 @@ function sidebar(active){ const g=[['Operación',[['index.html','⌂','Inicio'],
           <div class="prov">${F.proveedores.map((p) => `<label class="${S.config.proveedor === p.id ? 'on' : ''}"><input type="radio" name="prov" value="${p.id}" ${S.config.proveedor === p.id ? 'checked' : ''}><div><b>${esc(p.nombre)}</b><small>${esc(p.tipo)} · ${esc(p.nota)}</small></div></label>`).join('')}</div>
           <p class="muted-note">El sistema habla con el proveedor por un adaptador: cambiar de proveedor es escribir un adaptador nuevo, no rehacer la facturación. En esta demostración el proveedor está <b>simulado</b>.</p>
           <div class="field"><label>Ambiente</label><div class="seg"><button type="button" class="on">Pruebas (habilitación)</button><button type="button" disabled title="Requiere la habilitación ante la DIAN y el set de pruebas aprobado">Producción</button></div><span class="help">Producción se activa después de habilitar el software del proveedor ante la DIAN y aprobar el set de pruebas (≈ 1 a 3 semanas, por confirmar).</span></div>
-          <dl class="kv2"><dt>Envío al cliente</dt><dd>${esc(S.config.envia_correo)}</dd><dt>Reintentos</dt><dd>Cada ${S.config.reintento_min} minutos si la DIAN no responde (contingencia tipo 04)</dd><dt>Plan del proveedor</dt><dd>≈ $205.000 a $560.000 al año según el proveedor y el volumen de documentos (Plemsi, Dataico, MATIAS API; cotizar)</dd><dt>Certificado de firma</dt><dd>Lo maneja el proveedor o lo compra Comserva (≈ $150.000 al año si no está incluido; por confirmar)</dd></dl>
+          <dl class="kv2"><dt>Envío al cliente</dt><dd>${esc(S.config.envia_correo)}</dd><dt>Reintentos</dt><dd>Cada ${S.config.reintento_min} minutos si la DIAN no responde (contingencia tipo 04)</dd><dt>Plan del proveedor</dt><dd>Factus: ${F.factus_sandbox.planes.map(([n, v]) => `${D.fmtNum(n)} docs ${fmtCOP(v)}`).join(' · ')} al año (por confirmar). Otros: ≈ $205.000 a $560.000 al año (Plemsi, Dataico, MATIAS API; cotizar)</dd><dt>Certificado de firma</dt><dd>Lo maneja el proveedor o lo compra Comserva (≈ $150.000 al año si no está incluido; por confirmar)</dd></dl>
+        </div>
+      </section>
+      <section class="card" id="factus-sandbox">
+        <div class="card-head"><h2>Factus · probado en el sandbox</h2><span class="badge warn plain">Prueba · por confirmar</span></div>
+        <div class="card-body" style="display:grid;gap:12px">
+          <div class="callout info"><b>${esc(FS.fecha)}:</b> ${esc(FS.ambiente)}. Es el único proveedor probado; Plemsi y Dataico siguen como alternativas. <b>Falta la constancia de habilitación de Factus ante la DIAN</b> (por confirmar).</div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>Paso de la prueba</th><th>Resultado</th></tr></thead><tbody>${FS.pasos.map(([p, r]) => `<tr><td>${esc(p)}</td><td>${esc(r)}</td></tr>`).join('')}</tbody></table></div>
+          <dl class="kv2"><dt>Prefijo de prueba</dt><dd class="mono">${esc(FS.prefijo_prueba)} <span class="muted" style="font-family:var(--font-ui)">· ${esc(FS.rango_prueba)}</span></dd><dt>Notas crédito</dt><dd class="mono">${esc(FS.rango_nc)} <span class="muted" style="font-family:var(--font-ui)">· rango de prueba del sandbox</span></dd><dt>Lo aprendido</dt><dd>${esc(FS.aprendido)}</dd></dl>
+          <p class="muted-note">${esc(FS.nota_rango)}</p>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th class="num">Documentos al año</th><th class="num">Precio al año</th></tr></thead><tbody>${FS.planes.map(([n, v]) => `<tr><td class="num">${D.fmtNum(n)}</td><td class="num">${fmtCOP(v)}</td></tr>`).join('')}</tbody></table></div>
+          <p class="muted-note">${esc(FS.nota_planes)}</p>
         </div>
       </section>
       <section class="card">
