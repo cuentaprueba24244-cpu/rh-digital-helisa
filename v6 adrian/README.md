@@ -25,6 +25,7 @@
 | `reunion 21 oct 2026/` | Equipo | Resumen de la reunión (.md, .html y .pdf) con 11 imágenes de Helisa con los datos de terceros tapados, preguntas para el viernes (.md y .pdf) y mensaje listo para pedirle los formatos a Julio. Las transcripciones (TurboScribe de 02:20 a 32:20 y Whisper de 29:00 a 36:44) se quedan **solo en local**: `.gitignore` las excluye porque el repositorio es público. Se comparten por otro medio |
 | `propuesta 1/` | Comserva y equipo | Levantamiento v6, flujo de una hoja, mockups navegables y cambios para el desarrollo de la Propuesta 1 |
 | `propuesta 2/` | Comserva y equipo | Lo mismo para la Propuesta 2 |
+| `video-alcances/` | **Comserva** (reunión del 28 oct) y equipo | Video de motion graphics «Los dos alcances de RH digital», hecho con código (HyperFrames). Se descarga desde `renders/`: **v2** `alcances-rh-digital.mp4` (1 min 56 s, la recomendada) y **v1** `alcances-rh-digital-v1.mp4` (90 s). Guion, storyboard, escenas y música en la misma carpeta; ver su `README.md` |
 
 **Documentos de XxavilesxX basados en esta v6** (siguen en `propuesta/`, ver su `README.md`):
 - flujo comparativo P1 y P2;

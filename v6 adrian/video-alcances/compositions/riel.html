@@ -1,0 +1,141 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    #root { position: absolute; inset: 0; font-family: "Figtree", sans-serif; pointer-events: none; }
+    .rl-bar { position: absolute; height: 4px; top: 893px; border-radius: 2px; transform-origin: 0 50%; }
+    .rl-gris { background: #c8d0cb; }
+    .rl-verde { background: #2b6a4b; height: 6px; top: 892px; }
+    .rl-azul { background: #1f5fa8; height: 6px; top: 892px; }
+    .rl-pend { background: repeating-linear-gradient(90deg, #1f5fa8 0 14px, transparent 14px 26px); opacity: .55; }
+    .rl-nodo { position: absolute; top: 869px; width: 52px; height: 52px; margin-left: -26px; }
+    .rl-circ { position: absolute; inset: 0; border-radius: 50%; background: #fff; border: 3px solid #c8d0cb; }
+    .rl-relleno { position: absolute; inset: 0; border-radius: 50%; background: #2b6a4b; }
+    .rl-nodo.azul .rl-circ { border-color: #1f5fa8; border-style: dashed; }
+    .rl-nodo.azul .rl-relleno { background: #1f5fa8; }
+    .rl-ico { position: absolute; left: 13px; top: 13px; width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .rl-ico.off { stroke: #6f7c75; }
+    .rl-ico.on { stroke: #fff; }
+    .rl-nodo.azul .rl-ico.off { stroke: #1f5fa8; }
+    .rl-check { position: absolute; right: -6px; bottom: -6px; width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid #2b6a4b; }
+    .rl-nodo.azul .rl-check { border-color: #1f5fa8; }
+    .rl-check svg { position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; fill: none; stroke: #2b6a4b; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .rl-nodo.azul .rl-check svg { stroke: #1f5fa8; }
+    .rl-rot { position: absolute; top: 934px; width: 360px; margin-left: -180px; text-align: center; font-size: 28px; font-weight: 600; color: #46524c; white-space: nowrap; }
+    .rl-rot.azul { color: #1f5fa8; }
+    .rl-rot.ambar { color: #8a5d00; font-weight: 700; }
+    #rl-frontera { position: absolute; left: 1211px; top: 847px; width: 8px; height: 96px; border-radius: 4px; background: #d9a21b; transform-origin: 50% 50%; }
+  </style>
+  <div id="root" data-composition-id="riel" data-width="1920" data-height="1080">
+    <!-- líneas -->
+    <div id="rl-track" class="rl-bar rl-gris" style="left: 260px; width: 760px"></div>
+    <div id="rl-pend" class="rl-bar rl-pend" style="left: 1020px; width: 680px"></div>
+    <div id="rl-p12" class="rl-bar rl-verde" style="left: 260px; width: 380px"></div>
+    <div id="rl-p23" class="rl-bar rl-verde" style="left: 640px; width: 380px"></div>
+    <div id="rl-p34" class="rl-bar rl-azul" style="left: 1020px; width: 390px"></div>
+    <div id="rl-p45" class="rl-bar rl-azul" style="left: 1410px; width: 290px"></div>
+    <div id="rl-frontera"></div>
+
+    <!-- nodos -->
+    <div id="rl-n1" class="rl-nodo" style="left: 260px">
+      <div class="rl-circ"></div><div class="rl-relleno"></div>
+      <svg class="rl-ico off" viewBox="0 0 24 24"><path d="M12 21s-6-5.5-6-11a6 6 0 1 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <svg class="rl-ico on" viewBox="0 0 24 24"><path d="M12 21s-6-5.5-6-11a6 6 0 1 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+      <div class="rl-check"><svg viewBox="0 0 14 14"><path d="M2.5 7.2l3 3 6-6.2"/></svg></div>
+    </div>
+    <div id="rl-n2" class="rl-nodo" style="left: 640px">
+      <div class="rl-circ"></div><div class="rl-relleno"></div>
+      <svg class="rl-ico off" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h6M9.5 15.5h6"/></svg>
+      <svg class="rl-ico on" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h6M9.5 15.5h6"/></svg>
+      <div class="rl-check"><svg viewBox="0 0 14 14"><path d="M2.5 7.2l3 3 6-6.2"/></svg></div>
+    </div>
+    <div id="rl-n3" class="rl-nodo" style="left: 1020px">
+      <div class="rl-circ"></div><div class="rl-relleno"></div>
+      <svg class="rl-ico off" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M10 10v9"/></svg>
+      <svg class="rl-ico on" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16M10 10v9"/></svg>
+      <div class="rl-check"><svg viewBox="0 0 14 14"><path d="M2.5 7.2l3 3 6-6.2"/></svg></div>
+    </div>
+    <div id="rl-n4" class="rl-nodo azul" style="left: 1410px">
+      <div class="rl-circ"></div><div class="rl-relleno"></div>
+      <svg class="rl-ico off" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 11l2 2 4-4"/></svg>
+      <svg class="rl-ico on" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 11l2 2 4-4"/></svg>
+      <div class="rl-check"><svg viewBox="0 0 14 14"><path d="M2.5 7.2l3 3 6-6.2"/></svg></div>
+    </div>
+    <div id="rl-n5" class="rl-nodo azul" style="left: 1700px">
+      <div class="rl-circ"></div><div class="rl-relleno"></div>
+      <svg class="rl-ico off" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
+      <svg class="rl-ico on" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
+      <div class="rl-check"><svg viewBox="0 0 14 14"><path d="M2.5 7.2l3 3 6-6.2"/></svg></div>
+    </div>
+
+    <!-- rótulos -->
+    <div id="rl-t1" class="rl-rot" style="left: 260px">Visita</div>
+    <div id="rl-t2" class="rl-rot" style="left: 640px">Cierre y planilla RH</div>
+    <div id="rl-t3" class="rl-rot" style="left: 1020px">Helisa</div>
+    <div id="rl-t3b" class="rl-rot" style="left: 1020px">Helisa · contabilidad</div>
+    <div id="rl-tf" class="rl-rot ambar" style="left: 1215px">Fin del Alcance 1</div>
+    <div id="rl-tfb" class="rl-rot ambar" style="left: 1215px">Piloto</div>
+    <div id="rl-t4" class="rl-rot azul" style="left: 1410px">Factura electrónica</div>
+    <div id="rl-t5" class="rl-rot azul" style="left: 1700px">Cliente</div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const $ = (s) => document.querySelector(s);
+      const T0 = 14.4; // el riel arranca a los 14,4 s del video; los tiempos de abajo están en segundos del video
+      const at = (abs) => Math.max(0, +(abs - T0).toFixed(3));
+
+      // estado inicial
+      gsap.set(["#rl-p12", "#rl-p23", "#rl-p34", "#rl-p45", "#rl-pend"], { scaleX: 0 });
+      gsap.set(".rl-relleno, .rl-ico.on, .rl-check", { opacity: 0 });
+      gsap.set("#rl-frontera", { opacity: 0, scaleY: 1 });
+      gsap.set(["#rl-n4", "#rl-n5"], { opacity: 0, scale: 0.6 });
+      gsap.set(["#rl-t3b", "#rl-tf", "#rl-tfb", "#rl-t4", "#rl-t5"], { opacity: 0 });
+
+      // entrada del riel con la app
+      tl.fromTo("#rl-track", { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: "power2.inOut" }, 0.1);
+      tl.fromTo(["#rl-n1", "#rl-n2", "#rl-n3"], { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out", stagger: 0.12 }, 0.25);
+      tl.fromTo(["#rl-t1", "#rl-t2", "#rl-t3"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, stagger: 0.1 }, 0.55);
+
+      function encender(n, abs) {
+        const t = at(abs);
+        tl.fromTo(`${n} .rl-relleno`, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power3.out" }, t);
+        tl.to(`${n} .rl-ico.off`, { opacity: 0, duration: 0.15 }, t);
+        tl.to(`${n} .rl-ico.on`, { opacity: 1, duration: 0.15 }, t + 0.05);
+        tl.fromTo(`${n} .rl-check`, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, t + 0.18);
+      }
+      const linea = (id, a, b) => tl.fromTo(id, { scaleX: 0 }, { scaleX: 1, duration: b - a, ease: "power2.inOut" }, at(a));
+
+      encender("#rl-n1", 27.6);
+      linea("#rl-p12", 29.2, 30.2);
+      encender("#rl-n2", 35.6);
+      linea("#rl-p23", 49.4, 50.6);
+      encender("#rl-n3", 50.8);
+
+      // la frontera cae
+      tl.fromTo("#rl-frontera", { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, at(68.1));
+      tl.fromTo("#rl-tf", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(68.4));
+      // piloto: cambia el rótulo
+      tl.to("#rl-tf", { opacity: 0, filter: "blur(6px)", duration: 0.18 }, at(72.4));
+      tl.fromTo("#rl-tfb", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(72.6));
+      // se abre: la barra queda como un punto
+      tl.to("#rl-frontera", { scaleY: 0.2, duration: 0.5, ease: "power3.inOut" }, at(78.6));
+
+      // alcance 2: el riel se alarga
+      linea("#rl-pend", 79.6, 80.6);
+      tl.to(["#rl-n4", "#rl-n5"], { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out", stagger: 0.25 }, at(80.0));
+      tl.fromTo(["#rl-t4", "#rl-t5"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, stagger: 0.25 }, at(80.3));
+      linea("#rl-p34", 88.2, 89.2);
+      encender("#rl-n4", 90.0);
+      linea("#rl-p45", 91.8, 92.6);
+      encender("#rl-n5", 93.2);
+      // Helisa se queda con la contabilidad
+      tl.to("#rl-t3", { opacity: 0, filter: "blur(6px)", duration: 0.18 }, at(99.4));
+      tl.fromTo("#rl-t3b", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(99.6));
+
+      tl.set({}, {}, 88.8);
+      window.__timelines["riel"] = tl;
+    })();
+  </script>
+</template>
