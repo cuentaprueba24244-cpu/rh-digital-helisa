@@ -1,0 +1,89 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+    #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
+    .w { display: inline-block; }
+    #s5-ciclo { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #s5-svg { position: absolute; left: 300px; top: 160px; width: 520px; height: 520px; overflow: visible; }
+    .s5-et { position: absolute; font-size: 34px; font-weight: 700; color: #46524c; white-space: nowrap; }
+    #s5-centro { position: absolute; left: 360px; top: 362px; width: 400px; text-align: center; }
+    #s5-c1 { font-size: 84px; font-weight: 800; color: #123d2b; line-height: 1; letter-spacing: -0.02em; }
+    #s5-c2 { font-size: 34px; font-weight: 500; color: #46524c; margin-top: 8px; }
+    #s5-check { position: absolute; left: 470px; top: 330px; width: 180px; height: 180px; overflow: visible; }
+    .s5-titulo { position: absolute; left: 1000px; top: 300px; width: 820px; font-size: 88px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
+    .s5-titulo em { font-style: normal; }
+  </style>
+  <div id="root" data-composition-id="s5" data-width="1920" data-height="1080">
+    <div id="s5-ciclo">
+      <svg id="s5-svg" viewBox="0 0 520 520">
+        <circle cx="260" cy="260" r="190" fill="none" stroke="#dfe5e1" stroke-width="16" />
+        <circle id="s5-prog" cx="260" cy="260" r="190" fill="none" stroke="#2b6a4b" stroke-width="16" stroke-linecap="butt"
+          pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" transform="rotate(-90 260 260)" />
+        <circle id="s5-d1" cx="260" cy="70" r="15" fill="#fff" stroke="#2b6a4b" stroke-width="5" />
+        <circle id="s5-d2" cx="450" cy="260" r="15" fill="#fff" stroke="#2b6a4b" stroke-width="5" />
+        <circle id="s5-d3" cx="260" cy="450" r="15" fill="#fff" stroke="#2b6a4b" stroke-width="5" />
+        <circle id="s5-d4" cx="70" cy="260" r="15" fill="#fff" stroke="#2b6a4b" stroke-width="5" />
+      </svg>
+      <div id="s5-e1" class="s5-et" style="left: 560px; top: 168px; transform-origin: 0 0; margin-left: -62px">Visitas</div>
+      <div id="s5-e2" class="s5-et" style="left: 784px; top: 398px">Cierre</div>
+      <div id="s5-e3" class="s5-et" style="left: 560px; top: 640px; margin-left: -54px">Helisa</div>
+      <div id="s5-e4" class="s5-et" style="left: 228px; top: 398px">Cobro</div>
+      <div id="s5-centro"><div id="s5-c1">1 ciclo</div><div id="s5-c2">un mes completo</div></div>
+      <svg id="s5-check" viewBox="0 0 180 180">
+        <path id="s5-checkp" d="M 38 94 L 76 132 L 146 54" fill="none" stroke="#2b6a4b" stroke-width="18" stroke-linecap="butt" stroke-linejoin="round"
+          pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" />
+      </svg>
+    </div>
+    <h1 id="s5-t1" class="s5-titulo" data-palabras>Primero, un <em style="color: #8a5d00">piloto</em> de un ciclo real</h1>
+    <h1 id="s5-t2" class="s5-titulo" data-palabras>Comserva decide con sus propios datos</h1>
+    <h1 id="s5-t3" class="s5-titulo" data-palabras>Si funciona, <em style="color: #1f5fa8">seguimos</em></h1>
+  </div>
+  <script>
+    (function () {
+      function palabras(sel) {
+        document.querySelectorAll(sel).forEach((el) => {
+          const out = [];
+          el.childNodes.forEach((n) => {
+            if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (t) out.push(/^\s+$/.test(t) ? t : `<span class="w">${t}</span>`); });
+            else { n.classList.add("w"); out.push(n.outerHTML); }
+          });
+          el.innerHTML = out.join("");
+        });
+      }
+      palabras("#s5-t1, #s5-t2, #s5-t3");
+      const tl = gsap.timeline({ paused: true });
+      const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
+      const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
+
+      gsap.set([".s5-et", "#s5-centro"], { opacity: 0 });
+
+      tl.fromTo("#s5-svg", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 0.0);
+      tl.fromTo("#s5-centro", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.25 }, 0.3);
+      // un mes: visitas → cierre → Helisa → cobro
+      tl.to("#s5-prog", { attr: { "stroke-dashoffset": 0 }, duration: 3.8, ease: "power1.inOut" }, 0.4);
+      ["1", "2", "3", "4"].forEach((k, i) => {
+        const t = 0.4 + i * 0.95;
+        tl.to(`#s5-d${k}`, { attr: { fill: "#2b6a4b" }, duration: 0.2 }, t);
+        tl.fromTo(`#s5-e${k}`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, t);
+      });
+
+      entra("#s5-t1", 0.4);
+      sale("#s5-t1", 3.25);
+      entra("#s5-t2", 3.6);
+      sale("#s5-t2", 5.65);
+      entra("#s5-t3", 6.0);
+
+      // ✓ en el centro
+      tl.to("#s5-centro", { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 5.8);
+      tl.to("#s5-checkp", { attr: { "stroke-dashoffset": 0 }, duration: 0.4, ease: "power2.out" }, 6.0);
+
+      // salida
+      sale("#s5-t3", 6.9);
+      tl.to("#s5-ciclo", { opacity: 0, scale: 0.94, filter: "blur(8px)", duration: 0.3, ease: "power3.in" }, 6.88);
+
+      window.__timelines["s5"] = tl;
+    })();
+  </script>
+</template>

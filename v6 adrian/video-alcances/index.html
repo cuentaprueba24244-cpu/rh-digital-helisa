@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Los dos alcances de RH digital</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+      :root {
+        --ground: #f3f6f4;
+        --ink: #1c2420;
+        --font-display: "Figtree", sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--ground);
+        font-family: var(--font-display);
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="116.4"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="s1" data-composition-id="s1" data-composition-src="compositions/s1-papel.html"
+        data-start="0" data-duration="7.2" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s1b" data-composition-id="s1b" data-composition-src="compositions/s1b-solucion.html"
+        data-start="7.2" data-duration="7.2" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s2" data-composition-id="s2" data-composition-src="compositions/s2-app.html"
+        data-start="14.4" data-duration="14.4" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s3" data-composition-id="s3" data-composition-src="compositions/s3-cierre.html"
+        data-start="28.8" data-duration="14.4" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s4" data-composition-id="s4" data-composition-src="compositions/s4-alcance1.html"
+        data-start="43.2" data-duration="28.8" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s5" data-composition-id="s5" data-composition-src="compositions/s5-piloto.html"
+        data-start="72" data-duration="7.2" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s6" data-composition-id="s6" data-composition-src="compositions/s6-alcance2.html"
+        data-start="79.2" data-duration="24" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+      <div id="s7" data-composition-id="s7" data-composition-src="compositions/s7-mapa.html"
+        data-start="103.2" data-duration="13.2" data-track-index="1" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 1"></div>
+
+      <!-- El riel: la línea que se alarga, encima de la visita hasta el Alcance 2 -->
+      <div id="riel" data-composition-id="riel" data-composition-src="compositions/riel.html"
+        data-start="14.4" data-duration="88.8" data-track-index="2" data-track-kind="graphics"
+        data-width="1920" data-height="1080" style="z-index: 10"></div>
+
+      <audio id="musica" class="clip" src="assets/audio/musica.m4a" data-timeline-role="music"
+        data-start="0" data-duration="116.4" data-track-index="3" data-volume="1"></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

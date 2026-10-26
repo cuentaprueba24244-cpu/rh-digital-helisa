@@ -1,0 +1,207 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+    #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
+    .w { display: inline-block; }
+    .s4-titulo { position: absolute; left: 120px; top: 64px; width: 1680px; font-size: 80px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+    .s4-titulo em { font-style: normal; color: #2b6a4b; }
+    .s4-sub { position: absolute; font-size: 38px; font-weight: 500; color: #46524c; line-height: 1.3; }
+    .s4-card { position: absolute; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 22px 60px rgba(18,61,43,.16); }
+    .s4-card img { display: block; }
+    /* ficha Hoy → Ahora */
+    .ha-fila { position: absolute; display: flex; gap: 18px; align-items: baseline; width: 1200px; }
+    .ha-tag { flex: none; padding: 4px 14px; border-radius: 8px; font-size: 30px; font-weight: 800; }
+    .ha-hoy .ha-tag { background: #fbf0d2; color: #8a5d00; }
+    .ha-ahora .ha-tag { background: #dcefe4; color: #123d2b; }
+    .ha-txt { font-size: 36px; line-height: 1.25; }
+    .ha-hoy .ha-txt { color: #6f7c75; font-weight: 500; }
+    .ha-ahora .ha-txt { color: #1c2420; font-weight: 700; }
+    /* capítulo */
+    #s4-cap1 { position: absolute; left: 120px; top: 230px; font-size: 200px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #2b6a4b; }
+    #s4-cap2 { position: absolute; left: 132px; top: 470px; font-size: 64px; font-weight: 700; color: #1c2420; }
+    /* A · pedido */
+    #s4-pedido { left: 210px; top: 205px; width: 1500px; height: 409px; }
+    #s4-pedido img { width: 1500px; height: 409px; }
+    #s4-marca { position: absolute; left: 52px; top: 340px; width: 1392px; height: 42px; border: 4px solid #2b6a4b; border-radius: 8px; }
+    /* B · factura en Helisa */
+    #s4-helisa { left: 1100px; top: 212px; width: 580px; height: 600px; padding: 30px; }
+    #s4-helisa img { width: 520px; }
+    #s4-helisa .s4-sep { height: 16px; }
+    #s4-amano { position: absolute; left: 1066px; top: 166px; padding: 10px 20px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
+      font-size: 32px; font-weight: 700; color: #8a5d00; white-space: nowrap; }
+    /* C · la FVE vuelve al sistema */
+    .s4-caja { position: absolute; top: 360px; width: 440px; height: 170px; padding: 30px 34px; }
+    .s4-caja b { display: block; font-size: 46px; font-weight: 800; letter-spacing: -0.01em; }
+    .s4-caja span { display: block; margin-top: 10px; font-size: 30px; color: #46524c; }
+    .s4-caja .mono { font-family: "JetBrains Mono", monospace; font-weight: 500; }
+    #s4-flecha { position: absolute; left: 640px; top: 296px; width: 540px; height: 150px; overflow: visible; }
+    #s4-ida { position: absolute; left: 800px; top: 270px; padding: 6px 18px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
+      font-size: 32px; font-weight: 800; color: #8a5d00; white-space: nowrap; }
+    #s4-chip { position: absolute; left: 236px; top: 452px; padding: 10px 18px; border-radius: 10px; background: #fff; border-left: 6px solid #d9a21b;
+      font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 500; color: #1c2420; white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 12px 30px rgba(18,61,43,.14); }
+    #s4-ok { position: absolute; left: 1180px; top: 560px; width: 640px; font-size: 40px; font-weight: 700; color: #2b6a4b; line-height: 1.25; }
+    #s4-api { position: absolute; left: 200px; top: 700px; padding: 18px 28px; border: 2px solid #c8d0cb; border-radius: 12px; background: #fff;
+      font-size: 34px; font-weight: 500; color: #46524c; white-space: nowrap; }
+    /* D · cobro y cruce */
+    #s4-phone { position: absolute; left: 150px; top: 110px; width: 373px; height: 784px; border-radius: 44px; background: #0f1512; transform-origin: 0 0;
+      box-shadow: 0 2px 4px rgba(18,61,43,.12), 0 30px 70px rgba(18,61,43,.22); }
+    #s4-phone .scr { position: absolute; left: 12px; top: 12px; width: 349px; height: 760px; border-radius: 32px; overflow: hidden; }
+    #s4-phone img { width: 349px; height: 760px; display: block; }
+    .s4-cifra { position: absolute; left: 616px; font-size: 104px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    /* E · frontera */
+    #s4-t5 { position: absolute; left: 615px; top: 250px; width: 1200px; text-align: center; font-size: 104px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
+    #s4-t5 em { font-style: normal; color: #8a5d00; }
+    #s4-s5 { left: 615px; top: 500px; width: 1200px; text-align: center; }
+    #s4-guia { position: absolute; left: 1213px; top: 610px; width: 4px; height: 230px; transform-origin: 50% 0;
+      background: repeating-linear-gradient(180deg, #d9a21b 0 12px, transparent 12px 22px); }
+  </style>
+  <div id="root" data-composition-id="s4" data-width="1920" data-height="1080">
+    <div id="s4-cap1">Alcance 1</div>
+    <div id="s4-cap2">Hasta Helisa</div>
+
+    <!-- A · el pedido -->
+    <h1 id="s4-t1" class="s4-titulo" data-palabras>Del RH sale el <em>pedido</em> para Helisa</h1>
+    <div id="s4-pedido" class="s4-card">
+      <img src="assets/img/doc-pedido.png" alt="Archivo de pedidos para Helisa: OP 101 de Cofema" />
+      <div id="s4-marca"></div>
+    </div>
+    <div id="s4-hoyA" class="ha-fila ha-hoy" style="left: 210px; top: 660px"><span class="ha-tag">Hoy</span><span class="ha-txt">Armar cada factura digitando todo</span></div>
+    <div id="s4-ahoA" class="ha-fila ha-ahora" style="left: 210px; top: 735px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia importa un archivo con todos los pedidos</span></div>
+
+    <!-- B · la factura en Helisa -->
+    <h1 id="s4-t2" class="s4-titulo" data-palabras>En Helisa, Lucrecia llama el pedido con F3</h1>
+    <p id="s4-s2" class="s4-sub" style="left: 120px; top: 232px; width: 860px" data-palabras>Helisa emite la factura y la envía a la DIAN, como hoy.</p>
+    <div id="s4-helisa" class="s4-card">
+      <img src="assets/img/fve-encabezado.png" alt="FVE 25756 emitida en Helisa" />
+      <div class="s4-sep"></div>
+      <img src="assets/img/fve-totales.png" alt="Totales de la FVE 25756: $2.244.935" />
+    </div>
+    <div id="s4-amano">Sigue en Helisa · una por una</div>
+
+    <!-- C · la FVE vuelve al sistema -->
+    <h1 id="s4-t3" class="s4-titulo" data-palabras>La factura vuelve al sistema</h1>
+    <p id="s4-s3" class="s4-sub" style="left: 120px; top: 172px; width: 1680px" data-palabras>Lucrecia la registra en RH digital: por listado o digitándola.</p>
+    <div id="s4-cH" class="s4-card s4-caja" style="left: 200px"><b>Helisa</b><span class="mono">FVE 25756</span></div>
+    <div id="s4-cR" class="s4-card s4-caja" style="left: 1180px"><b style="color: #2b6a4b">RH digital</b><span>Cierre de Cofema</span></div>
+    <svg id="s4-flecha" viewBox="0 0 540 150">
+      <defs><marker id="s4-punta" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#d9a21b" /></marker></defs>
+      <path d="M 14 140 C 160 20, 380 20, 526 140" fill="none" stroke="#d9a21b" stroke-width="6" stroke-dasharray="16 12" marker-end="url(#s4-punta)" />
+    </svg>
+    <div id="s4-ida">Ida y vuelta</div>
+    <div id="s4-chip" data-layout-allow-overlap>FVE 25756 · $2.244.935</div>
+    <div id="s4-ok">✓ Igual al RH: se habilita el cobro</div>
+    <div id="s4-api">Con la API de Helisa (opcional), esto se hace solo.</div>
+
+    <!-- D · cobro y cruce -->
+    <div id="s4-phone"><div class="scr"><img src="assets/img/app-recibo.png" alt="App: recibo de caja, abono de $500.000 a la FVE 25756" /></div></div>
+    <h1 id="s4-t4" class="s4-titulo" style="left: 616px; top: 110px; width: 1200px" data-palabras>El operario cobra con <em>recibo</em> en la app</h1>
+    <div id="s4-lab4" class="s4-sub" style="left: 620px; top: 318px">Abono a la FVE 25756</div>
+    <div id="s4-menos" class="s4-cifra" style="top: 370px; color: #1c2420">−$500.000</div>
+    <div id="s4-saldo" class="s4-cifra" style="top: 500px; color: #123d2b">Saldo $2.244.935</div>
+    <div id="s4-hoyD" class="ha-fila ha-hoy" style="left: 620px; top: 650px"><span class="ha-tag">Hoy</span><span class="ha-txt">Digitar el recibo y buscar qué factura paga</span></div>
+    <div id="s4-ahoD" class="ha-fila ha-ahora" style="left: 620px; top: 725px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia importa el archivo y Helisa cruza solo</span></div>
+
+    <!-- E · la frontera -->
+    <h1 id="s4-t5" data-palabras><em>Hasta aquí</em> llega el Alcance 1</h1>
+    <p id="s4-s5" class="s4-sub" data-palabras>La factura se sigue haciendo en Helisa, una por una.</p>
+    <div id="s4-guia"></div>
+  </div>
+  <script>
+    (function () {
+      function palabras(sel) {
+        document.querySelectorAll(sel).forEach((el) => {
+          const out = [];
+          el.childNodes.forEach((n) => {
+            if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (t) out.push(/^\s+$/.test(t) ? t : `<span class="w">${t}</span>`); });
+            else { n.classList.add("w"); out.push(n.outerHTML); }
+          });
+          el.innerHTML = out.join("");
+        });
+      }
+      palabras("#s4-t1, #s4-t2, #s4-s2, #s4-t3, #s4-s3, #s4-t4, #s4-t5, #s4-s5");
+      const tl = gsap.timeline({ paused: true });
+      const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
+      const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
+      const aparece = (sel, t) => tl.fromTo(sel, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, t);
+      const se_va = (sel, t) => tl.to(sel, { opacity: 0, filter: "blur(8px)", duration: 0.25, ease: "power3.in" }, t);
+      const tarjeta = (sel, t, dx = 200) => tl.fromTo(sel, { opacity: 0, x: dx, filter: "blur(10px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, t);
+      const miles = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+      gsap.set(["#s4-pedido", "#s4-marca", "#s4-hoyA", "#s4-ahoA", "#s4-helisa", "#s4-amano",
+        "#s4-cH", "#s4-cR", "#s4-ida", "#s4-chip", "#s4-ok", "#s4-api",
+        "#s4-phone", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], { opacity: 0 });
+      gsap.set("#s4-guia", { scaleY: 0 });
+      gsap.set("#s4-flecha", { clipPath: "inset(0% 100% 0% 0%)" });
+
+      // Capítulo
+      tl.fromTo("#s4-cap1", { x: 360, opacity: 0, filter: "blur(14px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0.05);
+      tl.fromTo("#s4-cap2", { x: 240, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0.2);
+      tl.to(["#s4-cap1", "#s4-cap2"], { x: -320, opacity: 0, filter: "blur(14px)", duration: 0.35, ease: "power3.in", stagger: 0.05 }, 2.0);
+
+      // A · el pedido (2,4–7,6 s)
+      entra("#s4-t1", 2.6);
+      tarjeta("#s4-pedido", 2.5, 240);
+      tl.fromTo("#s4-marca", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, 3.4);
+      aparece("#s4-hoyA", 3.9);
+      aparece("#s4-ahoA", 4.5);
+      sale("#s4-t1", 6.95);
+      se_va(["#s4-hoyA", "#s4-ahoA"], 6.95);
+      // el pedido viaja al nodo Helisa (x 1020, y 895)
+      tl.to("#s4-pedido", { x: 60, y: 481, scale: 0.05, duration: 0.55, ease: "power3.in" }, 7.05);
+      tl.to("#s4-pedido", { opacity: 0, duration: 0.1 }, 7.52);
+
+      // B · la factura en Helisa (7,8–12,6 s)
+      entra("#s4-t2", 7.95);
+      tarjeta("#s4-helisa", 8.05);
+      entra("#s4-s2", 8.6);
+      tl.fromTo("#s4-amano", { opacity: 0, scale: 1.5, rotation: -6 }, { opacity: 1, scale: 1, rotation: -2, duration: 0.4, ease: "back.out(1.8)" }, 9.0);
+      sale("#s4-t2", 12.2);
+      sale("#s4-s2", 12.2);
+      se_va(["#s4-helisa", "#s4-amano"], 12.25);
+
+      // C · la FVE vuelve al sistema (12,8–18,8 s)
+      entra("#s4-t3", 12.95);
+      tarjeta("#s4-cH", 13.15, -160);
+      tarjeta("#s4-cR", 13.35, 160);
+      entra("#s4-s3", 13.6);
+      tl.to("#s4-flecha", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.inOut" }, 14.0);
+      tl.fromTo("#s4-ida", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 14.3);
+      tl.fromTo("#s4-chip", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 14.55);
+      tl.fromTo("#s4-chip", { x: 0, y: 0 }, { keyframes: [{ x: 480, y: -120, duration: 0.5, ease: "power1.out" }, { x: 960, y: 0, duration: 0.5, ease: "power1.in" }], immediateRender: false }, 14.6);
+      aparece("#s4-ok", 15.3);
+      aparece("#s4-api", 15.6);
+      sale("#s4-t3", 18.4);
+      sale("#s4-s3", 18.4);
+      se_va(["#s4-cH", "#s4-cR", "#s4-flecha", "#s4-ida", "#s4-chip", "#s4-ok", "#s4-api"], 18.45);
+
+      // D · el cobro y el cruce (18,8–24,8 s)
+      tl.fromTo("#s4-phone", { opacity: 0, scale: 0.7, filter: "blur(6px)" }, { opacity: 1, scale: 0.8, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 18.85);
+      entra("#s4-t4", 19.0);
+      aparece("#s4-lab4", 19.6);
+      aparece("#s4-menos", 19.8);
+      aparece("#s4-saldo", 20.35);
+      {
+        const o = { v: 2244935 };
+        tl.fromTo(o, { v: 2244935 }, { v: 1744935, duration: 0.8, ease: "power2.out",
+          onUpdate: () => { document.querySelector("#s4-saldo").textContent = "Saldo $" + miles(o.v); } }, 20.6);
+      }
+      aparece("#s4-hoyD", 21.55);
+      aparece("#s4-ahoD", 22.15);
+      sale("#s4-t4", 24.45);
+      se_va(["#s4-phone", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], 24.5);
+
+      // E · la frontera (24,8–28,8 s)
+      entra("#s4-t5", 25.0);
+      tl.to("#s4-guia", { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 25.05);
+      entra("#s4-s5", 25.9);
+      sale("#s4-t5", 28.45);
+      sale("#s4-s5", 28.45);
+      tl.to("#s4-guia", { opacity: 0, duration: 0.25 }, 28.5);
+
+      window.__timelines["s4"] = tl;
+    })();
+  </script>
+</template>

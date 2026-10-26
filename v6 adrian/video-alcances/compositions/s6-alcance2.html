@@ -1,0 +1,193 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+    #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
+    .w { display: inline-block; }
+    .s6-titulo { position: absolute; left: 120px; top: 150px; width: 880px; font-size: 80px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+    .s6-titulo em { font-style: normal; color: #1f5fa8; }
+    .s6-sub { position: absolute; left: 120px; width: 860px; font-size: 38px; font-weight: 500; color: #46524c; line-height: 1.3; }
+    .s6-card { position: absolute; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 22px 60px rgba(18,61,43,.16); }
+    .s6-card > img { display: block; width: 100%; height: 100%; }
+    /* ficha Hoy → Ahora (Alcance 2 en azul) */
+    .ha-fila { position: absolute; display: flex; gap: 18px; align-items: baseline; width: 880px; }
+    .ha-tag { flex: none; padding: 4px 14px; border-radius: 8px; font-size: 30px; font-weight: 800; }
+    .ha-hoy .ha-tag { background: #fbf0d2; color: #8a5d00; }
+    .ha-ahora .ha-tag { background: #dfeafa; color: #1f5fa8; }
+    .ha-txt { font-size: 36px; line-height: 1.25; }
+    .ha-hoy .ha-txt { color: #6f7c75; font-weight: 500; }
+    .ha-ahora .ha-txt { color: #1c2420; font-weight: 700; }
+    #s6-cap1 { position: absolute; left: 120px; top: 230px; font-size: 200px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #1f5fa8; }
+    #s6-cap2 { position: absolute; left: 132px; top: 470px; font-size: 64px; font-weight: 700; color: #1c2420; }
+    #s6-pref { left: 1080px; top: 140px; width: 640px; height: 631px; }
+    #s6-marca { position: absolute; left: 508px; top: 574px; width: 124px; height: 50px; border: 4px solid #1f5fa8; border-radius: 10px; }
+    #s6-fe { left: 1150px; top: 70px; width: 540px; height: 764px; }
+    #s6-lab2 { position: absolute; left: 120px; top: 300px; font-size: 44px; font-weight: 700; }
+    #s6-cop { position: absolute; left: 112px; top: 368px; font-size: 120px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #123d2b; font-variant-numeric: tabular-nums; }
+    #s6-sello { position: absolute; left: 120px; top: 530px; padding: 14px 28px; border-radius: 12px; background: #1f5fa8; color: #fff; font-size: 46px; font-weight: 800; white-space: nowrap; }
+    #s6-cufe { position: absolute; left: 120px; top: 650px; font-family: "JetBrains Mono", monospace; font-size: 30px; font-weight: 500; color: #46524c; }
+    #s6-nota { position: absolute; left: 120px; top: 704px; font-size: 30px; font-weight: 500; color: #46524c; }
+    #s6-mail { left: 1040px; top: 190px; width: 720px; height: 470px; padding: 40px 44px; }
+    .s6-fila { display: flex; gap: 18px; font-size: 32px; line-height: 1.3; margin-bottom: 14px; }
+    .s6-k { color: #46524c; font-weight: 500; width: 110px; flex: none; }
+    .s6-v { font-weight: 700; }
+    .s6-adj { display: flex; gap: 22px; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e1e6e3; }
+    .s6-file { flex: 1; display: flex; align-items: center; gap: 16px; padding: 18px 20px; border: 2px solid #c8d0cb; border-radius: 12px; font-size: 32px; font-weight: 700; }
+    .s6-file svg { width: 40px; height: 40px; fill: none; stroke: #1f5fa8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+    #s6-entregada { margin-top: 30px; font-size: 34px; font-weight: 800; color: #1f5fa8; }
+    /* recibo sin esperar */
+    #s6-recibo { left: 1040px; top: 200px; width: 720px; height: 430px; padding: 40px 44px; }
+    #s6-recibo h3 { font-size: 36px; font-weight: 800; margin-bottom: 22px; }
+    .s6-kv { display: flex; justify-content: space-between; font-size: 32px; padding: 14px 0; border-top: 2px solid #e1e6e3; }
+    .s6-kv span:first-child { color: #46524c; }
+    .s6-kv b { font-weight: 700; }
+    #s6-sinesperar { margin-top: 22px; font-size: 34px; font-weight: 800; color: #1f5fa8; }
+    /* asientos para Helisa */
+    #s6-asiento { left: 1040px; top: 170px; width: 720px; height: 540px; padding: 36px 44px; }
+    #s6-asiento h3 { font-size: 34px; font-weight: 800; margin: 0 0 14px; }
+    #s6-asiento h3.seg { margin-top: 30px; }
+    .s6-asi { display: grid; grid-template-columns: 150px 1fr 200px; font-size: 31px; padding: 13px 0; border-top: 2px solid #e1e6e3; }
+    .s6-asi b { font-weight: 700; }
+    .s6-asi span:last-child { text-align: right; font-family: "JetBrains Mono", monospace; font-weight: 500; }
+  </style>
+  <div id="root" data-composition-id="s6" data-width="1920" data-height="1080">
+    <div id="s6-cap1">Alcance 2</div>
+    <div id="s6-cap2">La factura electrónica</div>
+
+    <!-- A · prefactura y lote -->
+    <h1 id="s6-t1" class="s6-titulo" data-palabras>Del mismo RH sale la <em>prefactura</em></h1>
+    <p id="s6-s1" class="s6-sub" style="top: 340px" data-palabras>Sin pedido y sin F3.</p>
+    <div id="s6-hoyA" class="ha-fila ha-hoy" style="left: 120px; top: 470px"><span class="ha-tag">Hoy</span><span class="ha-txt">Cada factura, una por una en Helisa</span></div>
+    <div id="s6-ahoA" class="ha-fila ha-ahora" style="left: 120px; top: 545px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia revisa y aprueba todas por lote</span></div>
+    <div id="s6-pref" class="s6-card">
+      <img src="assets/img/panel-fe-prefacturas.png" alt="Panel: prefacturas de octubre listas para emitir por lote" />
+      <div id="s6-marca"></div>
+    </div>
+
+    <!-- B · DIAN -->
+    <h1 id="s6-t2" class="s6-titulo" data-palabras>La valida la <em>DIAN</em></h1>
+    <div id="s6-lab2">Factura electrónica RHD 1 · Cofema</div>
+    <div id="s6-cop">$2.244.935</div>
+    <div id="s6-sello">✓ Validada DIAN</div>
+    <div id="s6-cufe">CUFE 2da22dfc5cc1e9427163…</div>
+    <div id="s6-nota">Ejemplo con datos de prueba.</div>
+    <div id="s6-fe" class="s6-card"><img src="assets/img/doc-fe-hoja.png" alt="Factura electrónica RHD 1 de Cofema, datos de prueba" /></div>
+
+    <!-- C · al correo del cliente -->
+    <h1 id="s6-t3" class="s6-titulo" data-palabras>Le llega <em>sola</em> al correo del cliente</h1>
+    <p id="s6-s3" class="s6-sub" style="top: 400px" data-palabras>PDF y XML, sin enviar nada a mano.</p>
+    <div id="s6-mail" class="s6-card">
+      <div class="s6-fila"><span class="s6-k">Para</span><span class="s6-v">Cofema S.A.</span></div>
+      <div class="s6-fila"><span class="s6-k">Asunto</span><span class="s6-v">Factura electrónica RHD 1 · Comserva S.A.S.</span></div>
+      <div class="s6-adj">
+        <div class="s6-file"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg>RHD1.pdf</div>
+        <div class="s6-file"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 13l-2 2 2 2M14 13l2 2-2 2"/></svg>RHD1.xml</div>
+      </div>
+      <div id="s6-entregada">✓ Entregada al correo de recepción</div>
+    </div>
+
+    <!-- D · el recibo sin esperar a Helisa -->
+    <h1 id="s6-t4" class="s6-titulo" data-palabras>El recibo sale <em>sin esperar</em> a Helisa</h1>
+    <p id="s6-s4" class="s6-sub" style="top: 400px" data-palabras>El sistema ya conoce su factura: no hay ida y vuelta.</p>
+    <div id="s6-recibo" class="s6-card">
+      <h3>Recibo de caja · abono</h3>
+      <div class="s6-kv"><span>Cliente</span><b>Cofema S.A.</b></div>
+      <div class="s6-kv"><span>Aplica a</span><b>RHD 1</b></div>
+      <div class="s6-kv"><span>Valor</span><b>$500.000</b></div>
+      <div id="s6-sinesperar">✓ Saldo $1.744.935</div>
+    </div>
+
+    <!-- E · a Helisa solo van los asientos -->
+    <h1 id="s6-t5" class="s6-titulo" data-palabras>A Helisa solo van los <em>asientos</em></h1>
+    <p id="s6-s5" class="s6-sub" style="top: 400px" data-palabras>Helisa cruza el pago y lleva la contabilidad y la cartera.</p>
+    <div id="s6-asiento" class="s6-card">
+      <h3>Factura RHD 1</h3>
+      <div class="s6-asi"><span>Débito</span><b>1305 Cartera</b><span>2.244.935</span></div>
+      <div class="s6-asi"><span>Crédito</span><b>Ingreso</b><span>1.886.500</span></div>
+      <div class="s6-asi"><span>Crédito</span><b>IVA 19 %</b><span>358.435</span></div>
+      <h3 class="seg">Recibo · cruza la RHD 1</h3>
+      <div class="s6-asi"><span>Débito</span><b>Caja</b><span>500.000</span></div>
+      <div class="s6-asi"><span>Crédito</span><b>1305 Cartera</b><span>500.000</span></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      function palabras(sel) {
+        document.querySelectorAll(sel).forEach((el) => {
+          const out = [];
+          el.childNodes.forEach((n) => {
+            if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (t) out.push(/^\s+$/.test(t) ? t : `<span class="w">${t}</span>`); });
+            else { n.classList.add("w"); out.push(n.outerHTML); }
+          });
+          el.innerHTML = out.join("");
+        });
+      }
+      palabras("#s6-t1, #s6-s1, #s6-t2, #s6-t3, #s6-s3, #s6-t4, #s6-s4, #s6-t5, #s6-s5");
+      const tl = gsap.timeline({ paused: true });
+      const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
+      const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
+      const aparece = (sel, t) => tl.fromTo(sel, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, t);
+      const se_va = (sel, t) => tl.to(sel, { opacity: 0, filter: "blur(8px)", duration: 0.25, ease: "power3.in" }, t);
+      const tarjeta = (sel, t, dx = 200) => tl.fromTo(sel, { opacity: 0, x: dx, filter: "blur(10px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, t);
+
+      gsap.set(["#s6-hoyA", "#s6-ahoA", "#s6-pref", "#s6-marca", "#s6-lab2", "#s6-cop", "#s6-sello", "#s6-cufe", "#s6-nota", "#s6-fe",
+        "#s6-mail", "#s6-entregada", "#s6-recibo", "#s6-sinesperar", "#s6-asiento"], { opacity: 0 });
+
+      // Capítulo
+      tl.fromTo("#s6-cap1", { x: 360, opacity: 0, filter: "blur(14px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0.05);
+      tl.fromTo("#s6-cap2", { x: 240, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 0.2);
+      tl.to(["#s6-cap1", "#s6-cap2"], { x: -320, opacity: 0, filter: "blur(14px)", duration: 0.35, ease: "power3.in", stagger: 0.05 }, 2.0);
+
+      // A · prefactura y lote (2,4–7,8 s)
+      entra("#s6-t1", 2.6);
+      tarjeta("#s6-pref", 2.7);
+      entra("#s6-s1", 3.25);
+      tl.fromTo("#s6-marca", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, 4.4);
+      aparece("#s6-hoyA", 4.6);
+      aparece("#s6-ahoA", 5.2);
+      sale("#s6-t1", 7.45);
+      sale("#s6-s1", 7.45);
+      se_va(["#s6-hoyA", "#s6-ahoA", "#s6-pref"], 7.5);
+
+      // B · validada por la DIAN (7,8–12,6 s)
+      entra("#s6-t2", 8.0);
+      tarjeta("#s6-fe", 8.1);
+      aparece("#s6-lab2", 8.7);
+      aparece("#s6-cop", 9.1);
+      aparece("#s6-nota", 9.4);
+      tl.fromTo("#s6-sello", { opacity: 0, scale: 1.45 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, 10.65);
+      aparece("#s6-cufe", 11.1);
+      sale("#s6-t2", 12.2);
+      se_va(["#s6-lab2", "#s6-cop", "#s6-sello", "#s6-cufe", "#s6-nota", "#s6-fe"], 12.25);
+
+      // C · al correo del cliente (12,6–15,8 s)
+      entra("#s6-t3", 12.8);
+      tarjeta("#s6-mail", 13.05);
+      entra("#s6-s3", 13.45);
+      tl.fromTo("#s6-entregada", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 14.0);
+      sale("#s6-t3", 15.45);
+      sale("#s6-s3", 15.45);
+      se_va(["#s6-mail"], 15.5);
+
+      // D · el recibo sin esperar (15,8–19,8 s)
+      entra("#s6-t4", 16.0);
+      tarjeta("#s6-recibo", 16.2);
+      entra("#s6-s4", 16.6);
+      tl.fromTo("#s6-sinesperar", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 17.4);
+      sale("#s6-t4", 19.45);
+      sale("#s6-s4", 19.45);
+      se_va(["#s6-recibo"], 19.5);
+
+      // E · a Helisa solo van los asientos (19,8–24 s)
+      entra("#s6-t5", 20.0);
+      tarjeta("#s6-asiento", 20.15);
+      entra("#s6-s5", 20.6);
+      sale("#s6-t5", 23.65);
+      sale("#s6-s5", 23.65);
+      se_va(["#s6-asiento"], 23.7);
+
+      window.__timelines["s6"] = tl;
+    })();
+  </script>
+</template>
