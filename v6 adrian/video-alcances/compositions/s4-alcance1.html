@@ -1,16 +1,18 @@
 <template>
   <style>
     @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
     @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
     @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
     #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
     .w { display: inline-block; }
+    .pj { position: absolute; transform-origin: 0 0; }
+    .pj svg { display: block; width: 100%; height: 100%; overflow: visible; }
     .s4-titulo { position: absolute; left: 120px; top: 64px; width: 1680px; font-size: 80px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
     .s4-titulo em { font-style: normal; color: #2b6a4b; }
     .s4-sub { position: absolute; font-size: 38px; font-weight: 500; color: #46524c; line-height: 1.3; }
     .s4-card { position: absolute; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 22px 60px rgba(18,61,43,.16); }
     .s4-card img { display: block; }
-    /* ficha Hoy → Ahora */
     .ha-fila { position: absolute; display: flex; gap: 18px; align-items: baseline; width: 1200px; }
     .ha-tag { flex: none; padding: 4px 14px; border-radius: 8px; font-size: 30px; font-weight: 800; }
     .ha-hoy .ha-tag { background: #fbf0d2; color: #8a5d00; }
@@ -18,20 +20,31 @@
     .ha-txt { font-size: 36px; line-height: 1.25; }
     .ha-hoy .ha-txt { color: #6f7c75; font-weight: 500; }
     .ha-ahora .ha-txt { color: #1c2420; font-weight: 700; }
+    .mesa { position: absolute; }
+    .mesa .tapa { height: 22px; border-radius: 6px; background: #e1e6e3; }
+    .mesa .frente { height: 60px; background: #c8d0cb; border-top: 8px solid #b5bfb9; margin: 0 16px; }
+    .monitor { position: absolute; background: #2d3a34; border-radius: 14px; padding: 10px; box-shadow: 0 18px 40px rgba(18,61,43,.18); }
+    .monitor .pantalla { width: 100%; height: 100%; border-radius: 6px; overflow: hidden; background: #fff; position: relative; }
+    .monitor .pantalla img { position: absolute; display: block; }
     /* capítulo */
     #s4-cap1 { position: absolute; left: 120px; top: 230px; font-size: 200px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: #2b6a4b; }
     #s4-cap2 { position: absolute; left: 132px; top: 470px; font-size: 64px; font-weight: 700; color: #1c2420; }
     /* A · pedido */
-    #s4-pedido { left: 210px; top: 205px; width: 1500px; height: 409px; }
-    #s4-pedido img { width: 1500px; height: 409px; }
-    #s4-marca { position: absolute; left: 52px; top: 340px; width: 1392px; height: 42px; border: 4px solid #2b6a4b; border-radius: 8px; }
-    /* B · factura en Helisa */
-    #s4-helisa { left: 1100px; top: 212px; width: 580px; height: 600px; padding: 30px; }
-    #s4-helisa img { width: 520px; }
-    #s4-helisa .s4-sep { height: 16px; }
-    #s4-amano { position: absolute; left: 1066px; top: 166px; padding: 10px 20px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
-      font-size: 32px; font-weight: 700; color: #8a5d00; white-space: nowrap; }
-    /* C · la FVE vuelve al sistema */
+    #s4-pedido { left: 120px; top: 205px; width: 1200px; height: 327px; }
+    #s4-pedido img { width: 1200px; height: 327px; }
+    #s4-marca { position: absolute; left: 42px; top: 271px; width: 1114px; height: 36px; border: 4px solid #2b6a4b; border-radius: 8px; }
+    #s4-toast { position: absolute; left: 1380px; top: 236px; padding: 14px 22px; border-radius: 12px; background: #123d2b; color: #fff; font-size: 28px; font-weight: 700; white-space: nowrap;
+      box-shadow: 0 12px 30px rgba(18,61,43,.22); }
+    /* B · F3 una por una */
+    #s4-tecla { position: absolute; left: 1180px; top: 690px; width: 112px; height: 96px; border-radius: 14px; background: #fff; border: 3px solid #c8d0cb; border-bottom-width: 10px;
+      font-family: "JetBrains Mono", monospace; font-size: 40px; font-weight: 500; color: #1c2420; text-align: center; line-height: 84px; }
+    .fv { position: absolute; left: 1180px; width: 380px; height: 88px; border-radius: 12px; background: #fff; border-left: 8px solid #2b6a4b; padding: 10px 18px;
+      box-shadow: 0 10px 26px rgba(18,61,43,.14); }
+    .fv b { display: block; font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 500; }
+    .fv span { font-size: 28px; color: #46524c; }
+    #s4-amano { position: absolute; left: 1318px; top: 708px; padding: 10px 20px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
+      font-size: 30px; font-weight: 700; color: #8a5d00; white-space: nowrap; }
+    /* C · ida y vuelta */
     .s4-caja { position: absolute; top: 360px; width: 440px; height: 170px; padding: 30px 34px; }
     .s4-caja b { display: block; font-size: 46px; font-weight: 800; letter-spacing: -0.01em; }
     .s4-caja span { display: block; margin-top: 10px; font-size: 30px; color: #46524c; }
@@ -42,21 +55,28 @@
     #s4-chip { position: absolute; left: 236px; top: 452px; padding: 10px 18px; border-radius: 10px; background: #fff; border-left: 6px solid #d9a21b;
       font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 500; color: #1c2420; white-space: nowrap;
       box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 12px 30px rgba(18,61,43,.14); }
+    #s4-chip2 { position: absolute; left: 236px; top: 452px; padding: 10px 18px; border-radius: 10px; background: #fff; border-left: 6px solid #3d6575;
+      font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 500; color: #1c2420; white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 12px 30px rgba(18,61,43,.14); }
+    #s4-auto { position: absolute; left: 760px; top: 470px; padding: 6px 18px; border-radius: 10px; background: #e6eef2; border: 3px solid #3d6575;
+      font-size: 30px; font-weight: 800; color: #3d6575; white-space: nowrap; }
+    .pago { position: absolute; display: flex; gap: 18px; align-items: baseline; width: 1060px; }
+    .pago b { flex: none; padding: 4px 14px; border-radius: 8px; font-size: 30px; font-weight: 800; }
+    .pago span { font-size: 32px; font-weight: 700; line-height: 1.25; }
     #s4-ok { position: absolute; left: 1180px; top: 560px; width: 640px; font-size: 40px; font-weight: 700; color: #2b6a4b; line-height: 1.25; }
     #s4-api { position: absolute; left: 200px; top: 700px; padding: 18px 28px; border: 2px solid #c8d0cb; border-radius: 12px; background: #fff;
       font-size: 34px; font-weight: 500; color: #46524c; white-space: nowrap; }
-    /* D · cobro y cruce */
-    #s4-phone { position: absolute; left: 150px; top: 110px; width: 373px; height: 784px; border-radius: 44px; background: #0f1512; transform-origin: 0 0;
-      box-shadow: 0 2px 4px rgba(18,61,43,.12), 0 30px 70px rgba(18,61,43,.22); }
-    #s4-phone .scr { position: absolute; left: 12px; top: 12px; width: 349px; height: 760px; border-radius: 32px; overflow: hidden; }
-    #s4-phone img { width: 349px; height: 760px; display: block; }
-    .s4-cifra { position: absolute; left: 616px; font-size: 104px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    /* D · cobro */
+    .s4-cifra { position: absolute; left: 760px; font-size: 104px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
     /* E · frontera */
     #s4-t5 { position: absolute; left: 615px; top: 250px; width: 1200px; text-align: center; font-size: 104px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
     #s4-t5 em { font-style: normal; color: #8a5d00; }
     #s4-s5 { left: 615px; top: 500px; width: 1200px; text-align: center; }
     #s4-guia { position: absolute; left: 1213px; top: 610px; width: 4px; height: 230px; transform-origin: 50% 0;
       background: repeating-linear-gradient(180deg, #d9a21b 0 12px, transparent 12px 22px); }
+    .rol { position: absolute; left: 50%; top: -6%; transform: translateX(-50%); padding: 6px 16px; border-radius: 10px; background: #fff; border: 2px solid #c8d0cb;
+      font-size: 28px; font-weight: 700; color: #1c2420; white-space: nowrap; box-shadow: 0 6px 16px rgba(18,61,43,.12); }
+    .rol i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; vertical-align: 2px; }
   </style>
   <div id="root" data-composition-id="s4" data-width="1920" data-height="1080">
     <div id="s4-cap1">Alcance 1</div>
@@ -68,17 +88,181 @@
       <img src="assets/img/doc-pedido.png" alt="Archivo de pedidos para Helisa: OP 101 de Cofema" />
       <div id="s4-marca"></div>
     </div>
-    <div id="s4-hoyA" class="ha-fila ha-hoy" style="left: 210px; top: 660px"><span class="ha-tag">Hoy</span><span class="ha-txt">Armar cada factura digitando todo</span></div>
-    <div id="s4-ahoA" class="ha-fila ha-ahora" style="left: 210px; top: 735px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia importa un archivo con todos los pedidos</span></div>
+    <div id="s4-hoyA" class="ha-fila ha-hoy" style="left: 120px; top: 590px"><span class="ha-tag">Hoy</span><span class="ha-txt">Armar cada factura digitando todo</span></div>
+    <div id="s4-ahoA" class="ha-fila ha-ahora" style="left: 120px; top: 665px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia importa un archivo con todos los pedidos</span></div>
+    <div class="pj" id="s4-luA" style="left: 1370px; top: 340px; width: 420px; height: 490px"><svg viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+  <g id="s4a-todo">
+  <!-- silla -->
+  <rect x="186" y="250" width="228" height="340" rx="44" fill="#2d3a34"/>
+  <rect x="200" y="262" width="200" height="40" rx="20" fill="#3a4842"/>
+  <!-- torso: blusa clara y saco verde -->
+  <path d="M214 340 C250 318 350 318 386 340 C400 380 400 470 396 600 L204 600 C200 470 200 380 214 340 Z" fill="#f7f9f8"/>
+  <path d="M214 340 C232 330 252 326 264 330 L284 600 L204 600 C200 470 200 380 214 340 Z" fill="#2b6a4b"/>
+  <path d="M386 340 C368 330 348 326 336 330 L316 600 L396 600 C400 470 400 380 386 340 Z" fill="#2b6a4b"/>
+  <path d="M386 340 C396 380 398 470 396 600 L372 600 C376 470 374 380 366 334 Z" fill="#123d2b" opacity=".25"/>
+  <!-- cuello y escarapela -->
+  <rect x="282" y="262" width="36" height="70" rx="14" fill="#b67a59"/>
+  <path d="M272 326 L300 356 L328 326 Z" fill="#b67a59"/>
+  <path d="M284 330 L300 440 L316 330" fill="none" stroke="#1f5e43" stroke-width="5"/>
+  <rect x="284" y="436" width="32" height="42" rx="5" fill="#fff" stroke="#c8d0cb" stroke-width="2"/>
+  <rect x="290" y="444" width="20" height="14" rx="3" fill="#dcefe4"/>
+  <rect x="290" y="463" width="20" height="4" rx="2" fill="#2b6a4b"/>
+  <!-- cabeza: gira sobre la base del cuello (300,300) -->
+  <g id="s4a-cab">
+    <path d="M234 214 C226 124 374 124 366 214 C370 262 378 296 364 322 C350 334 332 326 328 304 L272 304 C268 326 250 334 236 322 C222 296 230 262 234 214 Z" fill="#3b2418"/>
+    <ellipse cx="300" cy="212" rx="56" ry="64" fill="#c98e6b"/>
+    <path d="M300 148 C336 150 354 176 356 212 C346 188 328 176 300 176 Z" fill="#b67a59" opacity=".35"/>
+    <path d="M244 196 C238 130 362 122 358 190 C350 168 330 152 296 150 C300 164 286 176 262 180 C254 184 248 190 244 196 Z" fill="#3b2418"/>
+    <path d="M300 150 C326 150 346 162 354 182 C340 168 322 160 304 160 Z" fill="#5a3826"/>
+    <circle cx="262" cy="240" r="10" fill="#d9785a" opacity=".22"/>
+    <circle cx="338" cy="240" r="10" fill="#d9785a" opacity=".22"/>
+    <path d="M266 198 q12 -7 24 -1" stroke="#3b2418" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M310 197 q12 -6 24 1" stroke="#3b2418" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g id="s4a-ojos">
+      <ellipse cx="279" cy="216" rx="6" ry="7.5" fill="#1c2420"/>
+      <ellipse cx="321" cy="216" rx="6" ry="7.5" fill="#1c2420"/>
+      <circle cx="281" cy="213" r="2" fill="#fff"/>
+      <circle cx="323" cy="213" r="2" fill="#fff"/>
+    </g>
+    <circle cx="279" cy="216" r="17" fill="none" stroke="#1c2420" stroke-width="3"/>
+    <circle cx="321" cy="216" r="17" fill="none" stroke="#1c2420" stroke-width="3"/>
+    <path d="M296 214 q4 -3 8 0" stroke="#1c2420" stroke-width="3" fill="none"/>
+    <path d="M300 222 q-6 13 3 17" stroke="#a46a4c" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M284 252 q16 12 32 0 q-16 5 -32 0 z" fill="#b4534a"/>
+    <circle cx="244" cy="246" r="5" fill="#d9a21b"/>
+    <circle cx="356" cy="246" r="5" fill="#d9a21b"/>
+  </g>
+  <!-- escritorio -->
+  <rect x="30" y="560" width="540" height="28" rx="6" fill="#e1e6e3"/>
+  <rect x="50" y="588" width="500" height="112" fill="#c8d0cb"/>
+  <rect x="50" y="588" width="500" height="10" fill="#b5bfb9"/>
+  <rect x="226" y="546" width="148" height="20" rx="5" fill="#46524c"/>
+  <path d="M236 552 h128 M236 559 h128" stroke="#6f7c75" stroke-width="3" stroke-dasharray="8 4"/>
+  <!-- calculadora -->
+  <g id="s4a-calc" opacity="0">
+    <rect x="80" y="500" width="84" height="62" rx="8" fill="#2d3a34"/>
+    <rect x="90" y="508" width="64" height="16" rx="3" fill="#dcefe4"/>
+    <g fill="#c8d0cb"><circle cx="98" cy="536" r="4"/><circle cx="114" cy="536" r="4"/><circle cx="130" cy="536" r="4"/><circle cx="146" cy="536" r="4"/><circle cx="98" cy="550" r="4"/><circle cx="114" cy="550" r="4"/><circle cx="130" cy="550" r="4"/><circle cx="146" cy="550" r="4" fill="#d9a21b"/></g>
+  </g>
+  <!-- pilas de planillas en papel -->
+  <g id="s4a-pila1" opacity="0"><rect x="420" y="530" width="110" height="30" rx="3" fill="#fbfaf5" stroke="#c8d0cb" stroke-width="2"/><path d="M420 540 h110 M420 550 h110" stroke="#e1e6e3" stroke-width="2"/></g>
+  <g id="s4a-pila2" opacity="0"><rect x="424" y="496" width="104" height="34" rx="3" fill="#f4f1e6" stroke="#c8d0cb" stroke-width="2" transform="rotate(-3 476 513)"/><path d="M426 508 h100 M426 519 h100" stroke="#e1e6e3" stroke-width="2" transform="rotate(-3 476 513)"/></g>
+  <g id="s4a-pila3" opacity="0"><rect x="418" y="462" width="110" height="34" rx="3" fill="#fbfaf5" stroke="#c8d0cb" stroke-width="2" transform="rotate(4 473 479)"/><path d="M420 474 h106 M420 485 h106" stroke="#e1e6e3" stroke-width="2" transform="rotate(4 473 479)"/></g>
+  <!-- brazo izquierdo: hombro 212,352 · codo 204,470 · muñeca 204,580 -->
+  <g id="s4a-hI">
+    <rect x="190" y="336" width="42" height="146" rx="21" fill="#2b6a4b"/>
+    <g id="s4a-cI">
+      <rect x="186" y="458" width="36" height="128" rx="18" fill="#2b6a4b"/>
+      <rect x="187" y="566" width="34" height="14" rx="6" fill="#f7f9f8"/>
+      <g id="s4a-mI"><ellipse cx="204" cy="592" rx="19" ry="17" fill="#c98e6b"/></g>
+    </g>
+  </g>
+  <!-- brazo derecho: hombro 388,352 · codo 396,470 · muñeca 396,580 -->
+  <g id="s4a-hD">
+    <rect x="368" y="336" width="42" height="146" rx="21" fill="#2b6a4b"/>
+    <g id="s4a-cD">
+      <rect x="378" y="458" width="36" height="128" rx="18" fill="#2b6a4b"/>
+      <rect x="379" y="566" width="34" height="14" rx="6" fill="#f7f9f8"/>
+      <g id="s4a-mD"><ellipse cx="396" cy="592" rx="19" ry="17" fill="#c98e6b"/></g>
+    </g>
+  </g>
+  </g>
+</svg></div>
+    <div id="s4-toast">✓ Importación de pedidos</div>
 
-    <!-- B · la factura en Helisa -->
+    <!-- B · la factura en Helisa, una por una -->
     <h1 id="s4-t2" class="s4-titulo" data-palabras>En Helisa, Lucrecia llama el pedido con F3</h1>
-    <p id="s4-s2" class="s4-sub" style="left: 120px; top: 232px; width: 860px" data-palabras>Helisa emite la factura y la envía a la DIAN, como hoy.</p>
-    <div id="s4-helisa" class="s4-card">
-      <img src="assets/img/fve-encabezado.png" alt="FVE 25756 emitida en Helisa" />
-      <div class="s4-sep"></div>
-      <img src="assets/img/fve-totales.png" alt="Totales de la FVE 25756: $2.244.935" />
+    <p id="s4-s2" class="s4-sub" style="left: 120px; top: 176px; width: 1100px" data-palabras>Helisa emite la factura y la envía a la DIAN, como hoy.</p>
+    <div class="mesa" id="s4-mesaB" style="left: 600px; top: 768px; width: 560px"><div class="tapa"></div><div class="frente"></div></div>
+    <div id="s4-monB" class="monitor" data-layout-ignore style="left: 660px; top: 410px; width: 440px; height: 300px">
+      <div class="pantalla">
+        <img src="assets/img/fve-encabezado.png" alt="FVE 25756 en Helisa" style="left: 8px; top: 8px; width: 196px" />
+        <img src="assets/img/fve-totales.png" alt="Totales de la FVE 25756" style="left: 210px; top: 26px; width: 206px" />
+        <div style="position: absolute; left: 8px; bottom: 8px; right: 8px; height: 26px; background: #123d2b; border-radius: 4px; color: #fff; font-size: 16px; font-weight: 700; padding: 4px 10px">Helisa · factura de venta</div>
+      </div>
     </div>
+    <div class="pj" id="s4-luB" style="left: 150px; top: 320px; width: 480px; height: 560px"><svg viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+  <g id="s4b-todo">
+  <!-- silla -->
+  <rect x="186" y="250" width="228" height="340" rx="44" fill="#2d3a34"/>
+  <rect x="200" y="262" width="200" height="40" rx="20" fill="#3a4842"/>
+  <!-- torso: blusa clara y saco verde -->
+  <path d="M214 340 C250 318 350 318 386 340 C400 380 400 470 396 600 L204 600 C200 470 200 380 214 340 Z" fill="#f7f9f8"/>
+  <path d="M214 340 C232 330 252 326 264 330 L284 600 L204 600 C200 470 200 380 214 340 Z" fill="#2b6a4b"/>
+  <path d="M386 340 C368 330 348 326 336 330 L316 600 L396 600 C400 470 400 380 386 340 Z" fill="#2b6a4b"/>
+  <path d="M386 340 C396 380 398 470 396 600 L372 600 C376 470 374 380 366 334 Z" fill="#123d2b" opacity=".25"/>
+  <!-- cuello y escarapela -->
+  <rect x="282" y="262" width="36" height="70" rx="14" fill="#b67a59"/>
+  <path d="M272 326 L300 356 L328 326 Z" fill="#b67a59"/>
+  <path d="M284 330 L300 440 L316 330" fill="none" stroke="#1f5e43" stroke-width="5"/>
+  <rect x="284" y="436" width="32" height="42" rx="5" fill="#fff" stroke="#c8d0cb" stroke-width="2"/>
+  <rect x="290" y="444" width="20" height="14" rx="3" fill="#dcefe4"/>
+  <rect x="290" y="463" width="20" height="4" rx="2" fill="#2b6a4b"/>
+  <!-- cabeza: gira sobre la base del cuello (300,300) -->
+  <g id="s4b-cab">
+    <path d="M234 214 C226 124 374 124 366 214 C370 262 378 296 364 322 C350 334 332 326 328 304 L272 304 C268 326 250 334 236 322 C222 296 230 262 234 214 Z" fill="#3b2418"/>
+    <ellipse cx="300" cy="212" rx="56" ry="64" fill="#c98e6b"/>
+    <path d="M300 148 C336 150 354 176 356 212 C346 188 328 176 300 176 Z" fill="#b67a59" opacity=".35"/>
+    <path d="M244 196 C238 130 362 122 358 190 C350 168 330 152 296 150 C300 164 286 176 262 180 C254 184 248 190 244 196 Z" fill="#3b2418"/>
+    <path d="M300 150 C326 150 346 162 354 182 C340 168 322 160 304 160 Z" fill="#5a3826"/>
+    <circle cx="262" cy="240" r="10" fill="#d9785a" opacity=".22"/>
+    <circle cx="338" cy="240" r="10" fill="#d9785a" opacity=".22"/>
+    <path d="M266 198 q12 -7 24 -1" stroke="#3b2418" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M310 197 q12 -6 24 1" stroke="#3b2418" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g id="s4b-ojos">
+      <ellipse cx="279" cy="216" rx="6" ry="7.5" fill="#1c2420"/>
+      <ellipse cx="321" cy="216" rx="6" ry="7.5" fill="#1c2420"/>
+      <circle cx="281" cy="213" r="2" fill="#fff"/>
+      <circle cx="323" cy="213" r="2" fill="#fff"/>
+    </g>
+    <circle cx="279" cy="216" r="17" fill="none" stroke="#1c2420" stroke-width="3"/>
+    <circle cx="321" cy="216" r="17" fill="none" stroke="#1c2420" stroke-width="3"/>
+    <path d="M296 214 q4 -3 8 0" stroke="#1c2420" stroke-width="3" fill="none"/>
+    <path d="M300 222 q-6 13 3 17" stroke="#a46a4c" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M284 252 q16 12 32 0 q-16 5 -32 0 z" fill="#b4534a"/>
+    <circle cx="244" cy="246" r="5" fill="#d9a21b"/>
+    <circle cx="356" cy="246" r="5" fill="#d9a21b"/>
+  </g>
+  <!-- escritorio -->
+  <rect x="30" y="560" width="540" height="28" rx="6" fill="#e1e6e3"/>
+  <rect x="50" y="588" width="500" height="112" fill="#c8d0cb"/>
+  <rect x="50" y="588" width="500" height="10" fill="#b5bfb9"/>
+  <rect x="226" y="546" width="148" height="20" rx="5" fill="#46524c"/>
+  <path d="M236 552 h128 M236 559 h128" stroke="#6f7c75" stroke-width="3" stroke-dasharray="8 4"/>
+  <!-- calculadora -->
+  <g id="s4b-calc" opacity="0">
+    <rect x="80" y="500" width="84" height="62" rx="8" fill="#2d3a34"/>
+    <rect x="90" y="508" width="64" height="16" rx="3" fill="#dcefe4"/>
+    <g fill="#c8d0cb"><circle cx="98" cy="536" r="4"/><circle cx="114" cy="536" r="4"/><circle cx="130" cy="536" r="4"/><circle cx="146" cy="536" r="4"/><circle cx="98" cy="550" r="4"/><circle cx="114" cy="550" r="4"/><circle cx="130" cy="550" r="4"/><circle cx="146" cy="550" r="4" fill="#d9a21b"/></g>
+  </g>
+  <!-- pilas de planillas en papel -->
+  <g id="s4b-pila1" opacity="0"><rect x="420" y="530" width="110" height="30" rx="3" fill="#fbfaf5" stroke="#c8d0cb" stroke-width="2"/><path d="M420 540 h110 M420 550 h110" stroke="#e1e6e3" stroke-width="2"/></g>
+  <g id="s4b-pila2" opacity="0"><rect x="424" y="496" width="104" height="34" rx="3" fill="#f4f1e6" stroke="#c8d0cb" stroke-width="2" transform="rotate(-3 476 513)"/><path d="M426 508 h100 M426 519 h100" stroke="#e1e6e3" stroke-width="2" transform="rotate(-3 476 513)"/></g>
+  <g id="s4b-pila3" opacity="0"><rect x="418" y="462" width="110" height="34" rx="3" fill="#fbfaf5" stroke="#c8d0cb" stroke-width="2" transform="rotate(4 473 479)"/><path d="M420 474 h106 M420 485 h106" stroke="#e1e6e3" stroke-width="2" transform="rotate(4 473 479)"/></g>
+  <!-- brazo izquierdo: hombro 212,352 · codo 204,470 · muñeca 204,580 -->
+  <g id="s4b-hI">
+    <rect x="190" y="336" width="42" height="146" rx="21" fill="#2b6a4b"/>
+    <g id="s4b-cI">
+      <rect x="186" y="458" width="36" height="128" rx="18" fill="#2b6a4b"/>
+      <rect x="187" y="566" width="34" height="14" rx="6" fill="#f7f9f8"/>
+      <g id="s4b-mI"><ellipse cx="204" cy="592" rx="19" ry="17" fill="#c98e6b"/></g>
+    </g>
+  </g>
+  <!-- brazo derecho: hombro 388,352 · codo 396,470 · muñeca 396,580 -->
+  <g id="s4b-hD">
+    <rect x="368" y="336" width="42" height="146" rx="21" fill="#2b6a4b"/>
+    <g id="s4b-cD">
+      <rect x="378" y="458" width="36" height="128" rx="18" fill="#2b6a4b"/>
+      <rect x="379" y="566" width="34" height="14" rx="6" fill="#f7f9f8"/>
+      <g id="s4b-mD"><ellipse cx="396" cy="592" rx="19" ry="17" fill="#c98e6b"/></g>
+    </g>
+  </g>
+  </g>
+</svg></div>
+    <div id="s4-fv1" class="fv" style="top: 300px"><b>FVE 25756</b><span>Cofema S.A.</span></div>
+    <div id="s4-fv2" class="fv" style="top: 400px"><b>FVE 25757</b><span>Droguería El Trébol</span></div>
+    <div id="s4-fv3" class="fv" style="top: 500px"><b>FVE 25758</b><span>IPS Salud Vital</span></div>
+    <div id="s4-tecla">F3</div>
     <div id="s4-amano">Sigue en Helisa · una por una</div>
 
     <!-- C · la FVE vuelve al sistema -->
@@ -90,19 +274,230 @@
       <defs><marker id="s4-punta" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#d9a21b" /></marker></defs>
       <path d="M 14 140 C 160 20, 380 20, 526 140" fill="none" stroke="#d9a21b" stroke-width="6" stroke-dasharray="16 12" marker-end="url(#s4-punta)" />
     </svg>
-    <div id="s4-ida">Ida y vuelta</div>
+    <div id="s4-ida">Ida y vuelta · a mano</div>
+    <div id="s4-auto">Con la API: automático</div>
+    <div id="s4-chip2" data-layout-allow-overlap>⚡ FVE 25756 · API</div>
     <div id="s4-chip" data-layout-allow-overlap>FVE 25756 · $2.244.935</div>
     <div id="s4-ok">✓ Igual al RH: se habilita el cobro</div>
-    <div id="s4-api">Con la API de Helisa (opcional), esto se hace solo.</div>
+    <div id="s4-api">Con la API de Helisa, el sistema la lee solo.</div>
 
-    <!-- D · cobro y cruce -->
-    <div id="s4-phone"><div class="scr"><img src="assets/img/app-recibo.png" alt="App: recibo de caja, abono de $500.000 a la FVE 25756" /></div></div>
-    <h1 id="s4-t4" class="s4-titulo" style="left: 616px; top: 110px; width: 1200px" data-palabras>El operario cobra con <em>recibo</em> en la app</h1>
-    <div id="s4-lab4" class="s4-sub" style="left: 620px; top: 318px">Abono a la FVE 25756</div>
+    <!-- D · el cliente paga y el operario emite el recibo -->
+    <div class="pj" id="s4-cl" style="left: 40px; top: 330px; width: 330px; height: 506px"><svg viewBox="0 0 600 920" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="300" cy="892" rx="150" ry="18" fill="#123d2b" opacity=".14"/>
+  <g id="s4c-todo">
+  <!-- piernas: giran en la cadera (262,590) y (338,590) -->
+  <g id="s4c-pI">
+    <path d="M232 588 L292 588 L288 862 L238 862 Z" fill="#46524c"/>
+    <path d="M234 852 h58 v20 q0 14 -14 14 h-58 q-14 0 -10 -12 q4 -16 24 -22 z" fill="#2d3a34"/>
+    <path d="M244 862 h30" stroke="#c8d0cb" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="s4c-pD">
+    <path d="M308 588 L368 588 L362 862 L312 862 Z" fill="#46524c"/>
+    <path d="M308 852 h58 q20 6 24 22 q4 12 -10 12 h-58 q-14 0 -14 -14 z" fill="#2d3a34"/>
+    <path d="M324 862 h30" stroke="#c8d0cb" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- torso: camisa verde -->
+  <path d="M198 296 C240 272 360 272 402 296 C418 330 412 440 404 600 L196 600 C188 440 182 330 198 296 Z" fill="#f7f9f8"/>
+  <!-- cuello -->
+  <rect x="278" y="236" width="44" height="56" rx="18" fill="#a96d4c"/>
+  <path d="M266 282 L300 322 L334 282 Z" fill="#a96d4c"/>
+  <path d="M262 280 L300 324 L338 280" fill="none" stroke="#c8d0cb" stroke-width="8" stroke-linejoin="round"/>
+  <!-- saco azul abierto sobre blusa clara, con escarapela de Cofema -->
+  <path d="M200 298 C230 286 258 282 268 288 L284 600 L198 600 C190 440 186 334 200 298 Z" fill="#3d6575"/>
+  <path d="M400 298 C370 286 342 282 332 288 L316 600 L402 600 C410 440 414 334 400 298 Z" fill="#3d6575"/>
+  <path d="M402 300 C412 340 412 450 404 600 L378 600 C384 470 384 360 374 304 Z" fill="#123d2b" opacity=".18"/>
+  <rect x="332" y="352" width="46" height="60" rx="6" fill="#fff" stroke="#c8d0cb" stroke-width="2"/>
+  <rect x="338" y="360" width="34" height="18" rx="3" fill="#fbf0d2"/>
+  <rect x="338" y="384" width="34" height="5" rx="2" fill="#3d6575"/>
+  <rect x="338" y="394" width="24" height="5" rx="2" fill="#c8d0cb"/>
+  <!-- brazo izquierdo (del espectador): hombro 206,310 · codo 206,440 · muñeca 206,560 -->
+  <g id="s4c-hI">
+    <rect x="184" y="292" width="44" height="160" rx="22" fill="#3d6575"/>
+    <g id="s4c-cI">
+      <rect x="186" y="428" width="40" height="138" rx="20" fill="#3d6575"/>
+      <rect x="186" y="540" width="40" height="18" rx="6" fill="#f7f9f8"/>
+      <g id="s4c-mI">
+        <circle cx="206" cy="572" r="24" fill="#a8704e"/>
+        <ellipse cx="226" cy="562" rx="9" ry="13" fill="#a8704e" transform="rotate(-30 226 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- brazo derecho: hombro 394,310 · codo 394,440 · muñeca 394,560 -->
+  <g id="s4c-hD">
+    <rect x="372" y="292" width="44" height="160" rx="22" fill="#3d6575"/>
+    <g id="s4c-cD">
+      <rect x="374" y="428" width="40" height="138" rx="20" fill="#3d6575"/>
+      <rect x="374" y="540" width="40" height="18" rx="6" fill="#f7f9f8"/>
+      <g id="s4c-mD">
+        <g id="s4c-billetes" opacity="0">
+          <rect x="360" y="560" width="96" height="50" rx="5" fill="#7fae7a" transform="rotate(-18 394 584)"/>
+          <rect x="356" y="568" width="96" height="50" rx="5" fill="#94c08f" transform="rotate(-8 394 592)"/>
+          <circle cx="404" cy="592" r="12" fill="none" stroke="#5c8a57" stroke-width="3" transform="rotate(-8 394 592)"/>
+        </g>
+        <g id="s4c-lapicero" opacity="0"><rect x="388" y="526" width="7" height="54" rx="3" fill="#1c2420" transform="rotate(30 392 572)"/></g>
+        <circle cx="394" cy="572" r="24" fill="#a8704e"/>
+        <ellipse cx="374" cy="562" rx="9" ry="13" fill="#a8704e" transform="rotate(30 374 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- cabeza: gira sobre la base del cuello (300,262) -->
+  <g id="s4c-cab">
+    <circle cx="236" cy="192" r="15" fill="#b07450"/>
+    <circle cx="364" cy="192" r="15" fill="#b07450"/>
+    <ellipse cx="300" cy="184" rx="65" ry="73" fill="#c48760"/>
+    <path d="M300 112 C340 112 364 140 365 184 C356 160 336 146 300 146 Z" fill="#b07450" opacity=".35"/>
+    <circle cx="300" cy="100" r="26" fill="#2e1d14"/>
+    <circle cx="260" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <circle cx="340" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <path d="M264 172 q13 -8 26 -1" stroke="#2e1d14" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M310 171 q13 -7 26 1" stroke="#2e1d14" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g id="s4c-ojos">
+      <ellipse cx="277" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <ellipse cx="323" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <circle cx="279.5" cy="190.5" r="2.4" fill="#fff"/>
+      <circle cx="325.5" cy="190.5" r="2.4" fill="#fff"/>
+    </g>
+    <path d="M300 200 q-8 15 3 20" stroke="#8a5236" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M284 232 q16 13 32 0" stroke="#8a3a32" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M234 196 C226 104 374 104 366 196 C356 152 330 132 300 132 C270 132 244 152 234 196 Z" fill="#2e1d14"/>
+    <path d="M252 150 C274 126 330 122 352 148 C330 136 296 136 270 154 Z" fill="#4a3022"/>
+  </g>
+  </g>
+</svg><div class="rol" id="s4-rcl"><i style="background:#3d6575"></i>Cliente</div></div>
+    <div class="pj" id="s4-op" style="left: 340px; top: 330px; width: 330px; height: 506px"><svg viewBox="0 0 600 920" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="300" cy="892" rx="150" ry="18" fill="#123d2b" opacity=".14"/>
+  <g id="s4o-todo">
+  <!-- piernas: giran en la cadera (262,590) y (338,590) -->
+  <g id="s4o-pI">
+    <path d="M232 588 L292 588 L288 862 L238 862 Z" fill="#24312b"/>
+    <path d="M234 852 h58 v20 q0 14 -14 14 h-58 q-14 0 -10 -12 q4 -16 24 -22 z" fill="#2a201b"/>
+    <path d="M244 862 h30" stroke="#4a3a30" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="s4o-pD">
+    <path d="M308 588 L368 588 L362 862 L312 862 Z" fill="#24312b"/>
+    <path d="M308 852 h58 q20 6 24 22 q4 12 -10 12 h-58 q-14 0 -14 -14 z" fill="#2a201b"/>
+    <path d="M324 862 h30" stroke="#4a3a30" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- torso: camisa verde -->
+  <path d="M198 296 C240 272 360 272 402 296 C418 330 412 440 404 600 L196 600 C188 440 182 330 198 296 Z" fill="#1f5e43"/>
+  <!-- cuello -->
+  <rect x="278" y="236" width="44" height="56" rx="18" fill="#9c6141"/>
+  <path d="M266 282 L300 322 L334 282 Z" fill="#9c6141"/>
+  <path d="M262 280 L300 324 L338 280" fill="none" stroke="#123d2b" stroke-width="8" stroke-linejoin="round"/>
+  <!-- chaleco ámbar con cintas reflectivas -->
+  <path d="M200 298 C230 286 258 282 268 288 L292 420 L292 600 L198 600 C190 440 186 334 200 298 Z" fill="#d9a21b"/>
+  <path d="M400 298 C370 286 342 282 332 288 L308 420 L308 600 L402 600 C410 440 414 334 400 298 Z" fill="#d9a21b"/>
+  <path d="M196 470 L292 470 L292 490 L195 490 Z M197 522 L292 522 L292 542 L197 542 Z" fill="#eef2ef"/>
+  <path d="M308 470 L404 470 L405 490 L308 490 Z M308 522 L403 522 L403 542 L308 542 Z" fill="#eef2ef"/>
+  <path d="M196 480 L292 480 M197 532 L292 532 M308 480 L404 480 M308 532 L403 532" stroke="#c8d0cb" stroke-width="2"/>
+  <path d="M402 300 C412 340 412 450 404 600 L372 600 C380 470 382 360 372 304 Z" fill="#b8860f" opacity=".45"/>
+  <path d="M198 300 C190 340 188 450 196 600 L214 600 C208 470 206 360 212 304 Z" fill="#fff" opacity=".12"/>
+  <rect x="214" y="400" width="52" height="42" rx="6" fill="#c08c12"/>
+  <rect x="232" y="386" width="6" height="26" rx="3" fill="#1f5fa8"/>
+  <g transform="translate(360 372)"><circle r="17" fill="#fff"/><path d="M0 -10c6 4 8 10 5 17-4-1-6-4-7-8-1 5-2 8-5 9-3-7-1-14 7-18z" fill="#1f5e43"/></g>
+  <!-- cinturón -->
+  <rect x="198" y="578" width="206" height="20" fill="#1c2420"/>
+  <rect x="288" y="580" width="24" height="16" rx="3" fill="#c8d0cb"/>
+
+  <!-- celular en las manos (se muestra en la pose de digitar) -->
+  <g id="s4o-cel" opacity="0" transform="translate(0 -40)">
+    <rect x="258" y="356" width="84" height="146" rx="12" fill="#0f1512" transform="rotate(-4 300 430)"/>
+    <rect x="265" y="366" width="70" height="124" rx="7" fill="#dcefe4" transform="rotate(-4 300 430)"/>
+    <g transform="rotate(-4 300 430)">
+      <rect x="272" y="378" width="40" height="7" rx="3" fill="#2b6a4b"/>
+      <rect x="272" y="394" width="56" height="12" rx="4" fill="#fff"/>
+      <rect x="272" y="412" width="56" height="12" rx="4" fill="#fff"/>
+      <rect x="272" y="430" width="56" height="12" rx="4" fill="#fff"/>
+      <rect x="272" y="466" width="56" height="14" rx="5" fill="#2b6a4b"/>
+    </g>
+  </g>
+
+  <!-- tabla con la planilla en papel (pose de escribir) -->
+  <g id="s4o-tabla" opacity="0">
+    <rect x="236" y="330" width="128" height="164" rx="8" fill="#8a5a2b" transform="rotate(6 300 412)"/>
+    <rect x="246" y="344" width="108" height="140" rx="3" fill="#fbfaf5" transform="rotate(6 300 412)"/>
+    <g transform="rotate(6 300 412)" stroke="#9aa59f" stroke-width="2.5">
+      <path d="M256 368 h88 M256 386 h88 M256 404 h88 M256 422 h88 M256 440 h88 M256 458 h60"/>
+      <path d="M258 384 q8 -10 16 -2 t16 -2" stroke="#1f5fa8" fill="none"/>
+      <path d="M258 420 q10 -8 18 0 t18 -4" stroke="#1f5fa8" fill="none"/>
+    </g>
+    <rect x="280" y="324" width="40" height="14" rx="4" fill="#c8d0cb" transform="rotate(6 300 412)"/>
+  </g>
+  <!-- brazo izquierdo (del espectador): hombro 206,310 · codo 206,440 · muñeca 206,560 -->
+  <g id="s4o-hI">
+    <rect x="184" y="292" width="44" height="160" rx="22" fill="#1f5e43"/>
+    <g id="s4o-cI">
+      <rect x="186" y="428" width="40" height="138" rx="20" fill="#1f5e43"/>
+      <rect x="186" y="540" width="40" height="18" rx="6" fill="#174d36"/>
+      <g id="s4o-mI">
+        <!-- bolsa roja de residuos (se muestra con la pose de cargar) -->
+        <g id="s4o-bolsa" opacity="0">
+          <path d="M196 572 C176 600 150 640 156 700 C162 752 250 752 256 700 C262 640 236 600 216 572 Z" fill="#c62d24"/>
+          <path d="M196 572 C176 600 150 640 156 700 C160 728 190 744 206 744" fill="none" stroke="#a3231c" stroke-width="6"/>
+          <path d="M194 566 q12 10 24 0" stroke="#7d1a14" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M184 652 l20 -30 l20 30 z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+          <circle cx="204" cy="642" r="3" fill="#fff"/>
+        </g>
+        <circle cx="206" cy="572" r="24" fill="#2d3a34"/>
+        <ellipse cx="226" cy="562" rx="9" ry="13" fill="#2d3a34" transform="rotate(-30 226 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- brazo derecho: hombro 394,310 · codo 394,440 · muñeca 394,560 -->
+  <g id="s4o-hD">
+    <rect x="372" y="292" width="44" height="160" rx="22" fill="#1f5e43"/>
+    <g id="s4o-cD">
+      <rect x="374" y="428" width="40" height="138" rx="20" fill="#1f5e43"/>
+      <rect x="374" y="540" width="40" height="18" rx="6" fill="#174d36"/>
+      <g id="s4o-mD">
+        <g id="s4o-lapiz" opacity="0"><rect x="388" y="530" width="8" height="58" rx="3" fill="#1f5fa8" transform="rotate(35 392 572)"/><path d="M388 530 l4 -10 l4 10 z" fill="#241a15" transform="rotate(35 392 572)"/></g>
+        <circle cx="394" cy="572" r="24" fill="#2d3a34"/>
+        <ellipse cx="374" cy="562" rx="9" ry="13" fill="#2d3a34" transform="rotate(30 374 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- cabeza: gira sobre la base del cuello (300,262) -->
+  <g id="s4o-cab">
+    <circle cx="236" cy="192" r="15" fill="#a86b46"/>
+    <circle cx="364" cy="192" r="15" fill="#a86b46"/>
+    <ellipse cx="300" cy="184" rx="65" ry="73" fill="#b97a52"/>
+    <path d="M300 112 C340 112 364 140 365 184 C356 160 336 146 300 146 Z" fill="#a86b46" opacity=".35"/>
+    <path d="M238 156 q-6 34 4 58 l12 -10 q-8 -22 -4 -46 z" fill="#241a15"/>
+    <path d="M362 156 q6 34 -4 58 l-12 -10 q8 -22 4 -46 z" fill="#241a15"/>
+    <circle cx="260" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <circle cx="340" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <path d="M264 172 q13 -8 26 -1" stroke="#241a15" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <path d="M310 171 q13 -7 26 1" stroke="#241a15" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <g id="s4o-ojos">
+      <ellipse cx="277" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <ellipse cx="323" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <circle cx="279.5" cy="190.5" r="2.4" fill="#fff"/>
+      <circle cx="325.5" cy="190.5" r="2.4" fill="#fff"/>
+    </g>
+    <path d="M300 200 q-8 15 3 20" stroke="#8a5236" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M281 226 q19 -10 38 0 q-19 7 -38 0 z" fill="#241a15"/>
+    <path d="M283 236 q17 14 34 0" stroke="#5a2e1e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- gorra verde con la hoja de la marca -->
+    <path d="M232 152 C232 80 368 80 368 152 Z" fill="#2b6a4b"/>
+    <path d="M268 90 C258 104 252 126 252 152 L262 152 C262 128 266 108 276 94 Z" fill="#fff" opacity=".10"/>
+    <path d="M300 82 L300 152" stroke="#1f5e43" stroke-width="3"/>
+    <rect x="231" y="144" width="138" height="11" rx="4" fill="#1f5e43"/>
+    <path d="M234 152 Q300 168 366 152 Q372 162 360 167 Q300 180 240 167 Q228 162 234 152 Z" fill="#123d2b"/>
+    <g transform="translate(300 118)"><circle r="15" fill="#fff"/><path d="M0 -9c5 3 8 9 4 15-3-1-5-3-6-6-1 4-2 6-4 7-3-6-1-12 6-16z" fill="#2b6a4b"/></g>
+    <circle cx="300" cy="81" r="6" fill="#1f5e43"/>
+  </g>
+  </g>
+</svg><div class="rol" id="s4-rop"><i style="background:#d9a21b"></i>Operario</div></div>
+    <h1 id="s4-t4" class="s4-titulo" style="left: 760px; top: 110px; width: 1060px" data-palabras>El cliente paga en <em>efectivo</em> o por <em>transferencia</em></h1>
+    <div id="s4-lab4" class="s4-sub" style="left: 764px; top: 318px">Abono a la FVE 25756</div>
     <div id="s4-menos" class="s4-cifra" style="top: 370px; color: #1c2420">−$500.000</div>
     <div id="s4-saldo" class="s4-cifra" style="top: 500px; color: #123d2b">Saldo $2.244.935</div>
-    <div id="s4-hoyD" class="ha-fila ha-hoy" style="left: 620px; top: 650px"><span class="ha-tag">Hoy</span><span class="ha-txt">Digitar el recibo y buscar qué factura paga</span></div>
-    <div id="s4-ahoD" class="ha-fila ha-ahora" style="left: 620px; top: 725px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia importa el archivo y Helisa cruza solo</span></div>
+    <div id="s4-hoyD" class="pago" style="left: 764px; top: 640px"><b style="background: #dcefe4; color: #123d2b">Efectivo</b><span>El operario le entrega el recibo en la app</span></div>
+    <div id="s4-ahoD" class="pago" style="left: 764px; top: 715px"><b style="background: #e6eef2; color: #3d6575">Transferencia</b><span>El soporte llega por WhatsApp y la oficina lo registra</span></div>
 
     <!-- E · la frontera -->
     <h1 id="s4-t5" data-palabras><em>Hasta aquí</em> llega el Alcance 1</h1>
@@ -111,6 +506,65 @@
   </div>
   <script>
     (function () {
+      // ---- rig de personajes (lo inserta tools/armar.mjs; no editar en compositions/) ----
+      // Cada personaje es un SVG con ids «prefijo-parte». Las articulaciones giran sobre su punto fijo;
+      // el estado vive en un objeto que GSAP anima y `aplicar` lo escribe en el SVG.
+      const RIGS = {
+        operario: {
+          juntas: { hI: [206, 310], cI: [206, 440], mI: [206, 560], hD: [394, 310], cD: [394, 440], mD: [394, 560], pI: [262, 590], pD: [338, 590], cab: [300, 262] },
+          ojos: 194, props: ["cel", "bolsa", "tabla", "lapiz"], todo: [300, 892],
+        },
+        lucrecia: {
+          juntas: { hI: [212, 352], cI: [204, 470], mI: [204, 580], hD: [388, 352], cD: [396, 470], mD: [396, 580], cab: [300, 300] },
+          ojos: 216, props: ["pila1", "pila2", "pila3", "calc"], todo: [300, 640],
+        },
+        cliente: {
+          juntas: { hI: [206, 310], cI: [206, 440], mI: [206, 560], hD: [394, 310], cD: [394, 440], mD: [394, 560], pI: [262, 590], pD: [338, 590], cab: [300, 262] },
+          ojos: 194, props: ["billetes", "lapicero"], todo: [300, 892],
+        },
+      };
+      function rig(px, tipo, inicial = {}) {
+        const cfg = RIGS[tipo];
+        const el = (id) => document.getElementById(px + "-" + id);
+        const st = { ojos: 1, x: 0, y: 0, rot: 0 };
+        for (const k of Object.keys(cfg.juntas)) st[k] = 0;
+        for (const k of cfg.props) st[k] = 0;
+        Object.assign(st, inicial);
+        const nodos = {};
+        for (const k of [...Object.keys(cfg.juntas), ...cfg.props, "ojos", "todo"]) nodos[k] = el(k);
+        function aplicar() {
+          for (const [k, [x, y]] of Object.entries(cfg.juntas)) {
+            if (nodos[k]) nodos[k].setAttribute("transform", `rotate(${st[k]} ${x} ${y})`);
+          }
+          for (const k of cfg.props) if (nodos[k]) nodos[k].setAttribute("opacity", st[k]);
+          if (nodos.ojos) nodos.ojos.setAttribute("transform", `translate(0 ${cfg.ojos * (1 - st.ojos)}) scale(1 ${st.ojos})`);
+          if (nodos.todo) nodos.todo.setAttribute("transform", `translate(${st.x} ${st.y}) rotate(${st.rot} ${cfg.todo[0]} ${cfg.todo[1]})`);
+        }
+        aplicar();
+        return { st, aplicar };
+      }
+      // Animaciones de personaje sobre una línea de tiempo `tl`
+      const pose = (tl, r, p, t, d = 0.5, ease = "power2.inOut") => tl.to(r.st, { ...p, duration: d, ease, onUpdate: r.aplicar }, t);
+      const parpadea = (tl, r, t) => {
+        tl.to(r.st, { ojos: 0.08, duration: 0.07, ease: "power1.in", onUpdate: r.aplicar }, t);
+        tl.to(r.st, { ojos: 1, duration: 0.1, ease: "power1.out", onUpdate: r.aplicar }, t + 0.07);
+      };
+      // Repite un gesto corto n veces (digitar, escribir, teclear): alterna dos valores de una junta
+      const gesto = (tl, r, junta, a, b, t, n, paso = 0.16) => {
+        for (let i = 0; i < n; i++) tl.to(r.st, { [junta]: i % 2 ? a : b, duration: paso, ease: "sine.inOut", onUpdate: r.aplicar }, t + i * paso);
+      };
+      // Camina: piernas alternas y un leve rebote del cuerpo mientras se desplaza en x
+      const camina = (tl, r, t, dur, dx, pasos) => {
+        tl.to(r.st, { x: r.st.x + dx, duration: dur, ease: "none", onUpdate: r.aplicar }, t);
+        const p = dur / pasos;
+        for (let i = 0; i < pasos; i++) {
+          const s = i % 2 ? 1 : -1;
+          tl.to(r.st, { pI: 14 * s, pD: -14 * s, hI: -10 * s, hD: -10 * s, y: -10, duration: p / 2, ease: "sine.out", onUpdate: r.aplicar }, t + i * p);
+          tl.to(r.st, { y: 0, duration: p / 2, ease: "sine.in", onUpdate: r.aplicar }, t + i * p + p / 2);
+        }
+        tl.to(r.st, { pI: 0, pD: 0, hI: 0, hD: 0, duration: 0.2, ease: "sine.out", onUpdate: r.aplicar }, t + dur);
+      };
+      // ---- fin del rig ----
       function palabras(sel) {
         document.querySelectorAll(sel).forEach((el) => {
           const out = [];
@@ -130,10 +584,19 @@
       const tarjeta = (sel, t, dx = 200) => tl.fromTo(sel, { opacity: 0, x: dx, filter: "blur(10px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, t);
       const miles = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-      gsap.set(["#s4-pedido", "#s4-marca", "#s4-hoyA", "#s4-ahoA", "#s4-helisa", "#s4-amano",
-        "#s4-cH", "#s4-cR", "#s4-ida", "#s4-chip", "#s4-ok", "#s4-api",
-        "#s4-phone", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], { opacity: 0 });
+      const luA = rig("s4a", "lucrecia", { hI: 6, cI: -40, hD: -6, cD: 40, cab: -3 });
+      const luB = rig("s4b", "lucrecia", { hI: 6, cI: -40, hD: -6, cD: 40, cab: 4 });
+      const cl = rig("s4c", "cliente", { billetes: 1, hD: -30, cD: 50 });
+      const op = rig("s4o", "operario", {});
+
+      gsap.set(["#s4-pedido", "#s4-marca", "#s4-hoyA", "#s4-ahoA", "#s4-luA", "#s4-toast",
+        "#s4-mesaB", "#s4-monB", "#s4-luB", "#s4-fv1", "#s4-fv2", "#s4-fv3", "#s4-tecla", "#s4-amano",
+        "#s4-cH", "#s4-cR", "#s4-ida", "#s4-chip", "#s4-ok", "#s4-api", "#s4-auto", "#s4-chip2",
+        "#s4-cl", "#s4-op", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], { opacity: 0 });
       gsap.set("#s4-guia", { scaleY: 0 });
+      gsap.set(["#s4-rcl", "#s4-rop"], { opacity: 0 });
+      tl.fromTo(["#s4-rcl", "#s4-rop"], { opacity: 0 }, { opacity: 1, duration: 0.25, stagger: 0.15 }, 20.4);
+      tl.to(["#s4-rcl", "#s4-rop"], { opacity: 0, duration: 0.2 }, 23.6);
       gsap.set("#s4-flecha", { clipPath: "inset(0% 100% 0% 0%)" });
 
       // Capítulo
@@ -144,62 +607,90 @@
       // A · el pedido (2,4–7,6 s)
       entra("#s4-t1", 2.6);
       tarjeta("#s4-pedido", 2.5, 240);
+      tarjeta("#s4-luA", 2.7, 160);
       tl.fromTo("#s4-marca", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, 3.4);
       aparece("#s4-hoyA", 3.9);
       aparece("#s4-ahoA", 4.5);
+      gesto(tl, luA, "mI", -8, 4, 3.6, 12, 0.14);
+      gesto(tl, luA, "mD", 6, -6, 3.67, 12, 0.14);
+      tl.fromTo("#s4-toast", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 5.4);
+      parpadea(tl, luA, 5.9);
       sale("#s4-t1", 6.95);
-      se_va(["#s4-hoyA", "#s4-ahoA"], 6.95);
+      se_va(["#s4-hoyA", "#s4-ahoA", "#s4-luA", "#s4-toast"], 6.95);
       // el pedido viaja al nodo Helisa (x 1020, y 895)
-      tl.to("#s4-pedido", { x: 60, y: 481, scale: 0.05, duration: 0.55, ease: "power3.in" }, 7.05);
+      tl.to("#s4-pedido", { x: 300, y: 527, scale: 0.05, duration: 0.55, ease: "power3.in" }, 7.05);
       tl.to("#s4-pedido", { opacity: 0, duration: 0.1 }, 7.52);
 
-      // B · la factura en Helisa (7,8–12,6 s)
-      entra("#s4-t2", 7.95);
-      tarjeta("#s4-helisa", 8.05);
-      entra("#s4-s2", 8.6);
-      tl.fromTo("#s4-amano", { opacity: 0, scale: 1.5, rotation: -6 }, { opacity: 1, scale: 1, rotation: -2, duration: 0.4, ease: "back.out(1.8)" }, 9.0);
-      sale("#s4-t2", 12.2);
-      sale("#s4-s2", 12.2);
-      se_va(["#s4-helisa", "#s4-amano"], 12.25);
+      // B · F3, una por una (7,6–14 s)
+      entra("#s4-t2", 7.75);
+      tl.fromTo(["#s4-mesaB", "#s4-monB", "#s4-luB"], { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out", stagger: 0.08 }, 7.8);
+      entra("#s4-s2", 8.4);
+      aparece("#s4-tecla", 8.9);
+      [["#s4-fv1", 9.4], ["#s4-fv2", 10.8], ["#s4-fv3", 12.2]].forEach(([fv, t]) => {
+        tl.to("#s4-tecla", { y: 8, duration: 0.08, ease: "power2.in" }, t - 0.12);
+        tl.to("#s4-tecla", { y: 0, duration: 0.14, ease: "power2.out" }, t - 0.04);
+        tl.to(luB.st, { mD: -12, duration: 0.08, onUpdate: luB.aplicar }, t - 0.12);
+        tl.to(luB.st, { mD: 0, duration: 0.14, onUpdate: luB.aplicar }, t - 0.04);
+        tl.fromTo(fv, { opacity: 0, x: -260, scale: 0.6 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, t);
+        gesto(tl, luB, "mI", -8, 4, t + 0.2, 6, 0.13);
+      });
+      tl.fromTo("#s4-amano", { opacity: 0, scale: 1.5, rotation: -6 }, { opacity: 1, scale: 1, rotation: -2, duration: 0.4, ease: "back.out(1.8)" }, 10.0);
+      parpadea(tl, luB, 11.4);
+      sale("#s4-t2", 13.6);
+      sale("#s4-s2", 13.6);
+      se_va(["#s4-mesaB", "#s4-monB", "#s4-luB", "#s4-fv1", "#s4-fv2", "#s4-fv3", "#s4-tecla", "#s4-amano"], 13.65);
 
-      // C · la FVE vuelve al sistema (12,8–18,8 s)
-      entra("#s4-t3", 12.95);
-      tarjeta("#s4-cH", 13.15, -160);
-      tarjeta("#s4-cR", 13.35, 160);
-      entra("#s4-s3", 13.6);
-      tl.to("#s4-flecha", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.inOut" }, 14.0);
-      tl.fromTo("#s4-ida", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 14.3);
-      tl.fromTo("#s4-chip", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 14.55);
-      tl.fromTo("#s4-chip", { x: 0, y: 0 }, { keyframes: [{ x: 480, y: -120, duration: 0.5, ease: "power1.out" }, { x: 960, y: 0, duration: 0.5, ease: "power1.in" }], immediateRender: false }, 14.6);
-      aparece("#s4-ok", 15.3);
-      aparece("#s4-api", 15.6);
-      sale("#s4-t3", 18.4);
-      sale("#s4-s3", 18.4);
-      se_va(["#s4-cH", "#s4-cR", "#s4-flecha", "#s4-ida", "#s4-chip", "#s4-ok", "#s4-api"], 18.45);
+      // C · la FVE vuelve al sistema (14–20 s)
+      entra("#s4-t3", 14.15);
+      tarjeta("#s4-cH", 14.35, -160);
+      tarjeta("#s4-cR", 14.55, 160);
+      entra("#s4-s3", 14.8);
+      tl.to("#s4-flecha", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.inOut" }, 15.2);
+      tl.fromTo("#s4-ida", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 15.5);
+      tl.fromTo("#s4-chip", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 15.75);
+      tl.fromTo("#s4-chip", { x: 0, y: 0 }, { keyframes: [{ x: 480, y: -120, duration: 0.5, ease: "power1.out" }, { x: 960, y: 0, duration: 0.5, ease: "power1.in" }], immediateRender: false }, 15.8);
+      aparece("#s4-ok", 16.5);
+      // con la API de Helisa la misma vuelta se hace sola
+      tl.to("#s4-chip", { opacity: 0, duration: 0.2 }, 17.0);
+      tl.fromTo("#s4-auto", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 17.1);
+      aparece("#s4-api", 17.15);
+      tl.fromTo("#s4-chip2", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 17.35);
+      tl.fromTo("#s4-chip2", { x: 0, y: 0 }, { keyframes: [{ x: 480, y: -120, duration: 0.4, ease: "power1.out" }, { x: 940, y: 0, duration: 0.4, ease: "power1.in" }], immediateRender: false }, 17.4);
+      sale("#s4-t3", 19.6);
+      sale("#s4-s3", 19.6);
+      se_va(["#s4-cH", "#s4-cR", "#s4-flecha", "#s4-ida", "#s4-ok", "#s4-api", "#s4-auto", "#s4-chip2"], 19.65);
 
-      // D · el cobro y el cruce (18,8–24,8 s)
-      tl.fromTo("#s4-phone", { opacity: 0, scale: 0.7, filter: "blur(6px)" }, { opacity: 1, scale: 0.8, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 18.85);
-      entra("#s4-t4", 19.0);
-      aparece("#s4-lab4", 19.6);
-      aparece("#s4-menos", 19.8);
-      aparece("#s4-saldo", 20.35);
+      // D · el cliente paga y el operario emite el recibo (20–27,2 s)
+      tl.fromTo(["#s4-cl", "#s4-op"], { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out", stagger: 0.12 }, 20.0);
+      entra("#s4-t4", 20.2);
+      pose(tl, cl, { hD: -62, cD: -24, cab: -4 }, 20.6, 0.5);
+      pose(tl, op, { hI: 58, cI: 24, cab: 6 }, 20.75, 0.45);
+      tl.to(cl.st, { billetes: 0, duration: 0.12, onUpdate: cl.aplicar }, 21.3);
+      pose(tl, cl, { hD: 0, cD: 0 }, 21.5, 0.4);
+      pose(tl, op, { cel: 1, hI: 18, cI: -98, mI: 18, hD: -18, cD: 98, mD: -18, cab: -2 }, 21.55, 0.5);
+      gesto(tl, op, "mD", -26, -12, 22.1, 12, 0.15);
+      parpadea(tl, cl, 22.6);
+      parpadea(tl, op, 24.4);
+      aparece("#s4-lab4", 21.0);
+      aparece("#s4-menos", 21.2);
+      aparece("#s4-saldo", 21.75);
       {
         const o = { v: 2244935 };
         tl.fromTo(o, { v: 2244935 }, { v: 1744935, duration: 0.8, ease: "power2.out",
-          onUpdate: () => { document.querySelector("#s4-saldo").textContent = "Saldo $" + miles(o.v); } }, 20.6);
+          onUpdate: () => { document.querySelector("#s4-saldo").textContent = "Saldo $" + miles(o.v); } }, 22.0);
       }
-      aparece("#s4-hoyD", 21.55);
-      aparece("#s4-ahoD", 22.15);
-      sale("#s4-t4", 24.45);
-      se_va(["#s4-phone", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], 24.5);
+      aparece("#s4-hoyD", 23.2);
+      aparece("#s4-ahoD", 23.8);
+      sale("#s4-t4", 26.85);
+      se_va(["#s4-cl", "#s4-op", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], 26.9);
 
-      // E · la frontera (24,8–28,8 s)
-      entra("#s4-t5", 25.0);
-      tl.to("#s4-guia", { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 25.05);
-      entra("#s4-s5", 25.9);
-      sale("#s4-t5", 28.45);
-      sale("#s4-s5", 28.45);
-      tl.to("#s4-guia", { opacity: 0, duration: 0.25 }, 28.5);
+      // E · la frontera (27,2–31,2 s)
+      entra("#s4-t5", 27.4);
+      tl.to("#s4-guia", { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 27.45);
+      entra("#s4-s5", 28.3);
+      sale("#s4-t5", 30.85);
+      sale("#s4-s5", 30.85);
+      tl.to("#s4-guia", { opacity: 0, duration: 0.25 }, 30.9);
 
       window.__timelines["s4"] = tl;
     })();

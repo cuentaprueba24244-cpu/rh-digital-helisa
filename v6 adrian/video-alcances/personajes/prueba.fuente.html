@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Personajes · prueba de poses</title>
+<style>
+  body { margin: 0; background: #f3f6f4; padding: 30px; display: grid; grid-template-columns: repeat(4, 340px); gap: 24px; font-family: sans-serif; }
+  .c { background: #fff; border-radius: 18px; padding: 10px; }
+  .c svg { width: 320px; height: 490px; display: block; }
+  .c.l svg { height: 373px; }
+  p { margin: 4px 8px; font-size: 14px; color: #46524c; }
+</style>
+</head>
+<body>
+  <div class="c"><!-- @svg operario a --><p>Operario · escribir en la planilla</p></div>
+  <div class="c"><!-- @svg operario b --><p>Operario · caminar</p></div>
+  <div class="c"><!-- @svg cliente c --><p>Cliente · entregar el pago</p></div>
+  <div class="c"><!-- @svg cliente d --><p>Cliente · de frente</p></div>
+  <div class="c l"><!-- @svg lucrecia e --><p>Lucrecia · teclear</p></div>
+  <div class="c l"><!-- @svg lucrecia f --><p>Lucrecia · calculadora y planillas</p></div>
+  <div class="c"><!-- @svg operario g --><p>Operario · digitar</p></div>
+  <div class="c"><!-- @svg operario h --><p>Operario · recibir el pago</p></div>
+<script>
+/* @rig */
+rig("a", "operario", { tabla: 1, lapiz: 1, hI: 18, cI: -98, mI: 18, hD: -30, cD: 92, mD: -40, cab: -3 });
+rig("b", "operario", { pI: 14, pD: -14, hI: -10, hD: -10, bolsa: 1 });
+rig("c", "cliente", { billetes: 1, hD: -30, cD: 50, cab: 4 });
+rig("d", "cliente", {});
+rig("e", "lucrecia", { hI: 6, cI: -40, hD: -6, cD: 40, cab: -2 });
+rig("f", "lucrecia", { calc: 1, pila1: 1, pila2: 1, pila3: 1, hI: 16, cI: -10, hD: -6, cD: 40, cab: 6 });
+rig("g", "operario", { cel: 1, hI: 18, cI: -98, mI: 18, hD: -18, cD: 98, mD: -18, cab: -2 });
+rig("h", "operario", { hD: -32, cD: -60, cab: -5 });
+</script>
+</body>
+</html>

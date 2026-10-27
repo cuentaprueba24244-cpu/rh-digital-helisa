@@ -1,5 +1,22 @@
 # Revisión · Los dos alcances de RH digital
 
+**Render v3:** 26 oct 2026, `renders/alcances-rh-digital-v3.mp4`. Es un MP4 de 1920 × 1080 a 30 fps; dura 138,0 s y pesa 19,3 MB. Audio medido en el MP4: −15 LUFS, pico real de −1 dBTP y ningún recorte. `check` pasa sin errores.
+
+## Cambios de la v3 (personajes)
+
+- **Intro nueva (0–28,8 s), contada como escena:**
+  1. Llega la camioneta de Comserva a Cofema en Florencia.
+  2. El operario baja con la bolsa roja, la pesa (la báscula marca 74,95 kg) y anota a mano. Aparece la planilla real con la fila del día 5.
+  3. El cliente sale a firmar en papel.
+  4. En la oficina, Lucrecia suma con calculadora mientras el reloj corre, y digita en Helisa.
+  5. Los papeles vuelan y forman la marca «Por eso creamos RH digital». Después aparecen el operario con la app y Lucrecia con el panel.
+- **Visita:** el operario digita con el celular en la mano y el celular grande nace del suyo. Aparecen el aviso de sin señal, la ficha «99,50 kg» que salta al total, el pin del GPS, el flash de la foto y su saludo al final.
+- **RH:** Lucrecia cierra septiembre con un clic en el panel y la cámara entra al monitor.
+- **Alcance 1:** Lucrecia importa el pedido. En Helisa presiona F3 y salen las FVE 25756, 25757 y 25758 una por una. El cliente le paga al operario y él emite el recibo en la app.
+- **Alcance 2:** Lucrecia emite las 12 facturas de septiembre (RHD 1–12) con un clic. El cliente recibe la factura en su portátil y el operario hace el recibo sin esperar a Helisa.
+- **Final:** el operario, Lucrecia y el cliente saludan bajo la marca.
+- **Aviso que queda:** `composition_file_too_large` aparece porque `armar.mjs` inserta los SVG de los personajes dentro de cada escena. Las fuentes en `escenas/` son cortas.
+
 **Render v2:** 25 oct 2026, `renders/alcances-rh-digital.mp4`. Es un MP4 H.264 de 1920 × 1080 a 30 fps, con audio AAC; dura 116,4 s y pesa 19,3 MB. La v1, de 90 s, quedó como `renders/alcances-rh-digital-v1.mp4`.
 
 ## Cambios de la v2 (revisión de Adrián)

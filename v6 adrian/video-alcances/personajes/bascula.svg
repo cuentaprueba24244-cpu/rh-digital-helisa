@@ -1,0 +1,17 @@
+<svg viewBox="0 0 300 360" xmlns="http://www.w3.org/2000/svg">
+  <!-- báscula de piso con visor digital; el número es el texto «X-num» -->
+  <ellipse cx="150" cy="346" rx="130" ry="10" fill="#123d2b" opacity=".14"/>
+  <rect x="134" y="104" width="16" height="200" rx="6" fill="#6f7c75"/>
+  <rect x="64" y="40" width="156" height="78" rx="12" fill="#2d3a34"/>
+  <rect x="76" y="52" width="132" height="44" rx="6" fill="#dcefe4"/>
+  <text id="X-num" x="198" y="86" text-anchor="end" font-family="JetBrains Mono, monospace" font-weight="500" font-size="30" fill="#123d2b">0,00</text>
+  <text x="142" y="112" text-anchor="middle" font-family="Figtree, sans-serif" font-weight="700" font-size="11" fill="#c8d0cb">kg</text>
+  <rect x="24" y="300" width="252" height="34" rx="8" fill="#46524c"/>
+  <rect x="34" y="292" width="232" height="14" rx="5" fill="#c8d0cb"/>
+  <!-- bolsa encima de la báscula (aparece al dejarla) -->
+  <g id="X-bolsa" opacity="0">
+    <path d="M140 190 C112 214 86 250 92 282 C98 304 202 304 208 282 C214 250 188 214 160 190 Z" fill="#c62d24"/>
+    <path d="M138 186 q12 10 24 0" stroke="#7d1a14" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M130 262 l20 -30 l20 30 z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+  </g>
+</svg>

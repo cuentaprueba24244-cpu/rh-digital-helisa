@@ -5,7 +5,7 @@
     @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
     #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
     .w { display: inline-block; }
-    #s2-phone { position: absolute; left: 373px; top: 48px; width: 373px; height: 784px; border-radius: 44px; background: #0f1512;
+    #s2-phone { position: absolute; left: 410px; top: 48px; width: 373px; height: 784px; border-radius: 44px; background: #0f1512;
       box-shadow: 0 2px 4px rgba(18,61,43,.12), 0 30px 70px rgba(18,61,43,.22); }
     #s2-screen { position: absolute; left: 12px; top: 12px; width: 349px; height: 760px; border-radius: 32px; overflow: hidden; background: #f3f6f4; }
     .s2-pant { position: absolute; left: 0; top: 0; width: 349px; height: 760px; display: block; }
@@ -13,7 +13,7 @@
     .s2-titulo { position: absolute; left: 880px; top: 250px; width: 920px; font-size: 80px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
     .s2-titulo em { font-style: normal; color: #2b6a4b; }
     .s2-sub { position: absolute; left: 880px; top: 450px; width: 900px; font-size: 38px; font-weight: 500; color: #46524c; line-height: 1.3; }
-    #s2-ficha { position: absolute; left: 400px; top: 690px; padding: 16px 22px; border-radius: 14px; background: #fff; border-left: 8px solid #2b6a4b;
+    #s2-ficha { position: absolute; left: 437px; top: 690px; padding: 16px 22px; border-radius: 14px; background: #fff; border-left: 8px solid #2b6a4b;
       font-size: 30px; font-weight: 700; color: #123d2b; white-space: nowrap;
       box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 18px 48px rgba(18,61,43,.14); }
     /* ficha Hoy → Ahora */
@@ -24,8 +24,146 @@
     .ha-txt { font-size: 36px; line-height: 1.25; }
     .ha-hoy .ha-txt { color: #6f7c75; font-weight: 500; }
     .ha-ahora .ha-txt { color: #1c2420; font-weight: 700; }
+    .pj { position: absolute; transform-origin: 0 0; }
+    .pj svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    #s2-kg { position: absolute; left: 150px; top: 520px; padding: 10px 16px; border-radius: 12px; background: #2b6a4b; color: #fff; font-size: 30px; font-weight: 800; white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(18,61,43,.25); }
+    #s2-senal { position: absolute; left: 210px; top: 210px; width: 90px; height: 90px; }
+    #s2-pin { position: absolute; left: 560px; top: 150px; width: 64px; height: 84px; }
+    #s2-flash { position: absolute; inset: 0; background: #fff; border-radius: 32px; }
   </style>
   <div id="root" data-composition-id="s2" data-width="1920" data-height="1080">
+    <div class="pj" id="s2-op" style="left: 10px; top: 290px; width: 360px; height: 552px"><svg viewBox="0 0 600 920" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="300" cy="892" rx="150" ry="18" fill="#123d2b" opacity=".14"/>
+  <g id="s2o-todo">
+  <!-- piernas: giran en la cadera (262,590) y (338,590) -->
+  <g id="s2o-pI">
+    <path d="M232 588 L292 588 L288 862 L238 862 Z" fill="#24312b"/>
+    <path d="M234 852 h58 v20 q0 14 -14 14 h-58 q-14 0 -10 -12 q4 -16 24 -22 z" fill="#2a201b"/>
+    <path d="M244 862 h30" stroke="#4a3a30" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="s2o-pD">
+    <path d="M308 588 L368 588 L362 862 L312 862 Z" fill="#24312b"/>
+    <path d="M308 852 h58 q20 6 24 22 q4 12 -10 12 h-58 q-14 0 -14 -14 z" fill="#2a201b"/>
+    <path d="M324 862 h30" stroke="#4a3a30" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- torso: camisa verde -->
+  <path d="M198 296 C240 272 360 272 402 296 C418 330 412 440 404 600 L196 600 C188 440 182 330 198 296 Z" fill="#1f5e43"/>
+  <!-- cuello -->
+  <rect x="278" y="236" width="44" height="56" rx="18" fill="#9c6141"/>
+  <path d="M266 282 L300 322 L334 282 Z" fill="#9c6141"/>
+  <path d="M262 280 L300 324 L338 280" fill="none" stroke="#123d2b" stroke-width="8" stroke-linejoin="round"/>
+  <!-- chaleco ámbar con cintas reflectivas -->
+  <path d="M200 298 C230 286 258 282 268 288 L292 420 L292 600 L198 600 C190 440 186 334 200 298 Z" fill="#d9a21b"/>
+  <path d="M400 298 C370 286 342 282 332 288 L308 420 L308 600 L402 600 C410 440 414 334 400 298 Z" fill="#d9a21b"/>
+  <path d="M196 470 L292 470 L292 490 L195 490 Z M197 522 L292 522 L292 542 L197 542 Z" fill="#eef2ef"/>
+  <path d="M308 470 L404 470 L405 490 L308 490 Z M308 522 L403 522 L403 542 L308 542 Z" fill="#eef2ef"/>
+  <path d="M196 480 L292 480 M197 532 L292 532 M308 480 L404 480 M308 532 L403 532" stroke="#c8d0cb" stroke-width="2"/>
+  <path d="M402 300 C412 340 412 450 404 600 L372 600 C380 470 382 360 372 304 Z" fill="#b8860f" opacity=".45"/>
+  <path d="M198 300 C190 340 188 450 196 600 L214 600 C208 470 206 360 212 304 Z" fill="#fff" opacity=".12"/>
+  <rect x="214" y="400" width="52" height="42" rx="6" fill="#c08c12"/>
+  <rect x="232" y="386" width="6" height="26" rx="3" fill="#1f5fa8"/>
+  <g transform="translate(360 372)"><circle r="17" fill="#fff"/><path d="M0 -10c6 4 8 10 5 17-4-1-6-4-7-8-1 5-2 8-5 9-3-7-1-14 7-18z" fill="#1f5e43"/></g>
+  <!-- cinturón -->
+  <rect x="198" y="578" width="206" height="20" fill="#1c2420"/>
+  <rect x="288" y="580" width="24" height="16" rx="3" fill="#c8d0cb"/>
+
+  <!-- celular en las manos (se muestra en la pose de digitar) -->
+  <g id="s2o-cel" opacity="0" transform="translate(0 -40)">
+    <rect x="258" y="356" width="84" height="146" rx="12" fill="#0f1512" transform="rotate(-4 300 430)"/>
+    <rect x="265" y="366" width="70" height="124" rx="7" fill="#dcefe4" transform="rotate(-4 300 430)"/>
+    <g transform="rotate(-4 300 430)">
+      <rect x="272" y="378" width="40" height="7" rx="3" fill="#2b6a4b"/>
+      <rect x="272" y="394" width="56" height="12" rx="4" fill="#fff"/>
+      <rect x="272" y="412" width="56" height="12" rx="4" fill="#fff"/>
+      <rect x="272" y="430" width="56" height="12" rx="4" fill="#fff"/>
+      <rect x="272" y="466" width="56" height="14" rx="5" fill="#2b6a4b"/>
+    </g>
+  </g>
+
+  <!-- tabla con la planilla en papel (pose de escribir) -->
+  <g id="s2o-tabla" opacity="0">
+    <rect x="236" y="330" width="128" height="164" rx="8" fill="#8a5a2b" transform="rotate(6 300 412)"/>
+    <rect x="246" y="344" width="108" height="140" rx="3" fill="#fbfaf5" transform="rotate(6 300 412)"/>
+    <g transform="rotate(6 300 412)" stroke="#9aa59f" stroke-width="2.5">
+      <path d="M256 368 h88 M256 386 h88 M256 404 h88 M256 422 h88 M256 440 h88 M256 458 h60"/>
+      <path d="M258 384 q8 -10 16 -2 t16 -2" stroke="#1f5fa8" fill="none"/>
+      <path d="M258 420 q10 -8 18 0 t18 -4" stroke="#1f5fa8" fill="none"/>
+    </g>
+    <rect x="280" y="324" width="40" height="14" rx="4" fill="#c8d0cb" transform="rotate(6 300 412)"/>
+  </g>
+  <!-- brazo izquierdo (del espectador): hombro 206,310 · codo 206,440 · muñeca 206,560 -->
+  <g id="s2o-hI">
+    <rect x="184" y="292" width="44" height="160" rx="22" fill="#1f5e43"/>
+    <g id="s2o-cI">
+      <rect x="186" y="428" width="40" height="138" rx="20" fill="#1f5e43"/>
+      <rect x="186" y="540" width="40" height="18" rx="6" fill="#174d36"/>
+      <g id="s2o-mI">
+        <!-- bolsa roja de residuos (se muestra con la pose de cargar) -->
+        <g id="s2o-bolsa" opacity="0">
+          <path d="M196 572 C176 600 150 640 156 700 C162 752 250 752 256 700 C262 640 236 600 216 572 Z" fill="#c62d24"/>
+          <path d="M196 572 C176 600 150 640 156 700 C160 728 190 744 206 744" fill="none" stroke="#a3231c" stroke-width="6"/>
+          <path d="M194 566 q12 10 24 0" stroke="#7d1a14" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M184 652 l20 -30 l20 30 z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+          <circle cx="204" cy="642" r="3" fill="#fff"/>
+        </g>
+        <circle cx="206" cy="572" r="24" fill="#2d3a34"/>
+        <ellipse cx="226" cy="562" rx="9" ry="13" fill="#2d3a34" transform="rotate(-30 226 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- brazo derecho: hombro 394,310 · codo 394,440 · muñeca 394,560 -->
+  <g id="s2o-hD">
+    <rect x="372" y="292" width="44" height="160" rx="22" fill="#1f5e43"/>
+    <g id="s2o-cD">
+      <rect x="374" y="428" width="40" height="138" rx="20" fill="#1f5e43"/>
+      <rect x="374" y="540" width="40" height="18" rx="6" fill="#174d36"/>
+      <g id="s2o-mD">
+        <g id="s2o-lapiz" opacity="0"><rect x="388" y="530" width="8" height="58" rx="3" fill="#1f5fa8" transform="rotate(35 392 572)"/><path d="M388 530 l4 -10 l4 10 z" fill="#241a15" transform="rotate(35 392 572)"/></g>
+        <circle cx="394" cy="572" r="24" fill="#2d3a34"/>
+        <ellipse cx="374" cy="562" rx="9" ry="13" fill="#2d3a34" transform="rotate(30 374 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- cabeza: gira sobre la base del cuello (300,262) -->
+  <g id="s2o-cab">
+    <circle cx="236" cy="192" r="15" fill="#a86b46"/>
+    <circle cx="364" cy="192" r="15" fill="#a86b46"/>
+    <ellipse cx="300" cy="184" rx="65" ry="73" fill="#b97a52"/>
+    <path d="M300 112 C340 112 364 140 365 184 C356 160 336 146 300 146 Z" fill="#a86b46" opacity=".35"/>
+    <path d="M238 156 q-6 34 4 58 l12 -10 q-8 -22 -4 -46 z" fill="#241a15"/>
+    <path d="M362 156 q6 34 -4 58 l-12 -10 q8 -22 4 -46 z" fill="#241a15"/>
+    <circle cx="260" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <circle cx="340" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <path d="M264 172 q13 -8 26 -1" stroke="#241a15" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <path d="M310 171 q13 -7 26 1" stroke="#241a15" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <g id="s2o-ojos">
+      <ellipse cx="277" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <ellipse cx="323" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <circle cx="279.5" cy="190.5" r="2.4" fill="#fff"/>
+      <circle cx="325.5" cy="190.5" r="2.4" fill="#fff"/>
+    </g>
+    <path d="M300 200 q-8 15 3 20" stroke="#8a5236" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M281 226 q19 -10 38 0 q-19 7 -38 0 z" fill="#241a15"/>
+    <path d="M283 236 q17 14 34 0" stroke="#5a2e1e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- gorra verde con la hoja de la marca -->
+    <path d="M232 152 C232 80 368 80 368 152 Z" fill="#2b6a4b"/>
+    <path d="M268 90 C258 104 252 126 252 152 L262 152 C262 128 266 108 276 94 Z" fill="#fff" opacity=".10"/>
+    <path d="M300 82 L300 152" stroke="#1f5e43" stroke-width="3"/>
+    <rect x="231" y="144" width="138" height="11" rx="4" fill="#1f5e43"/>
+    <path d="M234 152 Q300 168 366 152 Q372 162 360 167 Q300 180 240 167 Q228 162 234 152 Z" fill="#123d2b"/>
+    <g transform="translate(300 118)"><circle r="15" fill="#fff"/><path d="M0 -9c5 3 8 9 4 15-3-1-5-3-6-6-1 4-2 6-4 7-3-6-1-12 6-16z" fill="#2b6a4b"/></g>
+    <circle cx="300" cy="81" r="6" fill="#1f5e43"/>
+  </g>
+  </g>
+</svg></div>
+    <svg id="s2-senal" viewBox="0 0 90 90">
+      <circle cx="45" cy="45" r="42" fill="#fbf0d2" stroke="#d9a21b" stroke-width="4"/>
+      <path d="M45 66 V36 M33 48 L45 34 L57 48" stroke="#8a5d00" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M24 24 L66 66" stroke="#b3261e" stroke-width="7" stroke-linecap="round"/>
+    </svg>
     <div id="s2-phone">
       <div id="s2-screen">
         <img id="s2-hoy" class="s2-pant" src="assets/img/app-hoy-sin-senal.png" alt="App: Hoy, sin señal" />
@@ -35,6 +173,7 @@
         <img id="s2-firmas" class="s2-pant" src="assets/img/app-firmas.png" alt="App: firmas del cliente y del operario" />
         <img id="s2-const" class="s2-pant" src="assets/img/app-constancia.png" alt="App: constancia N.º 1186 emitida" />
         <div id="s2-marca"></div>
+        <div id="s2-flash"></div>
       </div>
     </div>
 
@@ -48,6 +187,8 @@
     <div id="s2-aho4" class="ha-fila ha-ahora" style="left: 880px; top: 600px"><span class="ha-tag">Ahora</span><span class="ha-txt">PDF por WhatsApp, con su número</span></div>
 
     <div id="s2-ficha">N.º 1186</div>
+    <div id="s2-kg">99,50 kg</div>
+    <svg id="s2-pin" viewBox="0 0 64 84"><path d="M32 82 C32 82 6 50 6 30 a26 26 0 1 1 52 0 C58 50 32 82 32 82 Z" fill="#b3261e"/><circle cx="32" cy="30" r="10" fill="#fff"/></svg>
   </div>
   <script>
     (function () {
@@ -61,6 +202,65 @@
           el.innerHTML = out.join("");
         });
       }
+      // ---- rig de personajes (lo inserta tools/armar.mjs; no editar en compositions/) ----
+      // Cada personaje es un SVG con ids «prefijo-parte». Las articulaciones giran sobre su punto fijo;
+      // el estado vive en un objeto que GSAP anima y `aplicar` lo escribe en el SVG.
+      const RIGS = {
+        operario: {
+          juntas: { hI: [206, 310], cI: [206, 440], mI: [206, 560], hD: [394, 310], cD: [394, 440], mD: [394, 560], pI: [262, 590], pD: [338, 590], cab: [300, 262] },
+          ojos: 194, props: ["cel", "bolsa", "tabla", "lapiz"], todo: [300, 892],
+        },
+        lucrecia: {
+          juntas: { hI: [212, 352], cI: [204, 470], mI: [204, 580], hD: [388, 352], cD: [396, 470], mD: [396, 580], cab: [300, 300] },
+          ojos: 216, props: ["pila1", "pila2", "pila3", "calc"], todo: [300, 640],
+        },
+        cliente: {
+          juntas: { hI: [206, 310], cI: [206, 440], mI: [206, 560], hD: [394, 310], cD: [394, 440], mD: [394, 560], pI: [262, 590], pD: [338, 590], cab: [300, 262] },
+          ojos: 194, props: ["billetes", "lapicero"], todo: [300, 892],
+        },
+      };
+      function rig(px, tipo, inicial = {}) {
+        const cfg = RIGS[tipo];
+        const el = (id) => document.getElementById(px + "-" + id);
+        const st = { ojos: 1, x: 0, y: 0, rot: 0 };
+        for (const k of Object.keys(cfg.juntas)) st[k] = 0;
+        for (const k of cfg.props) st[k] = 0;
+        Object.assign(st, inicial);
+        const nodos = {};
+        for (const k of [...Object.keys(cfg.juntas), ...cfg.props, "ojos", "todo"]) nodos[k] = el(k);
+        function aplicar() {
+          for (const [k, [x, y]] of Object.entries(cfg.juntas)) {
+            if (nodos[k]) nodos[k].setAttribute("transform", `rotate(${st[k]} ${x} ${y})`);
+          }
+          for (const k of cfg.props) if (nodos[k]) nodos[k].setAttribute("opacity", st[k]);
+          if (nodos.ojos) nodos.ojos.setAttribute("transform", `translate(0 ${cfg.ojos * (1 - st.ojos)}) scale(1 ${st.ojos})`);
+          if (nodos.todo) nodos.todo.setAttribute("transform", `translate(${st.x} ${st.y}) rotate(${st.rot} ${cfg.todo[0]} ${cfg.todo[1]})`);
+        }
+        aplicar();
+        return { st, aplicar };
+      }
+      // Animaciones de personaje sobre una línea de tiempo `tl`
+      const pose = (tl, r, p, t, d = 0.5, ease = "power2.inOut") => tl.to(r.st, { ...p, duration: d, ease, onUpdate: r.aplicar }, t);
+      const parpadea = (tl, r, t) => {
+        tl.to(r.st, { ojos: 0.08, duration: 0.07, ease: "power1.in", onUpdate: r.aplicar }, t);
+        tl.to(r.st, { ojos: 1, duration: 0.1, ease: "power1.out", onUpdate: r.aplicar }, t + 0.07);
+      };
+      // Repite un gesto corto n veces (digitar, escribir, teclear): alterna dos valores de una junta
+      const gesto = (tl, r, junta, a, b, t, n, paso = 0.16) => {
+        for (let i = 0; i < n; i++) tl.to(r.st, { [junta]: i % 2 ? a : b, duration: paso, ease: "sine.inOut", onUpdate: r.aplicar }, t + i * paso);
+      };
+      // Camina: piernas alternas y un leve rebote del cuerpo mientras se desplaza en x
+      const camina = (tl, r, t, dur, dx, pasos) => {
+        tl.to(r.st, { x: r.st.x + dx, duration: dur, ease: "none", onUpdate: r.aplicar }, t);
+        const p = dur / pasos;
+        for (let i = 0; i < pasos; i++) {
+          const s = i % 2 ? 1 : -1;
+          tl.to(r.st, { pI: 14 * s, pD: -14 * s, hI: -10 * s, hD: -10 * s, y: -10, duration: p / 2, ease: "sine.out", onUpdate: r.aplicar }, t + i * p);
+          tl.to(r.st, { y: 0, duration: p / 2, ease: "sine.in", onUpdate: r.aplicar }, t + i * p + p / 2);
+        }
+        tl.to(r.st, { pI: 0, pD: 0, hI: 0, hD: 0, duration: 0.2, ease: "sine.out", onUpdate: r.aplicar }, t + dur);
+      };
+      // ---- fin del rig ----
       palabras("#s2-t1, #s2-s1, #s2-t2, #s2-s2, #s2-t3, #s2-t4");
       const tl = gsap.timeline({ paused: true });
       const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
@@ -73,11 +273,34 @@
       };
 
       gsap.set(["#s2-kilos", "#s2-total", "#s2-evid", "#s2-firmas", "#s2-const"], { x: 349 });
-      gsap.set(["#s2-marca", "#s2-ficha", "#s2-hoy4", "#s2-aho4"], { opacity: 0 });
+      gsap.set(["#s2-marca", "#s2-ficha", "#s2-hoy4", "#s2-aho4", "#s2-kg", "#s2-senal", "#s2-pin", "#s2-flash"], { opacity: 0 });
+      const op = rig("s2o", "operario", { cel: 1, hI: 18, cI: -98, mI: 18, hD: -18, cD: 98, mD: -18, cab: -2 });
+
+      // El celular grande nace del celular que el operario tiene en las manos
+      tl.fromTo("#s2-phone", { x: -406, y: 84, scale: 0.12, opacity: 0.5 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.6, ease: "expo.out" }, 0);
+      // digita durante toda la visita (en tandas, mirando la pantalla)
+      [[0.7, 10], [3.0, 12], [6.6, 10], [8.1, 8], [9.7, 6]].forEach(([t, n]) => gesto(tl, op, "mD", -26, -12, t, n, 0.15));
+      [1.9, 5.6, 8.9, 11.4].forEach((t) => parpadea(tl, op, t));
+      // sin señal: el aviso sobre su cabeza
+      tl.fromTo("#s2-senal", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 0.8);
+      tl.to("#s2-senal", { opacity: 0, scale: 0.6, duration: 0.25, ease: "power3.in" }, 2.6);
+      // los kilos de la báscula saltan al total de la visita
+      tl.fromTo("#s2-kg", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 4.15);
+      tl.to("#s2-kg", { x: 470, y: -110, scale: 0.7, duration: 0.45, ease: "power2.inOut" }, 5.0);
+      tl.to("#s2-kg", { opacity: 0, duration: 0.12 }, 5.45);
+      // GPS y foto en el sitio
+      tl.fromTo("#s2-pin", { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.45, ease: "bounce.out" }, 6.9);
+      tl.to("#s2-pin", { opacity: 0, duration: 0.2 }, 7.9);
+      tl.fromTo("#s2-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.06 }, 7.55);
+      tl.to("#s2-flash", { opacity: 0, duration: 0.3 }, 7.61);
+      // saluda al cliente al terminar
+      pose(tl, op, { hD: -150, cD: 30, mD: 0, cab: -4 }, 11.9, 0.5);
+      gesto(tl, op, "cD", 40, 20, 12.4, 6, 0.18);
+      tl.to("#s2-op", { opacity: 0, x: 80, y: 250, scale: 0.4, duration: 0.55, ease: "power3.in" }, 13.85);
 
       // El celular ya llegó a su lugar al final de la escena anterior
-      entra("#s2-t1", 0.2);
-      entra("#s2-s1", 0.85);
+      entra("#s2-t1", 0.55);
+      entra("#s2-s1", 1.05);
       sale("#s2-t1", 2.55);
       sale("#s2-s1", 2.55);
 
@@ -105,13 +328,13 @@
 
       // La constancia viaja al nodo Visita del riel (x 260, y 895)
       tl.fromTo("#s2-ficha", { opacity: 0, y: 20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "expo.out" }, 11.8);
-      tl.to("#s2-ficha", { x: -390, y: 170, scale: 0.18, duration: 0.75, ease: "power3.in" }, 12.45);
+      tl.to("#s2-ficha", { x: -257, y: 170, scale: 0.18, duration: 0.75, ease: "power3.in" }, 12.45);
       tl.to("#s2-ficha", { opacity: 0, duration: 0.12 }, 13.1);
 
       sale("#s2-t4", 13.75);
       tl.to(["#s2-hoy4", "#s2-aho4"], { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 13.75);
       // El celular se va hacia el nodo Visita
-      tl.to("#s2-phone", { x: -300, y: 455, scale: 0.12, opacity: 0, duration: 0.55, ease: "power3.in" }, 13.85);
+      tl.to("#s2-phone", { x: -336, y: 455, scale: 0.12, opacity: 0, duration: 0.55, ease: "power3.in" }, 13.85);
 
       window.__timelines["s2"] = tl;
     })();

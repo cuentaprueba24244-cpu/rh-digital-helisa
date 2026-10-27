@@ -1,0 +1,295 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+    #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
+    .w { display: inline-block; }
+    .capa { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    .pj { position: absolute; transform-origin: 0 0; }
+    .pj svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .titulo { position: absolute; left: 120px; top: 64px; width: 1680px; font-size: 80px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+    .titulo em { font-style: normal; color: #2b6a4b; }
+    .etiqueta { position: absolute; font-size: 32px; font-weight: 600; color: #46524c; white-space: nowrap; }
+    .monitor { position: absolute; background: #2d3a34; border-radius: 16px; padding: 12px; box-shadow: 0 18px 40px rgba(18,61,43,.18); }
+    .monitor .pantalla { width: 100%; height: 100%; border-radius: 6px; overflow: hidden; background: #fff; position: relative; }
+    .monitor .pantalla img { position: absolute; display: block; }
+    .pie { position: absolute; width: 26px; height: 64px; background: #46524c; }
+    .base { position: absolute; width: 150px; height: 14px; border-radius: 7px; background: #46524c; }
+    .mesa { position: absolute; }
+    .mesa .tapa { height: 28px; border-radius: 6px; background: #e1e6e3; }
+    .mesa .frente { height: 112px; background: #c8d0cb; border-top: 10px solid #b5bfb9; margin: 0 20px; }
+    /* calle */
+    #i-cielo { background: #e6f1ea; }
+    #i-sol { position: absolute; left: 1490px; top: 120px; width: 170px; height: 170px; border-radius: 50%; background: #fbf0d2; }
+    #i-cerros { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #i-anden { position: absolute; left: 0; top: 784px; width: 1920px; height: 296px; background: #d5ddd8; }
+    #i-anden::before { content: ""; position: absolute; left: 0; top: 0; width: 1920px; height: 30px; background: #c3ccc6; }
+    #i-papel { position: absolute; left: 1270px; top: 230px; width: 560px; height: 427px; background: #fff; padding: 10px; border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(18,61,43,.12), 0 24px 60px rgba(18,61,43,.22); }
+    #i-papel img { display: block; width: 540px; height: 412px; }
+    #i-fila { position: absolute; left: 14px; top: 212px; width: 120px; height: 22px; border: 4px solid #d9a21b; border-radius: 6px; }
+    /* oficina */
+    #i-ofi { background: #eef2ef; }
+    #i-piso { position: absolute; left: 0; top: 860px; width: 1920px; height: 220px; background: #dfe5e1; }
+    #i-ventana { position: absolute; left: 150px; top: 230px; width: 380px; height: 300px; border-radius: 10px; background: #e6f1ea; border: 14px solid #fff; overflow: hidden;
+      box-shadow: 0 6px 18px rgba(18,61,43,.10); }
+    #i-ventana::after { content: ""; position: absolute; left: -40px; top: 170px; width: 460px; height: 200px; border-radius: 50% 50% 0 0; background: #b6d6c2; }
+    #i-repisa { position: absolute; left: 1560px; top: 250px; width: 280px; height: 16px; background: #c8d0cb; border-radius: 4px; }
+    .ar { position: absolute; bottom: 16px; width: 40px; border-radius: 4px; }
+    #i-reloj { position: absolute; left: 1330px; top: 150px; width: 150px; height: 150px; }
+    .cinta { position: absolute; left: 150px; font-family: "JetBrains Mono", monospace; font-size: 40px; font-weight: 500; color: #46524c; white-space: nowrap; }
+    #i-suma { color: #8a5d00; font-weight: 700; }
+    /* el cambio */
+    #i-cambio { background: #f3f6f4; }
+    .hoja { position: absolute; width: 90px; height: 116px; background: #fbfaf5; border-radius: 4px; box-shadow: 0 6px 16px rgba(18,61,43,.16);
+      background-image: repeating-linear-gradient(180deg, transparent 0 18px, #e1e6e3 18px 21px); }
+    #i-logo { position: absolute; left: 885px; top: 250px; width: 150px; height: 150px; }
+    #i-t7 { position: absolute; left: 160px; top: 430px; width: 1600px; text-align: center; font-size: 110px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+    #i-t7 em { font-style: normal; color: #2b6a4b; }
+    .rol { position: absolute; left: 50%; top: -6%; transform: translateX(-50%); padding: 6px 16px; border-radius: 10px; background: #fff; border: 2px solid #c8d0cb;
+      font-size: 28px; font-weight: 700; color: #1c2420; white-space: nowrap; box-shadow: 0 6px 16px rgba(18,61,43,.12); }
+    .rol i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; vertical-align: 2px; }
+  </style>
+  <div id="root" data-composition-id="s1" data-width="1920" data-height="1080">
+
+    <!-- ===== 1 · LA CALLE (0–12 s) ===== -->
+    <div id="i-calle" class="capa">
+      <div id="i-cielo" class="capa"></div>
+      <div id="i-sol"></div>
+      <svg id="i-cerros" viewBox="0 0 1920 1080">
+        <path d="M0 620 C220 520 420 560 640 600 C860 500 1100 480 1340 560 C1560 500 1760 520 1920 560 L1920 800 L0 800 Z" fill="#cfe5d7"/>
+        <path d="M0 700 C260 620 520 660 760 690 C1000 620 1240 640 1480 680 C1660 640 1800 650 1920 670 L1920 800 L0 800 Z" fill="#b6d6c2"/>
+        <g fill="#8fbea2"><circle cx="160" cy="690" r="46"/><circle cx="210" cy="676" r="38"/><rect x="180" y="690" width="12" height="96" fill="#7a5a3a"/></g>
+      </svg>
+      <div id="i-anden"></div>
+      <div class="pj" id="i-edif" data-layout-ignore style="left: 1150px; top: 236px; width: 720px; height: 560px"><!-- @svg edificio ied --></div>
+      <div class="pj" id="i-cl" style="left: 1260px; top: 254px; width: 360px; height: 552px"><!-- @svg cliente icl --><div class="rol" id="i-rcl"><i style="background:#3d6575"></i>Cliente · Cofema</div></div>
+      <div class="pj" id="i-bas" data-layout-ignore style="left: 700px; top: 440px; width: 300px; height: 360px"><!-- @svg bascula ibs --></div>
+      <div class="pj" id="i-op" style="left: 380px; top: 254px; width: 360px; height: 552px"><!-- @svg operario iop --><div class="rol" id="i-rop"><i style="background:#d9a21b"></i>Operario de Comserva</div></div>
+      <div class="pj" id="i-tr" data-layout-ignore style="left: 20px; top: 470px; width: 640px; height: 330px"><!-- @svg camioneta itr --></div>
+      <div id="i-papel"><img src="assets/img/papel-rh.png" alt="Planilla RH de Cofema escrita a mano" /><div id="i-fila"></div></div>
+      <div id="i-lugar" class="etiqueta" style="left: 122px; top: 40px">Florencia · 7:30 a. m.</div>
+      <h1 id="i-t1" class="titulo" style="top: 88px" data-palabras>Así empieza una ruta de <em>recolección</em></h1>
+      <h1 id="i-t2" class="titulo" style="top: 88px" data-palabras>Pesa cada bolsa y la anota <em>a mano</em></h1>
+      <h1 id="i-t3" class="titulo" style="top: 88px" data-palabras>El cliente firma en <em>papel</em></h1>
+    </div>
+
+    <!-- ===== 2 · LA OFICINA (12–19,2 s) ===== -->
+    <div id="i-ofi" class="capa">
+      <div id="i-piso"></div>
+      <div id="i-ventana"></div>
+      <div id="i-repisa">
+        <div class="ar" style="left: 14px; height: 120px; background: #2b6a4b"></div>
+        <div class="ar" style="left: 60px; height: 110px; background: #d9a21b"></div>
+        <div class="ar" style="left: 106px; height: 124px; background: #123d2b"></div>
+        <div class="ar" style="left: 152px; height: 104px; background: #c8d0cb"></div>
+        <div class="ar" style="left: 198px; height: 118px; background: #2b6a4b"></div>
+      </div>
+      <svg id="i-reloj" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="70" fill="#fff" stroke="#46524c" stroke-width="8"/>
+        <g stroke="#c8d0cb" stroke-width="5" stroke-linecap="round"><path d="M75 16 v12 M75 122 v12 M16 75 h12 M122 75 h12"/></g>
+        <path id="i-hora" d="M75 75 L75 42" stroke="#1c2420" stroke-width="8" stroke-linecap="round"/>
+        <path id="i-min" d="M75 75 L75 26" stroke="#2b6a4b" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="75" cy="75" r="7" fill="#1c2420"/>
+      </svg>
+      <div class="mesa" style="left: 1150px; top: 750px; width: 640px"><div class="tapa"></div><div class="frente"></div></div>
+      <div class="pie" id="i-pie1" style="left: 1427px; top: 690px"></div>
+      <div class="base" id="i-base1" style="left: 1365px; top: 740px"></div>
+      <div id="i-mon" class="monitor" data-layout-ignore style="left: 1190px; top: 380px; width: 460px; height: 310px">
+        <div class="pantalla">
+          <img src="assets/img/fve-encabezado.png" alt="Factura FVE 25756 en Helisa" style="left: 10px; top: 8px; width: 200px" />
+          <img src="assets/img/fve-totales.png" alt="Totales de la FVE 25756" style="left: 218px; top: 30px; width: 210px" />
+          <div style="position: absolute; left: 10px; bottom: 10px; right: 10px; height: 26px; background: #123d2b; border-radius: 4px; color: #fff; font-size: 16px; font-weight: 700; padding: 4px 10px">Helisa · factura de venta</div>
+        </div>
+      </div>
+      <div class="pj" id="i-lu" style="left: 600px; top: 190px; width: 600px; height: 700px"><!-- @svg lucrecia ilu --><div class="rol" id="i-rlu"><i style="background:#2b6a4b"></i>Lucrecia · facturación</div></div>
+      <div id="i-c1" class="cinta" style="top: 580px">74,95</div>
+      <div id="i-c2" class="cinta" style="top: 630px">+ 103,50</div>
+      <div id="i-c3" class="cinta" style="top: 680px">+ 144,90</div>
+      <div id="i-c4" class="cinta" style="top: 730px">+ 90,50</div>
+      <div id="i-c5" class="cinta" style="top: 790px"><span id="i-suma">= 413,85 kg</span></div>
+      <h1 id="i-t4" class="titulo" data-palabras>Cada mes, Lucrecia suma todo <em>a mano</em></h1>
+      <h1 id="i-t5" class="titulo" data-palabras>Y digita cada factura en <em>Helisa</em></h1>
+    </div>
+
+    <!-- ===== 3 · EL CAMBIO (19,2–28,8 s) ===== -->
+    <div id="i-cambio" class="capa">
+      <div id="i-h1" class="hoja" style="left: 1040px; top: 640px"></div>
+      <div id="i-h2" class="hoja" style="left: 1080px; top: 610px"></div>
+      <div id="i-h3" class="hoja" style="left: 1010px; top: 600px"></div>
+      <div id="i-h4" class="hoja" style="left: 260px; top: 660px"></div>
+      <div id="i-h5" class="hoja" style="left: 300px; top: 610px"></div>
+      <div id="i-h6" class="hoja" style="left: 220px; top: 590px"></div>
+      <svg id="i-logo" viewBox="0 0 64 64" aria-label="Comserva">
+        <circle cx="32" cy="32" r="30" fill="#1f5e43" />
+        <circle cx="32" cy="32" r="25" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.5" />
+        <path d="M32 12c11 7 15 18 10 31-7-2-11-7-13-14-1 9-3 14-9 17-6-13-1-26 12-34z" fill="#fff" />
+        <path d="M27 46c3-8 6-14 11-20" stroke="#1f5e43" stroke-width="1.6" fill="none" stroke-linecap="round" />
+      </svg>
+      <h1 id="i-t7" data-palabras>Por eso creamos <em>RH digital</em></h1>
+
+      <h1 id="i-t8" class="titulo" data-palabras>Una <em>app</em> para el operario y un <em>panel</em> para la oficina</h1>
+      <div class="mesa" id="i-mesa2" style="left: 1340px; top: 778px; width: 520px"><div class="tapa" style="height: 22px"></div><div class="frente" style="height: 90px"></div></div>
+      <div class="pie" id="i-pie2" style="left: 1617px; top: 720px"></div>
+      <div class="base" id="i-base2" style="left: 1555px; top: 768px"></div>
+      <div id="i-mon2" class="monitor" data-layout-ignore style="left: 1380px; top: 450px; width: 470px; height: 280px">
+        <div class="pantalla"><img src="assets/img/panel-p1-traza.png" alt="Panel de la oficina: trazabilidad de Cofema" style="left: 0; top: 0; width: 446px" /></div>
+      </div>
+      <div class="pj" id="i-lu2" style="left: 900px; top: 330px; width: 480px; height: 560px"><!-- @svg lucrecia ilu2 --></div>
+      <div class="pj" id="i-op2" style="left: 150px; top: 226px; width: 450px; height: 690px"><!-- @svg operario iop2 --></div>
+      <div id="i-e1" class="etiqueta" style="left: 250px; top: 924px">App del operario</div>
+      <div id="i-e2" class="etiqueta" style="left: 1240px; top: 924px">Panel de la oficina</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      /* @rig */
+      function palabras(sel) {
+        document.querySelectorAll(sel).forEach((el) => {
+          const out = [];
+          el.childNodes.forEach((n) => {
+            if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (t) out.push(/^\s+$/.test(t) ? t : `<span class="w">${t}</span>`); });
+            else { n.classList.add("w"); out.push(n.outerHTML); }
+          });
+          el.innerHTML = out.join("");
+        });
+      }
+      palabras("#i-t1, #i-t2, #i-t3, #i-t4, #i-t5, #i-t7, #i-t8");
+      const tl = gsap.timeline({ paused: true });
+      const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
+      const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
+      const aparece = (sel, t, d = 0.25) => tl.fromTo(sel, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: d }, t);
+
+      const op = rig("iop", "operario", { bolsa: 1 });
+      const cl = rig("icl", "cliente", {});
+      const lu = rig("ilu", "lucrecia", {});
+      const op2 = rig("iop2", "operario", { cel: 1, hI: 18, cI: -98, mI: 18, hD: -18, cD: 98, mD: -18, cab: -2 });
+      const lu2 = rig("ilu2", "lucrecia", { hI: 6, cI: -40, hD: -6, cD: 40, cab: 3 });
+
+      gsap.set(["#i-ofi", "#i-cambio", "#i-papel", "#i-fila", "#i-cl", "#i-op"], { opacity: 0 });
+      gsap.set(["#i-c1", "#i-c2", "#i-c3", "#i-c4", "#i-c5", "#i-mon", "#i-pie1", "#i-base1"], { opacity: 0 });
+      gsap.set(["#i-logo", "#i-mesa2", "#i-pie2", "#i-base2", "#i-mon2", "#i-lu2", "#i-op2", "#i-e1", "#i-e2"], { opacity: 0 });
+      gsap.set(".hoja", { opacity: 0 });
+      gsap.set(["#i-rop", "#i-rcl", "#i-rlu"], { opacity: 0 });
+      [["#i-rop", 2.6, 4.5], ["#i-rcl", 9.6, 11.4], ["#i-rlu", 12.4, 15.4]].forEach(([r, a, b]) => { tl.fromTo(r, { opacity: 0 }, { opacity: 1, duration: 0.25 }, a); tl.to(r, { opacity: 0, duration: 0.2 }, b); });
+
+      // ---------- 1 · la calle ----------
+      // la camioneta ya viene entrando en el frame 0 y frena junto al andén
+      tl.fromTo("#i-tr", { x: -380 }, { x: 0, duration: 2.0, ease: "power2.out" }, 0);
+      {
+        // las ruedas giran sobre su propio eje mientras la camioneta avanza
+        const r1 = document.getElementById("itr-r1"), r2 = document.getElementById("itr-r2");
+        const g = { a: -540 };
+        const gira = () => { r1.setAttribute("transform", `rotate(${g.a} 140 272)`); r2.setAttribute("transform", `rotate(${g.a} 520 272)`); };
+        gira();
+        tl.fromTo(g, { a: -540 }, { a: 0, duration: 2.0, ease: "power2.out", onUpdate: gira }, 0);
+      }
+      tl.fromTo("#i-tr", { y: 0 }, { y: 4, duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: 1, immediateRender: false }, 2.0);
+      aparece("#i-lugar", 0.2);
+      entra("#i-t1", 0.4);
+
+      // el operario baja con la bolsa y camina hasta la báscula
+      tl.fromTo("#i-op", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.2);
+      tl.fromTo("#i-op", { x: 0 }, { x: 520, duration: 2.1, ease: "none" }, 2.3);
+      camina(tl, op, 2.3, 2.1, 0, 6);
+      parpadea(tl, op, 4.6);
+      sale("#i-t1", 4.5);
+      tl.to("#i-lugar", { opacity: 0, duration: 0.2 }, 4.5);
+
+      // deja la bolsa en la báscula y el visor marca 74,95 kg
+      entra("#i-t2", 4.9);
+      pose(tl, op, { hI: 22, cI: 8, cab: 6 }, 4.7, 0.5);
+      tl.to(op.st, { bolsa: 0, duration: 0.12, onUpdate: op.aplicar }, 5.2);
+      tl.fromTo("#ibs-bolsa", { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.35, ease: "bounce.out" }, 5.2);
+      {
+        const o = { v: 0 };
+        tl.fromTo(o, { v: 0 }, { v: 74.95, duration: 0.8, ease: "power2.out",
+          onUpdate: () => { document.getElementById("ibs-num").textContent = o.v.toFixed(2).replace(".", ","); } }, 5.5);
+      }
+      // anota en la planilla de papel
+      pose(tl, op, { hI: 18, cI: -98, mI: 18, hD: -30, cD: 92, mD: -40, cab: -6, tabla: 1, lapiz: 1 }, 6.4, 0.55);
+      gesto(tl, op, "mD", -48, -32, 7.0, 12, 0.17);
+      parpadea(tl, op, 8.9);
+      // la planilla real de Cofema, con la fila del día 5
+      tl.fromTo("#i-papel", { opacity: 0, y: 30, rotation: 6 }, { opacity: 1, y: 0, rotation: 3, duration: 0.6, ease: "expo.out" }, 7.2);
+      tl.fromTo("#i-fila", { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, 7.9);
+      sale("#i-t2", 8.95);
+      tl.to("#i-papel", { opacity: 0, y: -30, filter: "blur(8px)", duration: 0.3, ease: "power3.in" }, 9.0);
+
+      // el cliente sale y firma en papel
+      entra("#i-t3", 9.4);
+      tl.fromTo("#i-cl", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 9.3);
+      tl.fromTo("#i-cl", { x: 0 }, { x: -150, duration: 1.0, ease: "none" }, 9.5);
+      camina(tl, cl, 9.5, 1.0, 0, 3);
+      pose(tl, cl, { hI: 52, cI: 26, cab: 6 }, 10.6, 0.45);
+      gesto(tl, cl, "mI", 10, -6, 11.05, 4, 0.14);
+      pose(tl, op, { cab: 4 }, 10.7, 0.3);
+      parpadea(tl, cl, 11.0);
+      sale("#i-t3", 11.45);
+
+      // barrido a la oficina
+      tl.to("#i-calle", { x: -500, opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power3.in" }, 11.65);
+
+      // ---------- 2 · la oficina ----------
+      tl.fromTo("#i-ofi", { opacity: 0, x: 500, filter: "blur(12px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 11.95);
+      entra("#i-t4", 12.3);
+      tl.to(lu.st, { calc: 1, duration: 0.2, onUpdate: lu.aplicar }, 12.2);
+      tl.to(lu.st, { pila1: 1, duration: 0.15, onUpdate: lu.aplicar }, 12.5);
+      tl.to(lu.st, { pila2: 1, duration: 0.15, onUpdate: lu.aplicar }, 12.8);
+      tl.to(lu.st, { pila3: 1, duration: 0.15, onUpdate: lu.aplicar }, 13.1);
+      pose(tl, lu, { hI: 16, cI: -10, hD: -6, cD: 40, cab: 3 }, 12.4, 0.5);
+      gesto(tl, lu, "cI", -16, -8, 13.0, 14, 0.16);
+      ["#i-c1", "#i-c2", "#i-c3", "#i-c4"].forEach((c, i) => tl.fromTo(c, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.25, ease: "expo.out" }, 13.0 + i * 0.5));
+      tl.fromTo("#i-c5", { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 15.1);
+      // el reloj corre: el tiempo se va sumando a mano
+      tl.fromTo("#i-min", { rotation: 0 }, { rotation: 2160, svgOrigin: "75 75", duration: 6.6, ease: "power1.inOut" }, 12.2);
+      tl.fromTo("#i-hora", { rotation: 0 }, { rotation: 180, svgOrigin: "75 75", duration: 6.6, ease: "power1.inOut" }, 12.2);
+      parpadea(tl, lu, 14.2);
+      sale("#i-t4", 15.5);
+
+      // y digita cada factura en Helisa
+      entra("#i-t5", 15.9);
+      tl.to(["#i-c1", "#i-c2", "#i-c3", "#i-c4", "#i-c5"], { opacity: 0, filter: "blur(6px)", duration: 0.25 }, 16.4);
+      tl.fromTo(["#i-mon", "#i-pie1", "#i-base1"], { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 15.75);
+      pose(tl, lu, { hI: 6, cI: -40, hD: -6, cD: 40, cab: -4 }, 15.8, 0.5);
+      gesto(tl, lu, "mI", -8, 4, 16.4, 14, 0.14);
+      gesto(tl, lu, "mD", 6, -6, 16.47, 14, 0.14);
+      parpadea(tl, lu, 17.4);
+      sale("#i-t5", 18.85);
+
+      // ---------- 3 · el cambio ----------
+      tl.to("#i-ofi", { opacity: 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in" }, 19.0);
+      tl.to("#i-cambio", { opacity: 1, duration: 0.01 }, 19.0);
+      const hojas = ["#i-h1", "#i-h2", "#i-h3", "#i-h4", "#i-h5", "#i-h6"];
+      hojas.forEach((h, i) => {
+        const r = (i % 2 ? 1 : -1) * (120 + i * 40);
+        tl.fromTo(h, { opacity: 1, rotation: 0, scale: 1 }, { opacity: 1, rotation: r, scale: 0.7, x: (i < 3 ? -140 : 620) + i * 6, y: -330, duration: 0.9, ease: "power2.inOut" }, 19.05 + i * 0.05);
+        tl.to(h, { opacity: 0, scale: 0.2, duration: 0.25, ease: "power2.in" }, 19.95 + i * 0.03);
+      });
+      tl.fromTo("#i-logo", { opacity: 0, scale: 0.3, rotation: -30 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.7, ease: "expo.out" }, 20.05);
+      entra("#i-t7", 20.35);
+      sale("#i-t7", 22.45);
+      tl.to("#i-logo", { opacity: 0, scale: 0.6, filter: "blur(6px)", duration: 0.3, ease: "power3.in" }, 22.45);
+
+      // la app y el panel
+      entra("#i-t8", 22.9);
+      tl.fromTo("#i-op2", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, 23.0);
+      tl.fromTo(["#i-mesa2", "#i-pie2", "#i-base2", "#i-mon2"], { opacity: 0, x: 160 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 23.2);
+      tl.fromTo("#i-lu2", { opacity: 0, x: 160 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 23.3);
+      aparece(["#i-e1", "#i-e2"], 23.9);
+      gesto(tl, op2, "mD", -26, -12, 24.2, 16, 0.15);
+      gesto(tl, lu2, "mI", -8, 4, 24.3, 18, 0.13);
+      parpadea(tl, op2, 25.1);
+      parpadea(tl, lu2, 26.0);
+      sale("#i-t8", 27.75);
+      tl.to(["#i-e1", "#i-e2"], { opacity: 0, duration: 0.2 }, 27.75);
+      tl.to(["#i-mesa2", "#i-pie2", "#i-base2", "#i-mon2", "#i-lu2"], { x: 420, opacity: 0, filter: "blur(10px)", duration: 0.4, ease: "power3.in" }, 27.8);
+      // el operario va a su lugar de la escena 2 (izquierda, escala 0,6)
+      tl.to("#i-op2", { x: -140, y: 64, scale: 0.8, duration: 0.7, ease: "power2.inOut" }, 28.05);
+
+      window.__timelines["s1"] = tl;
+    })();
+  </script>
+</template>
