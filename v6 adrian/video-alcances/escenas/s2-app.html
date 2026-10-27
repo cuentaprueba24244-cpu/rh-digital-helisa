@@ -1,0 +1,159 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+    #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
+    .w { display: inline-block; }
+    #s2-phone { position: absolute; left: 410px; top: 48px; width: 373px; height: 784px; border-radius: 44px; background: #0f1512;
+      box-shadow: 0 2px 4px rgba(18,61,43,.12), 0 30px 70px rgba(18,61,43,.22); }
+    #s2-screen { position: absolute; left: 12px; top: 12px; width: 349px; height: 760px; border-radius: 32px; overflow: hidden; background: #f3f6f4; }
+    .s2-pant { position: absolute; left: 0; top: 0; width: 349px; height: 760px; display: block; }
+    #s2-marca { position: absolute; left: 14px; top: 336px; width: 321px; height: 66px; border: 4px solid #2b6a4b; border-radius: 14px; }
+    .s2-titulo { position: absolute; left: 880px; top: 250px; width: 920px; font-size: 80px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
+    .s2-titulo em { font-style: normal; color: #2b6a4b; }
+    .s2-sub { position: absolute; left: 880px; top: 450px; width: 900px; font-size: 38px; font-weight: 500; color: #46524c; line-height: 1.3; }
+    #s2-ficha { position: absolute; left: 437px; top: 690px; padding: 16px 22px; border-radius: 14px; background: #fff; border-left: 8px solid #2b6a4b;
+      font-size: 30px; font-weight: 700; color: #123d2b; white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 18px 48px rgba(18,61,43,.14); }
+    /* ficha Hoy → Ahora */
+    .ha-fila { position: absolute; display: flex; gap: 18px; align-items: baseline; width: 900px; }
+    .ha-tag { flex: none; padding: 4px 14px; border-radius: 8px; font-size: 30px; font-weight: 800; }
+    .ha-hoy .ha-tag { background: #fbf0d2; color: #8a5d00; }
+    .ha-ahora .ha-tag { background: #dcefe4; color: #123d2b; }
+    .ha-txt { font-size: 36px; line-height: 1.25; }
+    .ha-hoy .ha-txt { color: #6f7c75; font-weight: 500; }
+    .ha-ahora .ha-txt { color: #1c2420; font-weight: 700; }
+    .pj { position: absolute; transform-origin: 0 0; }
+    .pj svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    #s2-kg { position: absolute; left: 150px; top: 520px; padding: 10px 16px; border-radius: 12px; background: #2b6a4b; color: #fff; font-size: 30px; font-weight: 800; white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(18,61,43,.25); }
+    #s2-senal { position: absolute; left: 210px; top: 210px; width: 90px; height: 90px; }
+    #s2-pin { position: absolute; left: 560px; top: 150px; width: 64px; height: 84px; }
+    #s2-flash { position: absolute; inset: 0; background: #fff; border-radius: 32px; }
+  </style>
+  <div id="root" data-composition-id="s2" data-width="1920" data-height="1080">
+    <div class="pj" id="s2-op" style="left: 10px; top: 290px; width: 360px; height: 552px"><!-- @svg operario s2o --></div>
+    <svg id="s2-senal" viewBox="0 0 90 90">
+      <circle cx="45" cy="45" r="42" fill="#fbf0d2" stroke="#d9a21b" stroke-width="4"/>
+      <path d="M45 66 V36 M33 48 L45 34 L57 48" stroke="#8a5d00" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M24 24 L66 66" stroke="#b3261e" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <div id="s2-phone">
+      <div id="s2-screen">
+        <img id="s2-hoy" class="s2-pant" src="assets/img/app-hoy-sin-senal.png" alt="App: Hoy, sin señal" />
+        <img id="s2-kilos" class="s2-pant" src="assets/img/app-kilos.png" alt="App: kilos por categoría de Cofema" />
+        <img id="s2-total" class="s2-pant" src="assets/img/app-kilos-total.png" alt="App: total de la visita 99,50 kg" />
+        <img id="s2-evid" class="s2-pant" src="assets/img/app-evidencia.png" alt="App: GPS, hora y foto" />
+        <img id="s2-firmas" class="s2-pant" src="assets/img/app-firmas.png" alt="App: firmas del cliente y del operario" />
+        <img id="s2-const" class="s2-pant" src="assets/img/app-constancia.png" alt="App: constancia N.º 1186 emitida" />
+        <div id="s2-marca"></div>
+        <div id="s2-flash"></div>
+      </div>
+    </div>
+
+    <h1 id="s2-t1" class="s2-titulo" data-palabras>En la visita, el operario usa el <em>celular</em></h1>
+    <p id="s2-s1" class="s2-sub" data-palabras>Funciona aunque no haya señal.</p>
+    <h1 id="s2-t2" class="s2-titulo" data-palabras>Registra los kilos de cada <em>categoría</em></h1>
+    <p id="s2-s2" class="s2-sub" data-palabras>Kilos por categoría. El total se suma solo.</p>
+    <h1 id="s2-t3" class="s2-titulo" data-palabras>Firma, foto y GPS <em>en el sitio</em></h1>
+    <h1 id="s2-t4" class="s2-titulo" data-palabras>El cliente recibe la constancia <em>al instante</em></h1>
+    <div id="s2-hoy4" class="ha-fila ha-hoy" style="left: 880px; top: 520px"><span class="ha-tag">Hoy</span><span class="ha-txt">Constancia en papel químico</span></div>
+    <div id="s2-aho4" class="ha-fila ha-ahora" style="left: 880px; top: 600px"><span class="ha-tag">Ahora</span><span class="ha-txt">PDF por WhatsApp, con su número</span></div>
+
+    <div id="s2-ficha">N.º 1186</div>
+    <div id="s2-kg">99,50 kg</div>
+    <svg id="s2-pin" viewBox="0 0 64 84"><path d="M32 82 C32 82 6 50 6 30 a26 26 0 1 1 52 0 C58 50 32 82 32 82 Z" fill="#b3261e"/><circle cx="32" cy="30" r="10" fill="#fff"/></svg>
+  </div>
+  <script>
+    (function () {
+      function palabras(sel) {
+        document.querySelectorAll(sel).forEach((el) => {
+          const out = [];
+          el.childNodes.forEach((n) => {
+            if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (t) out.push(/^\s+$/.test(t) ? t : `<span class="w">${t}</span>`); });
+            else { n.classList.add("w"); out.push(n.outerHTML); }
+          });
+          el.innerHTML = out.join("");
+        });
+      }
+      /* @rig */
+      palabras("#s2-t1, #s2-s1, #s2-t2, #s2-s2, #s2-t3, #s2-t4");
+      const tl = gsap.timeline({ paused: true });
+      const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
+      const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
+      // Cambio de pantalla como en la app: la nueva empuja desde la derecha
+      const empuja = (de, a, t) => {
+        tl.fromTo(a, { x: 349 }, { x: 0, duration: 0.45, ease: "power3.inOut" }, t);
+        tl.fromTo(de, { x: 0, opacity: 1 }, { x: -110, opacity: 0.4, duration: 0.45, ease: "power3.inOut", immediateRender: false }, t);
+        tl.set(de, { opacity: 0 }, t + 0.45);
+      };
+
+      gsap.set(["#s2-kilos", "#s2-total", "#s2-evid", "#s2-firmas", "#s2-const"], { x: 349 });
+      gsap.set(["#s2-marca", "#s2-ficha", "#s2-hoy4", "#s2-aho4", "#s2-kg", "#s2-senal", "#s2-pin", "#s2-flash"], { opacity: 0 });
+      const op = rig("s2o", "operario", { cel: 1, hI: 18, cI: -98, mI: 18, hD: -18, cD: 98, mD: -18, cab: -2 });
+
+      // El celular grande nace del celular que el operario tiene en las manos
+      tl.fromTo("#s2-phone", { x: -406, y: 84, scale: 0.12, opacity: 0.5 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.6, ease: "expo.out" }, 0);
+      // digita durante toda la visita (en tandas, mirando la pantalla)
+      [[0.7, 10], [3.0, 12], [6.6, 10], [8.1, 8], [9.7, 6]].forEach(([t, n]) => gesto(tl, op, "mD", -26, -12, t, n, 0.15));
+      [1.9, 5.6, 8.9, 11.4].forEach((t) => parpadea(tl, op, t));
+      // sin señal: el aviso sobre su cabeza
+      tl.fromTo("#s2-senal", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 0.8);
+      tl.to("#s2-senal", { opacity: 0, scale: 0.6, duration: 0.25, ease: "power3.in" }, 2.6);
+      // los kilos de la báscula saltan al total de la visita
+      tl.fromTo("#s2-kg", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 4.15);
+      tl.to("#s2-kg", { x: 470, y: -110, scale: 0.7, duration: 0.45, ease: "power2.inOut" }, 5.0);
+      tl.to("#s2-kg", { opacity: 0, duration: 0.12 }, 5.45);
+      // GPS y foto en el sitio
+      tl.fromTo("#s2-pin", { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.45, ease: "bounce.out" }, 6.9);
+      tl.to("#s2-pin", { opacity: 0, duration: 0.2 }, 7.9);
+      tl.fromTo("#s2-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.06 }, 7.55);
+      tl.to("#s2-flash", { opacity: 0, duration: 0.3 }, 7.61);
+      // saluda al cliente al terminar
+      pose(tl, op, { hD: -150, cD: 30, mD: 0, cab: -4 }, 11.9, 0.5);
+      gesto(tl, op, "cD", 40, 20, 12.4, 6, 0.18);
+      tl.to("#s2-op", { opacity: 0, x: 80, y: 250, scale: 0.4, duration: 0.55, ease: "power3.in" }, 13.85);
+
+      // El celular ya llegó a su lugar al final de la escena anterior
+      entra("#s2-t1", 0.55);
+      entra("#s2-s1", 1.05);
+      sale("#s2-t1", 2.55);
+      sale("#s2-s1", 2.55);
+
+      empuja("#s2-hoy", "#s2-kilos", 2.9);
+      entra("#s2-t2", 3.2);
+      entra("#s2-s2", 3.75);
+      // desplaza la pantalla de kilos hasta el total
+      tl.set("#s2-total", { x: 0 }, 4.6);
+      tl.fromTo("#s2-total", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.inOut", immediateRender: false }, 4.6);
+      tl.to("#s2-kilos", { y: -60, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 4.6);
+      tl.fromTo("#s2-marca", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, 5.35);
+      tl.to("#s2-marca", { opacity: 0, duration: 0.2 }, 6.3);
+      sale("#s2-t2", 6.2);
+      sale("#s2-s2", 6.2);
+
+      empuja("#s2-total", "#s2-evid", 6.5);
+      entra("#s2-t3", 6.8);
+      empuja("#s2-evid", "#s2-firmas", 8.0);
+      sale("#s2-t3", 9.25);
+
+      empuja("#s2-firmas", "#s2-const", 9.6);
+      entra("#s2-t4", 9.85);
+      tl.fromTo("#s2-hoy4", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 10.5);
+      tl.fromTo("#s2-aho4", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 11.1);
+
+      // La constancia viaja al nodo Visita del riel (x 260, y 895)
+      tl.fromTo("#s2-ficha", { opacity: 0, y: 20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "expo.out" }, 11.8);
+      tl.to("#s2-ficha", { x: -257, y: 170, scale: 0.18, duration: 0.75, ease: "power3.in" }, 12.45);
+      tl.to("#s2-ficha", { opacity: 0, duration: 0.12 }, 13.1);
+
+      sale("#s2-t4", 13.75);
+      tl.to(["#s2-hoy4", "#s2-aho4"], { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 13.75);
+      // El celular se va hacia el nodo Visita
+      tl.to("#s2-phone", { x: -336, y: 455, scale: 0.12, opacity: 0, duration: 0.55, ease: "power3.in" }, 13.85);
+
+      window.__timelines["s2"] = tl;
+    })();
+  </script>
+</template>

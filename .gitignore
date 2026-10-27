@@ -26,3 +26,6 @@ build/
 
 # Transcripciones de reuniones con el cliente (el repositorio es público: se guardan solo en local)
 */reunion*/Transcripci*.txt
+
+# Revisiones internas (no se publican)
+v6 adrian/*interno*

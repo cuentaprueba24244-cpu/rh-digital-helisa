@@ -1,0 +1,157 @@
+<template>
+  <style>
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-700-normal.woff2") format("woff2"); font-weight: 700; }
+    @font-face { font-family: "Figtree"; src: url("assets/fonts/figtree-latin-800-normal.woff2") format("woff2"); font-weight: 800; }
+    #root { position: absolute; inset: 0; background: #f3f6f4; font-family: "Figtree", sans-serif; color: #1c2420; overflow: hidden; }
+    .w { display: inline-block; }
+    .s3-titulo { position: absolute; left: 120px; top: 64px; width: 1680px; font-size: 80px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+    .s3-titulo em { font-style: normal; color: #2b6a4b; }
+    .s3-ficha { position: absolute; left: 120px; width: 600px; height: 96px; border-radius: 16px; background: #fff; border-left: 8px solid #2b6a4b;
+      display: flex; align-items: center; gap: 22px; padding: 0 28px 0 24px;
+      box-shadow: 0 2px 4px rgba(18,61,43,.08), 0 14px 36px rgba(18,61,43,.10); }
+    .s3-no { font-family: "JetBrains Mono", monospace; font-size: 30px; font-weight: 500; color: #b3261e; }
+    .s3-dia { font-size: 30px; font-weight: 500; color: #46524c; }
+    .s3-kg { margin-left: auto; font-size: 36px; font-weight: 800; color: #1c2420; font-variant-numeric: tabular-nums; }
+    .s3-lab { position: absolute; left: 820px; font-size: 36px; font-weight: 500; color: #46524c; }
+    .s3-cifra { position: absolute; left: 812px; font-size: 150px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: #123d2b; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    #s3-planilla { position: absolute; left: 300px; top: 172px; width: 1320px; height: 659px; background: #fff; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 4px rgba(18,61,43,.10), 0 22px 60px rgba(18,61,43,.16); }
+    #s3-planilla img { display: block; width: 100%; height: 100%; }
+    .ha-fila { position: absolute; display: flex; gap: 18px; align-items: baseline; width: 1000px; }
+    .ha-tag { flex: none; padding: 4px 14px; border-radius: 8px; font-size: 30px; font-weight: 800; }
+    .ha-hoy .ha-tag { background: #fbf0d2; color: #8a5d00; }
+    .ha-ahora .ha-tag { background: #dcefe4; color: #123d2b; }
+    .ha-txt { font-size: 36px; line-height: 1.25; }
+    .ha-hoy .ha-txt { color: #6f7c75; font-weight: 500; }
+    .ha-ahora .ha-txt { color: #1c2420; font-weight: 700; }
+    .pj { position: absolute; transform-origin: 0 0; }
+    .pj svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    #s3-lead { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+    #s3-mon { position: absolute; left: 820px; top: 330px; width: 600px; height: 360px; background: #2d3a34; border-radius: 16px; padding: 12px; transform-origin: 50% 50%;
+      box-shadow: 0 18px 40px rgba(18,61,43,.18); }
+    #s3-pant { width: 100%; height: 100%; background: #f3f6f4; border-radius: 6px; padding: 28px 30px; position: relative; }
+    #s3-pant .k { font-size: 28px; font-weight: 600; color: #46524c; }
+    #s3-pant .t { font-size: 40px; font-weight: 800; margin-top: 6px; }
+    #s3-pant .fila { display: flex; gap: 34px; margin-top: 16px; font-size: 28px; color: #46524c; }
+    #s3-pant .fila b { display: block; font-size: 34px; color: #1c2420; }
+    #s3-boton { position: absolute; left: 30px; bottom: 22px; padding: 10px 24px; border-radius: 10px; background: #2b6a4b; color: #fff; font-size: 28px; font-weight: 800; }
+    #s3-boton2 { position: absolute; left: 30px; bottom: 22px; padding: 10px 24px; border-radius: 10px; background: #dcefe4; color: #123d2b; font-size: 28px; font-weight: 800; }
+    #s3-cursor { position: absolute; left: 1250px; top: 600px; width: 34px; height: 44px; }
+    #s3-mesa { position: absolute; left: 260px; top: 746px; width: 1300px; }
+    #s3-mesa .tapa { height: 28px; border-radius: 6px; background: #e1e6e3; }
+    #s3-mesa .frente { height: 70px; background: #c8d0cb; border-top: 10px solid #b5bfb9; margin: 0 20px; }
+    #s3-tl { position: absolute; left: 120px; top: 64px; width: 1680px; font-size: 80px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+    #s3-tl em { font-style: normal; color: #2b6a4b; }
+  </style>
+  <div id="root" data-composition-id="s3" data-width="1920" data-height="1080">
+    <div id="s3-lead">
+      <div id="s3-mesa"><div class="tapa"></div><div class="frente"></div></div>
+      <div class="pj" id="s3-lu" style="left: 300px; top: 306px; width: 480px; height: 560px"><!-- @svg lucrecia s3l --></div>
+      <div id="s3-mon"><div id="s3-pant">
+        <div class="k">Cierre del periodo · Cofema</div>
+        <div class="t">Septiembre 2026</div>
+        <div class="fila"><span>Visitas<b>4</b></span><span>Del<b>27 ago</b></span><span>Al<b>26 sep</b></span></div>
+        <div id="s3-boton">Cerrar periodo</div>
+        <div id="s3-boton2">✓ Cerrado</div>
+      </div></div>
+      <svg id="s3-cursor" viewBox="0 0 34 44"><path d="M2 2 L2 36 L11 28 L17 42 L23 39 L17 26 L30 26 Z" fill="#1c2420" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      <h1 id="s3-tl" data-palabras>Lucrecia cierra septiembre con <em>un clic</em></h1>
+    </div>
+    <h1 id="s3-t1" class="s3-titulo" data-palabras>Al cierre del mes, el sistema genera el <em>RH</em></h1>
+
+    <div id="s3-f1" class="s3-ficha" style="top: 210px"><span class="s3-no">N.º 1092</span><span class="s3-dia">5 sep</span><span class="s3-kg">74,95 kg</span></div>
+    <div id="s3-f2" class="s3-ficha" style="top: 326px"><span class="s3-no">N.º 1101</span><span class="s3-dia">12 sep</span><span class="s3-kg">103,50 kg</span></div>
+    <div id="s3-f3" class="s3-ficha" style="top: 442px"><span class="s3-no">N.º 1118</span><span class="s3-dia">19 sep</span><span class="s3-kg">144,90 kg</span></div>
+    <div id="s3-f4" class="s3-ficha" style="top: 558px"><span class="s3-no">N.º 1124</span><span class="s3-dia">22 sep</span><span class="s3-kg">90,50 kg</span></div>
+
+    <div id="s3-lab1" class="s3-lab" style="top: 212px">Cofema · 4 visitas de septiembre</div>
+    <div id="s3-kgtot" class="s3-cifra" style="top: 262px">0,00 kg</div>
+    <div id="s3-tarifa" class="s3-lab" style="top: 452px">Básico $74.790 + 393,85 kg × $4.600 + IVA 19 %</div>
+    <div id="s3-cop" class="s3-cifra" style="top: 502px">$0</div>
+    <div id="s3-hoy" class="ha-fila ha-hoy" style="left: 820px; top: 690px"><span class="ha-tag">Hoy</span><span class="ha-txt">Sumar y calcular cada cobro a mano</span></div>
+    <div id="s3-aho" class="ha-fila ha-ahora" style="left: 820px; top: 760px"><span class="ha-tag">Ahora</span><span class="ha-txt">Suma las visitas y aplica la tarifa sola</span></div>
+
+    <h1 id="s3-t2" class="s3-titulo" data-palabras>El <em>RH</em> sale listo: kilos y valor del mes</h1>
+    <div id="s3-planilla"><img src="assets/img/doc-planilla.png" alt="Planilla RH 22690-26 de Cofema, septiembre" /></div>
+  </div>
+  <script>
+    (function () {
+      function palabras(sel) {
+        document.querySelectorAll(sel).forEach((el) => {
+          const out = [];
+          el.childNodes.forEach((n) => {
+            if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (t) out.push(/^\s+$/.test(t) ? t : `<span class="w">${t}</span>`); });
+            else { n.classList.add("w"); out.push(n.outerHTML); }
+          });
+          el.innerHTML = out.join("");
+        });
+      }
+      /* @rig */
+      palabras("#s3-t1, #s3-t2, #s3-tl");
+      const tl = gsap.timeline();
+      const raiz = gsap.timeline({ paused: true });
+      const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
+      const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
+      const miles = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      const kg = (n) => n.toFixed(2).replace(".", ",") + " kg";
+      const cuenta = (sel, a, b, t, d, fmt) => {
+        const o = { v: a };
+        tl.fromTo(o, { v: a }, { v: b, duration: d, ease: "power2.out", onUpdate: () => { document.querySelector(sel).textContent = fmt(o.v); } }, t);
+      };
+
+      gsap.set(["#s3-lab1", "#s3-kgtot", "#s3-tarifa", "#s3-cop", "#s3-planilla", "#s3-hoy", "#s3-aho"], { opacity: 0 });
+
+      entra("#s3-t1", 0.12);
+      // Las cuatro constancias de septiembre salen del nodo Visita (x 260, y 895)
+      ["#s3-f1", "#s3-f2", "#s3-f3", "#s3-f4"].forEach((id, i) => {
+        const top = 210 + i * 116;
+        tl.fromTo(id, { x: -160, y: 895 - (top + 48), scale: 0.2, opacity: 0 }, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.7, ease: "expo.out" }, 0.05 + i * 0.22);
+      });
+
+      // Se suman
+      tl.fromTo("#s3-lab1", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 2.2);
+      tl.fromTo("#s3-kgtot", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 2.35);
+      cuenta("#s3-kgtot", 0, 413.85, 2.4, 1.2, kg);
+      tl.to(["#s3-f1", "#s3-f2", "#s3-f3", "#s3-f4"], { opacity: 0.5, duration: 0.4 }, 3.7);
+
+      // Se liquida la tarifa
+      tl.fromTo("#s3-tarifa", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 4.4);
+      tl.fromTo("#s3-cop", { opacity: 0 }, { opacity: 1, duration: 0.15 }, 5.55);
+      cuenta("#s3-cop", 0, 2244935, 5.6, 1.2, (v) => "$" + miles(v));
+
+      // Hoy → Ahora
+      tl.fromTo("#s3-hoy", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 6.95);
+      tl.fromTo("#s3-aho", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, 7.55);
+
+      // Todo se va y sale el RH
+      sale("#s3-t1", 9.6);
+      tl.to(["#s3-f1", "#s3-f2", "#s3-f3", "#s3-f4", "#s3-lab1", "#s3-kgtot", "#s3-tarifa", "#s3-cop", "#s3-hoy", "#s3-aho"],
+        { opacity: 0, x: -80, filter: "blur(8px)", duration: 0.35, ease: "power3.in", stagger: 0.02 }, 9.65);
+      tl.fromTo("#s3-planilla", { opacity: 0, x: 260, filter: "blur(10px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.75, ease: "expo.out" }, 10.0);
+      entra("#s3-t2", 10.2);
+
+      // Barrido a la izquierda hacia el Alcance 1
+      sale("#s3-t2", 13.75);
+      tl.to("#s3-planilla", { x: -520, opacity: 0, filter: "blur(12px)", duration: 0.4, ease: "power3.in" }, 13.95);
+
+      // ---- arranque: Lucrecia cierra el mes en el panel (0–2,4 s) ----
+      const lu = rig("s3l", "lucrecia", { hI: 6, cI: -40, hD: -6, cD: 40, cab: 4 });
+      gsap.set(["#s3-boton2"], { opacity: 0 });
+      raiz.fromTo("#s3-tl .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, 0.15);
+      raiz.fromTo("#s3-cursor", { x: 0, y: 0 }, { x: -300, y: 25, duration: 0.7, ease: "power2.inOut" }, 0.4);
+      raiz.to("#s3-cursor", { scale: 0.85, duration: 0.08, yoyo: true, repeat: 1 }, 1.15);
+      raiz.to("#s3-boton2", { opacity: 1, duration: 0.12 }, 1.2);
+      raiz.to("#s3-boton", { opacity: 0, duration: 0.12 }, 1.2);
+      raiz.to(lu.st, { mD: -10, duration: 0.1, yoyo: true, repeat: 1, onUpdate: lu.aplicar }, 1.1);
+      raiz.to(lu.st, { ojos: 0.08, duration: 0.07, onUpdate: lu.aplicar }, 0.6);
+      raiz.to(lu.st, { ojos: 1, duration: 0.1, onUpdate: lu.aplicar }, 0.67);
+      raiz.to("#s3-tl .w", { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, 1.95);
+      // la cámara entra al monitor
+      raiz.to("#s3-mon", { scale: 3.2, opacity: 0, duration: 0.5, ease: "power3.in" }, 1.95);
+      raiz.to(["#s3-lu", "#s3-mesa", "#s3-cursor"], { opacity: 0, filter: "blur(10px)", duration: 0.35, ease: "power3.in" }, 1.95);
+      raiz.add(tl, 2.4);
+      window.__timelines["s3"] = raiz;
+    })();
+  </script>
+</template>

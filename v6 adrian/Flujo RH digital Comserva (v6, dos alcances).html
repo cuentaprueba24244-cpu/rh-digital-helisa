@@ -1,0 +1,334 @@
+<title>Flujo RH digital Comserva · dos alcances</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Una hoja de proceso: tronco común arriba, Alcance 1 (verde), compuerta del piloto (ámbar) y Alcance 2 (azul), como el riel del video */
+  :root {
+    --bg: #f3f6f4;
+    --surface: #ffffff;
+    --ink: #1c2420;
+    --ink-2: #46524c;
+    --line: #d5ddd8;
+    --verde: #2b6a4b;
+    --verde-fondo: #e3f0e8;
+    --azul: #1f5fa8;
+    --azul-fondo: #e1ebf8;
+    --ambar: #b77f0d;
+    --ambar-tinta: #8a5d00;
+    --ambar-fondo: #fbf0d2;
+    --op: #b77f0d;
+    --sis: #2b6a4b;
+    --lu: #123d2b;
+    --he: #3d6575;
+    --dian: #5b4b8a;
+    --cli: #6f7c75;
+    --display: "Figtree", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111916; --surface: #1a2420; --ink: #e8ece9; --ink-2: #b9c3bd; --line: #2d3a34;
+      --verde: #5bb58a; --verde-fondo: #17301f; --azul: #7fb0ea; --azul-fondo: #15263a;
+      --ambar: #e0b04a; --ambar-tinta: #f0c66a; --ambar-fondo: #33280f;
+      --op: #e0b04a; --sis: #5bb58a; --lu: #9fd6b8; --he: #8fb6c4; --dian: #b3a4e0; --cli: #a6b2ab;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #111916; --surface: #1a2420; --ink: #e8ece9; --ink-2: #b9c3bd; --line: #2d3a34;
+    --verde: #5bb58a; --verde-fondo: #17301f; --azul: #7fb0ea; --azul-fondo: #15263a;
+    --ambar: #e0b04a; --ambar-tinta: #f0c66a; --ambar-fondo: #33280f;
+    --op: #e0b04a; --sis: #5bb58a; --lu: #9fd6b8; --he: #8fb6c4; --dian: #b3a4e0; --cli: #a6b2ab;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--display); font-size: 15px; line-height: 1.45; }
+  .hoja { max-width: 1280px; margin: 0 auto; padding-block: 36px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: grid; gap: 28px; }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  .ceja { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  header { display: grid; gap: 10px; }
+  header h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  header p { margin: 0; max-width: 72ch; color: var(--ink-2); font-size: 16px; }
+  .cifra { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* actores */
+  .actores { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--ink-2); }
+  .actor { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+  .actor i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+
+  /* tramos */
+  .tramo { display: grid; gap: 14px; }
+  .tramo-cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .tramo-cab h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+  .tramo-cab p { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 70ch; }
+  .t-comun h2 { color: var(--ink); }
+  .t-a1 h2 { color: var(--verde); }
+  .t-a2 h2 { color: var(--azul); }
+  .pasos { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .t-comun .pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .paso { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .t-a1 .paso { border-top: 3px solid var(--verde); }
+  .t-a2 .paso { border-top: 3px solid var(--azul); }
+  .t-comun .paso { border-top: 3px solid var(--ink-2); }
+  .paso.mano { border-style: dashed; border-color: var(--ambar); border-top-width: 3px; background: color-mix(in srgb, var(--ambar-fondo) 45%, var(--surface)); }
+  .paso-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .num { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--ink-2); }
+  .paso h3 { font-size: 17px; font-weight: 800; line-height: 1.2; }
+  .paso p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .dato { font-size: 13px; color: var(--ink); }
+  .marcas { display: flex; flex-wrap: wrap; gap: 6px; }
+  .marca { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--line); color: var(--ink-2); background: var(--bg); white-space: nowrap; }
+  .marca.sale { color: var(--verde); border-color: color-mix(in srgb, var(--verde) 40%, transparent); background: var(--verde-fondo); }
+  .t-a2 .marca.sale { color: var(--azul); border-color: color-mix(in srgb, var(--azul) 40%, transparent); background: var(--azul-fondo); }
+  .marca.manual { color: var(--ambar-tinta); border-color: var(--ambar); background: var(--ambar-fondo); }
+  .marca.api { color: var(--he); border-style: dashed; }
+
+  .nota { margin: 0; font-size: 14px; color: var(--ink-2); padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  .nota b { color: var(--ink); }
+
+  /* bifurcación y compuerta */
+  .bifurca { display: flex; align-items: center; gap: 12px; color: var(--ink-2); font-size: 14px; font-weight: 600; }
+  .bifurca::before, .bifurca::after { content: ""; flex: 1; height: 2px; background: var(--line); }
+  .compuerta { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: center; padding: 16px 18px; border-radius: 12px;
+    background: var(--ambar-fondo); border: 2px solid var(--ambar); }
+  .compuerta .barra { grid-row: span 2; width: 8px; height: 56px; border-radius: 4px; background: var(--ambar); }
+  .compuerta h2 { font-size: 20px; font-weight: 800; color: var(--ambar-tinta); }
+  .compuerta p { margin: 0; font-size: 14px; color: var(--ink); }
+
+  /* quién cambia qué */
+  .cambios { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 720px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  thead th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); background: var(--bg); }
+  thead th.c1 { color: var(--verde); }
+  thead th.c2 { color: var(--azul); }
+  tbody th { font-weight: 800; white-space: nowrap; }
+  tbody td:nth-child(2) { color: var(--ink-2); }
+  tr:last-child th, tr:last-child td { border-bottom: 0; }
+
+  .dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .caja { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+  .caja h2 { font-size: 17px; font-weight: 800; }
+  .caja ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; color: var(--ink-2); }
+  .caja li b { color: var(--ink); }
+  footer { font-size: 12px; color: var(--ink-2); }
+
+  @media (max-width: 1000px) {
+    .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .t-comun .pasos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .pasos, .t-comun .pasos, .dos { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+
+<main class="hoja">
+  <header>
+    <span class="ceja">RH digital Comserva · v6 · un solo flujo para las dos propuestas</span>
+    <h1>De la visita a Helisa, y después a la factura electrónica</h1>
+    <p>El tramo común es igual en los dos alcances. Después del RH, el <b>Alcance 1</b> (Propuesta 1) llega hasta Helisa con pedidos y recibos. Se hace un piloto de un ciclo y, si Comserva lo aprueba, el <b>Alcance 2</b> (Propuesta 2) reemplaza los pasos A1 a A5 por la factura electrónica. Ejemplo real: Cofema, septiembre de 2026, con 4 visitas, <span class="cifra">413,85</span> kg y <span class="cifra">$2.244.935</span>.</p>
+    <div class="actores" aria-label="Quién hace cada paso">
+      <span class="actor"><i style="background: var(--op)"></i>Operario · app</span>
+      <span class="actor"><i style="background: var(--sis)"></i>Sistema RH digital</span>
+      <span class="actor"><i style="background: var(--lu)"></i>Lucrecia · oficina</span>
+      <span class="actor"><i style="background: var(--he)"></i>Helisa</span>
+      <span class="actor"><i style="background: var(--dian)"></i>Proveedor tecnológico y DIAN</span>
+      <span class="actor"><i style="background: var(--cli)"></i>Cliente</span>
+      <span class="marca manual">Borde punteado: sigue a mano</span>
+    </div>
+  </header>
+
+  <!-- TRAMO COMÚN -->
+  <section class="tramo t-comun">
+    <div class="tramo-cab"><h2>Tramo común</h2><p>Igual en los dos alcances.</p></div>
+    <div class="pasos">
+      <article class="paso">
+        <div class="paso-cab"><span class="num">1</span><span class="actor"><i style="background: var(--op)"></i>Operario · app</span></div>
+        <h3>Visita y pesaje</h3>
+        <p>Kilos por categoría, firmas, foto y GPS. Funciona sin señal.</p>
+        <span class="dato">Cofema: visitas de los días 5, 12, 19 y 22</span>
+        <div class="marcas"><span class="marca sale">Constancia PDF por WhatsApp</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">2</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia da el clic</span></div>
+        <h3>Cierre del cliente</h3>
+        <p>Desde el día 20 por cliente, o todos el 26. El sistema suma las visitas una sola vez.</p>
+        <span class="dato"><span class="cifra">413,85</span> kg en 4 visitas</span>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">3</span><span class="actor"><i style="background: var(--sis)"></i>Sistema</span></div>
+        <h3>Planilla RH con valores</h3>
+        <p>Aplica la tarifa del cliente: básico más kilos, solo por kilo o fijo mensual.</p>
+        <span class="dato">Total <span class="cifra">$2.244.935</span></span>
+        <div class="marcas"><span class="marca sale">Planilla RH en PDF</span></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="bifurca">Después del RH, el camino depende del alcance</div>
+
+  <!-- ALCANCE 1 -->
+  <section class="tramo t-a1">
+    <div class="tramo-cab"><h2>Alcance 1 · hasta Helisa</h2><p>Fase 1, Propuesta 1. La factura electrónica sigue saliendo de Helisa.</p></div>
+    <div class="pasos">
+      <article class="paso">
+        <div class="paso-cab"><span class="num">A1</span><span class="actor"><i style="background: var(--sis)"></i>Sistema</span></div>
+        <h3>Archivo de pedidos</h3>
+        <p>Un pedido por cliente o sede, con la estructura del Excel de Julio. Sin cuentas ni IVA.</p>
+        <span class="dato">Cofema: un pedido (tipo OP) en el archivo del corte</span>
+        <div class="marcas"><span class="marca sale">Archivo OP</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">A2</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia en Helisa</span></div>
+        <h3>Importa los pedidos</h3>
+        <p>Un solo archivo trae los pedidos de todos los clientes del corte.</p>
+        <div class="marcas"><span class="marca api">Con Conekta: automático</span></div>
+      </article>
+      <article class="paso mano">
+        <div class="paso-cab"><span class="num">A3</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia en Helisa</span></div>
+        <h3>Hace cada factura con F3</h3>
+        <p>Abre la factura del cliente y llama su pedido. Ya no digita las líneas ni suma kilos.</p>
+        <div class="marcas"><span class="marca manual">A mano · una por una</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">A4</span><span class="actor"><i style="background: var(--he)"></i>Helisa</span></div>
+        <h3>Emite la FVE</h3>
+        <p>Calcula el IVA, contabiliza y la envía a la DIAN, como hoy.</p>
+        <span class="dato"><span class="cifra">FVE 25756 · $2.244.935</span></span>
+      </article>
+      <article class="paso mano">
+        <div class="paso-cab"><span class="num">A5</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia</span></div>
+        <h3>La FVE vuelve al sistema</h3>
+        <p>La registra por el listado de Helisa o digitándola. Se valida contra el RH (± $1) y habilita el cobro.</p>
+        <div class="marcas"><span class="marca manual">Primera vuelta</span><span class="marca api">Con Conekta: la lee (por confirmar)</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">A6</span><span class="actor"><i style="background: var(--op)"></i>Operario · app</span></div>
+        <h3>Cobro</h3>
+        <p>En efectivo: el operario entrega el recibo en la app, solo con la FVE registrada. Por transferencia: el soporte llega por WhatsApp o correo y la oficina marca el pago.</p>
+        <span class="dato">Abono de <span class="cifra">$500.000</span></span>
+        <div class="marcas"><span class="marca sale">Recibo PDF por WhatsApp</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">A7</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia importa</span></div>
+        <h3>Archivo de recibos</h3>
+        <p>Movimiento contable 1305 contra caja o bancos, con la FVE que cruza. Libros F y N.</p>
+        <div class="marcas"><span class="marca sale">Archivo RC</span><span class="marca api">Con Conekta: automático</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">A8</span><span class="actor"><i style="background: var(--he)"></i>Helisa</span></div>
+        <h3>Cruza el pago</h3>
+        <p>El archivo ya dice qué factura paga cada recibo. Lucrecia anota en el sistema el número del recibo definitivo.</p>
+        <span class="dato">Saldo <span class="cifra">$1.744.935</span></span>
+        <div class="marcas"><span class="marca manual">Segunda vuelta</span></div>
+      </article>
+    </div>
+    <p class="nota"><b>La ida y vuelta que señaló Julio:</b> en el Alcance 1 hay dos subidas a Helisa (pedidos y recibos) y dos vueltas al sistema (la FVE en A5 y el número del recibo definitivo en A8). El cobro espera a que la FVE esté registrada. <b>Con la API de Helisa (Conekta, opcional, modalidad 1B)</b> esas idas y vueltas se automatizan, con lectura diaria o a demanda; qué campos devuelve está por confirmar con la conexión de prueba. La factura sigue haciéndose una por una en Helisa (A3).</p>
+  </section>
+
+  <!-- COMPUERTA -->
+  <section class="compuerta" aria-label="Compuerta del piloto">
+    <span class="barra" aria-hidden="true"></span>
+    <h2>Hasta aquí llega el Alcance 1 · un mes de prueba</h2>
+    <p>Se usa el Alcance 1 durante un ciclo real (un mes) y se mide cuánto tiempo toma la facturación una por una y qué errores aparecen. Con esos datos, Comserva decide si sigue el Alcance 2.</p>
+  </section>
+
+  <!-- ALCANCE 2 -->
+  <section class="tramo t-a2">
+    <div class="tramo-cab"><h2>Alcance 2 · factura electrónica</h2><p>Fase 2, Propuesta 2. Se conecta donde sale el pedido y reemplaza A1 a A5: ya no hay pedido, ni F3, ni vuelta de la factura.</p></div>
+    <div class="pasos">
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B1</span><span class="actor"><i style="background: var(--sis)"></i>Sistema</span></div>
+        <h3>Prefactura</h3>
+        <p>Del mismo RH: líneas, IVA 19 % y datos fiscales del cliente.</p>
+        <span class="dato">Total <span class="cifra">$2.244.935</span></span>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B2</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia</span></div>
+        <h3>Revisa y aprueba por lote</h3>
+        <p>Corrige o aprueba las prefacturas del corte y las emite todas de una vez.</p>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B3</span><span class="actor"><i style="background: var(--dian)"></i>Proveedor y DIAN</span></div>
+        <h3>Firma y valida</h3>
+        <p>El proveedor tecnológico la firma y la DIAN la valida. Vuelven CUFE, XML, PDF y QR.</p>
+        <span class="dato">Ejemplo de prueba: <span class="cifra">RHD 1</span></span>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B4</span><span class="actor"><i style="background: var(--cli)"></i>Cliente</span></div>
+        <h3>Le llega sola al correo</h3>
+        <p>PDF y XML a su correo de recepción. Los eventos RADIAN se siguen en el panel.</p>
+        <div class="marcas"><span class="marca sale">Factura electrónica</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B5</span><span class="actor"><i style="background: var(--op)"></i>Operario · app</span></div>
+        <h3>Cobro sin esperar</h3>
+        <p>El sistema ya conoce su factura validada: el recibo en efectivo sale sin esperar a Helisa. Las transferencias las marca la oficina.</p>
+        <span class="dato">Abono de <span class="cifra">$500.000</span></span>
+        <div class="marcas"><span class="marca sale">Recibo PDF por WhatsApp</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B6</span><span class="actor"><i style="background: var(--sis)"></i>Sistema</span></div>
+        <h3>Asientos para Helisa</h3>
+        <p>Factura (1305, ingreso e IVA) y recibo (caja contra 1305), en libros F y N. El número del recibo definitivo puede volver, de forma opcional.</p>
+        <div class="marcas"><span class="marca api">Por archivo o Conekta</span></div>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">B7</span><span class="actor"><i style="background: var(--he)"></i>Helisa</span></div>
+        <h3>Contabilidad y cartera</h3>
+        <p>Importa los asientos y cruza el pago. Ya no hace las facturas del servicio.</p>
+        <span class="dato">Saldo <span class="cifra">$1.744.935</span></span>
+      </article>
+      <article class="paso">
+        <div class="paso-cab"><span class="num">NC</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia y Gerencia</span></div>
+        <h3>Si hay un error</h3>
+        <p>La factura no se edita ni se borra: se corrige con nota crédito, que aprueba Gerencia. El plazo frente a la aceptación del cliente lo confirman el contador y el proveedor.</p>
+        <div class="marcas"><span class="marca">Ramal, no es un paso fijo</span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- QUÉ CAMBIA PARA CADA UNO -->
+  <section class="tramo">
+    <div class="tramo-cab"><h2>Qué cambia para cada uno</h2></div>
+    <div class="cambios">
+      <table>
+        <thead><tr><th></th><th>Hoy</th><th class="c1">Alcance 1</th><th class="c2">Alcance 2</th></tr></thead>
+        <tbody>
+          <tr><th>Operario</th><td>Planilla en papel químico y talonario de recibos</td><td>Visita, constancia y recibo en la app, aun sin señal</td><td>Igual que en el Alcance 1, y cobra sin esperar a Helisa</td></tr>
+          <tr><th>Lucrecia</th><td>Suma los kilos, calcula cada cobro y digita cada factura y cada recibo</td><td>Importa pedidos, llama cada pedido con F3, registra la FVE e importa recibos</td><td>Revisa y aprueba las facturas por lote e importa los asientos (o los envía Conekta)</td></tr>
+          <tr><th>Cliente</th><td>Copia en papel de la visita</td><td>Constancia y recibo por WhatsApp; la factura sigue llegando de Helisa</td><td>Además, la factura electrónica le llega sola al correo</td></tr>
+          <tr><th>Helisa</th><td>Facturación, contabilidad y cartera</td><td>Igual, y recibe pedidos y recibos por archivo o Conekta</td><td>Solo contabilidad y cartera, con los asientos que envía el sistema</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="dos">
+    <div class="caja">
+      <h2>Reglas que no se rompen</h2>
+      <ul>
+        <li><b>La visita es la única captura.</b> Nadie vuelve a sumar ni a digitar kilos.</li>
+        <li><b>Sin factura no hay recibo.</b> El recibo de la app es para pagos en efectivo; las transferencias las registra la oficina.</li>
+        <li><b>Lo firmado no se edita.</b> Se anula con motivo y se hace otro.</li>
+        <li><b>Un cierre, una sola factura.</b> Ningún RH se factura dos veces.</li>
+      </ul>
+    </div>
+    <div class="caja">
+      <h2>Por confirmar en la Fase 0</h2>
+      <ul>
+        <li>Habilitar el documento Pedido en Helisa y saber si tiene costo.</li>
+        <li>Formato final del archivo (.xlsx, .xls o .txt), prefijo FEV o FVE y recibo RC1 o RC2.</li>
+        <li>Volumen real de facturas e IVA del servicio, con el contador.</li>
+        <li>Si Comserva toma Conekta (1B).</li>
+        <li>Para el Alcance 2: habilitación de Factus ante la DIAN, prefijo real y que la cartera de Helisa acepte ese prefijo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>RH digital Comserva · flujo único de la v6 (Propuestas 1 y 2) · basado en los flujos de cada propuesta, el comparativo y las estructuras del Excel de Julio (23 oct 2026) · 26 oct 2026</footer>
+</main>

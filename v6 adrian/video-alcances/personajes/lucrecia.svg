@@ -1,0 +1,78 @@
+<svg viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+  <g id="X-todo">
+  <!-- silla -->
+  <rect x="186" y="250" width="228" height="340" rx="44" fill="#2d3a34"/>
+  <rect x="200" y="262" width="200" height="40" rx="20" fill="#3a4842"/>
+  <!-- torso: blusa clara y saco verde -->
+  <path d="M214 340 C250 318 350 318 386 340 C400 380 400 470 396 600 L204 600 C200 470 200 380 214 340 Z" fill="#f7f9f8"/>
+  <path d="M214 340 C232 330 252 326 264 330 L284 600 L204 600 C200 470 200 380 214 340 Z" fill="#2b6a4b"/>
+  <path d="M386 340 C368 330 348 326 336 330 L316 600 L396 600 C400 470 400 380 386 340 Z" fill="#2b6a4b"/>
+  <path d="M386 340 C396 380 398 470 396 600 L372 600 C376 470 374 380 366 334 Z" fill="#123d2b" opacity=".25"/>
+  <!-- cuello y escarapela -->
+  <rect x="282" y="262" width="36" height="70" rx="14" fill="#b67a59"/>
+  <path d="M272 326 L300 356 L328 326 Z" fill="#b67a59"/>
+  <path d="M284 330 L300 440 L316 330" fill="none" stroke="#1f5e43" stroke-width="5"/>
+  <rect x="284" y="436" width="32" height="42" rx="5" fill="#fff" stroke="#c8d0cb" stroke-width="2"/>
+  <rect x="290" y="444" width="20" height="14" rx="3" fill="#dcefe4"/>
+  <rect x="290" y="463" width="20" height="4" rx="2" fill="#2b6a4b"/>
+  <!-- cabeza: gira sobre la base del cuello (300,300) -->
+  <g id="X-cab">
+    <path d="M234 214 C226 124 374 124 366 214 C370 262 378 296 364 322 C350 334 332 326 328 304 L272 304 C268 326 250 334 236 322 C222 296 230 262 234 214 Z" fill="#3b2418"/>
+    <ellipse cx="300" cy="212" rx="56" ry="64" fill="#c98e6b"/>
+    <path d="M300 148 C336 150 354 176 356 212 C346 188 328 176 300 176 Z" fill="#b67a59" opacity=".35"/>
+    <path d="M244 196 C238 130 362 122 358 190 C350 168 330 152 296 150 C300 164 286 176 262 180 C254 184 248 190 244 196 Z" fill="#3b2418"/>
+    <path d="M300 150 C326 150 346 162 354 182 C340 168 322 160 304 160 Z" fill="#5a3826"/>
+    <circle cx="262" cy="240" r="10" fill="#d9785a" opacity=".22"/>
+    <circle cx="338" cy="240" r="10" fill="#d9785a" opacity=".22"/>
+    <path d="M266 198 q12 -7 24 -1" stroke="#3b2418" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M310 197 q12 -6 24 1" stroke="#3b2418" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g id="X-ojos">
+      <ellipse cx="279" cy="216" rx="6" ry="7.5" fill="#1c2420"/>
+      <ellipse cx="321" cy="216" rx="6" ry="7.5" fill="#1c2420"/>
+      <circle cx="281" cy="213" r="2" fill="#fff"/>
+      <circle cx="323" cy="213" r="2" fill="#fff"/>
+    </g>
+    <circle cx="279" cy="216" r="17" fill="none" stroke="#1c2420" stroke-width="3"/>
+    <circle cx="321" cy="216" r="17" fill="none" stroke="#1c2420" stroke-width="3"/>
+    <path d="M296 214 q4 -3 8 0" stroke="#1c2420" stroke-width="3" fill="none"/>
+    <path d="M300 222 q-6 13 3 17" stroke="#a46a4c" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M284 252 q16 12 32 0 q-16 5 -32 0 z" fill="#b4534a"/>
+    <circle cx="244" cy="246" r="5" fill="#d9a21b"/>
+    <circle cx="356" cy="246" r="5" fill="#d9a21b"/>
+  </g>
+  <!-- escritorio -->
+  <rect x="30" y="560" width="540" height="28" rx="6" fill="#e1e6e3"/>
+  <rect x="50" y="588" width="500" height="112" fill="#c8d0cb"/>
+  <rect x="50" y="588" width="500" height="10" fill="#b5bfb9"/>
+  <rect x="226" y="546" width="148" height="20" rx="5" fill="#46524c"/>
+  <path d="M236 552 h128 M236 559 h128" stroke="#6f7c75" stroke-width="3" stroke-dasharray="8 4"/>
+  <!-- calculadora -->
+  <g id="X-calc" opacity="0">
+    <rect x="80" y="500" width="84" height="62" rx="8" fill="#2d3a34"/>
+    <rect x="90" y="508" width="64" height="16" rx="3" fill="#dcefe4"/>
+    <g fill="#c8d0cb"><circle cx="98" cy="536" r="4"/><circle cx="114" cy="536" r="4"/><circle cx="130" cy="536" r="4"/><circle cx="146" cy="536" r="4"/><circle cx="98" cy="550" r="4"/><circle cx="114" cy="550" r="4"/><circle cx="130" cy="550" r="4"/><circle cx="146" cy="550" r="4" fill="#d9a21b"/></g>
+  </g>
+  <!-- pilas de planillas en papel -->
+  <g id="X-pila1" opacity="0"><rect x="420" y="530" width="110" height="30" rx="3" fill="#fbfaf5" stroke="#c8d0cb" stroke-width="2"/><path d="M420 540 h110 M420 550 h110" stroke="#e1e6e3" stroke-width="2"/></g>
+  <g id="X-pila2" opacity="0"><rect x="424" y="496" width="104" height="34" rx="3" fill="#f4f1e6" stroke="#c8d0cb" stroke-width="2" transform="rotate(-3 476 513)"/><path d="M426 508 h100 M426 519 h100" stroke="#e1e6e3" stroke-width="2" transform="rotate(-3 476 513)"/></g>
+  <g id="X-pila3" opacity="0"><rect x="418" y="462" width="110" height="34" rx="3" fill="#fbfaf5" stroke="#c8d0cb" stroke-width="2" transform="rotate(4 473 479)"/><path d="M420 474 h106 M420 485 h106" stroke="#e1e6e3" stroke-width="2" transform="rotate(4 473 479)"/></g>
+  <!-- brazo izquierdo: hombro 212,352 · codo 204,470 · muñeca 204,580 -->
+  <g id="X-hI">
+    <rect x="190" y="336" width="42" height="146" rx="21" fill="#2b6a4b"/>
+    <g id="X-cI">
+      <rect x="186" y="458" width="36" height="128" rx="18" fill="#2b6a4b"/>
+      <rect x="187" y="566" width="34" height="14" rx="6" fill="#f7f9f8"/>
+      <g id="X-mI"><ellipse cx="204" cy="592" rx="19" ry="17" fill="#c98e6b"/></g>
+    </g>
+  </g>
+  <!-- brazo derecho: hombro 388,352 · codo 396,470 · muñeca 396,580 -->
+  <g id="X-hD">
+    <rect x="368" y="336" width="42" height="146" rx="21" fill="#2b6a4b"/>
+    <g id="X-cD">
+      <rect x="378" y="458" width="36" height="128" rx="18" fill="#2b6a4b"/>
+      <rect x="379" y="566" width="34" height="14" rx="6" fill="#f7f9f8"/>
+      <g id="X-mD"><ellipse cx="396" cy="592" rx="19" ry="17" fill="#c98e6b"/></g>
+    </g>
+  </g>
+  </g>
+</svg>

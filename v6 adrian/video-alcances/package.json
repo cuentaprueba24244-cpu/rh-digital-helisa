@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "npx hyperframes preview",
     "check": "npx hyperframes check",
-    "render": "npx hyperframes render --quality delivery --output renders/alcances-rh-digital.mp4",
+    "render": "node tools/armar.mjs && npx hyperframes render --quality delivery --output renders/alcances-rh-digital-v3.mp4",
     "musica": "node tools/musica.mjs",
-    "capturas": "node tools/capturar.mjs && bash tools/preparar-papel.sh"
+    "capturas": "node tools/capturar.mjs && bash tools/preparar-papel.sh",
+    "armar": "node tools/armar.mjs"
   },
   "keywords": [],
   "author": "",

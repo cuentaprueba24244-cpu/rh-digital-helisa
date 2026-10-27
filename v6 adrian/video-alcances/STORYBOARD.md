@@ -10,7 +10,9 @@ bpm: 100
 
 # Storyboard · «La línea que se alarga»
 
-> **Versión 2 (25 oct, después de la revisión de Adrián).** Es la que está renderizada. Agrega la escena «Por eso creamos RH digital», fichas «Hoy → Ahora» en cada paso, el RH como paso propio, la ida y vuelta de la FVE con la nota de la API de Helisa y el recibo sin esperar en el Alcance 2. Los tiempos de abajo (v1) quedan solo como referencia; los de la v2 son estos:
+> **Versión 3 (26 oct), con personajes animados.** Es la más reciente. Escenas: intro `s1-intro` 0–28,8 s · visita `s2-app` 28,8–43,2 s · RH `s3-cierre` 43,2–60 s · Alcance 1 `s4-alcance1` 60–91,2 s · piloto `s5-piloto` 91,2–98,4 s · Alcance 2 `s6-alcance2` 98,4–124,8 s · mapa y marca `s7-mapa` 124,8–138 s. El riel va de 28,8 s a 124,8 s y el acorde final cae a los 132 s. El detalle está en REVIEW.md.
+>
+> **Versión 2 (25 oct, después de la revisión de Adrián).** Agrega la escena «Por eso creamos RH digital», fichas «Hoy → Ahora» en cada paso, el RH como paso propio, la ida y vuelta de la FVE con la nota de la API de Helisa y el recibo sin esperar en el Alcance 2. Los tiempos de abajo (v1) quedan solo como referencia; los de la v2 son estos:
 >
 > | Escena | Archivo | Tiempo |
 > | --- | --- | --- |

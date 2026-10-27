@@ -1,12 +1,26 @@
 # Video · Los dos alcances de RH digital
 
-Motion graphics de 1 min 56 s para la reunión con Comserva del 28 de octubre de 2026. Muestra el sistema como **dos alcances**:
+Motion graphics para la reunión con Comserva del 28 de octubre de 2026. La **v3** dura 2 min 18 s y trae personajes animados; la v2 dura 1 min 56 s y la v1, 90 s. Muestra el sistema como **dos alcances**:
 
 1. **Alcance 1:** de la visita en la app hasta Helisa (pedido y recibo).
 2. **El piloto:** Comserva decide con un ciclo real.
 3. **Alcance 2:** la factura electrónica validada por la DIAN, con Helisa para la contabilidad.
 
-El MP4 queda en [`renders/alcances-rh-digital.mp4`](renders/alcances-rh-digital.mp4).
+Los MP4 están en `renders/`:
+
+- [`alcances-rh-digital-v3.mp4`](renders/alcances-rh-digital-v3.mp4) · **v3**, la más completa, con el operario, Lucrecia y el cliente animados.
+- [`alcances-rh-digital.mp4`](renders/alcances-rh-digital.mp4) · v2.
+- [`alcances-rh-digital-v1.mp4`](renders/alcances-rh-digital-v1.mp4) · v1.
+
+## Personajes (v3)
+
+Los personajes están dibujados en vector con código, por partes, en `personajes/`:
+
+- **Personajes:** `operario.svg`, `lucrecia.svg` y `cliente.svg`.
+- **Escenografía:** `camioneta.svg`, `edificio.svg` y `bascula.svg`.
+- **Rig:** `rig.js` mueve las articulaciones (hombros, codos, manos, cadera, cabeza y ojos) y trae los gestos `pose`, `gesto`, `camina` y `parpadea`.
+
+Las escenas se escriben en `escenas/`. **No se editan en `compositions/`**: `node tools/armar.mjs` arma `compositions/` insertando los personajes donde dice `<!-- @svg nombre prefijo -->` y el rig donde dice `/* @rig */`. Para probar poses, abre `personajes/prueba.html`.
 
 ## Las 4 capas
 
@@ -14,7 +28,7 @@ El MP4 queda en [`renders/alcances-rh-digital.mp4`](renders/alcances-rh-digital.
 | --- | --- |
 | 1 · Guion | [BRIEF.md](BRIEF.md) (guion A elegido: «La línea que se alarga») |
 | 2 · Storyboard y estilo | [STORYBOARD.md](STORYBOARD.md), [frame.md](frame.md), [SPEC.md](SPEC.md) |
-| 3 · Animación | [index.html](index.html) y una página por escena en [compositions/](compositions/); el riel va en `riel.html` |
+| 3 · Animación | [index.html](index.html) y una página por escena en [escenas/](escenas/) (se arman en `compositions/`); el riel va en `riel.html`; los personajes, en [personajes/](personajes/) |
 | 4 · Sonido | [tools/musica.mjs](tools/musica.mjs) escribe la música con código; [tools/musica-mezcla.sh](tools/musica-mezcla.sh) la normaliza |
 
 La revisión y las decisiones están en [REVIEW.md](REVIEW.md).
@@ -46,6 +60,10 @@ npm run capturas
 
 ```bash
 node tools/musica.mjs && bash tools/musica-mezcla.sh
+```
+
+```bash
+node tools/armar.mjs
 ```
 
 ```bash

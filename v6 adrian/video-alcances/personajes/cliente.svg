@@ -1,0 +1,84 @@
+<svg viewBox="0 0 600 920" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="300" cy="892" rx="150" ry="18" fill="#123d2b" opacity=".14"/>
+  <g id="X-todo">
+  <!-- piernas: giran en la cadera (262,590) y (338,590) -->
+  <g id="X-pI">
+    <path d="M232 588 L292 588 L288 862 L238 862 Z" fill="#46524c"/>
+    <path d="M234 852 h58 v20 q0 14 -14 14 h-58 q-14 0 -10 -12 q4 -16 24 -22 z" fill="#2d3a34"/>
+    <path d="M244 862 h30" stroke="#c8d0cb" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="X-pD">
+    <path d="M308 588 L368 588 L362 862 L312 862 Z" fill="#46524c"/>
+    <path d="M308 852 h58 q20 6 24 22 q4 12 -10 12 h-58 q-14 0 -14 -14 z" fill="#2d3a34"/>
+    <path d="M324 862 h30" stroke="#c8d0cb" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <!-- torso: camisa verde -->
+  <path d="M198 296 C240 272 360 272 402 296 C418 330 412 440 404 600 L196 600 C188 440 182 330 198 296 Z" fill="#f7f9f8"/>
+  <!-- cuello -->
+  <rect x="278" y="236" width="44" height="56" rx="18" fill="#a96d4c"/>
+  <path d="M266 282 L300 322 L334 282 Z" fill="#a96d4c"/>
+  <path d="M262 280 L300 324 L338 280" fill="none" stroke="#c8d0cb" stroke-width="8" stroke-linejoin="round"/>
+  <!-- saco azul abierto sobre blusa clara, con escarapela de Cofema -->
+  <path d="M200 298 C230 286 258 282 268 288 L284 600 L198 600 C190 440 186 334 200 298 Z" fill="#3d6575"/>
+  <path d="M400 298 C370 286 342 282 332 288 L316 600 L402 600 C410 440 414 334 400 298 Z" fill="#3d6575"/>
+  <path d="M402 300 C412 340 412 450 404 600 L378 600 C384 470 384 360 374 304 Z" fill="#123d2b" opacity=".18"/>
+  <rect x="332" y="352" width="46" height="60" rx="6" fill="#fff" stroke="#c8d0cb" stroke-width="2"/>
+  <rect x="338" y="360" width="34" height="18" rx="3" fill="#fbf0d2"/>
+  <rect x="338" y="384" width="34" height="5" rx="2" fill="#3d6575"/>
+  <rect x="338" y="394" width="24" height="5" rx="2" fill="#c8d0cb"/>
+  <!-- brazo izquierdo (del espectador): hombro 206,310 · codo 206,440 · muñeca 206,560 -->
+  <g id="X-hI">
+    <rect x="184" y="292" width="44" height="160" rx="22" fill="#3d6575"/>
+    <g id="X-cI">
+      <rect x="186" y="428" width="40" height="138" rx="20" fill="#3d6575"/>
+      <rect x="186" y="540" width="40" height="18" rx="6" fill="#f7f9f8"/>
+      <g id="X-mI">
+        <circle cx="206" cy="572" r="24" fill="#a8704e"/>
+        <ellipse cx="226" cy="562" rx="9" ry="13" fill="#a8704e" transform="rotate(-30 226 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- brazo derecho: hombro 394,310 · codo 394,440 · muñeca 394,560 -->
+  <g id="X-hD">
+    <rect x="372" y="292" width="44" height="160" rx="22" fill="#3d6575"/>
+    <g id="X-cD">
+      <rect x="374" y="428" width="40" height="138" rx="20" fill="#3d6575"/>
+      <rect x="374" y="540" width="40" height="18" rx="6" fill="#f7f9f8"/>
+      <g id="X-mD">
+        <g id="X-billetes" opacity="0">
+          <rect x="360" y="560" width="96" height="50" rx="5" fill="#7fae7a" transform="rotate(-18 394 584)"/>
+          <rect x="356" y="568" width="96" height="50" rx="5" fill="#94c08f" transform="rotate(-8 394 592)"/>
+          <circle cx="404" cy="592" r="12" fill="none" stroke="#5c8a57" stroke-width="3" transform="rotate(-8 394 592)"/>
+        </g>
+        <g id="X-lapicero" opacity="0"><rect x="388" y="526" width="7" height="54" rx="3" fill="#1c2420" transform="rotate(30 392 572)"/></g>
+        <circle cx="394" cy="572" r="24" fill="#a8704e"/>
+        <ellipse cx="374" cy="562" rx="9" ry="13" fill="#a8704e" transform="rotate(30 374 562)"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- cabeza: gira sobre la base del cuello (300,262) -->
+  <g id="X-cab">
+    <circle cx="236" cy="192" r="15" fill="#b07450"/>
+    <circle cx="364" cy="192" r="15" fill="#b07450"/>
+    <ellipse cx="300" cy="184" rx="65" ry="73" fill="#c48760"/>
+    <path d="M300 112 C340 112 364 140 365 184 C356 160 336 146 300 146 Z" fill="#b07450" opacity=".35"/>
+    <circle cx="300" cy="100" r="26" fill="#2e1d14"/>
+    <circle cx="260" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <circle cx="340" cy="218" r="12" fill="#d9785a" opacity=".25"/>
+    <path d="M264 172 q13 -8 26 -1" stroke="#2e1d14" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M310 171 q13 -7 26 1" stroke="#2e1d14" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <g id="X-ojos">
+      <ellipse cx="277" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <ellipse cx="323" cy="194" rx="7" ry="9" fill="#1c2420"/>
+      <circle cx="279.5" cy="190.5" r="2.4" fill="#fff"/>
+      <circle cx="325.5" cy="190.5" r="2.4" fill="#fff"/>
+    </g>
+    <path d="M300 200 q-8 15 3 20" stroke="#8a5236" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M284 232 q16 13 32 0" stroke="#8a3a32" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M234 196 C226 104 374 104 366 196 C356 152 330 132 300 132 C270 132 244 152 234 196 Z" fill="#2e1d14"/>
+    <path d="M252 150 C274 126 330 122 352 148 C330 136 296 136 270 154 Z" fill="#4a3022"/>
+  </g>
+  </g>
+</svg>

@@ -1,0 +1,32 @@
+<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="320" cy="306" rx="290" ry="16" fill="#123d2b" opacity=".16"/>
+  <!-- furgón -->
+  <path d="M30 70 Q30 46 54 46 L420 46 Q440 46 440 66 L440 270 L30 270 Z" fill="#2b6a4b"/>
+  <path d="M30 70 Q30 46 54 46 L420 46 Q440 46 440 66 L440 92 L30 92 Z" fill="#fff" opacity=".08"/>
+  <rect x="30" y="196" width="410" height="22" fill="#d9a21b"/>
+  <rect x="30" y="218" width="410" height="8" fill="#eef2ef"/>
+  <!-- marca en el costado -->
+  <g transform="translate(118 132)"><circle r="44" fill="#fff"/><circle r="37" fill="none" stroke="#2b6a4b" stroke-opacity=".35" stroke-width="2"/><path d="M0 -26c16 10 22 26 15 44-10-3-16-10-19-20-2 13-5 20-13 24-8-18-2-36 17-48z" fill="#2b6a4b"/></g>
+  <text x="182" y="134" font-family="Figtree, sans-serif" font-weight="800" font-size="40" fill="#fff" letter-spacing="-0.5">Comserva</text>
+  <text x="184" y="166" font-family="Figtree, sans-serif" font-weight="600" font-size="20" fill="#dcefe4">Residuos hospitalarios</text>
+  <!-- cabina -->
+  <path d="M440 96 L530 96 Q548 96 560 114 L604 184 Q612 196 612 212 L612 270 L440 270 Z" fill="#1f5e43"/>
+  <path d="M456 112 L524 112 Q536 112 544 124 L580 180 L456 180 Z" fill="#dcefe4"/>
+  <path d="M470 112 L500 112 L470 180 L456 180 L456 140 Z" fill="#fff" opacity=".45"/>
+  <rect x="470" y="200" width="30" height="8" rx="4" fill="#123d2b"/>
+  <rect x="596" y="214" width="20" height="16" rx="4" fill="#fbf0d2"/>
+  <rect x="440" y="196" width="172" height="22" fill="#d9a21b"/>
+  <rect x="604" y="244" width="20" height="26" rx="4" fill="#46524c"/>
+  <rect x="22" y="250" width="22" height="20" rx="4" fill="#46524c"/>
+  <!-- baliza -->
+  <rect x="480" y="84" width="34" height="14" rx="6" fill="#d9a21b"/>
+  <path d="M86 270 a54 54 0 0 1 108 0 Z" fill="#123d2b"/>
+  <path d="M466 270 a54 54 0 0 1 108 0 Z" fill="#123d2b"/>
+  <rect x="22" y="262" width="596" height="12" rx="5" fill="#123d2b"/>
+  <rect x="548" y="118" width="12" height="30" rx="4" fill="#123d2b"/>
+  <rect x="596" y="192" width="22" height="18" rx="5" fill="#fbf0d2" stroke="#c8d0cb" stroke-width="2"/>
+  <path d="M452 104 L452 262" stroke="#123d2b" stroke-width="3" opacity=".6"/>
+  <!-- ruedas: giran con la línea de tiempo -->
+  <g id="X-r1"><circle cx="140" cy="272" r="40" fill="#1c2420"/><circle cx="140" cy="272" r="18" fill="#c8d0cb"/><path d="M140 254 v36 M122 272 h36" stroke="#6f7c75" stroke-width="5"/></g>
+  <g id="X-r2"><circle cx="520" cy="272" r="40" fill="#1c2420"/><circle cx="520" cy="272" r="18" fill="#c8d0cb"/><path d="M520 254 v36 M502 272 h36" stroke="#6f7c75" stroke-width="5"/></g>
+</svg>

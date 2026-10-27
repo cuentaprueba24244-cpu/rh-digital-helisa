@@ -24,7 +24,7 @@
     .rl-nodo.azul .rl-check svg { stroke: #1f5fa8; }
     .rl-rot { position: absolute; top: 934px; width: 360px; margin-left: -180px; text-align: center; font-size: 28px; font-weight: 600; color: #46524c; white-space: nowrap; }
     .rl-rot.azul { color: #1f5fa8; }
-    .rl-rot.ambar { color: #8a5d00; font-weight: 700; }
+    .rl-tramo { position: absolute; top: 984px; width: 300px; margin-left: -150px; text-align: center; font-size: 28px; font-weight: 800; border-top: 4px solid; padding-top: 4px; white-space: nowrap; }
     #rl-frontera { position: absolute; left: 1211px; top: 847px; width: 8px; height: 96px; border-radius: 4px; background: #d9a21b; transform-origin: 50% 50%; }
   </style>
   <div id="root" data-composition-id="riel" data-width="1920" data-height="1080">
@@ -74,8 +74,8 @@
     <div id="rl-t2" class="rl-rot" style="left: 640px">Cierre y planilla RH</div>
     <div id="rl-t3" class="rl-rot" style="left: 1020px">Helisa</div>
     <div id="rl-t3b" class="rl-rot" style="left: 1020px">Helisa · contabilidad</div>
-    <div id="rl-tf" class="rl-rot ambar" style="left: 1215px">Fin del Alcance 1</div>
-    <div id="rl-tfb" class="rl-rot ambar" style="left: 1215px">Piloto</div>
+    <div id="rl-a1" class="rl-tramo" style="left: 640px; width: 760px; margin-left: -380px; color: #2b6a4b; border-color: #2b6a4b">Alcance 1</div>
+    <div id="rl-a2" class="rl-tramo" style="left: 1555px; color: #1f5fa8; border-color: #1f5fa8">Alcance 2</div>
     <div id="rl-t4" class="rl-rot azul" style="left: 1410px">Factura electrónica</div>
     <div id="rl-t5" class="rl-rot azul" style="left: 1700px">Cliente</div>
   </div>
@@ -83,7 +83,7 @@
     (function () {
       const tl = gsap.timeline({ paused: true });
       const $ = (s) => document.querySelector(s);
-      const T0 = 14.4; // el riel arranca a los 14,4 s del video; los tiempos de abajo están en segundos del video
+      const T0 = 28.8; // el riel arranca a los 28,8 s del video; los tiempos de abajo están en segundos del video
       const at = (abs) => Math.max(0, +(abs - T0).toFixed(3));
 
       // estado inicial
@@ -91,12 +91,12 @@
       gsap.set(".rl-relleno, .rl-ico.on, .rl-check", { opacity: 0 });
       gsap.set("#rl-frontera", { opacity: 0, scaleY: 1 });
       gsap.set(["#rl-n4", "#rl-n5"], { opacity: 0, scale: 0.6 });
-      gsap.set(["#rl-t3b", "#rl-tf", "#rl-tfb", "#rl-t4", "#rl-t5"], { opacity: 0 });
+      gsap.set(["#rl-t3b", "#rl-a2", "#rl-t4", "#rl-t5"], { opacity: 0 });
 
       // entrada del riel con la app
       tl.fromTo("#rl-track", { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: "power2.inOut" }, 0.1);
       tl.fromTo(["#rl-n1", "#rl-n2", "#rl-n3"], { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out", stagger: 0.12 }, 0.25);
-      tl.fromTo(["#rl-t1", "#rl-t2", "#rl-t3"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, stagger: 0.1 }, 0.55);
+      tl.fromTo(["#rl-t1", "#rl-t2", "#rl-t3", "#rl-a1"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, stagger: 0.1 }, 0.55);
 
       function encender(n, abs) {
         const t = at(abs);
@@ -107,34 +107,32 @@
       }
       const linea = (id, a, b) => tl.fromTo(id, { scaleX: 0 }, { scaleX: 1, duration: b - a, ease: "power2.inOut" }, at(a));
 
-      encender("#rl-n1", 27.6);
-      linea("#rl-p12", 29.2, 30.2);
-      encender("#rl-n2", 35.6);
-      linea("#rl-p23", 49.4, 50.6);
-      encender("#rl-n3", 50.8);
+      encender("#rl-n1", 42.0);
+      linea("#rl-p12", 46.0, 47.0);
+      encender("#rl-n2", 52.4);
+      linea("#rl-p23", 66.2, 67.4);
+      encender("#rl-n3", 67.6);
 
       // la frontera cae
-      tl.fromTo("#rl-frontera", { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, at(68.1));
-      tl.fromTo("#rl-tf", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(68.4));
+      tl.fromTo("#rl-frontera", { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, at(87.3));
       // piloto: cambia el rótulo
-      tl.to("#rl-tf", { opacity: 0, filter: "blur(6px)", duration: 0.18 }, at(72.4));
-      tl.fromTo("#rl-tfb", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(72.6));
       // se abre: la barra queda como un punto
-      tl.to("#rl-frontera", { scaleY: 0.2, duration: 0.5, ease: "power3.inOut" }, at(78.6));
+      tl.to("#rl-frontera", { scaleY: 0.2, duration: 0.5, ease: "power3.inOut" }, at(97.8));
 
       // alcance 2: el riel se alarga
-      linea("#rl-pend", 79.6, 80.6);
-      tl.to(["#rl-n4", "#rl-n5"], { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out", stagger: 0.25 }, at(80.0));
-      tl.fromTo(["#rl-t4", "#rl-t5"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, stagger: 0.25 }, at(80.3));
-      linea("#rl-p34", 88.2, 89.2);
-      encender("#rl-n4", 90.0);
-      linea("#rl-p45", 91.8, 92.6);
-      encender("#rl-n5", 93.2);
+      linea("#rl-pend", 98.8, 99.8);
+      tl.to(["#rl-n4", "#rl-n5"], { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out", stagger: 0.25 }, at(99.2));
+      tl.fromTo(["#rl-t4", "#rl-t5"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, stagger: 0.25 }, at(99.5));
+      tl.fromTo("#rl-a2", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.25 }, at(100.0));
+      linea("#rl-p34", 107.8, 108.8);
+      encender("#rl-n4", 109.65);
+      linea("#rl-p45", 111.8, 112.6);
+      encender("#rl-n5", 113.2);
       // Helisa se queda con la contabilidad
-      tl.to("#rl-t3", { opacity: 0, filter: "blur(6px)", duration: 0.18 }, at(99.4));
-      tl.fromTo("#rl-t3b", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(99.6));
+      tl.to("#rl-t3", { opacity: 0, filter: "blur(6px)", duration: 0.18 }, at(120.6));
+      tl.fromTo("#rl-t3b", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2 }, at(120.8));
 
-      tl.set({}, {}, 88.8);
+      tl.set({}, {}, 96);
       window.__timelines["riel"] = tl;
     })();
   </script>
