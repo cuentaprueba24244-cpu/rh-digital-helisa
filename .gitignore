@@ -29,3 +29,6 @@ build/
 
 # Revisiones internas (no se publican)
 v6 adrian/*interno*
+
+# Transcripciones que quedaron en la raíz (misma regla: solo en local)
+Transcripci*.txt
