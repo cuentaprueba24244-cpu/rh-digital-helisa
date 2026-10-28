@@ -92,7 +92,11 @@ Plantilla del `fuentes/MODELO CONTRATO.docx` con los campos del cliente (razón 
 - Tiempos: Alcance 1 ≈ 12 semanas con piloto (300 h ÷ 45 h/sem ≈ 7 + 4 de piloto + holgura de diciembre); Alcance 2 ≈ 8 semanas más.
 - La transcripción `Transcripción reunión 2026-10-28.txt` quedó en la raíz del repositorio público: se agregó al `.gitignore` y **no debe subirse** (trae nombres y la charla informal del equipo).
 
-## 8. Antes de enviar
+## 8. Versión para la Junta Directiva (28 oct, tarde)
+
+A pedido de Ronaldo, la propuesta se reescribió en lenguaje de gerencia y junta: sin siglas ni jerga técnica (F3, OP/RC, CUFE, Conekta, artículos tributarios), con una tabla de entregables numerados por alcance, un precio, una forma de pago por resultados y fechas concretas (piloto en febrero de 2027; Alcance 2 hacia mayo de 2027). Las cifras no cambiaron. Siete páginas.
+
+## 9. Antes de enviar
 
 1. Que Adrián y Cristian revisen los recortes de las secciones 3 y 4 y estén de acuerdo con las 300 + 150 h.
 2. Confirmar el correo de Comserva (lo escribió Diego en el chat de la reunión) y adjuntar: propuesta v7 en PDF, video, flujo de una hoja y explicación paso a paso.
