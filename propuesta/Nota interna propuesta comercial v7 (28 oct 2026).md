@@ -102,3 +102,27 @@ A pedido de Ronaldo, la propuesta se reescribió en lenguaje de gerencia y junta
 2. Confirmar el correo de Comserva (lo escribió Diego en el chat de la reunión) y adjuntar: propuesta v7 en PDF, video, flujo de una hoja y explicación paso a paso.
 3. Pedirle a Factus la constancia de habilitación (sección 5) para poder sostener la condición del Alcance 2.
 4. Registrar el acta de la reunión del 23 de octubre.
+
+## 10. Oferta del contrato anual de hosting y mantenimiento (28 oct, noche)
+
+Documento aparte: `Oferta contrato anual hosting y mantenimiento (28 oct 2026).html/.pdf`. Reemplaza el párrafo de soporte opcional ($320.000 por 8 h) de la v7 y lo convierte en contrato de 12 meses con el hosting incluido.
+
+| | Esencial | Completo |
+|---|---|---|
+| Cuota mensual | $280.000 | $380.000 |
+| Año | $3.360.000 | $4.560.000 |
+| Año anticipado (11 meses) | $3.080.000 | $4.180.000 |
+| Terceros dentro de la cuota | ≈ $60.000 | ≈ $60.000 |
+| Trabajo del equipo | $220.000 (≈ 5,5 h) | $320.000 (8 h) |
+| Horas de ajustes para Comserva | 3 h (+ 2 h cambios Helisa/DIAN) | 8 h |
+| Respuesta | 1 día hábil | 4 h hábiles |
+
+**Cómo se calculó el costo de terceros (≈ $60.000/mes):**
+- Hostinger KVM 2 (hostinger.com/co, 28 oct 2026): $27.900/mes los primeros 24 meses, pagados por adelantado ($669.600), renovación $50.900/mes. Hostinger no incluye el IVA en el precio mostrado (19 % → $33.200 y $60.600). Promedio a tres años ≈ $42.000 con IVA. KVM 1 (1 vCPU, 4 GB) cuesta $19.900/$38.900 y podría bastar para el volumen de Comserva; se deja KVM 2 por el generador de PDF y la cola.
+- Cloudflare R2 ≈ $3.000. Dominio ≈ $6.000/mes (≈ $72.000/año; Hostinger muestra .com a $61.900/año regular).
+- Suma ≈ $51.000 los dos primeros años y ≈ $70.000 al renovar. Se cobra $60.000 fijo: el equipo gana un poco al inicio y pierde un poco después. Por eso el pago anual anticipado importa: permite comprar los 24 meses de Hostinger.
+- Si Comserva paga los servicios directamente, la cuota baja $60.000 (así está dicho en el documento).
+
+**Margen del equipo:** Esencial ≈ 5,5 h/mes a $40.000; Completo = las mismas 8 h a $320.000 de la v7. Las horas no usadas pasan solo al mes siguiente. Excedente a $40.000/h por escrito.
+
+**Inicio:** al terminar la garantía de 60 días del Alcance 1 (≈ abril de 2027). Renovación automática anual con aviso de 30 días, igual que el contrato modelo que Comserva usa con sus clientes, y ajuste por IPC.
