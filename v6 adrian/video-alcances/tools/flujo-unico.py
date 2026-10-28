@@ -87,8 +87,8 @@ def banda(x1, x2, color, titulo, sub):
     add(f'<text x="{x1+14}" y="175" font-size="14" font-weight="800" fill="#fff">{esc(titulo)}</text>')
     add(f'<text x="{x2-14}" y="175" font-size="11.5" fill="#e6efe9" text-anchor="end">{esc(sub)}</text>')
 banda(cx(0) - 8, cx(1) + CW + 8, "#46534c", "TRAMO COMÚN", "igual en los dos alcances")
-banda(cx(2) - 8, cx(5) + CW + 8, "#1f5e43", "ALCANCE 1 · hasta Helisa", "Fase 1 · Propuesta 1 · la FVE sigue saliendo de Helisa")
-banda(cx(6) - 8, cx(9) + CW + 8, "#2c5d8a", "ALCANCE 2 · factura electrónica", "Fase 2 · Propuesta 2 · reemplaza A1 a A5")
+banda(cx(2) - 8, cx(5) + CW + 8, "#1f5e43", "ALCANCE 1 · hasta Helisa", "RH digital entrega los archivos planos · Helisa sigue facturando")
+banda(cx(6) - 8, cx(9) + CW + 8, "#2c5d8a", "ALCANCE 2 · factura electrónica", "RH digital factura sin depender de Helisa · reemplaza A1 a A5")
 
 # carriles
 for lid, t, sub, y, h, c in LANES:
@@ -101,7 +101,7 @@ for lid, t, sub, y, h, c in LANES:
 # frontera del piloto
 fx = cx(5) + CW + 16
 add(f'<rect x="{fx}" y="150" width="40" height="{LY["dian"][0]+LY["dian"][1]-150}" rx="8" fill="#fbf0d2" stroke="#b77f0d" stroke-width="1.4"/>')
-add(f'<text transform="translate({fx+25} {(150+LY["dian"][0]+LY["dian"][1])/2}) rotate(-90)" font-size="13" font-weight="800" fill="#8a5d00" text-anchor="middle" letter-spacing="0.6">HASTA AQUÍ LLEGA EL ALCANCE 1 · UN MES DE PRUEBA · SI FUNCIONA, SIGUE EL ALCANCE 2</text>')
+add(f'<text transform="translate({fx+25} {(150+LY["dian"][0]+LY["dian"][1])/2}) rotate(-90)" font-size="13" font-weight="800" fill="#8a5d00" text-anchor="middle" letter-spacing="0.4">HASTA AQUÍ LLEGA EL ALCANCE 1 · HELISA SIGUE FACTURANDO · UN MES DE PRUEBA · SI FUNCIONA, ALCANCE 2</text>')
 
 # ---------- tramo común ----------
 c1 = paso("op", 0, "1", "Visita y pesaje", ["Días 5, 12, 19 y 22", "Kilos por categoría,", "firmas, foto y GPS", "*Funciona sin señal"], "c")
@@ -116,13 +116,13 @@ flecha(f"M{c2[0]+CW} {c2[1]+c2[3]/2} L{c3[0]-3} {c3[1]+c3[3]/2}")
 flecha(f"M{c3[0]+CW/2} {c3[1]} L{c3[0]+CW/2} {d2[1]+d2[3]+2}", "#2f7d59", True, "v")
 
 # ---------- alcance 1 ----------
-a1 = paso("sis", 2, "A1", "Archivo de pedidos", ["Uno por cliente o sede", "Excel de Julio: tipo OP,", "24 columnas", "*Sin cuentas ni IVA"], "v", tag="1B: por Conekta", tag_tono="api")
+a1 = paso("sis", 2, "A1", "Archivo plano: pedidos", ["Uno por cliente o sede", "Excel de Julio: tipo OP,", "24 columnas", "*Sin cuentas ni IVA"], "v", tag="1B: por Conekta", tag_tono="api")
 a2 = paso("lu", 2, "A2", "Importa pedidos", ["Menú Importar pedidos", "Un archivo trae a", "todos los clientes", "*Pedido: importado"], "v", tag="1B: no hace falta", tag_tono="api")
-a3 = paso("lu", 3, "A3", "Hace la FVE con F3", ["Abre la factura de", "cada cliente y llama", "su pedido", "*A mano · una por una"], "v", manual=True, tag="Manual", tag_tono="m")
+a3 = paso("lu", 3, "A3", "Factura como hoy (F3)", ["Abre la factura de", "cada cliente y llama", "su pedido", "*A mano · una por una"], "v", manual=True, tag="Manual", tag_tono="m")
 a4 = paso("he", 3, "A4", "Emite la FVE", ["Calcula el IVA,", "contabiliza (1305) y", "la envía a la DIAN", "*FVE 25756 · $2.244.935"], "v")
 a5 = paso("lu", 4, "A5", "La FVE vuelve", ["La registra por listado", "o digitándola; se valida", "contra el RH (± $1)", "*Habilita el cobro"], "v", manual=True, tag="1.ª vuelta", tag_tono="m")
 a6 = paso("op", 5, "A6", "Cobro", ["*Efectivo: recibo en la app", "(solo con FVE registrada)", "Transferencia: soporte por", "WhatsApp; la oficina lo marca"], "v")
-a7 = paso("sis", 5, "A7", "Archivo de recibos", ["Movimiento contable:", "caja contra 1305, con", "la FVE que cruza", "*17 columnas · F y N"], "v", tag="1B: por Conekta", tag_tono="api")
+a7 = paso("sis", 5, "A7", "Archivo plano: recibos", ["Movimiento contable:", "caja o bancos vs. 1305,", "con la FVE que cruza", "*17 columnas · F y N"], "v", tag="1B: por Conekta", tag_tono="api")
 a8 = paso("he", 5, "A8", "Cruza en cartera", ["Lucrecia importa el RC", "y anota el N.º del", "recibo definitivo", "*Saldo $1.744.935"], "v", tag="2.ª vuelta", tag_tono="m")
 d3 = doc(4, "Factura FVE", "Electrónica; la", "envía Helisa")
 d4 = doc(5, "Recibo de caja", "PDF por WhatsApp,", "al pagar")
@@ -156,7 +156,7 @@ b2 = paso("lu", 6, "B2", "Revisa y aprueba", ["Corrige o aprueba las", "prefactu
 b3 = paso("dian", 7, "B3", "Firma y valida", ["El proveedor (Factus) firma;", "la DIAN valida: CUFE,", "*XML, PDF y QR"], "a")
 b4 = paso("cli", 8, "B4", "Factura electrónica", ["PDF y XML al correo", "de recepción", "*Llega sola"], "a")
 b5 = paso("op", 8, "B5", "Cobro sin esperar", ["*Efectivo: recibo en la app", "apenas la DIAN valida", "Transferencia: la oficina", "marca el pago recibido"], "a")
-b6 = paso("sis", 9, "B6", "Asientos a Helisa", ["Factura: 1305, ingreso", "e IVA · Recibo: caja", "contra 1305 · F y N", "*Por archivo o Conekta"], "a")
+b6 = paso("sis", 9, "B6", "Asientos a Helisa", ["Factura: 1305, ingreso", "e IVA · Recibo: caja o", "bancos vs. 1305 · F y N", "*Por archivo o Conekta"], "a")
 b7 = paso("he", 9, "B7", "Contabilidad y cartera", ["Helisa importa los", "asientos y cruza el pago", "Ya no hace las facturas", "*Saldo $1.744.935"], "a")
 ytop = 200
 flecha(f"M{c3[0]+CW-30} {c3[1]} L{c3[0]+CW-30} {ytop} L{b1[0]+40} {ytop} L{b1[0]+40} {b1[1]-3}", A, True, "a")

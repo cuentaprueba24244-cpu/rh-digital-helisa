@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explicación del flujo RH digital</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Guía de estudio del flujo v6: se lee en pantalla y se imprime en A4 (la hoja del flujo va apaisada) */
+  @page { size: A4; margin: 16mm 15mm 16mm; }
+  @page ancho { size: A4 landscape; margin: 10mm; }
+  :root {
+    --bg: #ffffff; --ink: #1c2420; --ink-2: #46524c; --ink-3: #6f7c75; --line: #d5ddd8;
+    --verde: #2b6a4b; --verde-fondo: #e3f0e8; --azul: #1f5fa8; --azul-fondo: #e1ebf8;
+    --ambar: #b77f0d; --ambar-tinta: #8a5d00; --ambar-fondo: #fbf0d2; --gris-fondo: #f3f6f4;
+    --op: #b77f0d; --sis: #2b6a4b; --lu: #123d2b; --he: #3d6575; --dian: #5b4b8a; --cli: #6f7c75;
+    --display: "Figtree", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--display); font-size: 10.5pt; line-height: 1.45;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc { max-width: 820px; margin: 0 auto; padding-block: 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  .ceja { font-size: 8.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  .cifra { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; font-size: .95em; }
+  b { font-weight: 700; }
+
+  /* portada */
+  .portada { display: grid; gap: 12px; padding-bottom: 18px; border-bottom: 3px solid var(--verde); margin-bottom: 18px; }
+  .portada h1 { font-size: 26pt; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .portada .lead { font-size: 12pt; color: var(--ink-2); max-width: 62ch; }
+  .ejemplo { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 14px; border-radius: 10px; background: var(--gris-fondo); font-size: 10pt; }
+  .ejemplo span b { color: var(--verde); }
+
+  /* índice */
+  .indice { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 8px; }
+  .indice div { padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--line); font-size: 9.5pt; color: var(--ink-2); }
+  .indice div b { display: block; font-size: 10.5pt; color: var(--ink); }
+
+  /* secciones */
+  section { margin-top: 22px; }
+  .sec-cab { break-inside: avoid; display: grid; gap: 4px; padding: 12px 16px; border-radius: 12px; color: #fff; margin-bottom: 12px; break-after: avoid; }
+  .sec-cab h2 { font-size: 15pt; font-weight: 800; letter-spacing: -0.01em; }
+  .sec-cab p { font-size: 10pt; opacity: .92; }
+  .comun .sec-cab { background: #46534c; }
+  .a1 .sec-cab { background: #1f5e43; }
+  .a2 .sec-cab { background: #2c5d8a; }
+  .neutra .sec-cab { background: #2d3a34; }
+  .idea { padding: 10px 14px; border-left: 5px solid currentColor; border-radius: 0 10px 10px 0; font-size: 11pt; font-weight: 600; margin-bottom: 12px; }
+  .a1 .idea { color: var(--verde); background: var(--verde-fondo); }
+  .a2 .idea { color: var(--azul); background: var(--azul-fondo); }
+  .idea span { color: var(--ink); font-weight: 500; }
+
+  /* pasos */
+  .paso { display: grid; grid-template-columns: 46px 1fr; gap: 0 12px; padding: 12px 0; border-top: 1px solid var(--line); break-inside: avoid; }
+  .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 11pt; }
+  .comun .num { background: #46534c; } .a1 .num { background: var(--verde); } .a2 .num { background: var(--azul); }
+  .paso h3 { font-size: 12pt; font-weight: 800; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .quien { display: inline-flex; align-items: center; gap: 6px; font-size: 8.5pt; font-weight: 700; color: var(--ink-2);
+    padding: 2px 9px; border-radius: 999px; border: 1.5px solid var(--line); }
+  .quien i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .marca { font-size: 8.5pt; font-weight: 700; padding: 2px 9px; border-radius: 6px; }
+  .marca.manual { background: var(--ambar-fondo); color: var(--ambar-tinta); }
+  .marca.vuelta { background: var(--ambar-fondo); color: var(--ambar-tinta); border: 1.5px solid var(--ambar); }
+  .paso ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; }
+  .paso li::marker { color: var(--ink-3); }
+  .dato { margin-top: 6px; display: inline-block; padding: 3px 10px; border-radius: 6px; background: var(--gris-fondo); font-size: 9.5pt; color: var(--ink-2); }
+  .dato b { color: var(--ink); }
+  .reemplaza { font-size: 9.5pt; color: var(--ink-3); margin-top: 4px; font-style: italic; }
+
+  /* recuadros */
+  .caja { margin-top: 12px; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--line); break-inside: avoid; }
+  .caja h3 { font-size: 11.5pt; font-weight: 800; margin-bottom: 6px; }
+  .caja ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+  .caja.ambar { background: var(--ambar-fondo); border-color: var(--ambar); }
+  .caja.ambar h3 { color: var(--ambar-tinta); }
+
+  /* frontera */
+  .frontera { margin-top: 22px; border: 2px solid var(--ambar); border-radius: 14px; overflow: hidden; break-inside: avoid; }
+  .frontera > h2 { background: var(--ambar-fondo); color: var(--ambar-tinta); padding: 12px 16px; font-size: 15pt; font-weight: 800; }
+  .dos { display: grid; grid-template-columns: 1fr 1fr; }
+  .dos > div { padding: 12px 16px; }
+  .dos > div + div { border-left: 2px dashed var(--ambar); }
+  .dos h3 { display: inline-block; font-size: 10.5pt; font-weight: 800; padding: 3px 10px; border-radius: 6px; margin-bottom: 8px; }
+  .lohace h3 { background: var(--verde-fondo); color: #123d2b; }
+  .sigue h3 { background: var(--ambar-fondo); color: var(--ambar-tinta); }
+  .dos ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+  .lohace li::before { content: "✓ "; color: var(--verde); font-weight: 800; }
+  .sigue li::before { content: "• "; color: var(--ambar); font-weight: 800; }
+  .frontera .pie { padding: 10px 16px 14px; border-top: 1px solid var(--ambar); font-size: 10pt; color: var(--ink-2); }
+
+  /* tablas */
+  .tabla { width: 100%; border-collapse: collapse; font-size: 9.5pt; break-inside: avoid; }
+  .tabla th, .tabla td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .tabla thead th { font-size: 8.5pt; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); border-bottom: 2px solid var(--ink); }
+  .tabla tbody th { font-weight: 800; white-space: nowrap; }
+  .tabla td.a1c { background: #f1f8f4; } .tabla td.a2c { background: #eef4fb; }
+  .envuelve { overflow-x: auto; }
+
+  /* hoja del flujo */
+  .flujo { page: ancho; break-before: page; }
+  .flujo img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .flujo p { font-size: 9pt; color: var(--ink-3); margin-top: 6px; }
+
+  /* verificación */
+  .fuente { font-size: 9.5pt; color: var(--ink-2); }
+  .ok li::marker { content: "✓  "; color: var(--verde); font-weight: 800; }
+  .ojo li::marker { content: "!  "; color: var(--ambar-tinta); font-weight: 800; }
+
+  .salto { break-before: page; }
+  footer { margin-top: 26px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 8.5pt; color: var(--ink-3); }
+  @media screen and (max-width: 560px) { .dos { grid-template-columns: 1fr; } .dos > div + div { border-left: 0; border-top: 2px dashed var(--ambar); } }
+  /* cuadritos */
+  .cuadro { display: grid; grid-template-columns: 46px 1fr; gap: 0 12px; padding: 12px 14px; margin-bottom: 10px; border: 1.5px solid var(--line); border-radius: 12px; break-inside: avoid; }
+  .cuadro h3 { font-size: 12pt; font-weight: 800; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 6px; }
+  .num.doc { background: #fff !important; color: var(--ink-2); border: 2px solid var(--line); font-size: 8pt; border-radius: 8px; }
+  .cuadro dl { margin: 0; display: grid; grid-template-columns: 118px 1fr; gap: 5px 10px; }
+  .cuadro dt { font-size: 8.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); padding-top: 2px; }
+  .cuadro dd { margin: 0; }
+  .cuadro dd.ej { padding: 6px 10px; border-radius: 8px; background: var(--gris-fondo); }
+  .a1 .cuadro dd.ej { background: #f1f8f4; } .a2 .cuadro dd.ej { background: #eef4fb; }
+  .marca.api { background: #e6eef2; color: #3d6575; }
+  .muestra { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: -2px; }
+  @media screen and (max-width: 560px) { .cuadro dl { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <header class="portada">
+    <span class="ceja">RH digital · Comserva S.A.S. · v6 · guía de estudio</span>
+    <h1>El flujo de RH digital, paso por paso</h1>
+    <p class="lead">Cómo funciona el sistema en sus dos alcances, quién hace cada cosa y qué cambia frente a hoy. Todo se explica con un solo ejemplo real, de principio a fin.</p>
+    <div class="ejemplo">
+      <span>Cliente: <b>Cofema</b></span>
+      <span>Periodo: <b>septiembre de 2026</b></span>
+      <span>Visitas: <b>4</b> (días 5, 12, 19 y 22)</span>
+      <span>Kilos: <b class="cifra">413,85 kg</b></span>
+      <span>Factura: <b class="cifra">$2.244.935</b></span>
+      <span>Abono: <b class="cifra">$500.000</b></span>
+    </div>
+  </header>
+
+  <div class="indice">
+    <div><b>1. Quién participa</b>Los seis carriles del flujo</div>
+    <div><b>2. Tramo común</b>Visita, cierre y RH (pasos 1 a 3)</div>
+    <div><b>3. Alcance 1</b>Hasta Helisa (A1 a A8)</div>
+    <div><b>4. Frontera y mes de prueba</b>Dónde termina el Alcance 1</div>
+    <div><b>5. Alcance 2</b>La factura sale de RH digital (B1 a B7)</div>
+    <div><b>6. Qué cambia y reglas</b>Para cada persona</div>
+    <div><b>7. Contra la reunión del 21 oct</b>Qué se confirmó y qué falta</div>
+    <div><b>8. El flujo en una hoja</b>El diagrama completo</div>
+    <div><b>9. Cómo leer la hoja</b>Colores, flechas y etiquetas</div>
+    <div><b>10 a 12. Cada cuadrito</b>Qué se hace, qué pasa después y un ejemplo</div>
+    <div><b>13. Las cajas de abajo</b>Incluye la Fase 0 completa</div>
+  </div>
+
+  <!-- 1 -->
+  <section class="neutra">
+    <div class="sec-cab"><h2>1. Quién participa</h2><p>Cada carril del diagrama es una persona o un sistema.</p></div>
+    <div class="envuelve">
+      <table class="tabla">
+        <thead><tr><th>Carril</th><th>Quién es</th><th>Qué hace en el flujo</th></tr></thead>
+        <tbody>
+          <tr><th><span class="quien"><i style="background:var(--cli)"></i>Cliente</span></th><td>Cofema</td><td>Recibe la constancia, la planilla, la factura y el recibo. Paga.</td></tr>
+          <tr><th><span class="quien"><i style="background:var(--op)"></i>Operario</span></th><td>Quien recoge los residuos</td><td>Registra cada visita en la app del celular y hace el recibo cuando le pagan en efectivo.</td></tr>
+          <tr><th><span class="quien"><i style="background:var(--sis)"></i>Sistema</span></th><td>RH digital (servidor y panel de la oficina)</td><td>Suma, calcula y genera los documentos y los archivos.</td></tr>
+          <tr><th><span class="quien"><i style="background:var(--lu)"></i>Lucrecia</span></th><td>Facturación, en la oficina</td><td>Cierra el mes, factura y lleva los archivos a Helisa.</td></tr>
+          <tr><th><span class="quien"><i style="background:var(--he)"></i>Helisa</span></th><td>El software contable que Comserva ya usa</td><td>En el Alcance 1 hace la factura electrónica. En los dos alcances lleva la contabilidad y la cartera.</td></tr>
+          <tr><th><span class="quien"><i style="background:var(--dian)"></i>Proveedor y DIAN</span></th><td>Proveedor tecnológico (Factus) y la DIAN</td><td>Solo en el Alcance 2: firman y validan la factura que hace RH digital.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="comun salto">
+    <div class="sec-cab"><h2>2. Tramo común</h2><p>Es igual en los dos alcances. Reemplaza la planilla de papel y la suma con calculadora.</p></div>
+
+    <article class="paso"><div class="num">1</div><div>
+      <h3>Visita y pesaje <span class="quien"><i style="background:var(--op)"></i>Operario · app</span></h3>
+      <ul>
+        <li>El operario visita a Cofema los días 5, 12, 19 y 22.</li>
+        <li>En cada visita registra en la app los kilos por categoría (biológicos, anatomopatológicos, RAEES…).</li>
+        <li>Toma la firma de quien entrega, una foto y el GPS. Funciona aunque no haya señal: la visita se envía sola cuando vuelve.</li>
+        <li>Al cerrar la visita sale la <b>constancia en PDF</b>, que el operario le manda al cliente por WhatsApp.</li>
+      </ul>
+      <span class="dato">Hoy: planilla de papel químico, llenada a mano</span>
+    </div></article>
+
+    <article class="paso"><div class="num">2</div><div>
+      <h3>Cierre del cliente <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <ul>
+        <li>Desde el día 20, Lucrecia puede cerrar a cada cliente que ya terminó sus visitas. El 26 se cierran todos los demás.</li>
+        <li>El sistema suma las cuatro visitas. Nadie vuelve a sumar a mano.</li>
+      </ul>
+      <span class="dato">Cofema: <b class="cifra">413,85 kg</b> en el mes</span>
+    </div></article>
+
+    <article class="paso"><div class="num">3</div><div>
+      <h3>Planilla RH <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <ul>
+        <li>El sistema aplica la tarifa de cada cliente: un básico con unos kilos incluidos, más los kilos adicionales por su precio, más el IVA.</li>
+        <li>Sale la planilla del mes (el RH) en PDF para el cliente.</li>
+      </ul>
+      <span class="dato">Cofema: total <b class="cifra">$2.244.935</b>, igual a su factura real</span>
+    </div></article>
+  </section>
+
+  <!-- 3 -->
+  <section class="a1">
+    <div class="sec-cab"><h2>3. Alcance 1 · hasta Helisa</h2><p>Propuesta 1. Del RH en adelante, el sistema le entrega archivos a Helisa.</p></div>
+    <p class="idea">En una frase: <span>RH digital entrega los archivos planos y Helisa sigue facturando como hoy.</span></p>
+
+    <article class="paso"><div class="num">A1</div><div>
+      <h3>Archivo plano de pedidos <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <ul>
+        <li>Del RH sale un archivo con un <b>pedido</b> por cliente o sede, con el formato del Excel de Julio (tipo OP, 24 columnas).</li>
+        <li>No lleva cuentas ni IVA: Helisa no los pide en el pedido y los calcula después.</li>
+        <li>¿Por qué un pedido y no una factura? Porque Helisa no deja importar facturas, solo pedidos.</li>
+      </ul>
+    </div></article>
+
+    <article class="paso"><div class="num">A2</div><div>
+      <h3>Importa los pedidos <span class="quien"><i style="background:var(--lu)"></i>Lucrecia en Helisa</span></h3>
+      <ul>
+        <li>Lucrecia entra a «Importar pedidos» y sube un solo archivo con los pedidos de todos los clientes del corte.</li>
+      </ul>
+    </div></article>
+
+    <article class="paso"><div class="num">A3</div><div>
+      <h3>Factura como hoy, con F3 <span class="quien"><i style="background:var(--lu)"></i>Lucrecia en Helisa</span><span class="marca manual">A mano · una por una</span></h3>
+      <ul>
+        <li>Abre la factura de cada cliente, presiona F3, llama su pedido y la guarda.</li>
+        <li>Ya no digita las líneas ni suma kilos, pero <b>sigue siendo una por una</b>. Es el paso manual que queda en el Alcance 1.</li>
+      </ul>
+    </div></article>
+
+    <article class="paso"><div class="num">A4</div><div>
+      <h3>Helisa emite la factura <span class="quien"><i style="background:var(--he)"></i>Helisa</span></h3>
+      <ul>
+        <li>Helisa calcula el IVA, contabiliza en la 1305 (cartera) y envía la factura a la DIAN y al cliente, como hoy.</li>
+      </ul>
+      <span class="dato">Resultado: <b class="cifra">FVE 25756 · $2.244.935</b></span>
+    </div></article>
+
+    <article class="paso"><div class="num">A5</div><div>
+      <h3>La factura vuelve al sistema <span class="quien"><i style="background:var(--lu)"></i>Lucrecia</span><span class="marca vuelta">1.ª vuelta</span></h3>
+      <ul>
+        <li>Lucrecia registra en RH digital el número de la FVE, con el listado de Helisa o digitándolo.</li>
+        <li>El sistema compara la factura con el RH; acepta una diferencia de ± $1.</li>
+        <li>Con la factura registrada <b>se habilita el cobro</b>. Sin factura no hay recibo.</li>
+      </ul>
+    </div></article>
+
+    <article class="paso"><div class="num">A6</div><div>
+      <h3>Cobro <span class="quien"><i style="background:var(--op)"></i>Operario u oficina</span></h3>
+      <ul>
+        <li><b>Si paga en efectivo:</b> el operario hace el recibo de caja en la app, aplicado a la FVE 25756, y se lo manda en PDF por WhatsApp.</li>
+        <li><b>Si paga por transferencia:</b> el cliente manda el soporte por WhatsApp y la oficina marca el pago en el sistema.</li>
+      </ul>
+      <span class="dato">Cofema abona <b class="cifra">$500.000</b></span>
+    </div></article>
+
+    <article class="paso"><div class="num">A7</div><div>
+      <h3>Archivo plano de recibos <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <ul>
+        <li>De los recibos sale un segundo archivo. Es un movimiento contable: caja (o bancos, si fue transferencia) contra la 1305.</li>
+        <li>Cada línea dice qué factura paga (prefijo y número). Tiene 17 columnas y va en los dos libros de Helisa (F y N).</li>
+      </ul>
+    </div></article>
+
+    <article class="paso"><div class="num">A8</div><div>
+      <h3>Cruza el pago <span class="quien"><i style="background:var(--he)"></i>Helisa</span><span class="marca vuelta">2.ª vuelta</span></h3>
+      <ul>
+        <li>Lucrecia importa el archivo de recibos y Helisa le baja el pago a la factura.</li>
+        <li>Lucrecia anota en el sistema el número del recibo definitivo que dio Helisa.</li>
+      </ul>
+      <span class="dato">Cofema queda con saldo <b class="cifra">$1.744.935</b></span>
+    </div></article>
+
+    <div class="caja ambar">
+      <h3>Las dos vueltas: lo que criticó Julio</h3>
+      <ul>
+        <li>En el Alcance 1 se <b>sube dos veces</b> a Helisa (pedidos en A2 y recibos en A8) y se <b>regresa dos veces</b> al sistema (la FVE en A5 y el recibo definitivo en A8).</li>
+        <li><b>Con la API de Helisa (Conekta, opcional, modalidad 1B)</b>, A1, A2, A5 y A7 se harían solos; qué datos devuelve está por confirmar.</li>
+        <li>Aun con la API, <b>A3 sigue siendo manual</b>: la factura se hace una por una en Helisa.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <div class="frontera">
+    <h2>4. Hasta aquí llega el Alcance 1</h2>
+    <div class="dos">
+      <div class="lohace"><h3>Lo hace RH digital</h3><ul>
+        <li>Visitas, kilos y firmas en la app</li>
+        <li>El cierre del periodo y el RH</li>
+        <li>El archivo plano de pedidos</li>
+        <li>Los recibos de efectivo y el archivo plano de recibos</li>
+      </ul></div>
+      <div class="sigue"><h3>Sigue en Helisa</h3><ul>
+        <li>La factura electrónica, una por una (F3)</li>
+        <li>El envío a la DIAN</li>
+        <li>La contabilidad y la cartera</li>
+      </ul></div>
+    </div>
+    <p class="pie"><b>Después viene un mes de prueba.</b> Se usa el Alcance 1 durante un ciclo real y se mide cuánto tiempo toma facturar una por una y qué errores aparecen. Con esos datos, Comserva decide si pasa al Alcance 2.</p>
+  </div>
+
+  <!-- 5 -->
+  <section class="a2 salto">
+    <div class="sec-cab"><h2>5. Alcance 2 · la factura sale de RH digital</h2><p>Propuesta 2. Se conecta donde salía el pedido y reemplaza A1 a A5: ya no hay pedido, ni F3, ni vuelta de la factura.</p></div>
+    <p class="idea">En una frase: <span>RH digital factura sin depender de Helisa, y Helisa se queda solo con la contabilidad.</span></p>
+
+    <article class="paso"><div class="num">B1</div><div>
+      <h3>Prefactura <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <ul><li>Del mismo RH sale la factura completa: las líneas, el IVA del 19 % y los datos fiscales del cliente.</li></ul>
+      <span class="dato">Total <b class="cifra">$2.244.935</b></span>
+      <p class="reemplaza">Reemplaza A1 y A2: ya no hay pedido que importar.</p>
+    </div></article>
+
+    <article class="paso"><div class="num">B2</div><div>
+      <h3>Revisa y aprueba <span class="quien"><i style="background:var(--lu)"></i>Lucrecia</span></h3>
+      <ul><li>Revisa las prefacturas del corte, corrige si hace falta y las <b>emite todas de una vez</b>, en lote.</li></ul>
+      <p class="reemplaza">Reemplaza A3: ya no hay F3 ni factura una por una.</p>
+    </div></article>
+
+    <article class="paso"><div class="num">B3</div><div>
+      <h3>Firma y valida <span class="quien"><i style="background:var(--dian)"></i>Proveedor y DIAN</span></h3>
+      <ul>
+        <li>El proveedor tecnológico (Factus) firma la factura y la DIAN la valida.</li>
+        <li>Sale con su <b>CUFE</b>, el XML, el PDF y el código QR.</li>
+        <li>Se usa un proveedor porque facturar directo ante la DIAN con software propio exige cumplir todo el anexo técnico; Julio mencionó los dos caminos.</li>
+      </ul>
+      <p class="reemplaza">Reemplaza A4: la factura ya no la emite Helisa.</p>
+    </div></article>
+
+    <article class="paso"><div class="num">B4</div><div>
+      <h3>Le llega al cliente <span class="quien"><i style="background:var(--cli)"></i>Cliente</span></h3>
+      <ul><li>El PDF y el XML le llegan solos al correo de recepción del cliente. Nadie la envía a mano.</li></ul>
+    </div></article>
+
+    <article class="paso"><div class="num">B5</div><div>
+      <h3>Cobro sin esperar <span class="quien"><i style="background:var(--op)"></i>Operario u oficina</span></h3>
+      <ul>
+        <li>Apenas la DIAN valida, el operario ya puede hacer el recibo de efectivo, porque el sistema conoce su propia factura.</li>
+        <li>Las transferencias las sigue marcando la oficina.</li>
+      </ul>
+      <p class="reemplaza">Reemplaza A5: no hay que esperar a que la factura vuelva de Helisa.</p>
+    </div></article>
+
+    <article class="paso"><div class="num">B6</div><div>
+      <h3>Asientos a Helisa <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <ul>
+        <li>A Helisa solo le llegan los movimientos contables, por archivo o por la API:</li>
+        <li><b>De la factura:</b> cartera 1305, ingreso e IVA.</li>
+        <li><b>Del recibo:</b> caja o bancos contra 1305.</li>
+        <li>Las cuentas salen de la plantilla que ofreció Julio: qué cuenta lleva cada servicio.</li>
+      </ul>
+    </div></article>
+
+    <article class="paso"><div class="num">B7</div><div>
+      <h3>Contabilidad y cartera <span class="quien"><i style="background:var(--he)"></i>Helisa</span></h3>
+      <ul>
+        <li>Helisa importa los asientos, cruza el pago y lleva la contabilidad.</li>
+        <li><b>Helisa ya no hace las facturas.</b></li>
+      </ul>
+      <span class="dato">Saldo <b class="cifra">$1.744.935</b></span>
+    </div></article>
+
+    <div class="caja">
+      <h3>Si una factura sale con error</h3>
+      <ul><li>Se hace una nota crédito ligada al CUFE de esa factura, aprobada por Gerencia. Lo firmado no se edita.</li></ul>
+    </div>
+
+    <div class="frontera" style="border-color: var(--azul)">
+      <h2 style="background: var(--azul-fondo); color: var(--azul)">Así queda el Alcance 2</h2>
+      <div class="dos">
+        <div class="lohace"><h3>Lo hace RH digital</h3><ul>
+          <li>Todo lo del Alcance 1</li>
+          <li>La factura electrónica, en lote</li>
+          <li>El envío a la DIAN y al cliente (con el proveedor)</li>
+          <li>El recibo, sin esperar a Helisa</li>
+        </ul></div>
+        <div class="sigue" style="border-left-color: var(--azul)"><h3>Sigue en Helisa</h3><ul>
+          <li>La contabilidad</li>
+          <li>La cartera y el cruce de pagos</li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="neutra salto">
+    <div class="sec-cab"><h2>6. Qué cambia para cada persona</h2><p>Hoy, con el Alcance 1 y con el Alcance 2.</p></div>
+    <div class="envuelve">
+      <table class="tabla">
+        <thead><tr><th></th><th>Hoy</th><th>Alcance 1</th><th>Alcance 2</th></tr></thead>
+        <tbody>
+          <tr><th>Lucrecia</th><td>Suma kilos, calcula cada cobro y digita cada factura y cada recibo</td><td class="a1c">Importa los pedidos, hace cada factura con F3, registra la FVE e importa los recibos</td><td class="a2c">Revisa y aprueba las facturas en lote e importa los asientos</td></tr>
+          <tr><th>Operario</th><td>Planilla y recibo en papel</td><td class="a1c">Constancia y recibo en la app, aun sin señal</td><td class="a2c">Igual que en el Alcance 1, y cobra sin esperar a Helisa</td></tr>
+          <tr><th>Cliente</th><td>Copias en papel</td><td class="a1c">Constancia y recibo por WhatsApp; la factura se la manda Helisa</td><td class="a2c">Lo mismo, y la factura electrónica le llega sola al correo</td></tr>
+          <tr><th>Helisa</th><td>Factura, contabilidad y cartera</td><td class="a1c">Igual que hoy, pero recibe pedidos y recibos por archivo</td><td class="a2c">Solo contabilidad y cartera</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caja">
+      <h3>Las reglas que no cambian</h3>
+      <ul>
+        <li><b>La visita es la única captura.</b> Nadie vuelve a sumar ni a digitar kilos.</li>
+        <li><b>Sin factura no hay recibo.</b> El recibo de la app es para pagos en efectivo.</li>
+        <li><b>Cada RH entra en una sola factura.</b> Ningún cierre se cobra dos veces.</li>
+        <li><b>Lo firmado no se edita.</b> Se anula con un motivo y se hace otro.</li>
+        <li><b>Todo deja rastro:</b> cada paso guarda su documento con fecha y usuario, y se busca por cualquier número.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="neutra">
+    <div class="sec-cab"><h2>7. El flujo contra la reunión del 21 de octubre</h2><p>Es la última reunión transcrita, con Julio y Lucrecia. El flujo coincide con lo que se dijo.</p></div>
+
+    <div class="caja">
+      <h3>Lo que Julio confirmó en la reunión</h3>
+      <ul class="ok">
+        <li>Helisa no deja importar facturas, solo <b>pedidos</b>, y con cada pedido hay que hacer la factura una por una (A1 a A3).</li>
+        <li>El pedido <b>no lleva cuentas ni IVA</b>: lleva cliente, servicio, cantidad y precio. Helisa calcula el IVA y manda la factura a la 1305 (A1 y A4).</li>
+        <li>El recibo <b>se importa como movimiento contable</b>: 1305 contra caja, o contra bancos si fue transferencia, con una columna que dice qué factura cruza (A7 y A8).</li>
+        <li>Helisa lleva <b>dos libros</b>, el contable y el tributario (F y N).</li>
+        <li>Subir y regresar información genera trabajo de más: es la <b>ida y vuelta</b> (A5 y A8).</li>
+        <li>La <b>API de Helisa</b> tiene costo mensual y, aun con ella, la factura se sigue haciendo una por una.</li>
+        <li>Comserva ve más viable empezar por el archivo para Helisa (Alcance 1) y quiere que, si se puede, el sistema haga la factura y el recibo mientras la contabilidad sigue en Helisa (Alcance 2).</li>
+        <li>Para la factura electrónica hay <b>dos caminos</b>: proveedor tecnológico o software propio. El flujo usa proveedor (B3).</li>
+      </ul>
+    </div>
+
+    <div class="caja ambar">
+      <h3>Lo que falta definir el 28 de octubre</h3>
+      <ul class="ojo">
+        <li><b>Factura en el sitio.</b> Julio dijo que lo mejor sería facturar en el momento de la visita. El flujo factura una vez al mes, porque la tarifa es mensual (básico con kilos incluidos más los adicionales). Facturar en cada visita cambiaría esa forma de cobrar: lo decide Comserva.</li>
+        <li><b>Pedido en Helisa.</b> No está habilitado en el Helisa de Comserva (Julio lo mostró en otra empresa). Hay que habilitarlo para el Alcance 1.</li>
+        <li><b>Cuentas contables.</b> Julio ofreció una plantilla con la cuenta de cada servicio. Se necesita para los recibos (A7) y los asientos (B6).</li>
+        <li><b>Reglas que no se hablaron ese día.</b> El cierre del día 20 o 26, el recibo solo con factura registrada, la tolerancia de ± $1 y Factus como proveedor vienen de la v5/v6 y de la reunión del 16 de octubre. Nadie las contradijo, pero conviene confirmarlas.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- 8 -->
+  <section class="flujo">
+    <div class="sec-cab" style="background:#2d3a34; color:#fff"><h2>8. El flujo en una hoja</h2><p>Tramo común, Alcance 1 (A1–A8), frontera y Alcance 2 (B1–B7), con el ejemplo de Cofema.</p></div>
+    <img src="Flujo RH digital Comserva (v6, una hoja).png" alt="Diagrama de carriles del flujo de RH digital con el tramo común, el Alcance 1 y el Alcance 2">
+    <p>El diagrama a tamaño completo está en «Flujo RH digital Comserva (v6, una hoja).pdf».</p>
+  </section>
+
+  <!-- 9 -->
+  <section class="neutra cuadritos">
+    <div class="sec-cab"><h2>9. Cómo leer la hoja</h2><p>Antes de ver cada cuadrito: qué significan los colores, las flechas y las etiquetas del diagrama.</p></div>
+    <div class="envuelve">
+      <table class="tabla">
+        <thead><tr><th>Lo que ves</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><th><span class="muestra" style="background:#1f5e43"></span>Verde</th><td>Tramo común y Alcance 1 (Propuesta 1).</td></tr>
+          <tr><th><span class="muestra" style="background:#2c5d8a"></span>Azul</th><td>Alcance 2 (Propuesta 2).</td></tr>
+          <tr><th><span class="muestra" style="background:#b77f0d"></span>Ámbar</th><td>Algo que sigue a mano o una «vuelta» al sistema. Los cuadritos rayados en ámbar (A3 y A5) son manuales.</td></tr>
+          <tr><th><span class="muestra" style="background:#3d6575"></span>Gris azulado</th><td>Lo que haría solo la API de Helisa (Conekta, opcional, modalidad 1B).</td></tr>
+          <tr><th>Filas (carriles)</th><td>Quién hace el paso: Cliente, Operario, Sistema, Lucrecia, Helisa, Proveedor y DIAN.</td></tr>
+          <tr><th>Recuadro con número</th><td>Un paso del proceso. 1–3 es el tramo común, A1–A8 el Alcance 1, B1–B7 el Alcance 2.</td></tr>
+          <tr><th>Recuadro con ícono «PDF»</th><td>Un documento que recibe el cliente: Constancia, Planilla del mes, Factura FVE y Recibo de caja.</td></tr>
+          <tr><th>Flecha continua</th><td>El paso le pasa algo al siguiente. El texto pequeño dice qué: «descarga», «llama», «la guarda», «importa», «revisión», «lote por API».</td></tr>
+          <tr><th>Flecha verde punteada</th><td>Un documento que se le entrega al cliente.</td></tr>
+          <tr><th>Flecha ámbar</th><td>Información que vuelve al sistema (A4 → A5: «N.º, fecha y total»).</td></tr>
+          <tr><th>Flecha azul punteada de arriba</th><td>El atajo del Alcance 2: del RH se salta directo a la prefactura (B1), sin pedido, sin F3 y sin vuelta.</td></tr>
+          <tr><th>Etiqueta «1B: por Conekta»</th><td>Con la API, ese archivo viajaría solo a Helisa (A1 y A7).</td></tr>
+          <tr><th>Etiqueta «1B: no hace falta»</th><td>Con la API, ese paso desaparece (A2).</td></tr>
+          <tr><th>Etiquetas «1.ª vuelta» y «2.ª vuelta»</th><td>Las dos veces que la información regresa de Helisa al sistema (A5 y A8).</td></tr>
+          <tr><th>Barra vertical ámbar</th><td>La frontera: hasta ahí llega el Alcance 1. Después viene el mes de prueba y, si funciona, el Alcance 2.</td></tr>
+          <tr><th>Notas en cursiva</th><td>Aclaraciones: en el Alcance 1 no se usa el carril del proveedor; Factus se probó en su sandbox el 23 de octubre y falta verificar su habilitación ante la DIAN; en el Alcance 2 Helisa queda para la contabilidad.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="comun cuadritos salto">
+    <div class="sec-cab"><h2>10. Cada cuadrito, uno por uno · tramo común</h2><p>Para cada uno: qué se hace ahí, qué le pasa al siguiente y un ejemplo con Cofema.</p></div>
+    <article class="cuadro"><div class="num">1</div><div>
+      <h3>Visita y pesaje <span class="quien"><i style="background:var(--op)"></i>Operario · app</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>El operario llega al cliente, pesa las bolsas por tipo de residuo y lo anota en el celular. Toma una foto, el GPS y la firma de quien entrega.</dd>
+        <dt>Qué pasa después</dt><dd>La visita <b>sube al sistema</b> (flecha «cada visita sube»). Si no hay señal, se guarda en el celular y sube sola después. Además sale la <b>Constancia</b> para el cliente.</dd>
+        <dt>Ejemplo</dt><dd class="ej">El 5 de septiembre el operario recoge en Cofema 74,95 kg (39,35 de biológicos y 35,60 de anatomopatológicos). La recepcionista firma con el dedo en la pantalla.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num doc">PDF</div><div>
+      <h3>Constancia <span class="quien"><i style="background:var(--cli)"></i>Va al cliente</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Es el comprobante de esa visita: qué se recogió, cuántos kilos y quién firmó. Reemplaza la copia de la planilla de papel.</dd>
+        <dt>Qué pasa después</dt><dd>Se le manda al cliente por WhatsApp en el momento (flecha punteada).</dd>
+        <dt>Ejemplo</dt><dd class="ej">Cofema recibe en su WhatsApp: «Constancia de visita, 5 de septiembre, 74,95 kg, firmada».</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">2</div><div>
+      <h3>Cierre del cliente <span class="quien"><i style="background:var(--sis)"></i>Sistema · Lucrecia da el clic</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Junta todas las visitas del mes de un cliente y suma los kilos. Lucrecia lo puede hacer desde el día 20 si el cliente ya no tiene más visitas; el 26 se cierran todos.</dd>
+        <dt>Qué pasa después</dt><dd>El total de kilos pasa a la <b>Planilla RH</b> (paso 3).</dd>
+        <dt>Ejemplo</dt><dd class="ej">74,95 + 103,50 + 144,90 + 90,50 = <b>413,85 kg</b>. Nadie sumó con calculadora.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">3</div><div>
+      <h3>Planilla RH <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Aplica la tarifa del cliente a los kilos del mes y calcula cuánto se le cobra, con IVA.</dd>
+        <dt>Qué pasa después</dt><dd>El valor del mes pasa al <b>A1</b> (en el Alcance 1) o al <b>B1</b> (en el Alcance 2). Y sale la <b>Planilla del mes</b> para el cliente.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Cofema paga un básico con unos kilos incluidos, más los kilos adicionales, más IVA: <b>$2.244.935</b>.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num doc">PDF</div><div>
+      <h3>Planilla del mes <span class="quien"><i style="background:var(--cli)"></i>Va al cliente</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Es el resumen del mes: todas las visitas, los kilos y el valor al pie.</dd>
+        <dt>Qué pasa después</dt><dd>Se le envía al cliente cuando se cierra su mes (flecha punteada).</dd>
+        <dt>Ejemplo</dt><dd class="ej">Cofema recibe una hoja con sus 4 visitas de septiembre, 413,85 kg y el total $2.244.935.</dd>
+      </dl>
+    </div></article>
+  </section>
+
+  <section class="a1 cuadritos">
+    <div class="sec-cab"><h2>11. Cada cuadrito · Alcance 1</h2><p>Hasta Helisa. La factura la sigue haciendo Helisa.</p></div>
+    <article class="cuadro"><div class="num">A1</div><div>
+      <h3>Archivo plano: pedidos <span class="quien"><i style="background:var(--sis)"></i>Sistema</span><span class="marca api">1B: por Conekta</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Convierte el RH de cada cliente en un <b>pedido</b> y los pone todos en un archivo Excel con el formato que pide Helisa. No lleva IVA ni cuentas.</dd>
+        <dt>Qué pasa después</dt><dd>Lucrecia <b>descarga</b> el archivo para subirlo a Helisa (A2). La etiqueta «1B: por Conekta» quiere decir que, con la API, el archivo viajaría solo.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Una fila del archivo dice, en pocas palabras: «Pedido · Cofema · servicio de recolección · cantidad · precio». Es como una lista de compras que Helisa sabe leer.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A2</div><div>
+      <h3>Importa pedidos <span class="quien"><i style="background:var(--lu)"></i>Lucrecia en Helisa</span><span class="marca api">1B: no hace falta</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Lucrecia entra a «Importar pedidos» en Helisa y sube el archivo.</dd>
+        <dt>Qué pasa después</dt><dd>Los pedidos quedan guardados en Helisa, listos para que Lucrecia los <b>llame</b> en la factura (A3). Con la API este paso no haría falta.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Un solo archivo trae los pedidos de todos los clientes del mes. Lucrecia lo sube una sola vez.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A3</div><div>
+      <h3>Factura como hoy (F3) <span class="quien"><i style="background:var(--lu)"></i>Lucrecia en Helisa</span><span class="marca manual">Manual</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Por cada cliente, Lucrecia abre una factura nueva, presiona F3 y trae su pedido. Ya no digita líneas ni suma kilos, pero lo hace <b>una por una</b>.</dd>
+        <dt>Qué pasa después</dt><dd>Cuando la <b>guarda</b>, la factura pasa a Helisa para emitirla (A4).</dd>
+        <dt>Ejemplo</dt><dd class="ej">Abre factura → escoge Cofema → F3 → aparece el pedido por $2.244.935 → guardar. Y repite con el siguiente cliente.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A4</div><div>
+      <h3>Emite la FVE <span class="quien"><i style="background:var(--he)"></i>Helisa</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Helisa calcula el IVA, la contabiliza en cartera (1305) y la envía a la DIAN, como hoy.</dd>
+        <dt>Qué pasa después</dt><dd>Salen dos cosas: la <b>Factura FVE</b> al cliente (flecha punteada «envía al cliente») y el <b>número, la fecha y el total</b> de vuelta a Lucrecia (flecha ámbar hacia A5).</dd>
+        <dt>Ejemplo</dt><dd class="ej">Helisa crea la <b>FVE 25756</b> de Cofema por $2.244.935.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num doc">PDF</div><div>
+      <h3>Factura FVE <span class="quien"><i style="background:var(--cli)"></i>Va al cliente</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Es la factura electrónica oficial, con validez ante la DIAN.</dd>
+        <dt>Qué pasa después</dt><dd>La envía Helisa al cliente, igual que hoy.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Cofema recibe la FVE 25756 por $2.244.935.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A5</div><div>
+      <h3>La FVE vuelve <span class="quien"><i style="background:var(--lu)"></i>Lucrecia</span><span class="marca vuelta">1.ª vuelta</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Lucrecia anota en RH digital el número de la factura que hizo Helisa. El sistema la compara con el RH (acepta una diferencia de $1).</dd>
+        <dt>Qué pasa después</dt><dd>Si coincide, <b>habilita el cobro</b> (flecha hacia A6): desde ahí ya se le puede hacer recibo a ese cliente.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Lucrecia escribe «FVE 25756 · $2.244.935». El sistema ve que es igual al RH y marca a Cofema como «con factura: se puede cobrar».</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A6</div><div>
+      <h3>Cobro <span class="quien"><i style="background:var(--op)"></i>Operario · app (u oficina)</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Se recibe el pago. <b>Efectivo:</b> el operario hace el recibo en la app. <b>Transferencia:</b> el cliente manda el soporte por WhatsApp y la oficina marca el pago.</dd>
+        <dt>Qué pasa después</dt><dd>Sale el <b>Recibo de caja</b> para el cliente (flecha punteada) y el pago se <b>entrega</b> al sistema para el archivo de recibos (A7).</dd>
+        <dt>Ejemplo</dt><dd class="ej">En la siguiente visita, Cofema le da $500.000 en efectivo al operario. Él hace el recibo en el celular y Cofema lo recibe por WhatsApp.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num doc">PDF</div><div>
+      <h3>Recibo de caja <span class="quien"><i style="background:var(--cli)"></i>Va al cliente</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Es el comprobante del pago, con la firma de quien paga y del operario.</dd>
+        <dt>Qué pasa después</dt><dd>Se manda por WhatsApp en el momento de pagar.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Cofema recibe: «Recibo de caja · abono de $500.000 a la FVE 25756».</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A7</div><div>
+      <h3>Archivo plano: recibos <span class="quien"><i style="background:var(--sis)"></i>Sistema</span><span class="marca api">1B: por Conekta</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Arma un archivo con todos los pagos. Cada línea dice cuánto entró, si fue a caja o a bancos, y a qué factura se abona.</dd>
+        <dt>Qué pasa después</dt><dd>Lucrecia lo <b>importa</b> en Helisa (A8). Con la API viajaría solo.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Una fila dice: «Recibo · Cofema · $500.000 · caja · abona a la FVE 25756».</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">A8</div><div>
+      <h3>Cruza en cartera <span class="quien"><i style="background:var(--he)"></i>Helisa</span><span class="marca vuelta">2.ª vuelta</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Helisa descuenta el pago de la factura. Lucrecia anota en RH digital el número del recibo definitivo que le dio Helisa.</dd>
+        <dt>Qué pasa después</dt><dd>Aquí termina el ciclo del Alcance 1: la cuenta del cliente queda al día en Helisa y en el sistema.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Cofema debía $2.244.935, pagó $500.000 y queda debiendo <b>$1.744.935</b>.</dd>
+      </dl>
+    </div></article>
+  </section>
+
+  <section class="a2 cuadritos">
+    <div class="sec-cab"><h2>12. Cada cuadrito · Alcance 2</h2><p>La factura sale de RH digital. Reemplaza A1 a A5.</p></div>
+    <article class="cuadro"><div class="num">B1</div><div>
+      <h3>Prefactura <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Con el mismo RH, el sistema arma la factura completa: las líneas, el IVA del 19 % y los datos del cliente. Es un borrador.</dd>
+        <dt>Qué pasa después</dt><dd>Pasa a <b>revisión</b> de Lucrecia (B2).</dd>
+        <dt>Ejemplo</dt><dd class="ej">Borrador de Cofema: $1.886.500 + IVA $358.435 = <b>$2.244.935</b>.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">B2</div><div>
+      <h3>Revisa y aprueba <span class="quien"><i style="background:var(--lu)"></i>Lucrecia</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Lucrecia mira los borradores, corrige si algo está mal y los aprueba todos con un botón.</dd>
+        <dt>Qué pasa después</dt><dd>Las facturas se van <b>en lote por la API</b> al proveedor tecnológico (B3).</dd>
+        <dt>Ejemplo</dt><dd class="ej">Revisa las 12 facturas de septiembre, todo está bien y presiona «Emitir lote». Ya no hay F3 ni una por una.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">B3</div><div>
+      <h3>Firma y valida <span class="quien"><i style="background:var(--dian)"></i>Proveedor y DIAN</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>El proveedor tecnológico (Factus) firma cada factura y la DIAN la acepta. Cada una recibe su <b>CUFE</b>, que es su código único.</dd>
+        <dt>Qué pasa después</dt><dd>La factura validada va al cliente (B4) y, al mismo tiempo, queda <b>«validada: habilita el cobro»</b> (B5).</dd>
+        <dt>Ejemplo</dt><dd class="ej">La factura de Cofema vuelve con «✓ Validada DIAN» y su CUFE (en las pruebas se usó con datos de prueba).</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">B4</div><div>
+      <h3>Factura electrónica <span class="quien"><i style="background:var(--cli)"></i>Cliente</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>El cliente recibe la factura sin que nadie la mande a mano.</dd>
+        <dt>Qué pasa después</dt><dd>Le llega sola al correo de recepción de facturas.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Al correo de facturas de Cofema llegan el PDF y el XML de su factura.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">B5</div><div>
+      <h3>Cobro sin esperar <span class="quien"><i style="background:var(--op)"></i>Operario · app (u oficina)</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Es el mismo cobro del A6, pero sin esperar a que la factura vuelva de Helisa: el sistema ya conoce su propia factura.</dd>
+        <dt>Qué pasa después</dt><dd>Los pagos pasan al sistema para los asientos (B6).</dd>
+        <dt>Ejemplo</dt><dd class="ej">El mismo día que la DIAN valida, el operario ya puede recibir los $500.000 de Cofema y hacer el recibo.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">B6</div><div>
+      <h3>Asientos a Helisa <span class="quien"><i style="background:var(--sis)"></i>Sistema</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Arma los movimientos contables de las facturas y de los recibos, con las cuentas de la plantilla de Julio.</dd>
+        <dt>Qué pasa después</dt><dd>Helisa los <b>importa</b> (B7), por archivo o por la API.</dd>
+        <dt>Ejemplo</dt><dd class="ej">Factura: cartera 1305 $2.244.935 = ingreso $1.886.500 + IVA $358.435. Recibo: caja $500.000 contra cartera 1305.</dd>
+      </dl>
+    </div></article>
+    <article class="cuadro"><div class="num">B7</div><div>
+      <h3>Contabilidad y cartera <span class="quien"><i style="background:var(--he)"></i>Helisa</span></h3>
+      <dl>
+        <dt>Qué se hace</dt><dd>Helisa registra todo en sus libros y lleva lo que debe cada cliente. Ya no hace facturas.</dd>
+        <dt>Qué pasa después</dt><dd>Fin del ciclo del Alcance 2.</dd>
+        <dt>Ejemplo</dt><dd class="ej">En Helisa, Cofema queda con saldo <b>$1.744.935</b>, igual que en el Alcance 1.</dd>
+      </dl>
+    </div></article>
+  </section>
+
+  <section class="neutra">
+    <div class="sec-cab"><h2>13. Las cajas de abajo de la hoja</h2><p>Las tres cajas al pie del diagrama.</p></div>
+    <div class="caja">
+      <h3>«Qué cambia para Lucrecia»</h3>
+      <ul><li>Es el resumen de la tabla de la sección 6: hoy, Alcance 1 y Alcance 2, para Lucrecia, el operario y el cliente.</li></ul>
+    </div>
+    <div class="caja">
+      <h3>«Reglas que no se rompen»</h3>
+      <ul><li>Son las cinco reglas de la sección 6: la visita es la única captura, sin factura no hay recibo, cada RH en una sola factura, lo firmado no se edita y todo deja rastro.</li></ul>
+    </div>
+    <div class="caja ambar">
+      <h3>«Por confirmar en la Fase 0»: lo que hay que averiguar antes de construir</h3>
+      <ul>
+        <li><b>Pedido en Helisa:</b> hoy no está habilitado en el Helisa de Comserva. Hay que saber quién lo habilita y cuánto cuesta. Sin esto no funciona el Alcance 1.</li>
+        <li><b>Archivo:</b> en qué formato lo acepta Helisa (.xlsx, .xls o .txt). Se confirma con una importación de prueba.</li>
+        <li><b>Cruce:</b> qué prefijo usa la factura (FEV o FVE), cuál el recibo (RC1 o RC2) y qué cuentas lleva el libro N.</li>
+        <li><b>Volumen:</b> cuántas facturas son del servicio de residuos y cómo va su IVA, con el contador.</li>
+        <li><b>Conekta (1B):</b> si Comserva decide pagar la API y qué datos devuelve.</li>
+        <li><b>Alcance 2:</b> que Factus quede habilitado ante la DIAN, el prefijo real de las facturas y que la cartera de Helisa acepte ese prefijo.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>RH digital Comserva · guía de estudio del flujo v6 (Propuesta 1 = Alcance 1, Propuesta 2 = Alcance 2) · según los flujos de cada propuesta, el Excel de Julio (23 oct) y la reunión del 21 de octubre · 27 de octubre de 2026</footer>
+</div>
+</body>
+</html>

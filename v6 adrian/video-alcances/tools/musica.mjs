@@ -1,11 +1,11 @@
-// Música del video, escrita con código: 100 BPM, 138 s, re mayor (D – Bm – G – A).
+// Música del video, escrita con código: 100 BPM, 157,2 s, re mayor (D – Bm – G – A).
 // Sintetiza cada voz muestra por muestra y escribe assets/audio/musica.wav (48 kHz, estéreo, 16 bits).
 // Uso: node tools/musica.mjs   (después, tools/musica-mezcla.sh normaliza y crea musica.m4a)
 import fs from 'node:fs';
 
 const SR = 48000;
-const DUR = 138;
-const N = SR * DUR;
+const DUR = 157.2;
+const N = Math.round(SR * DUR);
 const BPM = 100;
 const BEAT = 60 / BPM;          // 0,6 s
 const BAR = BEAT * 4;           // 2,4 s
@@ -30,11 +30,11 @@ const SEC = [
   { de: 8, a: 12, nombre: 'solucion' },
   { de: 12, a: 18, nombre: 'app' },
   { de: 18, a: 25, nombre: 'cierre' },
-  { de: 25, a: 38, nombre: 'alcance1' },
-  { de: 38, a: 41, nombre: 'piloto' },
-  { de: 41, a: 52, nombre: 'alcance2' },
-  { de: 52, a: 55, nombre: 'mapa' },
-  { de: 55, a: 58, nombre: 'final' },
+  { de: 25, a: 44, nombre: 'alcance1' },
+  { de: 44, a: 47, nombre: 'piloto' },
+  { de: 47, a: 60, nombre: 'alcance2' },
+  { de: 60, a: 63, nombre: 'mapa' },
+  { de: 63, a: 66, nombre: 'final' },
 ];
 const seccion = (bar) => SEC.find((x) => bar >= x.de && bar < x.a)?.nombre ?? 'final';
 
@@ -170,7 +170,7 @@ function crash(t0, amp) {
 
 // ---------- arreglo ----------
 const ARP = [0, 2, 1, 2, 3, 2, 1, 2]; // índices sobre [raíz+12, 3.ª, 5.ª, raíz+24]
-for (let bar = 0; bar < 58; bar++) {
+for (let bar = 0; bar < 66; bar++) {
   const t = bar * BAR;
   if (t >= DUR) break;
   const sec = seccion(bar);
@@ -221,9 +221,9 @@ for (let bar = 0; bar < 58; bar++) {
   }
 }
 
-// Final: acorde de re mayor en el compás 55 (132,0 s), cuando llega la marca
+// Final: acorde de re mayor en el compás 63 (151,2 s), cuando llega la marca
 {
-  const t = 55 * BAR;
+  const t = 63 * BAR;
   for (const m of [38, 50, 57, 62, 66, 69, 74]) pad(t, 4.6, m, 0.045, 1800);
   for (const [i, m] of [62, 66, 69, 74, 78].entries()) pluck(t + i * 0.09, m, 0.09, (i % 2 ? 0.3 : -0.3), 1);
   bombo(t, 0.5);
@@ -236,14 +236,14 @@ crash(20.05, 0.06);
 for (const [i, m] of [62, 66, 69, 74].entries()) pluck(20.05 + 1 / 30 + i * 0.07, m, 0.07, (i % 2 ? 0.3 : -0.3), 0.8);
 // la báscula marca el peso, las teclas F3 y el clic del lote
 pop(6.3 + 1 / 30, 0.12);
-for (const t of [69.28, 70.68, 72.08, 103.95]) tic(t + 1 / 30, 0.14);
-for (const c of [11.95, 43.2, 60.0, 124.8]) aire(c, 0.16);
-aire(91.2, 0.10, 0.6);
-subida(96.0, 98.4, 0.22);
-crash(98.4, 0.12);
-bombo(98.4, 0.6);
-golpe(87.3, 0.55);
-for (const t of [42.0, 52.4, 67.6, 109.65, 113.2]) pop(t + 1 / 30, 0.16);
+for (const t of [64.65, 69.28, 70.68, 72.08, 90.05, 118.35]) tic(t + 1 / 30, 0.14);
+for (const c of [11.95, 43.2, 60.0, 144.0]) aire(c, 0.16);
+aire(105.6, 0.10, 0.6);
+subida(110.4, 112.8, 0.22);
+crash(112.8, 0.12);
+bombo(112.8, 0.6);
+golpe(96.9, 0.55);
+for (const t of [42.0, 52.4, 67.6, 91.3, 124.05, 127.6]) pop(t + 1 / 30, 0.16);
 
 // ---------- reverberación (Schroeder) ----------
 function reverb(inp) {
