@@ -95,7 +95,7 @@
   .bifurca::before, .bifurca::after { content: ""; flex: 1; height: 2px; background: var(--line); }
   .compuerta { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: center; padding: 16px 18px; border-radius: 12px;
     background: var(--ambar-fondo); border: 2px solid var(--ambar); }
-  .compuerta .barra { grid-row: span 2; width: 8px; height: 56px; border-radius: 4px; background: var(--ambar); }
+  .compuerta .barra { grid-row: span 3; align-self: stretch; width: 8px; min-height: 56px; border-radius: 4px; background: var(--ambar); }
   .compuerta h2 { font-size: 20px; font-weight: 800; color: var(--ambar-tinta); }
   .compuerta p { margin: 0; font-size: 14px; color: var(--ink); }
 
@@ -177,8 +177,8 @@
     <div class="pasos">
       <article class="paso">
         <div class="paso-cab"><span class="num">A1</span><span class="actor"><i style="background: var(--sis)"></i>Sistema</span></div>
-        <h3>Archivo de pedidos</h3>
-        <p>Un pedido por cliente o sede, con la estructura del Excel de Julio. Sin cuentas ni IVA.</p>
+        <h3>Archivo plano de pedidos</h3>
+        <p>Un pedido por cliente o sede, con la estructura del Excel de Julio. Sin cuentas ni IVA. Es lo que el sistema le entrega a Helisa.</p>
         <span class="dato">Cofema: un pedido (tipo OP) en el archivo del corte</span>
         <div class="marcas"><span class="marca sale">Archivo OP</span></div>
       </article>
@@ -190,7 +190,7 @@
       </article>
       <article class="paso mano">
         <div class="paso-cab"><span class="num">A3</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia en Helisa</span></div>
-        <h3>Hace cada factura con F3</h3>
+        <h3>Factura como hoy: con F3, una por una</h3>
         <p>Abre la factura del cliente y llama su pedido. Ya no digita las líneas ni suma kilos.</p>
         <div class="marcas"><span class="marca manual">A mano · una por una</span></div>
       </article>
@@ -215,7 +215,7 @@
       </article>
       <article class="paso">
         <div class="paso-cab"><span class="num">A7</span><span class="actor"><i style="background: var(--lu)"></i>Lucrecia importa</span></div>
-        <h3>Archivo de recibos</h3>
+        <h3>Archivo plano de recibos</h3>
         <p>Movimiento contable 1305 contra caja o bancos, con la FVE que cruza. Libros F y N.</p>
         <div class="marcas"><span class="marca sale">Archivo RC</span><span class="marca api">Con Conekta: automático</span></div>
       </article>
@@ -235,11 +235,12 @@
     <span class="barra" aria-hidden="true"></span>
     <h2>Hasta aquí llega el Alcance 1 · un mes de prueba</h2>
     <p>Se usa el Alcance 1 durante un ciclo real (un mes) y se mide cuánto tiempo toma la facturación una por una y qué errores aparecen. Con esos datos, Comserva decide si sigue el Alcance 2.</p>
+    <p><b>Lo hace RH digital:</b> visitas, cierre y RH, el archivo plano de pedidos, los recibos de efectivo y el archivo plano de recibos. <b>Sigue en Helisa:</b> cada factura electrónica (con F3, una por una), su envío a la DIAN, la contabilidad y la cartera.</p>
   </section>
 
   <!-- ALCANCE 2 -->
   <section class="tramo t-a2">
-    <div class="tramo-cab"><h2>Alcance 2 · factura electrónica</h2><p>Fase 2, Propuesta 2. Se conecta donde sale el pedido y reemplaza A1 a A5: ya no hay pedido, ni F3, ni vuelta de la factura.</p></div>
+    <div class="tramo-cab"><h2>Alcance 2 · factura electrónica</h2><p>Fase 2, Propuesta 2. RH digital factura sin depender de Helisa, por medio de un proveedor tecnológico autorizado. Se conecta donde sale el pedido y reemplaza A1 a A5: ya no hay pedido, ni F3, ni vuelta de la factura. Helisa se queda con la contabilidad y la cartera.</p></div>
     <div class="pasos">
       <article class="paso">
         <div class="paso-cab"><span class="num">B1</span><span class="actor"><i style="background: var(--sis)"></i>Sistema</span></div>

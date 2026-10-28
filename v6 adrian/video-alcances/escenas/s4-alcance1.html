@@ -35,14 +35,21 @@
     #s4-marca { position: absolute; left: 42px; top: 271px; width: 1114px; height: 36px; border: 4px solid #2b6a4b; border-radius: 8px; }
     #s4-toast { position: absolute; left: 1380px; top: 236px; padding: 14px 22px; border-radius: 12px; background: #123d2b; color: #fff; font-size: 28px; font-weight: 700; white-space: nowrap;
       box-shadow: 0 12px 30px rgba(18,61,43,.22); }
+    #s4-desc { position: absolute; left: 1380px; top: 236px; padding: 14px 22px; border-radius: 12px; background: #fff; border: 3px solid #2b6a4b; color: #123d2b; font-size: 28px; font-weight: 700; white-space: nowrap;
+      box-shadow: 0 12px 30px rgba(18,61,43,.16); }
     /* B · F3 una por una */
-    #s4-tecla { position: absolute; left: 1180px; top: 690px; width: 112px; height: 96px; border-radius: 14px; background: #fff; border: 3px solid #c8d0cb; border-bottom-width: 10px;
-      font-family: "JetBrains Mono", monospace; font-size: 40px; font-weight: 500; color: #1c2420; text-align: center; line-height: 84px; }
+    #s4-menu { position: absolute; left: 1180px; top: 612px; width: 520px; padding: 6px 0; background: #fff; border: 2px solid #c8d0cb; border-radius: 6px;
+      box-shadow: 0 14px 34px rgba(18,61,43,.18); font-size: 26px; color: #1c2420; }
+    #s4-menu .mi { display: flex; justify-content: space-between; padding: 8px 18px; }
+    #s4-menu .mi span { color: #46524c; font-family: "JetBrains Mono", monospace; font-weight: 500; }
+    #s4-menu .mi.sel { background: #cfe3f5; font-weight: 700; }
+    #s4-menu .mi.sel span { color: #1c2420; }
+    #s4-cur { position: absolute; left: 1560px; top: 668px; width: 34px; height: 44px; }
     .fv { position: absolute; left: 1180px; width: 380px; height: 88px; border-radius: 12px; background: #fff; border-left: 8px solid #2b6a4b; padding: 10px 18px;
       box-shadow: 0 10px 26px rgba(18,61,43,.14); }
     .fv b { display: block; font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 500; }
     .fv span { font-size: 28px; color: #46524c; }
-    #s4-amano { position: absolute; left: 1318px; top: 708px; padding: 10px 20px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
+    #s4-amano { position: absolute; left: 1180px; top: 784px; padding: 10px 20px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
       font-size: 30px; font-weight: 700; color: #8a5d00; white-space: nowrap; }
     /* C · ida y vuelta */
     .s4-caja { position: absolute; top: 360px; width: 440px; height: 170px; padding: 30px 34px; }
@@ -68,12 +75,31 @@
       font-size: 34px; font-weight: 500; color: #46524c; white-space: nowrap; }
     /* D · cobro */
     .s4-cifra { position: absolute; left: 760px; font-size: 104px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    /* R · archivo de recibos */
+    .rcard { position: absolute; top: 290px; height: 250px; padding: 24px 28px; display: flex; flex-direction: column; gap: 6px; }
+    .rcard b { font-size: 36px; font-weight: 800; letter-spacing: -0.01em; }
+    .rcard span { font-size: 28px; color: #46524c; }
+    .rcard .mono { font-style: normal; font-family: "JetBrains Mono", monospace; font-weight: 500; color: #1c2420; }
+    .rcard .rsaldo { font-size: 34px; font-weight: 800; color: #123d2b; font-variant-numeric: tabular-nums; }
+    #s4-rBtn { position: absolute; left: 28px; bottom: 18px; padding: 8px 16px; border-radius: 10px; background: #2b6a4b; color: #fff; font-size: 24px; font-weight: 700; }
+    .rflecha { position: absolute; top: 400px; width: 108px; height: 30px; overflow: visible; }
+    #s4-rCur { position: absolute; left: 860px; top: 505px; width: 34px; height: 44px; }
+    #s4-rToast { position: absolute; left: 1300px; top: 560px; padding: 12px 20px; border-radius: 12px; background: #123d2b; color: #fff; font-size: 26px; font-weight: 700; white-space: nowrap;
+      box-shadow: 0 12px 30px rgba(18,61,43,.22); }
+    #s4-rVuelta { position: absolute; left: 120px; top: 785px; padding: 10px 20px; border-radius: 10px; background: #fbf0d2; border: 3px solid #d9a21b;
+      font-size: 30px; font-weight: 700; color: #8a5d00; white-space: nowrap; }
     /* E · frontera */
-    #s4-t5 { position: absolute; left: 615px; top: 250px; width: 1200px; text-align: center; font-size: 104px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
+    #s4-t5 { position: absolute; left: 120px; top: 64px; width: 1680px; text-align: center; font-size: 96px; font-weight: 800; line-height: 1.04; letter-spacing: -0.02em; }
     #s4-t5 em { font-style: normal; color: #8a5d00; }
-    #s4-s5 { left: 615px; top: 500px; width: 1200px; text-align: center; }
-    #s4-guia { position: absolute; left: 1213px; top: 610px; width: 4px; height: 230px; transform-origin: 50% 0;
+    #s4-s5 { left: 120px; top: 190px; width: 1680px; text-align: center; }
+    #s4-guia { position: absolute; left: 1288px; top: 300px; width: 4px; height: 540px; transform-origin: 50% 0;
       background: repeating-linear-gradient(180deg, #d9a21b 0 12px, transparent 12px 22px); }
+    .res { position: absolute; top: 300px; display: flex; flex-direction: column; gap: 22px; }
+    #s4-colR { left: 220px; width: 940px; }
+    #s4-colH { left: 1330px; width: 520px; }
+    .res-cab { align-self: flex-start; padding: 6px 18px; border-radius: 10px; font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+    .res-it { display: flex; gap: 16px; font-size: 38px; font-weight: 700; line-height: 1.2; color: #1c2420; }
+    .res-it i { flex: none; width: 34px; font-style: normal; font-weight: 800; }
     .rol { position: absolute; left: 50%; top: -6%; transform: translateX(-50%); padding: 6px 16px; border-radius: 10px; background: #fff; border: 2px solid #c8d0cb;
       font-size: 28px; font-weight: 700; color: #1c2420; white-space: nowrap; box-shadow: 0 6px 16px rgba(18,61,43,.12); }
     .rol i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; vertical-align: 2px; }
@@ -83,19 +109,20 @@
     <div id="s4-cap2">Hasta Helisa</div>
 
     <!-- A · el pedido -->
-    <h1 id="s4-t1" class="s4-titulo" data-palabras>Del RH sale el <em>pedido</em> para Helisa</h1>
+    <h1 id="s4-t1" class="s4-titulo" data-palabras>Del RH sale el <em>archivo plano</em></h1>
     <div id="s4-pedido" class="s4-card">
       <img src="assets/img/doc-pedido.png" alt="Archivo de pedidos para Helisa: OP 101 de Cofema" />
       <div id="s4-marca"></div>
     </div>
     <div id="s4-hoyA" class="ha-fila ha-hoy" style="left: 120px; top: 590px"><span class="ha-tag">Hoy</span><span class="ha-txt">Armar cada factura digitando todo</span></div>
-    <div id="s4-ahoA" class="ha-fila ha-ahora" style="left: 120px; top: 665px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia importa un archivo con todos los pedidos</span></div>
+    <div id="s4-ahoA" class="ha-fila ha-ahora" style="left: 120px; top: 665px"><span class="ha-tag">Ahora</span><span class="ha-txt">Lucrecia lo descarga del panel y lo importa en Helisa</span></div>
     <div class="pj" id="s4-luA" style="left: 1370px; top: 340px; width: 420px; height: 490px"><!-- @svg lucrecia s4a --></div>
+    <div id="s4-desc">⬇ Descargado del panel</div>
     <div id="s4-toast">✓ Importación de pedidos</div>
 
     <!-- B · la factura en Helisa, una por una -->
-    <h1 id="s4-t2" class="s4-titulo" data-palabras>En Helisa, Lucrecia llama el pedido con F3</h1>
-    <p id="s4-s2" class="s4-sub" style="left: 120px; top: 176px; width: 1100px" data-palabras>Helisa emite la factura y la envía a la DIAN, como hoy.</p>
+    <h1 id="s4-t2" class="s4-titulo" data-palabras>En Helisa, Lucrecia factura <em>como hoy</em></h1>
+    <p id="s4-s2" class="s4-sub" style="left: 120px; top: 176px; width: 1100px" data-palabras>En cada factura llama el pedido con «Documento previo Pedidos» (F3).</p>
     <div class="mesa" id="s4-mesaB" style="left: 600px; top: 768px; width: 560px"><div class="tapa"></div><div class="frente"></div></div>
     <div id="s4-monB" class="monitor" data-layout-ignore style="left: 660px; top: 410px; width: 440px; height: 300px">
       <div class="pantalla">
@@ -108,7 +135,12 @@
     <div id="s4-fv1" class="fv" style="top: 300px"><b>FVE 25756</b><span>Cofema S.A.</span></div>
     <div id="s4-fv2" class="fv" style="top: 400px"><b>FVE 25757</b><span>Droguería El Trébol</span></div>
     <div id="s4-fv3" class="fv" style="top: 500px"><b>FVE 25758</b><span>IPS Salud Vital</span></div>
-    <div id="s4-tecla">F3</div>
+    <div id="s4-menu" data-layout-allow-overlap>
+      <div class="mi">Documento previo Cotizaciones<span>F2</span></div>
+      <div class="mi sel" id="s4-mped">Documento previo Pedidos<span>F3</span></div>
+      <div class="mi">Documento previo Remisiones<span>F4</span></div>
+    </div>
+    <svg id="s4-cur" viewBox="0 0 34 44"><path d="M2 2 L2 36 L11 28 L17 42 L23 39 L17 26 L30 26 Z" fill="#1c2420" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>
     <div id="s4-amano">Sigue en Helisa · una por una</div>
 
     <!-- C · la FVE vuelve al sistema -->
@@ -137,10 +169,44 @@
     <div id="s4-hoyD" class="pago" style="left: 764px; top: 640px"><b style="background: #dcefe4; color: #123d2b">Efectivo</b><span>El operario le entrega el recibo en la app</span></div>
     <div id="s4-ahoD" class="pago" style="left: 764px; top: 715px"><b style="background: #e6eef2; color: #3d6575">Transferencia</b><span>El soporte llega por WhatsApp y la oficina lo registra</span></div>
 
+    <!-- R · del recibo sale otro archivo plano -->
+    <h1 id="s4-t6" class="s4-titulo" data-palabras>Del recibo sale otro <em>archivo plano</em></h1>
+    <p id="s4-s6" class="s4-sub" style="left: 120px; top: 176px; width: 1680px" data-palabras>Lucrecia lo descarga, lo importa en Helisa y Helisa cruza el pago.</p>
+    <div id="s4-rRc" class="s4-card rcard" style="left: 120px; width: 470px">
+      <b>Recibo de caja</b><span>Cofema S.A.</span><span>Abono <i class="mono">$500.000</i></span><span>A la <i class="mono">FVE 25756</i></span>
+    </div>
+    <div id="s4-rFi" class="s4-card rcard" style="left: 710px; width: 470px; border-top: 6px solid #2b6a4b">
+      <b>Archivo plano de recibos</b><span>Caja contra cartera 1305</span><span>Cruza la <i class="mono">FVE 25756</i></span>
+      <div id="s4-rBtn">⬇ Descargar</div>
+    </div>
+    <div id="s4-rHe" class="s4-card rcard" style="left: 1300px; width: 500px; border-top: 6px solid #3d6575">
+      <b>Helisa · cartera</b><span>Cofema · <i class="mono">FVE 25756</i></span><span id="s4-rSaldo" class="rsaldo">Saldo $2.244.935</span>
+    </div>
+    <svg id="s4-rA1" class="rflecha" style="left: 596px" viewBox="0 0 108 30"><path d="M4 15 H96" stroke="#2b6a4b" stroke-width="5" fill="none"/><path d="M90 5 L104 15 L90 25 z" fill="#2b6a4b"/></svg>
+    <svg id="s4-rA2" class="rflecha" style="left: 1186px" viewBox="0 0 108 30"><path d="M4 15 H96" stroke="#2b6a4b" stroke-width="5" fill="none"/><path d="M90 5 L104 15 L90 25 z" fill="#2b6a4b"/></svg>
+    <svg id="s4-rCur" viewBox="0 0 34 44"><path d="M2 2 L2 36 L11 28 L17 42 L23 39 L17 26 L30 26 Z" fill="#1c2420" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+    <div id="s4-rToast">✓ Importación de movimiento contable</div>
+    <div id="s4-hoyR" class="ha-fila ha-hoy" style="left: 120px; top: 630px"><span class="ha-tag">Hoy</span><span class="ha-txt">Lucrecia digita cada recibo en Helisa</span></div>
+    <div id="s4-ahoR" class="ha-fila ha-ahora" style="left: 120px; top: 705px"><span class="ha-tag">Ahora</span><span class="ha-txt">Importa un solo archivo con todos los recibos</span></div>
+    <div id="s4-rVuelta">2.ª vuelta · Lucrecia anota en RH digital el N.º del recibo de Helisa</div>
+
     <!-- E · la frontera -->
     <h1 id="s4-t5" data-palabras><em>Hasta aquí</em> llega el Alcance 1</h1>
-    <p id="s4-s5" class="s4-sub" data-palabras>La factura se sigue haciendo en Helisa, una por una.</p>
+    <p id="s4-s5" class="s4-sub" data-palabras>RH digital entrega los archivos planos. La factura la sigue sacando Helisa.</p>
     <div id="s4-guia"></div>
+    <div id="s4-colR" class="res">
+      <div class="res-cab" style="background: #dcefe4; color: #123d2b">Lo hace RH digital</div>
+      <div class="res-it"><i style="color: #2b6a4b">✓</i>Visitas, kilos y firmas en la app</div>
+      <div class="res-it"><i style="color: #2b6a4b">✓</i>El cierre del periodo y el RH</div>
+      <div class="res-it"><i style="color: #2b6a4b">✓</i>El archivo plano de pedidos</div>
+      <div class="res-it"><i style="color: #2b6a4b">✓</i>Los recibos y su archivo plano</div>
+    </div>
+    <div id="s4-colH" class="res">
+      <div class="res-cab" style="background: #fbf0d2; color: #8a5d00">Sigue en Helisa</div>
+      <div class="res-it"><i style="color: #8a5d00">•</i>La factura electrónica, una por una</div>
+      <div class="res-it"><i style="color: #8a5d00">•</i>El envío a la DIAN</div>
+      <div class="res-it"><i style="color: #8a5d00">•</i>La contabilidad y la cartera</div>
+    </div>
   </div>
   <script>
     (function () {
@@ -155,7 +221,7 @@
           el.innerHTML = out.join("");
         });
       }
-      palabras("#s4-t1, #s4-t2, #s4-s2, #s4-t3, #s4-s3, #s4-t4, #s4-t5, #s4-s5");
+      palabras("#s4-t1, #s4-t2, #s4-s2, #s4-t3, #s4-s3, #s4-t4, #s4-t6, #s4-s6, #s4-t5, #s4-s5");
       const tl = gsap.timeline({ paused: true });
       const entra = (sel, t) => tl.fromTo(`${sel} .w`, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, stagger: 0.067, ease: "power2.out" }, t);
       const sale = (sel, t) => tl.to(`${sel} .w`, { opacity: 0, filter: "blur(8px)", duration: 0.2, stagger: 0.02, ease: "power3.in" }, t);
@@ -169,10 +235,12 @@
       const cl = rig("s4c", "cliente", { billetes: 1, hD: -30, cD: 50 });
       const op = rig("s4o", "operario", {});
 
-      gsap.set(["#s4-pedido", "#s4-marca", "#s4-hoyA", "#s4-ahoA", "#s4-luA", "#s4-toast",
-        "#s4-mesaB", "#s4-monB", "#s4-luB", "#s4-fv1", "#s4-fv2", "#s4-fv3", "#s4-tecla", "#s4-amano",
+      gsap.set(["#s4-pedido", "#s4-marca", "#s4-hoyA", "#s4-ahoA", "#s4-luA", "#s4-toast", "#s4-desc",
+        "#s4-mesaB", "#s4-monB", "#s4-luB", "#s4-fv1", "#s4-fv2", "#s4-fv3", "#s4-menu", "#s4-cur", "#s4-amano",
         "#s4-cH", "#s4-cR", "#s4-ida", "#s4-chip", "#s4-ok", "#s4-api", "#s4-auto", "#s4-chip2",
-        "#s4-cl", "#s4-op", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], { opacity: 0 });
+        "#s4-cl", "#s4-op", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD",
+        "#s4-rRc", "#s4-rFi", "#s4-rHe", "#s4-rA1", "#s4-rA2", "#s4-rCur", "#s4-rToast", "#s4-hoyR", "#s4-ahoR", "#s4-rVuelta",
+        "#s4-colR .res-cab", "#s4-colR .res-it", "#s4-colH .res-cab", "#s4-colH .res-it"], { opacity: 0 });
       gsap.set("#s4-guia", { scaleY: 0 });
       gsap.set(["#s4-rcl", "#s4-rop"], { opacity: 0 });
       tl.fromTo(["#s4-rcl", "#s4-rop"], { opacity: 0 }, { opacity: 1, duration: 0.25, stagger: 0.15 }, 20.4);
@@ -193,22 +261,28 @@
       aparece("#s4-ahoA", 4.5);
       gesto(tl, luA, "mI", -8, 4, 3.6, 12, 0.14);
       gesto(tl, luA, "mD", 6, -6, 3.67, 12, 0.14);
-      tl.fromTo("#s4-toast", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 5.4);
+      // Lucrecia descarga el archivo del panel y lo importa en Helisa
+      tl.fromTo("#s4-desc", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 4.6);
+      tl.to("#s4-desc", { opacity: 0, y: -16, duration: 0.2 }, 5.55);
+      tl.fromTo("#s4-toast", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 5.7);
       parpadea(tl, luA, 5.9);
       sale("#s4-t1", 6.95);
       se_va(["#s4-hoyA", "#s4-ahoA", "#s4-luA", "#s4-toast"], 6.95);
-      // el pedido viaja al nodo Helisa (x 1020, y 895)
-      tl.to("#s4-pedido", { x: 300, y: 527, scale: 0.05, duration: 0.55, ease: "power3.in" }, 7.05);
+      // el pedido viaja al nodo Helisa (x 900, y 895)
+      tl.to("#s4-pedido", { x: 180, y: 527, scale: 0.05, duration: 0.55, ease: "power3.in" }, 7.05);
       tl.to("#s4-pedido", { opacity: 0, duration: 0.1 }, 7.52);
 
       // B · F3, una por una (7,6–14 s)
       entra("#s4-t2", 7.75);
       tl.fromTo(["#s4-mesaB", "#s4-monB", "#s4-luB"], { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out", stagger: 0.08 }, 7.8);
       entra("#s4-s2", 8.4);
-      aparece("#s4-tecla", 8.9);
+      tl.fromTo("#s4-menu", { opacity: 0, scale: 0.92, transformOrigin: "0% 0%" }, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, 8.9);
+      tl.fromTo("#s4-cur", { opacity: 0, x: 60, y: 40 }, { opacity: 1, x: 0, y: 0, duration: 0.4, ease: "power2.out" }, 9.0);
       [["#s4-fv1", 9.4], ["#s4-fv2", 10.8], ["#s4-fv3", 12.2]].forEach(([fv, t]) => {
-        tl.to("#s4-tecla", { y: 8, duration: 0.08, ease: "power2.in" }, t - 0.12);
-        tl.to("#s4-tecla", { y: 0, duration: 0.14, ease: "power2.out" }, t - 0.04);
+        // clic en «Documento previo Pedidos (F3)»
+        tl.to("#s4-mped", { backgroundColor: "#8fbbe6", duration: 0.08, ease: "power2.in" }, t - 0.12);
+        tl.to("#s4-mped", { backgroundColor: "#cfe3f5", duration: 0.14, ease: "power2.out" }, t - 0.04);
+        tl.to("#s4-cur", { scale: 0.85, duration: 0.08, yoyo: true, repeat: 1 }, t - 0.12);
         tl.to(luB.st, { mD: -12, duration: 0.08, onUpdate: luB.aplicar }, t - 0.12);
         tl.to(luB.st, { mD: 0, duration: 0.14, onUpdate: luB.aplicar }, t - 0.04);
         tl.fromTo(fv, { opacity: 0, x: -260, scale: 0.6 }, { opacity: 1, x: 0, scale: 1, duration: 0.5, ease: "expo.out" }, t);
@@ -218,7 +292,7 @@
       parpadea(tl, luB, 11.4);
       sale("#s4-t2", 13.6);
       sale("#s4-s2", 13.6);
-      se_va(["#s4-mesaB", "#s4-monB", "#s4-luB", "#s4-fv1", "#s4-fv2", "#s4-fv3", "#s4-tecla", "#s4-amano"], 13.65);
+      se_va(["#s4-mesaB", "#s4-monB", "#s4-luB", "#s4-fv1", "#s4-fv2", "#s4-fv3", "#s4-menu", "#s4-cur", "#s4-amano"], 13.65);
 
       // C · la FVE vuelve al sistema (14–20 s)
       entra("#s4-t3", 14.15);
@@ -264,13 +338,44 @@
       sale("#s4-t4", 26.85);
       se_va(["#s4-cl", "#s4-op", "#s4-lab4", "#s4-menos", "#s4-saldo", "#s4-hoyD", "#s4-ahoD"], 26.9);
 
-      // E · la frontera (27,2–31,2 s)
-      entra("#s4-t5", 27.4);
-      tl.to("#s4-guia", { scaleY: 1, duration: 0.5, ease: "power2.inOut" }, 27.45);
-      entra("#s4-s5", 28.3);
-      sale("#s4-t5", 30.85);
-      sale("#s4-s5", 30.85);
-      tl.to("#s4-guia", { opacity: 0, duration: 0.25 }, 30.9);
+      // R · del recibo sale otro archivo plano (27,2–36,8 s)
+      entra("#s4-t6", 27.4);
+      tarjeta("#s4-rRc", 27.6, -160);
+      entra("#s4-s6", 28.1);
+      tl.fromTo("#s4-rA1", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" }, 28.7);
+      tarjeta("#s4-rFi", 28.9);
+      tl.fromTo("#s4-rCur", { opacity: 0, x: 120, y: 120 }, { opacity: 1, x: 0, y: 0, duration: 0.5, ease: "power2.out" }, 29.5);
+      tl.to("#s4-rCur", { scale: 0.85, duration: 0.08, yoyo: true, repeat: 1 }, 30.05);
+      tl.to("#s4-rBtn", { scale: 0.9, duration: 0.08, yoyo: true, repeat: 1 }, 30.05);
+      tl.to("#s4-rCur", { opacity: 0, duration: 0.2 }, 30.5);
+      tl.fromTo("#s4-rA2", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" }, 30.5);
+      tarjeta("#s4-rHe", 30.7);
+      tl.fromTo("#s4-rToast", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 31.3);
+      {
+        const o = { v: 2244935 };
+        tl.fromTo(o, { v: 2244935 }, { v: 1744935, duration: 0.8, ease: "power2.out", immediateRender: false,
+          onUpdate: () => { document.querySelector("#s4-rSaldo").textContent = "Saldo $" + miles(o.v); } }, 31.5);
+      }
+      aparece("#s4-hoyR", 32.5);
+      aparece("#s4-ahoR", 33.1);
+      tl.fromTo("#s4-rVuelta", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 33.8);
+      sale("#s4-t6", 36.35);
+      sale("#s4-s6", 36.35);
+      se_va(["#s4-rRc", "#s4-rFi", "#s4-rHe", "#s4-rA1", "#s4-rA2", "#s4-rToast", "#s4-hoyR", "#s4-ahoR", "#s4-rVuelta"], 36.4);
+
+      // E · la frontera: qué hace RH digital y qué sigue en Helisa (36,8–45,6 s)
+      entra("#s4-t5", 37.0);
+      tl.to("#s4-guia", { scaleY: 1, duration: 0.6, ease: "power2.inOut" }, 37.05);
+      entra("#s4-s5", 37.8);
+      const item = (sel, t) => tl.fromTo(sel, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, t);
+      item("#s4-colR .res-cab", 39.0);
+      document.querySelectorAll("#s4-colR .res-it").forEach((el, i) => item(el, 39.4 + i * 0.5));
+      item("#s4-colH .res-cab", 41.6);
+      document.querySelectorAll("#s4-colH .res-it").forEach((el, i) => item(el, 42.0 + i * 0.5));
+      sale("#s4-t5", 45.25);
+      sale("#s4-s5", 45.25);
+      se_va(["#s4-colR", "#s4-colH"], 45.25);
+      tl.to("#s4-guia", { opacity: 0, duration: 0.25 }, 45.3);
 
       window.__timelines["s4"] = tl;
     })();

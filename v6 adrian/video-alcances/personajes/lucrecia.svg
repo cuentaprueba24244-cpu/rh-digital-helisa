@@ -9,15 +9,19 @@
   <path d="M386 340 C368 330 348 326 336 330 L316 600 L396 600 C400 470 400 380 386 340 Z" fill="#2b6a4b"/>
   <path d="M386 340 C396 380 398 470 396 600 L372 600 C376 470 374 380 366 334 Z" fill="#123d2b" opacity=".25"/>
   <!-- cuello y escarapela -->
-  <rect x="282" y="262" width="36" height="70" rx="14" fill="#b67a59"/>
-  <path d="M272 326 L300 356 L328 326 Z" fill="#b67a59"/>
+  <rect x="276" y="268" width="48" height="70" rx="16" fill="#b67a59"/>
+  <path d="M268 326 L300 360 L332 326 Z" fill="#b67a59"/>
   <path d="M284 330 L300 440 L316 330" fill="none" stroke="#1f5e43" stroke-width="5"/>
   <rect x="284" y="436" width="32" height="42" rx="5" fill="#fff" stroke="#c8d0cb" stroke-width="2"/>
   <rect x="290" y="444" width="20" height="14" rx="3" fill="#dcefe4"/>
   <rect x="290" y="463" width="20" height="4" rx="2" fill="#2b6a4b"/>
-  <!-- cabeza: gira sobre la base del cuello (300,300) -->
+  <!-- cabeza: gira sobre la base del cuello (300,300); va 16 px más abajo para que el pelo caiga sobre los hombros -->
   <g id="X-cab">
+  <g transform="translate(0 16)">
     <path d="M234 214 C226 124 374 124 366 214 C370 262 378 296 364 322 C350 334 332 326 328 304 L272 304 C268 326 250 334 236 322 C222 296 230 262 234 214 Z" fill="#3b2418"/>
+    <!-- cuello delante del pelo de atrás, con la sombra del mentón -->
+    <rect x="276" y="246" width="48" height="76" rx="16" fill="#b67a59"/>
+    <path d="M276 268 q24 16 48 0 v-12 h-48 z" fill="#a46a4c" opacity=".6"/>
     <ellipse cx="300" cy="212" rx="56" ry="64" fill="#c98e6b"/>
     <path d="M300 148 C336 150 354 176 356 212 C346 188 328 176 300 176 Z" fill="#b67a59" opacity=".35"/>
     <path d="M244 196 C238 130 362 122 358 190 C350 168 330 152 296 150 C300 164 286 176 262 180 C254 184 248 190 244 196 Z" fill="#3b2418"/>
@@ -39,6 +43,7 @@
     <path d="M284 252 q16 12 32 0 q-16 5 -32 0 z" fill="#b4534a"/>
     <circle cx="244" cy="246" r="5" fill="#d9a21b"/>
     <circle cx="356" cy="246" r="5" fill="#d9a21b"/>
+  </g>
   </g>
   <!-- escritorio -->
   <rect x="30" y="560" width="540" height="28" rx="6" fill="#e1e6e3"/>

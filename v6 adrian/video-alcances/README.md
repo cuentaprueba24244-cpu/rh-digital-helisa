@@ -1,6 +1,6 @@
 # Video · Los dos alcances de RH digital
 
-Motion graphics para la reunión con Comserva del 28 de octubre de 2026. La **v3** dura 2 min 18 s y trae personajes animados; la v2 dura 1 min 56 s y la v1, 90 s. Muestra el sistema como **dos alcances**:
+Motion graphics para la reunión con Comserva del 28 de octubre de 2026. La **v5** dura 2 min 37 s: el Alcance 1 llega hasta los recibos y su archivo plano, y en Helisa se ve el menú real «Documento previo Pedidos · F3». La v4 dura 2 min 28 s, la v3 dura 2 min 18 s, la v2 1 min 56 s y la v1, 90 s. Muestra el sistema como **dos alcances**:
 
 1. **Alcance 1:** de la visita en la app hasta Helisa (pedido y recibo).
 2. **El piloto:** Comserva decide con un ciclo real.
@@ -8,7 +8,10 @@ Motion graphics para la reunión con Comserva del 28 de octubre de 2026. La **v3
 
 Los MP4 están en `renders/`:
 
-- [`alcances-rh-digital-v3.mp4`](renders/alcances-rh-digital-v3.mp4) · **v3**, la más completa, con el operario, Lucrecia y el cliente animados.
+- [`alcances-rh-digital-v6.mp4`](renders/alcances-rh-digital-v6.mp4) · **v6**, la vigente: la v5 con Lucrecia corregida (la cabeza ya no se ve separada del cuerpo).
+- [`alcances-rh-digital-v5.mp4`](renders/alcances-rh-digital-v5.mp4) · **v5**: la v4 más el tramo del recibo, la descarga de los archivos y el menú real de F3.
+- [`alcances-rh-digital-v4.mp4`](renders/alcances-rh-digital-v4.mp4) · **v4**: la v3 más el archivo plano y el resumen de cada alcance.
+- [`alcances-rh-digital-v3.mp4`](renders/alcances-rh-digital-v3.mp4) · **v3**, con el operario, Lucrecia y el cliente animados.
 - [`alcances-rh-digital.mp4`](renders/alcances-rh-digital.mp4) · v2.
 - [`alcances-rh-digital-v1.mp4`](renders/alcances-rh-digital-v1.mp4) · v1.
 

@@ -1,5 +1,28 @@
 # Revisión · Los dos alcances de RH digital
 
+**Render v6:** 27 oct 2026, `renders/alcances-rh-digital-v6.mp4`. Es la v5 con Lucrecia corregida: la cabeza parecía separada del cuerpo porque el cuello era largo y delgado y se veía la silla oscura alrededor. La cabeza baja 16 px, el pelo cae sobre los hombros y el cuello (más ancho, con sombra del mentón) se dibuja delante del pelo de atrás. Dura 157,2 s.
+
+**Render v5:** 27 oct 2026, `renders/alcances-rh-digital-v5.mp4`. Dura 157,2 s. `lint` pasa sin errores.
+
+## Cambios de la v5 (el Alcance 1 llega hasta los recibos)
+
+- **Descarga del archivo de pedidos:** antes de la importación aparece «⬇ Descargado del panel», y la fila «Ahora» dice que Lucrecia lo descarga del panel y lo importa en Helisa.
+- **F3:** la tecla suelta se cambió por el menú real de Helisa, con «Documento previo Pedidos · F3» resaltado y el clic del cursor en cada factura, como en la pantalla del 21 de octubre.
+- **Tramo nuevo del recibo (27,2–36,8 s de la escena 4):** recibo de caja → archivo plano de recibos (con el botón «Descargar») → Helisa · cartera, que cruza el pago y deja el saldo en $1.744.935. Hoy/Ahora: «Lucrecia digita cada recibo» → «Importa un solo archivo con todos los recibos». Cierra con la 2.ª vuelta.
+- **Riel:** el Alcance 1 suma el punto «Recibos» (x 1140), que se enciende cuando Helisa cruza el pago. La frontera pasa a x 1290; el mapa final usa el mismo riel.
+- **Escena 5:** «un mes de prueba» pasa a «un periodo de prueba».
+- **Tiempos:** la escena 4 dura 45,6 s y el video pasa de 147,6 s a 157,2 s. El riel y la música se corrieron cuatro compases.
+
+**Render v4:** 26 oct 2026, `renders/alcances-rh-digital-v4.mp4`. Dura 147,6 s y pesa 20,5 MB. `lint` pasa sin errores.
+
+## Cambios de la v4 (dónde termina cada alcance)
+
+- **Alcance 1:** el paso A dice «Del RH sale el archivo plano», la palabra que usa Comserva. El paso B dice «En Helisa, Lucrecia factura como hoy»: llama cada pedido con F3 y Helisa envía la factura a la DIAN. El cobro suma la fila «Helisa: los recibos le llegan en otro archivo plano».
+- **Frontera del Alcance 1 (27,2–36 s de la escena):** dos columnas. «Lo hace RH digital» lista visitas, cierre y RH, el archivo plano de pedidos y los recibos con su archivo. «Sigue en Helisa» lista la factura electrónica una por una, el envío a la DIAN y la contabilidad y cartera.
+- **Alcance 2:** el capítulo dice «La factura sale de RH digital». La nota de la DIAN dice que va por un proveedor tecnológico autorizado. La escena cierra con «Así queda el Alcance 2»: RH digital factura sin depender de Helisa, y Helisa se queda con la contabilidad y la cartera.
+- **Mapa final:** «Primero, RH digital llega hasta Helisa» y «Después, la factura sale de RH digital».
+- **Tiempos:** s4 dura 36 s y s6 dura 31,2 s, y el video pasa de 138 s a 147,6 s. El riel y la música se corrieron dos compases en cada alargue.
+
 **Render v3:** 26 oct 2026, `renders/alcances-rh-digital-v3.mp4`. Es un MP4 de 1920 × 1080 a 30 fps; dura 138,0 s y pesa 19,3 MB. Audio medido en el MP4: −15 LUFS, pico real de −1 dBTP y ningún recorte. `check` pasa sin errores.
 
 ## Cambios de la v3 (personajes)
