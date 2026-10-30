@@ -125,7 +125,7 @@ Documento aparte: `Oferta contrato anual hosting y mantenimiento (28 oct 2026).h
 
 **Margen del equipo:** Esencial ≈ 5,5 h/mes a $40.000; Completo = las mismas 8 h a $320.000 de la v7. Las horas no usadas pasan solo al mes siguiente. Excedente a $40.000/h por escrito.
 
-**Inicio:** al terminar la garantía de 60 días del Alcance 1 (≈ mayo de 2027). Renovación automática anual con aviso de 30 días, igual que el contrato modelo que Comserva usa con sus clientes, y ajuste por IPC.
+**Inicio:** al terminar la garantía de 60 días del Alcance 1 (≈ abril de 2027). Renovación automática anual con aviso de 30 días, igual que el contrato modelo que Comserva usa con sus clientes, y ajuste por IPC.
 
 ## 11. Corrección del 29 de octubre: el Alcance 1 es «todo lo demás» y vale $15 M
 
@@ -137,9 +137,9 @@ Ronaldo corrigió el reparto: el **Alcance 2 es solo la facturación electrónic
 | Alcance 2 | + $6.000.000 (150 h) | + $6.000.000 (150 h), sin cambio |
 | Total | $18.000.000 | **$21.000.000** |
 | Complemento contratos | $1.600.000 aparte (40 h) | dentro del Alcance 1 |
-| Tiempo Alcance 1 | 12 semanas (piloto feb 2027) | 14 semanas (piloto marzo 2027; A2 hacia junio) |
+| Tiempo Alcance 1 | 12 semanas (piloto feb 2027) | **3 meses desde la firma** (12 semanas, piloto feb 2027; A2 hacia mayo). Ronaldo lo fijó el 29 oct: las 75 h nuevas se absorben con más horas por semana, no con más semanas |
 | Hitos A1 (30/30/30/10) | 3,6 / 3,6 / 3,6 / 1,2 M | 4,5 / 4,5 / 4,5 / 1,5 M |
 
 **Las 75 h nuevas:** portal del cliente 40 h (ingreso por cliente, lista de visitas con evidencia, descarga de constancia, planilla, acta, factura y recibos, saldo, correo automático por documento nuevo) y contratos 35 h (las 40 h del complemento, menos 5 h porque los datos del cliente ya están en el panel). Queda por fuera, y así lo dice la propuesta: la API de Helisa (Conekta cuesta $211.680 al mes), la app para iPhone, la migración del histórico en papel y la firma digital certificada.
 
-**Lo que no cambió:** tarifa $40.000/h, garantía 60 días, Alcance 2 150 h, terceros, soporte. La oferta del contrato anual solo cambia la fecha de inicio (≈ mayo de 2027). Sobre las retenciones: a $15 M, con retención en la fuente del 11 % por honorarios (si aplica) quedan ≈ $13,35 M; con el 4 % por servicios, ≈ $14,4 M. Hay que confirmar con Julio bajo qué concepto facturará el equipo.
+**Lo que no cambió:** tarifa $40.000/h, garantía 60 días, Alcance 2 150 h, terceros, soporte. La oferta del contrato anual no cambia (inicio ≈ abril de 2027). Sobre las retenciones: a $15 M, con retención en la fuente del 11 % por honorarios (si aplica) quedan ≈ $13,35 M; con el 4 % por servicios, ≈ $14,4 M. Hay que confirmar con Julio bajo qué concepto facturará el equipo.
