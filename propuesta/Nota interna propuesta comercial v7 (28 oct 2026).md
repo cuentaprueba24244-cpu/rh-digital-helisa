@@ -143,3 +143,16 @@ Ronaldo corrigió el reparto: el **Alcance 2 es solo la facturación electrónic
 **Las 75 h nuevas:** portal del cliente 40 h (ingreso por cliente, lista de visitas con evidencia, descarga de constancia, planilla, acta, factura y recibos, saldo, correo automático por documento nuevo) y contratos 35 h (las 40 h del complemento, menos 5 h porque los datos del cliente ya están en el panel). Queda por fuera, y así lo dice la propuesta: la API de Helisa (Conekta cuesta $211.680 al mes), la app para iPhone, la migración del histórico en papel y la firma digital certificada.
 
 **Lo que no cambió:** tarifa $40.000/h, garantía 60 días, Alcance 2 150 h, terceros, soporte. La oferta del contrato anual no cambia (inicio ≈ abril de 2027). Sobre las retenciones: a $15 M, con retención en la fuente del 11 % por honorarios (si aplica) quedan ≈ $13,35 M; con el 4 % por servicios, ≈ $14,4 M. Hay que confirmar con Julio bajo qué concepto facturará el equipo.
+
+## 12. Oferta anual rebajada (29 oct)
+
+Ronaldo pidió revisar si se podía bajar. Se bajó cambiando el servidor a **Hostinger KVM 1** ($19.900/mes promo 24 meses = $477.600; $38.900 al renovar; 1 vCPU, 4 GB, 50 GB: sobra para 240 facturas y pocos usuarios) y recortando horas.
+
+| | Esencial | Completo |
+|---|---|---|
+| Cuota | **$220.000** (antes $280.000) | **$320.000** (antes $380.000) |
+| Año / anticipado (11 meses) / semestre | $2.640.000 / $2.420.000 / $1.320.000 | $3.840.000 / $3.520.000 / $1.920.000 |
+| Terceros dentro de la cuota | ≈ $48.000 | ≈ $48.000 |
+| Trabajo del equipo | $172.000 (≈ 4 h: 2 admin + 2 ajustes) | $272.000 (≈ 6 h) |
+
+Si Comserva paga los servicios, la cuota baja $48.000. El párrafo de soporte de la propuesta v7 ahora remite a esta oferta («desde $220.000 al mes»). Primer año de mantenimiento = 18 % (Esencial) o 26 % (Completo) de los $15 M del Alcance 1. Piso: no bajar más, porque el neto por hora ya queda en ≈ $43.000–45.000.
