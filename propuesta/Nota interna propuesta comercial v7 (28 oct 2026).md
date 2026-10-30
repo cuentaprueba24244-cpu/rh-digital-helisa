@@ -156,3 +156,7 @@ Ronaldo pidió revisar si se podía bajar. Se bajó cambiando el servidor a **Ho
 | Trabajo del equipo | $172.000 (≈ 4 h: 2 admin + 2 ajustes) | $272.000 (≈ 6 h) |
 
 Si Comserva paga los servicios, la cuota baja $48.000. El párrafo de soporte de la propuesta v7 ahora remite a esta oferta («desde $220.000 al mes»). Primer año de mantenimiento = 18 % (Esencial) o 26 % (Completo) de los $15 M del Alcance 1. Piso: no bajar más, porque el neto por hora ya queda en ≈ $43.000–45.000.
+
+## 13. Opción Conekta dentro del Alcance 1 (29 oct)
+
+Observación del equipo: la v7 no mostraba el camino 1B (API Conekta de Helisa). Se agregó como **opción dentro del Alcance 1** en la propuesta comercial: desarrollo adicional **$2.800.000** (70 h de la estimación v2 a $40.000) y **≈ $212.000 al mes** que Comserva paga a Helisa (precio de helisa.com; más el hosting que Helisa exija). Aparece en la sección 2 (recuadro naranja), en la tabla de inversión (fila opcional) y en los servicios de terceros. No cambia el precio base de $15 M ni los hitos; si Comserva la toma, se paga con el segundo hito.
